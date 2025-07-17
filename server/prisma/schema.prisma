@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String
+  password  String
+  role      String    @default("customer")
+  status    String    @default("active")
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+  reviews   Review[]
+  stores    Store[]
+  Address   Address[]
+}
+
+model Store {
+  id                String    @id @default(cuid())
+  name              String
+  owner             String
+  location          String
+  storeStatus       String    @default("pending")
+  rating            Float     @default(0)
+  servicesAvailable Int       @default(0)
+  images            String[]
+  latitude          Float?
+  longitude         Float?
+  schedule          Json?
+  createdAt         DateTime  @default(now())
+  bookings          Booking[]
+  reviews           Review[]
+  services          Service[]
+  ownerUser         User?     @relation(fields: [ownerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  ownerId           String?
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  totalPrice      Int
+  status          String
+  serviceName     String
+  deliveryOption  String?
+  scheduleDate    DateTime?
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String
+  store           Store         @relation(fields: [storeId], references: [id])
+  storeId         String
+  reviews         Review[]
+  deliveryFee     Int           @default(0)
+  payment         Payment?
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  date      DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  bookingId String   @unique
+  userName  String
+}
+
+model Promo {
+  id           String @id @default(cuid())
+  code         String @unique
+  description  String
+  discountType String
+  value        Int
+  status       String @default("active")
+}
+
+model Banner {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  linkUrl   String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+}
+
+model Address {
+  id            String   @id @default(cuid())
+  label         String
+  recipientName String
+  phoneNumber   String
+  fullAddress   String
+  city          String
+  postalCode    String
+  isPrimary     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+}
+
+model Service {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  price       Int
+  shoeType    String
+  store       Store   @relation(fields: [storeId], references: [id])
+  storeId     String
+}
+
+model Payment {
+  id               String        @id @default(cuid())
+  booking          Booking       @relation(fields: [bookingId], references: [id])
+  bookingId        String        @unique
+  amount           Int
+  status           PaymentStatus @default(PENDING)
+  provider         String
+  transactionToken String?
+  redirectUrl      String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}

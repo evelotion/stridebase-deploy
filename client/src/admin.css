@@ -1,0 +1,578 @@
+/* Import Font */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+/* Color Palette */
+:root {
+  --primary-color: #0dcaf0;
+  --secondary-color: #28a745;
+  --text-dark: #343a40;
+  --text-muted: #6c757d;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --border-color: #dee2e6;
+  --table-hover-color: #f1f1f1;
+}
+
+/* Dark Mode Color Definitions */
+body.dark-mode {
+  --primary-color: #0dcaf0;
+  --secondary-color: #28a745;
+  --text-dark: #e1e1e1;
+  --text-muted: #a0a0a0;
+  --bg-light: #1c1c22;
+  --bg-white: #25252b;
+  --border-color: #404040;
+  --table-hover-color: #313138;
+}
+
+/* Base Layout */
+body {
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+  /* Mengembalikan scrollbar default browser */
+}
+
+#wrapper {
+  display: flex;
+  transition: all 0.3s ease;
+}
+
+#sidebar-wrapper {
+  min-height: 100vh;
+  width: 250px;
+  background: var(--bg-white);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  transition: margin 0.3s ease, background-color 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar-wrapper .list-group {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar-wrapper .sidebar-heading {
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s ease;
+}
+
+#sidebar-wrapper .sidebar-heading .logo,
+#sidebar-wrapper .sidebar-heading .store-logo {
+  max-height: 28px;
+  width: 28px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+#sidebar-wrapper .sidebar-heading span {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+#sidebar-wrapper .list-group-item {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+}
+
+#sidebar-wrapper .list-group-item a {
+  display: block;
+  padding: 0.9rem 1.5rem;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+#sidebar-wrapper .list-group-item.active > a,
+#sidebar-wrapper .list-group-item > a:hover {
+  color: var(--primary-color);
+  background: rgba(13, 202, 240, 0.08);
+  border-left-color: var(--primary-color);
+}
+
+/* Submenu Styles */
+.submenu-toggle .fa-chevron-down {
+  transition: transform 0.3s ease;
+}
+.submenu-toggle[aria-expanded="true"] .fa-chevron-down {
+  transform: rotate(180deg);
+}
+#sidebar-wrapper .list-group-item ul {
+  padding-left: 1rem;
+  background-color: rgba(0, 0, 0, 0.015);
+}
+#sidebar-wrapper .submenu-link {
+  padding: 0.7rem 1.5rem 0.7rem 2.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-left: 4px solid transparent;
+}
+
+#sidebar-wrapper .submenu-link:hover,
+#sidebar-wrapper .submenu-link.active {
+  color: var(--primary-color);
+  background: rgba(13, 202, 240, 0.08);
+  border-left-color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Dark Mode Toggler Styles */
+#dark-mode-toggler {
+  padding: 0.9rem 1.5rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: pointer;
+}
+#dark-mode-toggler .form-check-input {
+  background-color: #ccc;
+  border-color: #ccc;
+  cursor: pointer;
+}
+body.dark-mode #dark-mode-toggler .form-check-input {
+  background-color: #444;
+  border-color: #555;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: -250px;
+}
+
+/* Mengembalikan area konten utama seperti semula */
+#page-content-wrapper {
+  width: calc(100% - 250px);
+  transition: width 0.3s ease;
+  padding-bottom: 3rem;
+}
+#wrapper.toggled #page-content-wrapper {
+  width: 100%;
+}
+
+/* General Styles & Utilities */
+#menu-toggle {
+  cursor: pointer;
+}
+.primary-text {
+  color: var(--primary-color);
+}
+.secondary-text {
+  color: var(--secondary-color);
+}
+
+.rounded-full {
+  border-radius: 999px !important;
+  padding: 1rem !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Card Styles */
+.kpi-card,
+.chart-card,
+.table-card,
+.filter-card,
+.card {
+  background: var(--bg-white);
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease, border-color 0.3s ease;
+}
+body.dark-mode .card,
+body.dark-mode .kpi-card,
+body.dark-mode .chart-card,
+body.dark-mode .table-card {
+  border-color: var(--border-color);
+}
+
+.kpi-card:hover,
+.chart-card:hover,
+.table-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08) !important;
+}
+
+.kpi-card .fs-2 {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.kpi-card .fs-5 {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.chart-container {
+  position: relative;
+  height: 350px;
+  width: 100%;
+}
+
+/* Table */
+.table-card {
+  /* Tidak perlu properti khusus di sini */
+}
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+.table thead th {
+  border-bottom-width: 1px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.table tbody tr {
+  transition: background-color 0.2s ease, display 0.3s;
+}
+.table-hover tbody tr:hover {
+  background-color: var(--table-hover-color);
+}
+.table thead.table-light {
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border-color);
+}
+body.dark-mode .table {
+  color: var(--text-dark);
+}
+body.dark-mode .badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #343a40 !important;
+}
+
+/* REVISI UTAMA: Mengatur ulang tinggi maksimal tabel */
+.table-responsive {
+  max-height: 320px; /* Cukup untuk 1 baris header + 5 baris data */
+  overflow-y: auto; /* Tampilkan scrollbar vertikal jika konten lebih tinggi */
+}
+
+/* Other component adjustments for dark mode */
+body.dark-mode .nav-tabs .nav-link {
+  color: var(--text-muted);
+  border-color: transparent;
+}
+body.dark-mode .nav-tabs .nav-link.active {
+  color: var(--primary-color);
+  background-color: var(--bg-white);
+  border-color: var(--border-color) !important;
+  border-bottom-color: var(--bg-white) !important;
+}
+body.dark-mode .modal-content {
+  background-color: var(--bg-white);
+  color: var(--text-dark);
+}
+body.dark-mode .modal-header {
+  border-bottom-color: var(--border-color);
+}
+body.dark-mode .modal-footer {
+  border-top-color: var(--border-color);
+}
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  border-color: var(--border-color);
+}
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background-color: var(--bg-white);
+  color: var(--text-dark);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(13, 202, 240, 0.25);
+}
+
+.store-logo,
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+}
+.filter-bar .nav-pills .nav-link {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.report-kpi-card .kpi-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+.report-kpi-card .kpi-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Photo Gallery Styles */
+.photo-gallery .photo-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-light);
+  aspect-ratio: 1 / 1;
+}
+.photo-gallery .photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.photo-gallery .photo-item:hover img {
+  transform: scale(1.05);
+}
+.photo-gallery .photo-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  padding: 1.5rem 0.75rem 0.75rem;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.photo-gallery .photo-item:hover .photo-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+.photo-gallery .photo-actions .btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+}
+.photo-primary-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 0.7rem;
+  z-index: 2;
+}
+.photo-item-add {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--border-color);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.photo-item-add:hover {
+  background-color: var(--table-hover-color);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+.photo-item-add i {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: -250px;
+  }
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+  }
+  #page-content-wrapper {
+    width: 100%;
+  }
+  #wrapper.toggled #page-content-wrapper {
+    width: calc(100% - 250px);
+  }
+  .navbar-nav {
+    display: none;
+  }
+  .row > div {
+    margin-bottom: 1rem;
+  }
+}
+
+.dropdown-menu {
+  max-height: 250px;
+  overflow-y: auto;
+}
+/* Tambahkan di akhir file admin.css */
+
+.avatar-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.avatar-initials span {
+  line-height: 1;
+}
+
+/* === Enhanced Dark Mode Button === */
+.dark-mode-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--table-hover-color);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.dark-mode-button:hover {
+  background-color: var(--primary-color);
+  color: white;
+  transform: rotate(15deg);
+}
+
+/* Efek saat Dark Mode AKTIF */
+body.dark-mode .dark-mode-button {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 0 15px rgba(13, 202, 240, 0.6); /* Efek glow/shadow */
+}
+
+/* === Floating Side Tab Dark Mode Button === */
+.dark-mode-tab {
+    position: fixed;
+    top: 50%; /* Posisi vertikal di tengah layar */
+    right: 0;  /* Menempel di kanan */
+    z-index: 1030;
+    
+    /* Mengatur transform agar posisi awal berada di luar layar */
+    transform: translate(calc(100% - 45px), -50%); 
+    
+    display: flex;
+    align-items: center;
+    
+    padding: 10px 15px;
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    border-right: none; /* Hilangkan border kanan agar menempel sempurna */
+    
+    /* Membuat bentuk seperti tab */
+    border-radius: 20px 0 0 20px; 
+    
+    box-shadow: -2px 2px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.dark-mode-tab:hover {
+    /* Menggeser tombol ke posisi normal saat di-hover */
+    transform: translate(0, -50%);
+    box-shadow: -4px 4px 15px rgba(0,0,0,0.15);
+}
+
+.dark-mode-tab i {
+    font-size: 1.1rem;
+    width: 25px; /* Memberi ruang tetap untuk ikon */
+    text-align: center;
+}
+
+.dark-mode-tab span {
+    margin-left: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap; /* Mencegah teks turun ke bawah */
+}
+
+/* Efek Glow saat Dark Mode Aktif (tetap sama) */
+body.dark-mode .dark-mode-tab {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.6);
+}
+
+/* === Perbaikan Tema Dark Mode (Tambahan) === */
+
+/* Perbaikan 1: Membuat latar belakang utama menjadi gelap */
+#page-content-wrapper {
+  background-color: var(--bg-light);
+}
+
+/* Perbaikan 2: Membuat teks di dalam kartu KPI menjadi terang */
+.kpi-card h3, .kpi-card .fs-2 {
+    color: var(--text-dark);
+}
+
+.kpi-card p, .kpi-card .fs-5 {
+    color: var(--text-muted);
+}
+
+/* === Perbaikan Lanjutan Tema Dark Mode === */
+
+/* Untuk judul halaman seperti "Dashboard", "Manajemen Promo", dll. */
+#page-content-wrapper h2 {
+    color: var(--text-dark);
+}
+
+/* Untuk tombol dropdown admin di kanan atas */
+.navbar .nav-item .nav-link {
+    color: var(--text-dark);
+}
+
+/* === Perbaikan Lanjutan Desain Kartu & Teks === */
+
+/* Memastikan semua kartu di dalam baris yang sama memiliki tinggi seragam */
+.row.d-flex .col-md-3, .row.d-flex .col-md-7, .row.d-flex .col-md-5 {
+    display: flex;
+}
+
+.kpi-card, .chart-card, .table-card {
+    width: 100%;
+}
+
+/* Mengatur agar konten di dalam kartu KPI bisa tumbuh mengisi ruang */
+.kpi-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Opsional: membuat konten lebih ke tengah */
+}
+
+/* Perbaikan warna font untuk semua judul di dalam kartu */
+.chart-card h3, .table-card h3 {
+    color: var(--text-dark);
+}
+
+/* Ditambahkan untuk Desain Ulang Tabel Toko */
+.store-owner-subtext {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

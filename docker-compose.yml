@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  server:
+    build: ./server
+    container_name: stridebase_server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/stridebase_db
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  client:
+    build: ./client
+    container_name: stridebase_client
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: stridebase_db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=stridebase_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # <-- Port ini sudah benar
+    restart: unless-stopped
+
+  redis:
+    image: redis:6-alpine
+    container_name: stridebase_redis
+    ports: # <-- PENAMBAHAN PENTING DI SINI
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
