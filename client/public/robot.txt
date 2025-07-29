@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /partner/
+Disallow: /developer/
+Disallow: /dashboard/
+
+Sitemap: http://localhost:5000/sitemap.xml

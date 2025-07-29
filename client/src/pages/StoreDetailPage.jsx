@@ -1,49 +1,74 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+// Komponen Peta sudah tidak diimpor lagi
 
-// Komponen baru untuk menampilkan satu kartu ulasan
-const ReviewCard = ({ review }) => {
-  return (
-    <div className="review-card mb-3">
-      <div className="d-flex align-items-center mb-2">
-        <div className="review-avatar">{review.userName.charAt(0)}</div>
-        <div>
-          <h6 className="mb-0">{review.userName}</h6>
-          <p className="mb-0 text-muted small">
-            {new Date(review.date).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
-        </div>
-        <div className="ms-auto">
-          {[...Array(5)].map((_, i) => (
-            <i
-              key={i}
-              className={`fas fa-star ${
-                i < review.rating ? "text-warning" : "text-light"
-              }`}
-            ></i>
-          ))}
-        </div>
+const ReviewCard = ({ review }) => (
+  <div className="review-card mb-3">
+    <div className="d-flex align-items-center mb-2">
+      <div className="review-avatar">{review.userName.charAt(0)}</div>
+      <div>
+        <h6 className="mb-0">{review.userName}</h6>
+        <p className="mb-0 text-muted small">
+          {new Date(review.date).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
+        </p>
       </div>
-      <p className="review-comment">
-        {review.comment || "Tidak ada komentar."}
-      </p>
+      <div className="ms-auto">
+        {[...Array(5)].map((_, i) => (
+          <i
+            key={i}
+            className={`fas fa-star ${
+              i < review.rating ? "text-warning" : "text-light"
+            }`}
+          ></i>
+        ))}
+      </div>
     </div>
-  );
+    <p className="review-comment">{review.comment || "Tidak ada komentar."}</p>
+    {review.imageUrl && (
+      <div className="mt-2" style={{ paddingLeft: "55px" }}>
+        <img
+          src={`http://localhost:5000${review.imageUrl}`}
+          alt={`Ulasan dari ${review.userName}`}
+          className="img-thumbnail"
+          style={{ maxWidth: "150px", cursor: "pointer" }}
+          onClick={() => window.open(`http://localhost:5000${review.imageUrl}`)}
+        />
+      </div>
+    )}
+    {review.partnerReply && (
+      <div className="mt-3 p-3 bg-light rounded border-start border-4 border-primary">
+        <h6 className="fw-bold small text-muted">Balasan dari Toko:</h6>
+        <p className="mb-0 fst-italic">"{review.partnerReply}"</p>
+      </div>
+    )}
+  </div>
+);
+
+const getServiceIcon = (serviceName) => {
+  const name = serviceName.toLowerCase();
+  if (name.includes("deep") || name.includes("cuci")) return "fa-soap";
+  if (name.includes("repair") || name.includes("consultation"))
+    return "fa-tools";
+  if (name.includes("unyellowing")) return "fa-sun";
+  if (name.includes("leather") || name.includes("kulit")) return "fa-gem";
+  if (name.includes("suede")) return "fa-leaf";
+  return "fa-shoe-prints"; // Ikon default
 };
 
 const StoreDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // State yang sudah ada
   const [store, setStore] = useState(null);
-  const [servicesData, setServicesData] = useState(null);
+  const [servicesData, setServicesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
+
   const [selectedShoeType, setSelectedShoeType] = useState("");
   const [selectedService, setSelectedService] = useState(null);
   const [deliveryOption, setDeliveryOption] = useState("self-delivery");
@@ -51,8 +76,6 @@ const StoreDetailPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [finalSchedule, setFinalSchedule] = useState(null);
-
-  // State baru untuk alamat
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -64,6 +87,8 @@ const StoreDetailPage = () => {
     city: "",
     postalCode: "",
   });
+
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
 
   const fetchUserAddresses = async () => {
     const token = localStorage.getItem("token");
@@ -90,21 +115,27 @@ const StoreDetailPage = () => {
       try {
         const [storeRes, servicesRes, reviewsRes] = await Promise.all([
           fetch(`/api/stores/${id}`),
-          fetch("/api/services"),
+          fetch(`/api/stores/${id}/services`),
           fetch(`/api/reviews/store/${id}`),
         ]);
 
         if (!storeRes.ok) throw new Error("Toko tidak ditemukan");
+        if (!servicesRes.ok) throw new Error("Gagal memuat layanan toko");
 
         const storeData = await storeRes.json();
-        const allServices = await servicesRes.json();
+        const storeServices = await servicesRes.json();
         const storeReviews = await reviewsRes.json();
 
         setStore(storeData);
-        setServicesData(allServices);
+        setServicesData(storeServices);
         setReviews(storeReviews);
+
+        if (storeServices.length > 0) {
+          const firstShoeType = storeServices[0].shoeType;
+          setSelectedShoeType(firstShoeType);
+        }
       } catch (error) {
-        console.error("Gagal mengambil data:", error);
+        console.error("Gagal mengambil data halaman toko:", error);
       } finally {
         setLoading(false);
       }
@@ -120,6 +151,12 @@ const StoreDetailPage = () => {
     }
   }, [deliveryOption]);
 
+  const headerImage =
+    store?.headerImage || (store?.images.length > 0 ? store.images[0] : null);
+  const galleryImages =
+    store?.images.filter((img) => img !== headerImage) || [];
+  const galleryPreviewImages = galleryImages.slice(0, 4);
+
   const handleShoeTypeChange = (event) => {
     setSelectedShoeType(event.target.value);
     setSelectedService(null);
@@ -127,23 +164,26 @@ const StoreDetailPage = () => {
 
   const handleServiceChange = (event) => {
     const serviceId = event.target.value;
-    const serviceDetails = servicesData[selectedShoeType].find(
-      (s) => s.id === serviceId
-    );
+    const serviceDetails = servicesData.find((s) => s.id === serviceId);
     setSelectedService(serviceDetails);
   };
 
   const handleBooking = () => {
+    if (!localStorage.getItem("token")) {
+      showMessage("Silakan login terlebih dahulu untuk melakukan pemesanan.");
+      navigate("/login");
+      return;
+    }
     if (!selectedService) {
-      alert("Silakan pilih layanan terlebih dahulu.");
+      showMessage("Silakan pilih layanan terlebih dahulu.");
       return;
     }
     if (deliveryOption === "pickup" && !finalSchedule) {
-      alert("Silakan pilih jadwal antar jemput.");
+      showMessage("Silakan pilih jadwal antar jemput.");
       return;
     }
     if (deliveryOption === "pickup" && !selectedAddress) {
-      alert("Silakan pilih alamat pengantaran.");
+      showMessage("Silakan pilih atau tambah alamat penjemputan.");
       return;
     }
 
@@ -179,44 +219,63 @@ const StoreDetailPage = () => {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.message || "Gagal menyimpan alamat.");
-
       setShowAddressModal(false);
       fetchUserAddresses();
-      alert("Alamat baru berhasil disimpan!");
+      showMessage("Alamat baru berhasil disimpan!");
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
   const renderActionButton = () => {
     if (selectedService?.id === "repair") {
       const message = encodeURIComponent(
-        `Halo Admin StrideBase, saya ingin berkonsultasi mengenai perbaikan sepatu di toko ${store.name}.`
+        `Halo, saya ingin konsultasi perbaikan sepatu di ${store.name}.`
       );
       return (
         <a
-          href={`https://wa.me/6281234567890?text=${message}`} // Ganti dengan nomor WhatsApp Admin Anda
+          href={`https://wa.me/6281234567890?text=${message}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn btn-success w-100"
+          className="btn btn-success btn-lg w-100"
         >
-          <i className="fab fa-whatsapp me-2"></i>Hubungi Admin
+          <i className="fab fa-whatsapp me-2"></i>Hubungi via WhatsApp
         </a>
       );
     }
-
     return (
       <button
-        className="btn btn-gradient w-100"
+        className="btn btn-dark btn-lg w-100"
         type="button"
-        disabled={
-          !selectedService || (deliveryOption === "pickup" && !finalSchedule)
-        }
+        disabled={!selectedService}
         onClick={handleBooking}
       >
-        Book Now
+        Pesan Sekarang
       </button>
     );
+  };
+
+  const generateStructuredData = () => {
+    if (!store) return null;
+    return JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      name: store.name,
+      image: store.images.map((img) => `http://localhost:5000${img}`),
+      address: { "@type": "PostalAddress", streetAddress: store.location },
+      description:
+        store.description ||
+        `Layanan cuci sepatu profesional di ${store.name}, ${store.location}.`,
+      telephone: "+62-XXX-XXXX-XXXX",
+      aggregateRating:
+        reviews.length > 0
+          ? {
+              "@type": "AggregateRating",
+              ratingValue: store.rating,
+              reviewCount: reviews.length,
+            }
+          : undefined,
+    });
   };
 
   if (loading)
@@ -230,44 +289,110 @@ const StoreDetailPage = () => {
   if (!store)
     return (
       <div className="container py-5 text-center">
+        <Helmet>
+          <title>Toko Tidak Ditemukan | StrideBase</title>
+        </Helmet>
         <h2>404 - Toko Tidak Ditemukan</h2>
       </div>
     );
 
-  return (
-    <main className="page-content container store-detail">
-      <div className="mb-4">
-        <h1 className="mb-2">{store.name}</h1>
-        <p className="text-muted mb-2">
-          <i className="fas fa-map-marker-alt me-2"></i> {store.location}
-        </p>
-        <p className="rating-stars mb-0">
-          <i className="fas fa-star"></i> {store.rating} ({reviews.length}{" "}
-          ulasan)
-        </p>
-      </div>
+  const availableShoeTypes = [...new Set(servicesData.map((s) => s.shoeType))];
 
-      <div className="row g-4">
-        <div className="col-12 col-md-7">
-          <div className="info-box rounded-4 p-4 h-100">
+  return (
+    <>
+      <main className="store-detail-page-container">
+        <Helmet>
+          <title>{`${store.name} - Jasa Cuci Sepatu di ${store.location} | StrideBase`}</title>
+          <meta
+            name="description"
+            content={`Layanan cuci sepatu profesional di ${store.name}, ${store.location}. Lihat daftar layanan, harga, dan ulasan pelanggan. Pesan sekarang melalui StrideBase.`}
+          />
+          <script type="application/ld+json">{generateStructuredData()}</script>
+        </Helmet>
+
+        {/* --- KONTEN UTAMA --- */}
+        <div className="store-detail-main">
+          <div className="store-header">
+            {store.tier === "PRO" && (
+              <span
+                className="badge bg-warning text-dark position-absolute top-0 end-0 m-3 fs-6"
+                style={{ zIndex: 2 }}
+              >
+                <i className="fas fa-crown me-1"></i> PRO
+              </span>
+            )}
             <img
-              src={store.images[0]}
-              className="img-fluid rounded-3 mb-4"
+              src={
+                headerImage
+                  ? `http://localhost:5000${headerImage}`
+                  : "https://via.placeholder.com/800x400.png?text=No+Header"
+              }
               alt={store.name}
+              className="store-header-image"
             />
-            <h5>Deskripsi</h5>
-            <p>
+            <div className="store-header-overlay">
+              <h1>{store.name}</h1>
+              <p className="lead">{store.location}</p>
+              <div className="rating-badge">
+                <i className="fas fa-star"></i> {store.rating} ({reviews.length}{" "}
+                ulasan)
+              </div>
+            </div>
+          </div>
+
+          {galleryImages.length > 0 && (
+            <div className="info-box store-gallery-section">
+              <h5 className="section-title">Galeri Toko</h5>
+              <div className="gallery-preview-grid">
+                {galleryPreviewImages.map((img, index) => (
+                  <div
+                    key={index}
+                    className="gallery-preview-item"
+                    onClick={() => setShowGalleryModal(true)}
+                  >
+                    <img
+                      src={`http://localhost:5000${img}`}
+                      alt={`Galeri ${index + 1}`}
+                    />
+                  </div>
+                ))}
+                {galleryImages.length > 4 && (
+                  <div
+                    className="gallery-preview-item gallery-view-all"
+                    onClick={() => setShowGalleryModal(true)}
+                  >
+                    <img
+                      src={`http://localhost:5000${galleryImages[4]}`}
+                      alt="Lihat semua"
+                    />
+                    <div className="gallery-view-all-overlay">
+                      <span>+{galleryImages.length - 4} Lainnya</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* --- KOTAK INFO --- */}
+          <div className="info-box">
+            <h5 className="section-title">
+              <i className="fas fa-info-circle me-2"></i>Tentang Toko
+            </h5>
+            <p className="text-muted">
               {store.description || "Deskripsi untuk toko ini belum tersedia."}
             </p>
           </div>
         </div>
 
-        <div className="col-12 col-md-5">
-          <div className="info-box rounded-4 p-4 h-100 d-flex flex-column">
-            <h6 className="fw-semibold mb-3">1. Pilih Jenis Sepatu</h6>
-            <div id="shoe-type-options" className="mb-3 d-flex flex-wrap gap-2">
-              {servicesData &&
-                Object.keys(servicesData).map((type) => (
+        {/* --- SIDEBAR (HANYA UNTUK PEMESANAN) --- */}
+        <div className="store-detail-sidebar">
+          <div className="info-box">
+            <h5 className="section-title">Pesan Layanan</h5>
+            <div className="mb-4">
+              <h6 className="fw-semibold mb-3">1. Pilih Jenis Sepatu</h6>
+              <div className="d-flex flex-wrap gap-2">
+                {availableShoeTypes.map((type) => (
                   <label className="service-option-chip" key={type}>
                     <input
                       type="radio"
@@ -279,38 +404,47 @@ const StoreDetailPage = () => {
                     <span>{type.charAt(0).toUpperCase() + type.slice(1)}</span>
                   </label>
                 ))}
+              </div>
             </div>
-
-            <hr className="my-3" />
-
             <div
-              style={{
-                opacity: selectedShoeType ? 1 : 0.5,
-                pointerEvents: selectedShoeType ? "auto" : "none",
-              }}
+              className={`mb-4 ${!selectedShoeType ? "section-disabled" : ""}`}
             >
               <h6 className="fw-semibold mb-3">2. Pilih Layanan</h6>
-              <div id="service-options-container">
+              <div className="service-card-container">
                 {selectedShoeType ? (
-                  servicesData[selectedShoeType].map((service) => (
-                    <label className="service-option" key={service.id}>
-                      <input
-                        type="radio"
-                        name="service"
-                        value={service.id}
-                        onChange={handleServiceChange}
-                        checked={selectedService?.id === service.id}
-                      />
-                      <div className="service-label">
-                        <span className="fw-bold d-block">{service.name}</span>
-                        <span className="small text-muted">
-                          {service.price > 0
-                            ? `Rp ${service.price.toLocaleString("id-ID")}`
-                            : "Gratis Konsultasi"}
-                        </span>
-                      </div>
-                    </label>
-                  ))
+                  servicesData
+                    .filter((s) => s.shoeType === selectedShoeType)
+                    .map((service) => (
+                      <label className="service-card" key={service.id}>
+                        <input
+                          type="radio"
+                          name="service"
+                          value={service.id}
+                          onChange={handleServiceChange}
+                          checked={selectedService?.id === service.id}
+                        />
+                        <div className="service-card-content">
+                          <div className="service-card-icon">
+                            <i
+                              className={`fas ${getServiceIcon(service.name)}`}
+                            ></i>
+                          </div>
+                          <div className="service-card-details">
+                            <span className="fw-bold d-block">
+                              {service.name}
+                            </span>
+                            <span className="small text-muted">
+                              {service.price > 0
+                                ? `Rp ${service.price.toLocaleString("id-ID")}`
+                                : "Gratis Konsultasi"}
+                            </span>
+                          </div>
+                          <div className="service-card-checkmark">
+                            <i className="fas fa-check-circle"></i>
+                          </div>
+                        </div>
+                      </label>
+                    ))
                 ) : (
                   <p className="text-muted small">
                     Pilih jenis sepatu terlebih dahulu.
@@ -318,23 +452,14 @@ const StoreDetailPage = () => {
                 )}
               </div>
             </div>
-
-            {/* =========== PERUBAHAN LOGIKA DI SINI =========== */}
             <div
-              className="mt-4"
-              style={{
-                opacity:
-                  !selectedService || selectedService.id === "repair" ? 0.5 : 1,
-                pointerEvents:
-                  !selectedService || selectedService.id === "repair"
-                    ? "none"
-                    : "auto",
-              }}
+              className={`mb-4 ${
+                !selectedService || selectedService.id === "repair"
+                  ? "section-disabled"
+                  : ""
+              }`}
             >
-              {/* ================================================= */}
-
-              <hr className="my-3" />
-              <h6 className="fw-semibold mb-3">3. Atur Pengantaran & Jadwal</h6>
+              <h6 className="fw-semibold mb-3">3. Atur Pengantaran</h6>
               <div className="delivery-option-group">
                 <label className="delivery-option">
                   <input
@@ -348,9 +473,7 @@ const StoreDetailPage = () => {
                     <i className="fas fa-motorcycle"></i>
                     <div>
                       <strong>Antar Jemput</strong>
-                      <small className="d-block text-muted">
-                        Kurir akan mengambil sepatumu.
-                      </small>
+                      <small>Kurir akan mengambil sepatumu.</small>
                     </div>
                   </div>
                 </label>
@@ -366,41 +489,34 @@ const StoreDetailPage = () => {
                     <i className="fas fa-walking"></i>
                     <div>
                       <strong>Antar Sendiri</strong>
-                      <small className="d-block text-muted">
-                        Datang langsung ke toko.
-                      </small>
+                      <small>Datang langsung ke toko.</small>
                     </div>
                   </div>
                 </label>
               </div>
-
               {deliveryOption === "pickup" && (
                 <div className="mt-3">
-                  <h6 className="fw-semibold mb-2">Pilih Alamat Jemput</h6>
-                  {addresses.length > 0 ? (
-                    addresses.map((addr) => (
-                      <label className="address-option" key={addr.id}>
-                        <input
-                          type="radio"
-                          name="address"
-                          value={addr.id}
-                          checked={selectedAddress === addr.id}
-                          onChange={(e) => setSelectedAddress(e.target.value)}
-                        />
-                        <div className="address-option-label">
-                          <strong>{addr.label}</strong>
-                          <small>
-                            {addr.recipientName} -{" "}
-                            {addr.fullAddress.substring(0, 30)}...
-                          </small>
-                        </div>
-                      </label>
-                    ))
-                  ) : (
-                    <p className="small text-muted">
-                      Anda belum punya alamat tersimpan.
-                    </p>
-                  )}
+                  <h6 className="fw-semibold mb-2 small">
+                    Pilih Alamat Jemput
+                  </h6>
+                  {addresses.map((addr) => (
+                    <label className="address-option" key={addr.id}>
+                      <input
+                        type="radio"
+                        name="address"
+                        value={addr.id}
+                        checked={selectedAddress === addr.id}
+                        onChange={(e) => setSelectedAddress(e.target.value)}
+                      />
+                      <div className="address-option-label">
+                        <strong>{addr.label}</strong>
+                        <small>
+                          {addr.recipientName} -{" "}
+                          {addr.fullAddress.substring(0, 30)}...
+                        </small>
+                      </div>
+                    </label>
+                  ))}
                   <button
                     className="btn btn-sm btn-outline-dark w-100 mt-2"
                     onClick={() => setShowAddressModal(true)}
@@ -409,7 +525,6 @@ const StoreDetailPage = () => {
                   </button>
                 </div>
               )}
-
               <div className="mt-3">
                 <button
                   type="button"
@@ -418,10 +533,7 @@ const StoreDetailPage = () => {
                   disabled={deliveryOption === "self-delivery"}
                 >
                   <i className="fas fa-calendar-alt"></i>
-                  <div
-                    id="selectedScheduleText"
-                    className="text-start flex-grow-1"
-                  >
+                  <div className="text-start flex-grow-1">
                     {finalSchedule && deliveryOption === "pickup" ? (
                       <>
                         <strong className="d-block">
@@ -445,22 +557,111 @@ const StoreDetailPage = () => {
                 </button>
               </div>
             </div>
-
-            <div className="d-grid mt-auto pt-4">{renderActionButton()}</div>
+            <div className="d-grid mt-4 pt-3 border-top">
+              {renderActionButton()}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="info-box rounded-4 p-4 mt-4">
-        <h5 className="mb-3">Ulasan Pelanggan ({reviews.length})</h5>
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
-          ))
-        ) : (
-          <p className="text-muted">Belum ada ulasan untuk toko ini.</p>
-        )}
-      </div>
+        {/* --- BAGIAN ULASAN --- */}
+        <div className="store-detail-reviews">
+          <div className="info-box">
+            <h5 className="section-title">
+              <i className="fas fa-star-half-alt me-2"></i>Ulasan Pelanggan (
+              {reviews.length})
+            </h5>
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <ReviewCard key={review.id} review={review} />
+              ))
+            ) : (
+              <p className="text-muted">Belum ada ulasan untuk toko ini.</p>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {showGalleryModal && (
+        <>
+          <div
+            className="modal fade show"
+            style={{ display: "block" }}
+            tabIndex="-1"
+            onClick={() => setShowGalleryModal(false)}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered modal-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className="modal-content"
+                style={{ backgroundColor: "transparent", border: "none" }}
+              >
+                <div className="modal-header" style={{ borderBottom: "none" }}>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={() => setShowGalleryModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body gallery-modal-body">
+                  <div
+                    id="fullGalleryCarousel"
+                    className="carousel slide"
+                    data-bs-ride="carousel"
+                  >
+                    <div className="carousel-inner">
+                      {galleryImages.map((image, index) => (
+                        <div
+                          className={`carousel-item ${
+                            index === 0 ? "active" : ""
+                          }`}
+                          key={index}
+                        >
+                          <img
+                            src={`http://localhost:5000${image}`}
+                            className="d-block w-100"
+                            alt={`Galeri Penuh ${index + 1}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {galleryImages.length > 1 && (
+                      <>
+                        <button
+                          className="carousel-control-prev"
+                          type="button"
+                          data-bs-target="#fullGalleryCarousel"
+                          data-bs-slide="prev"
+                        >
+                          <span
+                            className="carousel-control-prev-icon"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="visually-hidden">Previous</span>
+                        </button>
+                        <button
+                          className="carousel-control-next"
+                          type="button"
+                          data-bs-target="#fullGalleryCarousel"
+                          data-bs-slide="next"
+                        >
+                          <span
+                            className="carousel-control-next-icon"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="visually-hidden">Next</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show"></div>
+        </>
+      )}
 
       {showScheduleModal && (
         <>
@@ -513,7 +714,6 @@ const StoreDetailPage = () => {
                       );
                     })}
                   </div>
-
                   {selectedDate && (
                     <>
                       <hr />
@@ -700,7 +900,7 @@ const StoreDetailPage = () => {
           <div className="modal-backdrop fade show"></div>
         </>
       )}
-    </main>
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 
-// Definisikan tipe untuk objek store
 interface Store {
   id: string;
   name: string;
@@ -8,25 +7,51 @@ interface Store {
   rating: number;
   servicesAvailable: number;
   images: string[];
-  distance?: number; // Tanda '?' berarti properti ini opsional
+  distance?: number;
+  tier: "PRO" | "BASIC";
 }
 
-// Definisikan tipe untuk props yang diterima komponen
 interface StoreCardProps {
   store: Store;
 }
 
-// Terapkan tipe props ke komponen menggunakan sintaks React.FC (Functional Component)
 const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
-  // Destructuring properti dari objek store
-  const { id, name, location, rating, servicesAvailable, images, distance } =
-    store;
+  const {
+    id,
+    name,
+    location,
+    rating,
+    servicesAvailable,
+    images,
+    distance,
+    tier,
+  } = store;
+
+  const imageUrl =
+    images && images.length > 0
+      ? `http://localhost:5000${images[0]}`
+      : "https://via.placeholder.com/300x180.png?text=No+Image";
 
   return (
     <div className="store-grid__card">
+      {/* --- PERUBAHAN DI SINI --- */}
+      {tier === "PRO" && (
+        <span
+          className="badge bg-warning text-dark position-absolute top-0 end-0 m-2"
+          style={{ zIndex: 2 }}
+        >
+          <i className="fas fa-crown me-1"></i> PRO
+        </span>
+      )}
+      {/* --- AKHIR PERUBAHAN --- */}
+
       <div className="store-grid__image-wrapper">
-        {/* Gunakan gambar pertama dari array images */}
-        <img src={images[0]} className="store-grid__image" alt={name} />
+        <img
+          src={imageUrl}
+          className="store-grid__image"
+          alt={name}
+          loading="lazy"
+        />
       </div>
       <div className="store-grid__content">
         <h5 className="store-grid__title">{name}</h5>
@@ -38,7 +63,6 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
             <i className="fas fa-star"></i> {rating} | {servicesAvailable}{" "}
             layanan
           </p>
-          {/* Tampilkan Jarak Jika Ada */}
           {distance !== undefined && (
             <p className="store-grid__distance mb-0">
               <i className="fas fa-road"></i> {distance.toFixed(1)} km

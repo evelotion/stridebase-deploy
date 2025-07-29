@@ -22,8 +22,8 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: indraadwii
+          password: dckr_pat_ZH6yrPS-jp8sBJlW2voTLg3yItA
 
       # Langkah 3: Build dan Push Docker image untuk Server (Backend)
       - name: Build and push server image
@@ -31,7 +31,7 @@ jobs:
         with:
           context: ./server # Path ke folder server
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/stridebase-server:latest
+          tags: indradwii/stridebase-server:latest
 
       # Langkah 4: Build dan Push Docker image untuk Client (Frontend)
       - name: Build and push client image
@@ -39,23 +39,23 @@ jobs:
         with:
           context: ./client # Path ke folder client
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/stridebase-client:latest
+          tags: indradwii/stridebase-client:latest
 
       # Langkah 5: Deploy ke Server Produksi menggunakan SSH
       # Simpan konfigurasi server di GitHub Secrets (HOST, USERNAME, SSH_KEY)
-      - name: Deploy to production server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            # Pindah ke direktori proyek di server
-            cd /path/to/your/project/stridebase-app
+      # - name: Deploy to production server
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.HOST }}
+      #     username: ${{ secrets.USERNAME }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #     script: |
+      #       # Pindah ke direktori proyek di server
+      #       cd /path/to/your/project/stridebase-app
             
-            # Tarik versi terbaru dari docker-compose.yml (jika ada perubahan)
-            git pull origin main
+      #       # Tarik versi terbaru dari docker-compose.yml (jika ada perubahan)
+      #       git pull origin main
             
-            # Hentikan container yang sedang berjalan dan jalankan yang baru dengan image terbaru
-            docker-compose down
-            docker-compose up -d
+      #       # Hentikan container yang sedang berjalan dan jalankan yang baru dengan image terbaru
+      #       docker-compose down
+      #       docker-compose up -d

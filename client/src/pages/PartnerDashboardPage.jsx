@@ -1,3 +1,5 @@
+// File: stridebase-app/client/src/pages/PartnerDashboardPage.jsx
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -18,26 +20,73 @@ const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   </div>
 );
 
+// --- KOMPONEN BARU UNTUK GRAFIK (SIMULASI) ---
+const RevenueChart = ({ data }) => {
+  const maxValue = Math.max(...data.map((d) => d.revenue), 1); // Hindari pembagian dengan nol
+  return (
+    <div className="table-card p-3 shadow-sm">
+      <h5 className="mb-3">Pendapatan 7 Hari Terakhir</h5>
+      <div
+        className="d-flex justify-content-around align-items-end"
+        style={{ height: "200px" }}
+      >
+        {data.map((day, index) => (
+          <div key={index} className="text-center">
+            <div
+              className="bg-primary rounded-top"
+              style={{
+                height: `${(day.revenue / maxValue) * 100}%`,
+                width: "30px",
+                transition: "height 0.5s ease-out",
+              }}
+              title={`Rp ${day.revenue.toLocaleString("id-ID")}`}
+            ></div>
+            <small className="text-muted">{day.date}</small>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+// --- AKHIR KOMPONEN BARU ---
+
 const PartnerDashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [outstandingInvoices, setOutstandingInvoices] = useState([]);
+  const [store, setStore] = useState(null); // State baru untuk data toko
 
+  // ... (useEffect untuk fetch data tidak berubah) ...
   useEffect(() => {
     const fetchPartnerStats = async () => {
       const token = localStorage.getItem("token");
+      setLoading(true);
       try {
-        const response = await fetch("/api/partner/dashboard", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const [statsRes, invoicesRes, storeRes] = await Promise.all([
+          fetch("/api/partner/dashboard", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("/api/partner/invoices/outstanding", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("/api/partner/settings", {
+            // Ambil juga data toko
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Gagal mengambil data statistik toko."
-          );
+        if (!statsRes.ok || !invoicesRes.ok || !storeRes.ok) {
+          throw new Error("Gagal mengambil data dasbor.");
         }
-        setStats(data);
+
+        const statsData = await statsRes.json();
+        const invoicesData = await invoicesRes.json();
+        const storeData = await storeRes.json();
+
+        setStats(statsData);
+        setOutstandingInvoices(invoicesData);
+        setStore(storeData); // Simpan data toko
       } catch (err) {
         setError(err.message);
       } finally {
@@ -47,13 +96,60 @@ const PartnerDashboardPage = () => {
     fetchPartnerStats();
   }, []);
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "Completed":
+      case "Reviewed":
+        return "bg-success";
+      case "Processing":
+        return "bg-warning text-dark";
+      case "Cancelled":
+        return "bg-danger";
+      default:
+        return "bg-secondary";
+    }
+  };
+
   if (loading) return <div className="p-4">Memuat statistik toko...</div>;
   if (error) return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
     <div className="container-fluid px-4">
-      <h2 className="fs-2 m-4">Dashboard: {stats?.storeName || "Toko Anda"}</h2>
+      {/* --- BAGIAN JUDUL YANG DIMODIFIKASI --- */}
+      <div className="d-flex align-items-center m-4">
+        <h2 className="fs-2 mb-0 me-3">
+          Dashboard: {stats?.storeName || "Toko Anda"}
+        </h2>
+        {/* --- PERUBAHAN DI SINI --- */}
+        {store?.tier === "PRO" && (
+          <span className="badge bg-warning text-dark fs-6">
+            <i className="fas fa-crown me-1"></i> PRO
+          </span>
+        )}
+        {store?.tier === "BASIC" && (
+          <span className="badge bg-light text-dark fs-6">BASIC</span>
+        )}
+        {/* --- AKHIR PERUBAHAN --- */}
+      </div>
+      {/* --- AKHIR BAGIAN JUDUL --- */}
+
+      {outstandingInvoices.length > 0 && (
+        <div className="alert alert-warning d-flex justify-content-between align-items-center">
+          <span>
+            <i className="fas fa-exclamation-triangle me-2"></i>
+            Anda memiliki <strong>{outstandingInvoices.length}</strong> tagihan
+            yang belum dibayar.
+          </span>
+          <Link
+            to={`/partner/invoices/${outstandingInvoices[0].id}`}
+            className="btn btn-sm btn-dark"
+          >
+            Lihat & Bayar
+          </Link>
+        </div>
+      )}
       <div className="row g-3 my-2">
+        {/* ... (KPI Cards tidak berubah) ... */}
         <KpiCard
           title="Total Pendapatan"
           value={`Rp ${stats?.totalRevenue.toLocaleString("id-ID") || 0}`}
@@ -83,7 +179,49 @@ const PartnerDashboardPage = () => {
           linkTo="#"
         />
       </div>
-      {/* Di sini nanti bisa kita tambahkan grafik atau daftar pesanan terbaru */}
+
+      {/* --- BAGIAN BARU UNTUK GRAFIK DAN TABEL PESANAN --- */}
+      <div className="row g-3 my-4">
+        <div className="col-md-7">
+          {stats?.revenueLast7Days && (
+            <RevenueChart data={stats.revenueLast7Days} />
+          )}
+        </div>
+        <div className="col-md-5">
+          <div className="table-card p-3 shadow-sm h-100">
+            <h5 className="mb-3">Pesanan Terbaru</h5>
+            <div className="table-responsive">
+              <table className="table table-hover align-middle">
+                <tbody>
+                  {stats?.recentOrders?.map((order) => (
+                    <tr key={order.id}>
+                      <td>
+                        <span className="fw-bold">{order.customerName}</span>
+                        <small className="d-block text-muted">
+                          {order.serviceName}
+                        </small>
+                      </td>
+                      <td className="text-end">
+                        <span
+                          className={`badge ${getStatusBadge(order.status)}`}
+                        >
+                          {order.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {(!stats?.recentOrders || stats.recentOrders.length === 0) && (
+                <p className="text-center text-muted small mt-3">
+                  Belum ada pesanan.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* --- AKHIR BAGIAN BARU --- */}
     </div>
   );
 };

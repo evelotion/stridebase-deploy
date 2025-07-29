@@ -26,7 +26,7 @@ const AdminBannersPage = () => {
       const data = await response.json();
       setBanners(data);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ const AdminBannersPage = () => {
     const token = localStorage.getItem("token");
 
     if (!newBannerData.imageFile || !newBannerData.linkUrl) {
-      alert("File gambar dan Link Tujuan wajib diisi.");
+      showMessage("File gambar dan Link Tujuan wajib diisi.");
       return;
     }
 
@@ -93,9 +93,9 @@ const AdminBannersPage = () => {
 
       handleCloseAddModal();
       fetchBanners(); // Refresh tabel
-      alert("Banner baru berhasil ditambahkan.");
+      showMessage("Banner baru berhasil ditambahkan.");
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -114,9 +114,9 @@ const AdminBannersPage = () => {
         throw new Error(data.message || "Gagal menghapus banner.");
 
       fetchBanners(); // Refresh tabel
-      alert(data.message);
+      showMessage(data.message);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 

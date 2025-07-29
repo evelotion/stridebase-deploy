@@ -1,0 +1,122 @@
+/* File: stridebase-app/client/src/invoice.css */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+    color: #555;
+}
+
+.invoice-box {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    border: 1px solid #eee;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    font-size: 16px;
+    line-height: 24px;
+    background-color: #fff;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.invoice-title {
+    font-size: 45px;
+    line-height: 45px;
+    color: #333;
+    margin: 0;
+}
+
+.invoice-number {
+    font-size: 20px;
+    color: #777;
+}
+
+.stridebase-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.invoice-meta {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+    margin-bottom: 30px;
+}
+
+.meta-section address {
+    margin: 0;
+    font-style: normal;
+}
+
+.items-table {
+    width: 100%;
+    line-height: inherit;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+.items-table th, .items-table td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.items-table thead th {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #333;
+}
+
+.items-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.invoice-totals {
+    margin-top: 30px;
+    margin-left: auto;
+    width: 40%;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+.grand-total {
+    border-top: 2px solid #eee;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.invoice-footer {
+    margin-top: 50px;
+    text-align: center;
+    color: #777;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.status-paid {
+    color: #198754;
+    font-weight: bold;
+}
+
+@media print {
+    body {
+        background-color: #fff;
+    }
+    .invoice-box {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+}

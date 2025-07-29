@@ -252,10 +252,13 @@ body.dark-mode .badge.bg-warning {
   color: #343a40 !important;
 }
 
-/* REVISI UTAMA: Mengatur ulang tinggi maksimal tabel */
+/* ### PERUBAHAN UTAMA DI SINI ###
+  Kode .table-responsive yang membatasi tinggi dan menyebabkan
+  masalah overflow sudah dihapus.
+*/
 .table-responsive {
-  max-height: 320px; /* Cukup untuk 1 baris header + 5 baris data */
-  overflow-y: auto; /* Tampilkan scrollbar vertikal jika konten lebih tinggi */
+  /* Biarkan kosong atau hanya atur overflow-x jika perlu untuk tabel lebar */
+  overflow-x: auto;
 }
 
 /* Other component adjustments for dark mode */
@@ -466,57 +469,57 @@ body.dark-mode .dark-mode-button {
 
 /* === Floating Side Tab Dark Mode Button === */
 .dark-mode-tab {
-    position: fixed;
-    top: 50%; /* Posisi vertikal di tengah layar */
-    right: 0;  /* Menempel di kanan */
-    z-index: 1030;
-    
-    /* Mengatur transform agar posisi awal berada di luar layar */
-    transform: translate(calc(100% - 45px), -50%); 
-    
-    display: flex;
-    align-items: center;
-    
-    padding: 10px 15px;
-    background-color: var(--bg-white);
-    color: var(--text-dark);
-    border: 1px solid var(--border-color);
-    border-right: none; /* Hilangkan border kanan agar menempel sempurna */
-    
-    /* Membuat bentuk seperti tab */
-    border-radius: 20px 0 0 20px; 
-    
-    box-shadow: -2px 2px 10px rgba(0,0,0,0.1);
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease-in-out;
+  position: fixed;
+  top: 50%; /* Posisi vertikal di tengah layar */
+  right: 0; /* Menempel di kanan */
+  z-index: 1030;
+
+  /* Mengatur transform agar posisi awal berada di luar layar */
+  transform: translate(calc(100% - 45px), -50%);
+
+  display: flex;
+  align-items: center;
+
+  padding: 10px 15px;
+  background-color: var(--bg-white);
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+  border-right: none; /* Hilangkan border kanan agar menempel sempurna */
+
+  /* Membuat bentuk seperti tab */
+  border-radius: 20px 0 0 20px;
+
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
 }
 
 .dark-mode-tab:hover {
-    /* Menggeser tombol ke posisi normal saat di-hover */
-    transform: translate(0, -50%);
-    box-shadow: -4px 4px 15px rgba(0,0,0,0.15);
+  /* Menggeser tombol ke posisi normal saat di-hover */
+  transform: translate(0, -50%);
+  box-shadow: -4px 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .dark-mode-tab i {
-    font-size: 1.1rem;
-    width: 25px; /* Memberi ruang tetap untuk ikon */
-    text-align: center;
+  font-size: 1.1rem;
+  width: 25px; /* Memberi ruang tetap untuk ikon */
+  text-align: center;
 }
 
 .dark-mode-tab span {
-    margin-left: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    white-space: nowrap; /* Mencegah teks turun ke bawah */
+  margin-left: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap; /* Mencegah teks turun ke bawah */
 }
 
 /* Efek Glow saat Dark Mode Aktif (tetap sama) */
 body.dark-mode .dark-mode-tab {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 15px rgba(13, 202, 240, 0.6);
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 15px rgba(13, 202, 240, 0.6);
 }
 
 /* === Perbaikan Tema Dark Mode (Tambahan) === */
@@ -527,47 +530,54 @@ body.dark-mode .dark-mode-tab {
 }
 
 /* Perbaikan 2: Membuat teks di dalam kartu KPI menjadi terang */
-.kpi-card h3, .kpi-card .fs-2 {
-    color: var(--text-dark);
+.kpi-card h3,
+.kpi-card .fs-2 {
+  color: var(--text-dark);
 }
 
-.kpi-card p, .kpi-card .fs-5 {
-    color: var(--text-muted);
+.kpi-card p,
+.kpi-card .fs-5 {
+  color: var(--text-muted);
 }
 
 /* === Perbaikan Lanjutan Tema Dark Mode === */
 
 /* Untuk judul halaman seperti "Dashboard", "Manajemen Promo", dll. */
 #page-content-wrapper h2 {
-    color: var(--text-dark);
+  color: var(--text-dark);
 }
 
 /* Untuk tombol dropdown admin di kanan atas */
 .navbar .nav-item .nav-link {
-    color: var(--text-dark);
+  color: var(--text-dark);
 }
 
 /* === Perbaikan Lanjutan Desain Kartu & Teks === */
 
 /* Memastikan semua kartu di dalam baris yang sama memiliki tinggi seragam */
-.row.d-flex .col-md-3, .row.d-flex .col-md-7, .row.d-flex .col-md-5 {
-    display: flex;
+.row.d-flex .col-md-3,
+.row.d-flex .col-md-7,
+.row.d-flex .col-md-5 {
+  display: flex;
 }
 
-.kpi-card, .chart-card, .table-card {
-    width: 100%;
+.kpi-card,
+.chart-card,
+.table-card {
+  width: 100%;
 }
 
 /* Mengatur agar konten di dalam kartu KPI bisa tumbuh mengisi ruang */
 .kpi-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Opsional: membuat konten lebih ke tengah */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Opsional: membuat konten lebih ke tengah */
 }
 
 /* Perbaikan warna font untuk semua judul di dalam kartu */
-.chart-card h3, .table-card h3 {
-    color: var(--text-dark);
+.chart-card h3,
+.table-card h3 {
+  color: var(--text-dark);
 }
 
 /* Ditambahkan untuk Desain Ulang Tabel Toko */
@@ -575,4 +585,82 @@ body.dark-mode .dark-mode-tab {
   display: block;
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+
+/* === Skeleton Loader Styles === */
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+  }
+  100% {
+    background-color: hsl(200, 20%, 95%);
+  }
+}
+
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+  opacity: 0.7;
+  border-radius: 0.25rem;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-text__body {
+  width: 75%;
+}
+
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* ========================================================== */
+/* === KODE BARU: STANDARDISASI TAMPILAN TAB DI SEMUA PANEL === */
+/* ========================================================== */
+
+/* Mengatur container dasar untuk navigasi tab */
+.nav-tabs,
+.nav-pills {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem; /* Memberi jarak ke konten di bawahnya */
+}
+
+/* Mengatur setiap item di dalam navigasi */
+.nav-tabs .nav-item,
+.nav-pills .nav-item {
+  margin-bottom: -1px; /* Mengangkat tombol agar menyatu dengan garis bawah */
+}
+
+/* Mengatur tampilan tombol/link tab */
+.nav-tabs .nav-link,
+.nav-pills .nav-link {
+  border: 1px solid transparent;
+  border-radius: 0.5rem 0.5rem 0 0; /* Sudut atas melengkung */
+  padding: 0.75rem 1.25rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Efek saat kursor mouse di atas tab */
+.nav-tabs .nav-link:hover,
+.nav-pills .nav-link:hover {
+  border-color: var(--border-color);
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+}
+
+/* Mengatur tampilan tombol tab yang AKTIF */
+.nav-tabs .nav-link.active,
+.nav-pills .nav-link.active {
+  color: var(--primary-color);
+  background-color: var(--bg-white);
+  border-color: var(--border-color) var(--border-color) var(--bg-white);
+  font-weight: 600;
 }

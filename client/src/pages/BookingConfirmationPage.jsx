@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 const BookingConfirmationPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoError, setPromoError] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -11,36 +14,76 @@ const BookingConfirmationPage = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("Sesi Anda telah berakhir. Silakan login kembali.");
+      showMessage("Sesi Anda telah berakhir. Silakan login kembali.");
       navigate("/login");
       return;
     }
+
     if (savedBooking) {
       const bookingData = JSON.parse(savedBooking);
+      if (!bookingData.storeId || !bookingData.service) {
+        showMessage("Detail layanan tidak lengkap. Silakan ulangi proses pemesanan.");
+        navigate(`/store/${bookingData.storeId || ""}`);
+        return;
+      }
+      if (bookingData.deliveryOption === "pickup" && !bookingData.addressId) {
+        showMessage(
+          "Alamat penjemputan belum dipilih. Silakan lengkapi detail pesanan Anda."
+        );
+        navigate(`/store/${bookingData.storeId}`);
+        return;
+      }
       if (bookingData.schedule && bookingData.schedule.date) {
         bookingData.schedule.date = new Date(bookingData.schedule.date);
       }
       setBookingDetails(bookingData);
     } else {
-      alert("Tidak ada detail booking ditemukan. Silakan ulangi proses.");
+      showMessage("Tidak ada detail booking ditemukan. Silakan ulangi proses.");
       navigate("/");
     }
   }, [navigate]);
 
-  // --- FUNGSI UTAMA YANG DIPERBARUI ---
+  const handleApplyPromo = async () => {
+    setPromoError("");
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch("/api/admin/promos/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ code: promoCode }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+      setAppliedPromo(data);
+    } catch (error) {
+      setPromoError(error.message);
+      setAppliedPromo(null);
+    }
+  };
+
   const handleConfirmAndPay = async () => {
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
 
+    // Sertakan promo yang diaplikasikan ke dalam detail booking
+    const finalBookingDetails = {
+      ...bookingDetails,
+      promoCode: appliedPromo ? appliedPromo.code : undefined,
+    };
+
     try {
-      // Langkah 1: Buat booking seperti biasa untuk mendapatkan ID
       const bookingResponse = await fetch("/api/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(bookingDetails),
+        body: JSON.stringify(finalBookingDetails), // Kirim detail final
       });
 
       const newBookingData = await bookingResponse.json();
@@ -48,7 +91,6 @@ const BookingConfirmationPage = () => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      // Langkah 2: Gunakan booking ID untuk membuat transaksi pembayaran
       const paymentResponse = await fetch("/api/payments/create-transaction", {
         method: "POST",
         headers: {
@@ -65,15 +107,13 @@ const BookingConfirmationPage = () => {
         );
       }
 
-      // Langkah 3: Arahkan pengguna ke URL pembayaran dari payment gateway
       localStorage.removeItem("pendingBooking");
-      window.location.href = paymentData.redirectUrl; // Redirect penuh ke halaman pembayaran
+      window.location.href = paymentData.redirectUrl;
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
       setIsSubmitting(false);
     }
   };
-  // ------------------------------------
 
   if (!bookingDetails) {
     return (
@@ -87,7 +127,18 @@ const BookingConfirmationPage = () => {
     bookingDetails;
   const handlingFee = 2000;
   const deliveryFee = deliveryOption === "pickup" ? 10000 : 0;
-  const totalCost = (service?.price || 0) + handlingFee + deliveryFee;
+  const subtotal = service?.price || 0;
+
+  let discountAmount = 0;
+  if (appliedPromo) {
+    if (appliedPromo.discountType === "percentage") {
+      discountAmount = (subtotal * appliedPromo.value) / 100;
+    } else {
+      discountAmount = appliedPromo.value;
+    }
+  }
+
+  const totalCost = subtotal + handlingFee + deliveryFee - discountAmount;
 
   const scheduleString = schedule
     ? `${schedule.date.toLocaleDateString("id-ID", {
@@ -137,6 +188,40 @@ const BookingConfirmationPage = () => {
                   <strong>Jadwal:</strong> {scheduleString}
                 </p>
               </div>
+
+              {/* --- BAGIAN PROMO BARU --- */}
+              <div className="booking-section">
+                <h5 className="section-title">
+                  <i className="fas fa-tags me-2"></i>Kode Promo
+                </h5>
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Masukkan kode promo"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  />
+                  <button
+                    className="btn btn-outline-secondary"
+                    type="button"
+                    onClick={handleApplyPromo}
+                  >
+                    Terapkan
+                  </button>
+                </div>
+                {appliedPromo && (
+                  <div className="text-success small mt-2">
+                    ✓ Promo <strong>{appliedPromo.code}</strong> berhasil
+                    diterapkan!
+                  </div>
+                )}
+                {promoError && (
+                  <div className="text-danger small mt-2">{promoError}</div>
+                )}
+              </div>
+              {/* --- AKHIR BAGIAN PROMO --- */}
+
               <div className="booking-section">
                 <h5 className="section-title">
                   <i className="fas fa-receipt me-2"></i>Rincian Biaya
@@ -144,7 +229,7 @@ const BookingConfirmationPage = () => {
                 <ul className="list-group list-group-flush cost-details">
                   <li className="list-group-item d-flex justify-content-between align-items-center">
                     <span>{service?.name}</span>
-                    <span>Rp {service?.price.toLocaleString("id-ID")}</span>
+                    <span>Rp {subtotal.toLocaleString("id-ID")}</span>
                   </li>
                   {deliveryFee > 0 && (
                     <li className="list-group-item d-flex justify-content-between align-items-center">
@@ -156,6 +241,12 @@ const BookingConfirmationPage = () => {
                     <span>Biaya Penanganan</span>
                     <span>Rp {handlingFee.toLocaleString("id-ID")}</span>
                   </li>
+                  {appliedPromo && (
+                    <li className="list-group-item d-flex justify-content-between align-items-center text-success">
+                      <span>Diskon ({appliedPromo.code})</span>
+                      <span>- Rp {discountAmount.toLocaleString("id-ID")}</span>
+                    </li>
+                  )}
                 </ul>
                 <ul className="list-group list-group-flush cost-details">
                   <li className="list-group-item d-flex justify-content-between align-items-center total-row">
