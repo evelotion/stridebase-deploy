@@ -18,6 +18,7 @@ import fs from "fs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import sharp from "sharp";
+import cors from "cors";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -102,6 +103,11 @@ io.on("connection", (socket) => {
     console.log(`❌ Pengguna terputus: ${socket.id}`);
   });
 });
+
+
+app.use(cors({ 
+    origin: ["http://localhost:5173", "https://stridebase-client.onrender.com"] 
+}));
 
 app.use(express.json());
 const themeConfigPath = path.join(__dirname, "config", "theme.json");
