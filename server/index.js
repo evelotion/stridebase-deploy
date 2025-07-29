@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-import redisClient from "./redis-client.js";
+// import redisClient from "./redis-client.js";
 // import emailQueue from "./queues/emailQueue.js";
 import { servicesData } from "./data-stores.js";
 import { exec } from "child_process";
