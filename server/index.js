@@ -1,6 +1,6 @@
 // File: server/index.js
 
-import "./redis-client.js";
+// import "./redis-client.js";
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -10,7 +10,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import redisClient from "./redis-client.js";
-import emailQueue from "./queues/emailQueue.js";
+// import emailQueue from "./queues/emailQueue.js";
 import { servicesData } from "./data-stores.js";
 import { exec } from "child_process";
 import rateLimit from "express-rate-limit";
@@ -635,14 +635,14 @@ app.post("/api/bookings", authenticateToken, async (req, res) => {
         })} - Pukul ${schedule.time}`
       : "Langsung diantar ke toko";
 
-    await emailQueue.add("send-confirmation-email", {
-      to: newBooking.user.email,
-      subject: `Konfirmasi Booking Anda di ${newBooking.store.name}`,
-      body: `Hai ${newBooking.user.name}, booking Anda untuk layanan ${newBooking.serviceName} dengan jadwal ${fullScheduleString} telah kami terima.`,
-    });
-    console.log(
-      `Tugas email untuk booking #${newBooking.id} telah ditambahkan ke antrian.`
-    );
+    // await emailQueue.add("send-confirmation-email", {
+    //   to: newBooking.user.email,
+    //   subject: `Konfirmasi Booking Anda di ${newBooking.store.name}`,
+    //   body: `Hai ${newBooking.user.name}, booking Anda untuk layanan ${newBooking.serviceName} dengan jadwal ${fullScheduleString} telah kami terima.`,
+    // });
+    // console.log(
+    //   `Tugas email untuk booking #${newBooking.id} telah ditambahkan ke antrian.`
+    // );
 
     res.status(201).json(newBooking);
   } catch (error) {
@@ -728,15 +728,15 @@ app.get("/api/stores", async (req, res) => {
   const cacheKey = `stores:${JSON.stringify(req.query)}`;
 
   try {
-    const cachedStores = await redisClient.get(cacheKey);
-    if (cachedStores) {
-      console.log(`✅ Mengambil data toko dari cache: ${cacheKey}`);
-      return res.json(JSON.parse(cachedStores));
-    }
+    // const cachedStores = await redisClient.get(cacheKey);
+    // if (cachedStores) {
+    //   console.log(`✅ Mengambil data toko dari cache: ${cacheKey}`);
+    //   return res.json(JSON.parse(cachedStores));
+    // }
 
-    console.log(
-      `❌ Cache miss. Mengambil data toko dari database: ${cacheKey}`
-    );
+    // console.log(
+    //   `❌ Cache miss. Mengambil data toko dari database: ${cacheKey}`
+    // );
 
     const whereClause = {
       storeStatus: "active",

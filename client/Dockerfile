@@ -1,21 +1,21 @@
-# File: client/Dockerfile
+# Tahap 1: Membangun (Build) Aplikasi React
+FROM node:18-alpine AS build
 
-# Menggunakan image Node.js versi 18 yang ringan sebagai dasar
-FROM node:18-alpine
-
-# Menetapkan direktori kerja di dalam container
 WORKDIR /app
-
-# Salin file package.json dan package-lock.json terlebih dahulu
 COPY package*.json ./
-
-# Instal semua dependensi
 RUN npm install --legacy-peer-deps
-
-# Salin sisa kode aplikasi
 COPY . .
+# Perintah ini akan membuat folder /app/dist yang berisi file statis
+RUN npm run build
 
-# Perintah untuk menjalankan server pengembangan Vite
-# Opsi --host diperlukan agar bisa diakses dari luar container
-EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host"]
+# Tahap 2: Menjalankan (Serve) Aplikasi dengan Server Nginx
+FROM nginx:stable-alpine
+
+# Salin hasil build dari tahap sebelumnya ke direktori Nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Ekspos port 80 untuk Nginx
+EXPOSE 80
+
+# Jalankan Nginx saat container dimulai
+CMD ["nginx", "-g", "daemon off;"]

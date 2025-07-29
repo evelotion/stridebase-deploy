@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://server:5000", // Alamat backend kita
+        target: "https://stridebase-server.onrender.com", 
         changeOrigin: true,
       },
     },
