@@ -46,7 +46,7 @@ const Navbar = ({
         <Link className="navbar-brand fw-bold" to="/">
           {theme?.branding?.logoUrl ? (
             <img
-              src={`http://localhost:5000${theme.branding.logoUrl}`}
+              src={`${theme.branding.logoUrl}`}
               alt="StrideBase Logo"
               // --- UBAH BARIS INI ---
               style={{ maxHeight: "32px" }} // Dari "28px" menjadi "32px"

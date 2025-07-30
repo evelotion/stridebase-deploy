@@ -138,7 +138,7 @@ const AdminBannersPage = () => {
               <div className="card shadow-sm">
                 {/* Tambahkan base URL server jika perlu */}
                 <img
-                  src={`http://localhost:5000${banner.imageUrl}`}
+                  src={`${banner.imageUrl}`}
                   className="card-img-top"
                   alt="Banner"
                   style={{ height: "150px", objectFit: "cover" }}

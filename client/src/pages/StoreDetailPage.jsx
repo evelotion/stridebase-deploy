@@ -32,11 +32,11 @@ const ReviewCard = ({ review }) => (
     {review.imageUrl && (
       <div className="mt-2" style={{ paddingLeft: "55px" }}>
         <img
-          src={`http://localhost:5000${review.imageUrl}`}
+          src={`${review.imageUrl}`}
           alt={`Ulasan dari ${review.userName}`}
           className="img-thumbnail"
           style={{ maxWidth: "150px", cursor: "pointer" }}
-          onClick={() => window.open(`http://localhost:5000${review.imageUrl}`)}
+          onClick={() => window.open(`${review.imageUrl}`)}
         />
       </div>
     )}
@@ -261,7 +261,7 @@ const StoreDetailPage = () => {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       name: store.name,
-      image: store.images.map((img) => `http://localhost:5000${img}`),
+      image: store.images.map((img) => `${img}`),
       address: { "@type": "PostalAddress", streetAddress: store.location },
       description:
         store.description ||
@@ -324,7 +324,7 @@ const StoreDetailPage = () => {
             <img
               src={
                 headerImage
-                  ? `http://localhost:5000${headerImage}`
+                  ? `${headerImage}`
                   : "https://via.placeholder.com/800x400.png?text=No+Header"
               }
               alt={store.name}
@@ -351,7 +351,7 @@ const StoreDetailPage = () => {
                     onClick={() => setShowGalleryModal(true)}
                   >
                     <img
-                      src={`http://localhost:5000${img}`}
+                      src={`${img}`}
                       alt={`Galeri ${index + 1}`}
                     />
                   </div>
@@ -362,7 +362,7 @@ const StoreDetailPage = () => {
                     onClick={() => setShowGalleryModal(true)}
                   >
                     <img
-                      src={`http://localhost:5000${galleryImages[4]}`}
+                      src={`${galleryImages[4]}`}
                       alt="Lihat semua"
                     />
                     <div className="gallery-view-all-overlay">
@@ -619,7 +619,7 @@ const StoreDetailPage = () => {
                           key={index}
                         >
                           <img
-                            src={`http://localhost:5000${image}`}
+                            src={`${image}`}
                             className="d-block w-100"
                             alt={`Galeri Penuh ${index + 1}`}
                           />

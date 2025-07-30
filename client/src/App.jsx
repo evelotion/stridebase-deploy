@@ -93,7 +93,7 @@ const applyTheme = (theme) => {
   const favicon = document.querySelector("link[rel='icon']");
 
   if (favicon && theme.branding?.faviconUrl) {
-    favicon.href = `http://localhost:5000${theme.branding.faviconUrl}`;
+    favicon.href = `${theme.branding.faviconUrl}`;
   }
 
   if (theme.colors) {
@@ -157,7 +157,7 @@ const applyTheme = (theme) => {
 
   if (theme.background) {
     if (theme.background.type === "image" && theme.background.imageUrl) {
-      document.body.style.backgroundImage = `url(http://localhost:5000${theme.background.imageUrl})`;
+      document.body.style.backgroundImage = `url(${theme.background.imageUrl})`;
       document.body.style.backgroundColor = "";
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
@@ -394,7 +394,7 @@ function App() {
       fetchNotifications();
     }
 
-    const themeSocket = io("http://localhost:5000");
+    const themeSocket = io("");
     themeSocket.on("themeUpdated", (newThemeConfig) => {
       console.log("Menerima pembaruan tema secara real-time:", newThemeConfig);
       setTheme(newThemeConfig);

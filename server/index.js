@@ -176,7 +176,7 @@ const processAndSaveImage = async (fileBuffer, fieldname) => {
 
   await sharp(fileBuffer).resize(800).webp({ quality: 80 }).toFile(filepath);
 
-  return `/uploads/${filename}`;
+  return `/uploads/${filename}`; // INI SUDAH BENAR
 };
 
 const authenticateToken = async (req, res, next) => {

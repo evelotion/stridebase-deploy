@@ -256,7 +256,7 @@ const PartnerSettingsPage = () => {
                 <div className="col-md-3" key={index}>
                   <div className="photo-gallery-item position-relative">
                     <img
-                      src={`http://localhost:5000${img}`}
+                      src={`${img}`}
                       alt={`Store view ${index + 1}`}
                       className="img-fluid rounded"
                       style={{

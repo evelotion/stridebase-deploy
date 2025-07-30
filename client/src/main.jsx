@@ -11,7 +11,7 @@ import "./style.css";
 // Menentukan URL API berdasarkan lingkungan (development atau production)
 const apiUrl = import.meta.env.PROD 
   ? "https://stridebase-server.onrender.com" // URL saat di-deploy
-  : "http://localhost:5000"; // URL saat pengembangan lokal
+  : ""; // URL saat pengembangan lokal
 
 // Mengganti fungsi fetch bawaan untuk otomatis menambahkan URL API
 const originalFetch = window.fetch;

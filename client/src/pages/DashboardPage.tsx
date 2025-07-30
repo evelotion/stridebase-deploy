@@ -80,7 +80,7 @@ interface VisitedStoreCardProps {
   store: Store;
 }
 
-const socket = io("http://localhost:5000");
+const socket = io("");
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
@@ -135,7 +135,7 @@ const VisitedStoreCard: React.FC<VisitedStoreCardProps> = ({ store }) => (
       className="card text-decoration-none text-dark h-100"
     >
       <img
-        src={`http://localhost:5000${store.images[0]}`}
+        src={`${store.images[0]}`}
         className="card-img-top"
         alt={store.name}
         style={{ height: "120px", objectFit: "cover" }}
@@ -1064,7 +1064,7 @@ const DashboardPage: React.FC = () => {
                       {reviewImageUrl ? (
                         <div className="d-inline-block position-relative">
                           <img
-                            src={`http://localhost:5000${reviewImageUrl}`}
+                            src={`${reviewImageUrl}`}
                             alt="Pratinjau Ulasan"
                             className="img-thumbnail"
                             width="150"

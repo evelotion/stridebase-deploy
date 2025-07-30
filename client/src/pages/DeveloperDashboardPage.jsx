@@ -612,7 +612,7 @@ const DeveloperDashboardPage = () => {
                         <img
                           src={
                             logoPreview ||
-                            `http://localhost:5000${config.branding?.logoUrl}`
+                            `${config.branding?.logoUrl}`
                           }
                           alt="Logo"
                           style={{
@@ -638,7 +638,7 @@ const DeveloperDashboardPage = () => {
                         <img
                           src={
                             faviconPreview ||
-                            `http://localhost:5000${config.branding?.faviconUrl}`
+                            `${config.branding?.faviconUrl}`
                           }
                           alt="Favicon"
                           style={{ height: "32px", marginRight: "1rem" }}

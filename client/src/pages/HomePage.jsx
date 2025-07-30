@@ -89,7 +89,7 @@ const HomePage = () => {
                       >
                         <Link to={banner.linkUrl}>
                           <img
-                            src={`http://localhost:5000${banner.imageUrl}`}
+                            src={`${banner.imageUrl}`}
                             className="d-block w-100"
                             alt={`Banner ${index + 1}`}
                             style={{ height: "400px", objectFit: "cover" }}

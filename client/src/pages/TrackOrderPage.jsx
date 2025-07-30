@@ -5,7 +5,7 @@ import { useParams, Link } from 'react-router-dom';
 import { io } from "socket.io-client";
 
 // Inisialisasi socket di luar komponen agar tidak dibuat ulang terus-menerus
-const socket = io("http://localhost:5000");
+const socket = io("");
 
 // Komponen untuk satu langkah di progress bar
 const ProgressStep = ({ icon, title, active }) => (
