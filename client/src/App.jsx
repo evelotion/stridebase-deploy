@@ -357,7 +357,8 @@ function App() {
 
     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.id) {
-      socket = io("http://localhost:5000", {
+      // Gunakan URL Render untuk koneksi socket
+      socket = io("https://stridebase-server.onrender.com", { // <-- PERBAIKAN
         query: { userId: user.id },
       });
 
