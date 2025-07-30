@@ -17,6 +17,7 @@ import Footer from "./components/Footer";
 import AdminLayout from "./components/AdminLayout";
 import DeveloperLayout from "./components/DeveloperLayout";
 import Notification from "./components/Notification";
+import API_BASE_URL from './apiConfig.ts';
 
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));
@@ -332,7 +333,7 @@ function App() {
   useEffect(() => {
     const fetchThemeConfig = async () => {
       try {
-        const response = await fetch("/api/public/theme-config");
+        const response = await fetch(`${API_BASE_URL}/api/public/theme-config`);
         if (response.ok) {
           const data = await response.json();
           setTheme(data);

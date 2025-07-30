@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { io } from "socket.io-client";
-import API_BASE_URL from '../apiConfig.js';
+import API_BASE_URL from "../apiConfig.js";
 
+// Definisikan interface untuk props, termasuk showMessage
+interface DashboardPageProps {
+  showMessage: (message: string, title?: string) => void;
+}
+
+// Definisikan tipe data lainnya
 interface User {
   id: string;
   name: string;
@@ -79,7 +85,11 @@ interface VisitedStoreCardProps {
   store: Store;
 }
 
-const socket = io("");
+// Gunakan URL yang benar untuk koneksi socket
+const socketUrl = import.meta.env.PROD
+  ? import.meta.env.VITE_API_PRODUCTION_URL
+  : "/";
+const socket = io(socketUrl);
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
@@ -134,7 +144,7 @@ const VisitedStoreCard: React.FC<VisitedStoreCardProps> = ({ store }) => (
       className="card text-decoration-none text-dark h-100"
     >
       <img
-        src={`${store.images[0]}`}
+        src={`${API_BASE_URL}${store.images[0]}`}
         className="card-img-top"
         alt={store.name}
         style={{ height: "120px", objectFit: "cover" }}
@@ -149,7 +159,8 @@ const VisitedStoreCard: React.FC<VisitedStoreCardProps> = ({ store }) => (
   </div>
 );
 
-const DashboardPage: React.FC = () => {
+// Terima `showMessage` sebagai props
+const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
   const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -301,9 +312,14 @@ const DashboardPage: React.FC = () => {
 
       showMessage(data.message);
 
-      const loyaltyRes = await fetch(`${API_BASE_URL}/api/user/loyalty`, { headers });
+      const loyaltyRes = await fetch(`${API_BASE_URL}/api/user/loyalty`, {
+        headers,
+      });
       setLoyaltyData(await loyaltyRes.json());
-      const promosRes = await fetch(`${API_BASE_URL}/api/user/redeemed-promos`, { headers });
+      const promosRes = await fetch(
+        `${API_BASE_URL}/api/user/redeemed-promos`,
+        { headers }
+      );
       setRedeemedPromos(await promosRes.json());
     } catch (error) {
       if (error instanceof Error) showMessage(`Error: ${error.message}`);
@@ -378,10 +394,13 @@ const DashboardPage: React.FC = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/user/addresses/${addressId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/user/addresses/${addressId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!response.ok) {
         const data = await response.json();
@@ -1058,7 +1077,7 @@ const DashboardPage: React.FC = () => {
                       {reviewImageUrl ? (
                         <div className="d-inline-block position-relative">
                           <img
-                            src={`${reviewImageUrl}`}
+                            src={`${API_BASE_URL}${reviewImageUrl}`}
                             alt="Pratinjau Ulasan"
                             className="img-thumbnail"
                             width="150"
