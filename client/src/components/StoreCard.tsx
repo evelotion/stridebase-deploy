@@ -29,7 +29,11 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
 
   const imageUrl =
     images && images.length > 0
+<<<<<<< HEAD
       ? `http://localhost:5000${images[0]}`
+=======
+      ? `${images[0]}`
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       : "https://via.placeholder.com/300x180.png?text=No+Image";
 
   return (

@@ -23,7 +23,11 @@ const Navbar = ({
     if (unreadCount > 0) {
       const token = localStorage.getItem("token");
       try {
+<<<<<<< HEAD
         const response = await fetch("/api/user/notifications/mark-read", {
+=======
+        const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/notifications/mark-read", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -46,7 +50,11 @@ const Navbar = ({
         <Link className="navbar-brand fw-bold" to="/">
           {theme?.branding?.logoUrl ? (
             <img
+<<<<<<< HEAD
               src={`http://localhost:5000${theme.branding.logoUrl}`}
+=======
+              src={`${theme.branding.logoUrl}`}
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
               alt="StrideBase Logo"
               // --- UBAH BARIS INI ---
               style={{ maxHeight: "32px" }} // Dari "28px" menjadi "32px"

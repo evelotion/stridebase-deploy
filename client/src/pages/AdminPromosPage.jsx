@@ -30,7 +30,7 @@ const AdminPromosPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/promos", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/promos", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -40,7 +40,7 @@ const AdminPromosPage = () => {
       setPromos(data);
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      showMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -86,7 +86,7 @@ const AdminPromosPage = () => {
       endDate: newPromoData.endDate || null,
     };
     try {
-      const response = await fetch("/api/admin/promos", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/promos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,9 +102,9 @@ const AdminPromosPage = () => {
       }
       handleCloseAddModal();
       fetchPromos();
-      alert(`Promo "${createdPromo.code}" berhasil ditambahkan.`);
+      showMessage(`Promo "${createdPromo.code}" berhasil ditambahkan.`);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -152,7 +152,7 @@ const AdminPromosPage = () => {
       endDate: editingPromo.endDate || null,
     };
     try {
-      const response = await fetch(`/api/admin/promos/${editingPromo.id}`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/promos/${editingPromo.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -166,9 +166,9 @@ const AdminPromosPage = () => {
       }
       handleCloseEditModal();
       fetchPromos();
-      alert(`Promo "${updatedPromo.code}" berhasil diperbarui.`);
+      showMessage(`Promo "${updatedPromo.code}" berhasil diperbarui.`);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -179,7 +179,7 @@ const AdminPromosPage = () => {
     if (!confirm(`Apakah Anda yakin ingin ${actionText} promo ini?`)) return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/promos/${promoId}/status`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/promos/${promoId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -192,9 +192,9 @@ const AdminPromosPage = () => {
         throw new Error(updatedPromo.message || "Gagal mengubah status promo.");
       }
       fetchPromos();
-      alert(`Promo berhasil di-${actionText}.`);
+      showMessage(`Promo berhasil di-${actionText}.`);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -205,7 +205,7 @@ const AdminPromosPage = () => {
       return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/promos/${promoId}`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/promos/${promoId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -214,9 +214,13 @@ const AdminPromosPage = () => {
         throw new Error(data.message || "Gagal menghapus promo.");
       }
       fetchPromos();
+<<<<<<< HEAD
       alert(data.message);
+=======
+      showMessage(data.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 

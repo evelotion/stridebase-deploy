@@ -17,14 +17,22 @@ const AdminSettingsPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/admin/config", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/config", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Gagal mengambil data konfigurasi.");
       const data = await response.json();
       setConfig(data);
     } catch (error) {
+<<<<<<< HEAD
       alert(error.message);
+=======
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setLoading(false);
     }
@@ -51,7 +59,11 @@ const AdminSettingsPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/admin/config", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/config", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,9 +72,15 @@ const AdminSettingsPage = () => {
         body: JSON.stringify(config),
       });
       if (!response.ok) throw new Error("Gagal menyimpan perubahan.");
+<<<<<<< HEAD
       alert("Pengaturan berhasil disimpan!");
     } catch (error) {
       alert(error.message);
+=======
+      showMessage("Pengaturan berhasil disimpan!");
+    } catch (error) {
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }

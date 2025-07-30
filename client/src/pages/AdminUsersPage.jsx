@@ -15,7 +15,7 @@ const AdminUsersPage = () => {
     setLoading(true); // Pastikan loading true di awal fetch
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/users", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -44,7 +44,7 @@ const AdminUsersPage = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}/role`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/users/${userId}/role`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -65,10 +65,10 @@ const AdminUsersPage = () => {
           user.id === userId ? { ...user, role: updatedUser.role } : user
         )
       );
-      alert(`Peran untuk ${userName} berhasil diubah.`);
+      showMessage(`Peran untuk ${userName} berhasil diubah.`);
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -82,7 +82,7 @@ const AdminUsersPage = () => {
     }
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}/status`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/users/${userId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -103,14 +103,14 @@ const AdminUsersPage = () => {
           user.id === userId ? { ...user, status: updatedUser.status } : user
         )
       );
-      alert(
+      showMessage(
         `Pengguna ${userName} berhasil di-${
           newStatus === "blocked" ? "blokir" : "aktifkan"
         }.`
       );
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 

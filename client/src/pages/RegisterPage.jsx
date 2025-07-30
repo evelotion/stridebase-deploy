@@ -43,7 +43,11 @@ const RegisterPage = () => {
     }
 
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/auth/register", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/auth/register", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),

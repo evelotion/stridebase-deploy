@@ -27,10 +27,17 @@ const PartnerServicesPage = () => {
     try {
       // Ambil data toko dan layanan secara bersamaan
       const [storeRes, servicesRes] = await Promise.all([
+<<<<<<< HEAD
         fetch("/api/partner/settings", {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch("/api/partner/services", {
+=======
+        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/services", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -96,8 +103,8 @@ const PartnerServicesPage = () => {
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `/api/partner/services/${currentService.id}`
-      : "/api/partner/services";
+      ? `import.meta.env.VITE_API_BASE_URL + "/api/partner/services/${currentService.id}`
+      : "import.meta.env.VITE_API_BASE_URL + "/api/partner/services";
 
     try {
       const response = await fetch(url, {
@@ -113,11 +120,11 @@ const PartnerServicesPage = () => {
       if (!response.ok)
         throw new Error(data.message || "Gagal memproses layanan.");
 
-      alert(`Layanan berhasil ${isEditing ? "diperbarui" : "ditambahkan"}!`);
+      showMessage(`Layanan berhasil ${isEditing ? "diperbarui" : "ditambahkan"}!`);
       handleCloseModal();
       fetchData(); // Muat ulang data
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showMessage(`Error: ${err.message}`);
     }
   };
 
@@ -128,7 +135,7 @@ const PartnerServicesPage = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/partner/services/${serviceId}`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/partner/services/${serviceId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -137,10 +144,10 @@ const PartnerServicesPage = () => {
       if (!response.ok)
         throw new Error(data.message || "Gagal menghapus layanan.");
 
-      alert("Layanan berhasil dihapus.");
+      showMessage("Layanan berhasil dihapus.");
       fetchData(); // Muat ulang data
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showMessage(`Error: ${err.message}`);
     }
   };
 

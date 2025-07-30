@@ -11,7 +11,7 @@ const PartnerOrdersPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      const response = await fetch("/api/partner/orders", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/orders", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -38,7 +38,11 @@ const PartnerOrdersPage = () => {
     try {
       // Panggil endpoint baru yang sudah kita buat di backend
       const response = await fetch(
+<<<<<<< HEAD
         `/api/partner/orders/${bookingId}/work-status`,
+=======
+        `import.meta.env.VITE_API_BASE_URL + "/api/partner/orders/${bookingId}/work-status`,
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         {
           method: "PATCH",
           headers: {
@@ -64,7 +68,7 @@ const PartnerOrdersPage = () => {
       // Notifikasi di sini opsional karena Socket.IO akan menangani pembaruan
       // di sisi pelanggan secara otomatis.
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showMessage(`Error: ${err.message}`);
     }
   };
   // ===================================================================

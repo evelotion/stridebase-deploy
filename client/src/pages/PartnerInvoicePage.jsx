@@ -13,7 +13,11 @@ const PartnerInvoicePage = () => {
         const fetchInvoice = async () => {
             const token = localStorage.getItem('token');
             try {
+<<<<<<< HEAD
                 const response = await fetch(`/api/partner/invoices/${id}`, {
+=======
+                const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/partner/invoices/${id}`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Invoice tidak ditemukan.');
@@ -31,7 +35,11 @@ const PartnerInvoicePage = () => {
     const handlePayNow = async () => {
         const token = localStorage.getItem('token');
         try {
+<<<<<<< HEAD
             const response = await fetch(`/api/partner/invoices/${id}/pay`, {
+=======
+            const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/partner/invoices/${id}/pay`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -39,7 +47,11 @@ const PartnerInvoicePage = () => {
             if (!response.ok) throw new Error(data.message);
             window.location.href = data.redirectUrl; // Arahkan ke payment gateway
         } catch (error) {
+<<<<<<< HEAD
             alert(error.message);
+=======
+            showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         }
     };
 

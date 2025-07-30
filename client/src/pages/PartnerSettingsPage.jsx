@@ -38,7 +38,11 @@ const PartnerSettingsPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/partner/settings", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -100,7 +104,11 @@ const PartnerSettingsPage = () => {
     const token = localStorage.getItem("token");
 
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/partner/upload-photo", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/upload-photo", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -115,9 +123,15 @@ const PartnerSettingsPage = () => {
         // Jika ini gambar pertama, otomatis jadikan header
         headerImage: prev.headerImage ? prev.headerImage : result.filePath,
       }));
+<<<<<<< HEAD
       alert("Foto berhasil diunggah! Jangan lupa simpan perubahan.");
     } catch (err) {
       alert(`Error: ${err.message}`);
+=======
+      showMessage("Foto berhasil diunggah! Jangan lupa simpan perubahan.");
+    } catch (err) {
+      showMessage(`Error: ${err.message}`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -150,7 +164,7 @@ const PartnerSettingsPage = () => {
     };
 
     try {
-      const response = await fetch("/api/partner/settings", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -161,9 +175,13 @@ const PartnerSettingsPage = () => {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.message || "Gagal menyimpan perubahan.");
+<<<<<<< HEAD
       alert("Pengaturan toko berhasil disimpan!");
+=======
+      showMessage("Pengaturan toko berhasil disimpan!");
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      showMessage(`Error: ${err.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -256,7 +274,11 @@ const PartnerSettingsPage = () => {
                 <div className="col-md-3" key={index}>
                   <div className="photo-gallery-item position-relative">
                     <img
+<<<<<<< HEAD
                       src={`http://localhost:5000${img}`}
+=======
+                      src={`${img}`}
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                       alt={`Store view ${index + 1}`}
                       className="img-fluid rounded"
                       style={{

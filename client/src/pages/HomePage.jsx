@@ -16,11 +16,19 @@ const HomePage = () => {
 
         // Menggunakan Promise.all untuk mengambil semua data secara paralel
         const [storesRes, bannersRes, recommendationsRes] = await Promise.all([
+<<<<<<< HEAD
           fetch("/api/stores"),
           fetch("/api/banners"),
           // Fetch rekomendasi HANYA jika ada token
           token
             ? fetch("/api/user/recommendations", { headers })
+=======
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/stores"),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/banners"),
+          // Fetch rekomendasi HANYA jika ada token
+          token
+            ? fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/recommendations", { headers })
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             : Promise.resolve(null),
         ]);
 
@@ -89,7 +97,7 @@ const HomePage = () => {
                       >
                         <Link to={banner.linkUrl}>
                           <img
-                            src={`http://localhost:5000${banner.imageUrl}`}
+                            src={`${banner.imageUrl}`}
                             className="d-block w-100"
                             alt={`Banner ${index + 1}`}
                             style={{ height: "400px", objectFit: "cover" }}

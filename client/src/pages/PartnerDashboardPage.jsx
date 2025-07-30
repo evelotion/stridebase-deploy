@@ -64,6 +64,7 @@ const PartnerDashboardPage = () => {
       setLoading(true);
       try {
         const [statsRes, invoicesRes, storeRes] = await Promise.all([
+<<<<<<< HEAD
           fetch("/api/partner/dashboard", {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -71,6 +72,15 @@ const PartnerDashboardPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("/api/partner/settings", {
+=======
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/dashboard", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/invoices/outstanding", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             // Ambil juga data toko
             headers: { Authorization: `Bearer ${token}` },
           }),

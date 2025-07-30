@@ -5,7 +5,11 @@ import { useParams, Link } from 'react-router-dom';
 import { io } from "socket.io-client";
 
 // Inisialisasi socket di luar komponen agar tidak dibuat ulang terus-menerus
+<<<<<<< HEAD
 const socket = io("http://localhost:5000");
+=======
+const socket = io("");
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
 // Komponen untuk satu langkah di progress bar
 const ProgressStep = ({ icon, title, active }) => (
@@ -41,7 +45,11 @@ const TrackOrderPage = () => {
             }
             try {
                 // Endpoint ini harus dibuat/disesuaikan untuk mengambil detail booking tunggal
+<<<<<<< HEAD
                 const response = await fetch(`/api/bookings/${bookingId}`, {
+=======
+                const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/bookings/${bookingId}`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {

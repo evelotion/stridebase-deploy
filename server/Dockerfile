@@ -28,4 +28,8 @@ EXPOSE 5000
 # Gunakan shell form untuk menjalankan dua perintah secara berurutan.
 # Ini memastikan Prisma Client selalu di-generate ulang sesuai lingkungan container
 # setiap kali container dimulai, sebelum server dijalankan.
+<<<<<<< HEAD
 CMD ["sh", "-c", "npx prisma generate && npm start"]
+=======
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3

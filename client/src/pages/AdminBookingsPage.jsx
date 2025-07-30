@@ -13,7 +13,11 @@ const AdminBookingsPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/admin/bookings", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/bookings", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -23,7 +27,11 @@ const AdminBookingsPage = () => {
       setBookings(data);
     } catch (error) {
       console.error(error);
+<<<<<<< HEAD
       alert(error.message);
+=======
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setLoading(false);
     }
@@ -39,7 +47,11 @@ const AdminBookingsPage = () => {
     setBookings(updatedBookings);
 
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/admin/bookings/${bookingId}/status`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/bookings/${bookingId}/status`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -56,7 +68,11 @@ const AdminBookingsPage = () => {
       console.log(`Status untuk booking ${bookingId} berhasil diubah.`);
     } catch (error) {
       setBookings(originalBookings);
+<<<<<<< HEAD
       alert(error.message);
+=======
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 

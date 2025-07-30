@@ -22,7 +22,11 @@ const AdminReviewsPage = () => {
     setLoading(true);
     const token = localStorage.getItem('token');
     try {
+<<<<<<< HEAD
       const response = await fetch('/api/admin/reviews', {
+=======
+      const response = await fetch('import.meta.env.VITE_API_BASE_URL + "/api/admin/reviews', {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok) {
@@ -32,7 +36,11 @@ const AdminReviewsPage = () => {
       setReviews(data);
     } catch (error) {
       console.error(error);
+<<<<<<< HEAD
       alert(error.message);
+=======
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setLoading(false);
     }
@@ -43,19 +51,31 @@ const AdminReviewsPage = () => {
 
     const token = localStorage.getItem('token');
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/admin/reviews/${reviewId}`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/reviews/${reviewId}`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok) {
         throw new Error('Gagal menghapus ulasan.');
       }
+<<<<<<< HEAD
       alert('Ulasan berhasil dihapus.');
+=======
+      showMessage('Ulasan berhasil dihapus.');
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       // Refresh data ulasan setelah menghapus
       fetchReviews();
     } catch (error) {
       console.error(error);
+<<<<<<< HEAD
       alert(error.message);
+=======
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 

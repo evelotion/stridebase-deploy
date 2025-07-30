@@ -28,6 +28,7 @@ const AdminStoresPage = () => {
       const token = localStorage.getItem("token");
       try {
         const [storesRes, usersRes, configRes] = await Promise.all([
+<<<<<<< HEAD
           fetch("/api/admin/stores", {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -35,6 +36,15 @@ const AdminStoresPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("/api/public/theme-config"),
+=======
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stores", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/users", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/public/theme-config"),
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         ]);
 
         if (!storesRes.ok || !usersRes.ok || !configRes.ok) {
@@ -51,7 +61,11 @@ const AdminStoresPage = () => {
         );
         setThemeConfig(configData);
       } catch (error) {
+<<<<<<< HEAD
         alert(error.message);
+=======
+        showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       } finally {
         setLoading(false);
       }
@@ -62,14 +76,18 @@ const AdminStoresPage = () => {
   const fetchStores = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/stores", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stores", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Gagal mengambil data toko.");
       const data = await response.json();
       setStores(data);
     } catch (error) {
+<<<<<<< HEAD
       alert(error.message);
+=======
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -95,7 +113,7 @@ const AdminStoresPage = () => {
   const handleStatusChange = async (storeId, newStatus, successMessage) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/stores/${storeId}/status`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${storeId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -105,6 +123,7 @@ const AdminStoresPage = () => {
       });
       if (!response.ok) throw new Error("Gagal mengubah status toko.");
       fetchStores();
+<<<<<<< HEAD
       alert(
         successMessage || `Status toko berhasil diubah menjadi "${newStatus}".`
       );
@@ -139,8 +158,44 @@ const AdminStoresPage = () => {
       if (!response.ok) throw new Error("Gagal mengubah tingkatan toko.");
       fetchStores(); // Cukup panggil fetchStores untuk refresh semua data
       alert(`Keanggotaan ${storeName} berhasil diubah menjadi ${newTier}.`);
+=======
+      showMessage(
+        successMessage || `Status toko berhasil diubah menjadi "${newStatus}".`
+      );
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
+    }
+  };
+
+  const handleTierChange = async (storeId, newTier) => {
+    // Terima storeId, bukan 'id'
+    const storeName = stores.find((s) => s.id === storeId)?.name;
+    if (
+      !confirm(
+        `Apakah Anda yakin ingin mengubah keanggotaan ${storeName} menjadi "${newTier}"?`
+      )
+    )
+      return;
+
+    const token = localStorage.getItem("token");
+    try {
+      // PERBAIKAN UTAMA ADA DI BARIS URL DI BAWAH INI
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${storeId}/tier`, {
+        // Gunakan storeId
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ newTier }),
+      });
+
+      if (!response.ok) throw new Error("Gagal mengubah tingkatan toko.");
+      fetchStores(); // Cukup panggil fetchStores untuk refresh semua data
+      showMessage(`Keanggotaan ${storeName} berhasil diubah menjadi ${newTier}.`);
+    } catch (error) {
+      showMessage(error.message);
     }
   };
 
@@ -160,7 +215,7 @@ const AdminStoresPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/stores/${editingStore.id}`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${editingStore.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -171,9 +226,9 @@ const AdminStoresPage = () => {
       if (!response.ok) throw new Error("Gagal memperbarui data toko.");
       handleCloseEditModal();
       fetchStores();
-      alert(`Data untuk ${editingStore.name} berhasil diperbarui.`);
+      showMessage(`Data untuk ${editingStore.name} berhasil diperbarui.`);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -199,7 +254,7 @@ const AdminStoresPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/stores", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stores", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -213,9 +268,13 @@ const AdminStoresPage = () => {
       }
       handleCloseAddModal();
       fetchStores();
+<<<<<<< HEAD
       alert(`Toko "${createdStore.name}" berhasil ditambahkan.`);
+=======
+      showMessage(`Toko "${createdStore.name}" berhasil ditambahkan.`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 

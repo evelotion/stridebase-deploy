@@ -102,10 +102,17 @@ const AdminReportsPage = () => {
 
     try {
       const [statsRes, transactionsRes] = await Promise.all([
+<<<<<<< HEAD
         fetch("/api/admin/stats", {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`/api/admin/transactions?${params.toString()}`, {
+=======
+        fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stats", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/transactions?${params.toString()}`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -224,7 +231,11 @@ const AdminReportsPage = () => {
               </div>
               <div className="col-md-3">
                 <a
+<<<<<<< HEAD
                   href={`/api/admin/export/transactions?startDate=${startDate}&endDate=${endDate}`}
+=======
+                  href={`import.meta.env.VITE_API_BASE_URL + "/api/admin/export/transactions?startDate=${startDate}&endDate=${endDate}`}
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                   className="btn btn-outline-success w-100"
                   download
                 >

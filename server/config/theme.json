@@ -1,5 +1,6 @@
 {
   "featureFlags": {
+<<<<<<< HEAD
   "enableNewTheme": true,
   "maintenanceMode": false,
   "enableProTierUpgrade": false,
@@ -16,6 +17,24 @@
   "branding": {
     "logoUrl": "/uploads/asset-1753538313486.png",
     "faviconUrl": "/uploads/asset-1752927610848.png"
+=======
+    "enableNewTheme": true,
+    "maintenanceMode": false,
+    "enableProTierUpgrade": false,
+    "enableTierSystem": true,
+    "pageStatus": {
+      "/about": true,
+      "/contact": true,
+      "/store": true,
+      "/faq": true
+    }
+  },
+  "globalAnnouncement": "Diskon 50% untuk semua layanan hingga akhir bulan!",
+  "serverVersion": "1.5.0",
+  "branding": {
+    "logoUrl": ""/uploads/asset-1753538313486.png",
+    "faviconUrl": ""/uploads/asset-1752927610848.png"
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   },
   "typography": {
     "fontFamily": "'Public Sans', sans-serif",

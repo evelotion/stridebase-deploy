@@ -14,7 +14,7 @@ const BookingConfirmationPage = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("Sesi Anda telah berakhir. Silakan login kembali.");
+      showMessage("Sesi Anda telah berakhir. Silakan login kembali.");
       navigate("/login");
       return;
     }
@@ -22,12 +22,20 @@ const BookingConfirmationPage = () => {
     if (savedBooking) {
       const bookingData = JSON.parse(savedBooking);
       if (!bookingData.storeId || !bookingData.service) {
+<<<<<<< HEAD
         alert("Detail layanan tidak lengkap. Silakan ulangi proses pemesanan.");
+=======
+        showMessage("Detail layanan tidak lengkap. Silakan ulangi proses pemesanan.");
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         navigate(`/store/${bookingData.storeId || ""}`);
         return;
       }
       if (bookingData.deliveryOption === "pickup" && !bookingData.addressId) {
+<<<<<<< HEAD
         alert(
+=======
+        showMessage(
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           "Alamat penjemputan belum dipilih. Silakan lengkapi detail pesanan Anda."
         );
         navigate(`/store/${bookingData.storeId}`);
@@ -38,13 +46,14 @@ const BookingConfirmationPage = () => {
       }
       setBookingDetails(bookingData);
     } else {
-      alert("Tidak ada detail booking ditemukan. Silakan ulangi proses.");
+      showMessage("Tidak ada detail booking ditemukan. Silakan ulangi proses.");
       navigate("/");
     }
   }, [navigate]);
 
   const handleApplyPromo = async () => {
     setPromoError("");
+<<<<<<< HEAD
     const token = localStorage.getItem("token");
     try {
       const response = await fetch("/api/admin/promos/validate", {
@@ -78,11 +87,49 @@ const BookingConfirmationPage = () => {
 
     try {
       const bookingResponse = await fetch("/api/bookings", {
+=======
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/promos/validate", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
+<<<<<<< HEAD
+=======
+        body: JSON.stringify({ code: promoCode }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+      setAppliedPromo(data);
+    } catch (error) {
+      setPromoError(error.message);
+      setAppliedPromo(null);
+    }
+  };
+
+  const handleConfirmAndPay = async () => {
+    setIsSubmitting(true);
+    const token = localStorage.getItem("token");
+
+    // Sertakan promo yang diaplikasikan ke dalam detail booking
+    const finalBookingDetails = {
+      ...bookingDetails,
+      promoCode: appliedPromo ? appliedPromo.code : undefined,
+    };
+
+    try {
+      const bookingResponse = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         body: JSON.stringify(finalBookingDetails), // Kirim detail final
       });
 
@@ -91,7 +138,11 @@ const BookingConfirmationPage = () => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
+<<<<<<< HEAD
       const paymentResponse = await fetch("/api/payments/create-transaction", {
+=======
+      const paymentResponse = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/payments/create-transaction", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +161,7 @@ const BookingConfirmationPage = () => {
       localStorage.removeItem("pendingBooking");
       window.location.href = paymentData.redirectUrl;
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
       setIsSubmitting(false);
     }
   };

@@ -71,7 +71,11 @@ const DeveloperDashboardPage = () => {
     const token = localStorage.getItem("token");
     const fetchInitialConfig = async () => {
       try {
+<<<<<<< HEAD
         const response = await fetch("/api/superuser/config", {
+=======
+        const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/superuser/config", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error("Gagal mengambil data konfigurasi.");
@@ -139,7 +143,11 @@ const DeveloperDashboardPage = () => {
       setLoadingHealth(true);
       try {
         const response = await fetch(
+<<<<<<< HEAD
           "/api/superuser/maintenance/health-check",
+=======
+          "import.meta.env.VITE_API_BASE_URL + "/api/superuser/maintenance/health-check",
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           { headers }
         );
         const data = await response.json();
@@ -154,7 +162,11 @@ const DeveloperDashboardPage = () => {
       setLoadingLogs(true);
       try {
         const response = await fetch(
+<<<<<<< HEAD
           "/api/superuser/maintenance/security-logs",
+=======
+          "import.meta.env.VITE_API_BASE_URL + "/api/superuser/maintenance/security-logs",
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           { headers }
         );
         if (!response.ok) throw new Error("Gagal mengambil log keamanan.");
@@ -169,7 +181,11 @@ const DeveloperDashboardPage = () => {
     const fetchApprovalRequests = async () => {
       setLoadingRequests(true);
       try {
+<<<<<<< HEAD
         const response = await fetch("/api/superuser/approval-requests", {
+=======
+        const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/superuser/approval-requests", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers,
         });
         if (!response.ok)
@@ -185,7 +201,11 @@ const DeveloperDashboardPage = () => {
     const fetchPaymentConfig = async () => {
       setLoadingPaymentConfig(true);
       try {
+<<<<<<< HEAD
         const response = await fetch("/api/superuser/config/payment", {
+=======
+        const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/superuser/config/payment", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers,
         });
         if (!response.ok)
@@ -284,7 +304,11 @@ const DeveloperDashboardPage = () => {
     const formData = new FormData();
     formData.append("asset", file);
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/superuser/upload-asset", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/superuser/upload-asset", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -296,11 +320,19 @@ const DeveloperDashboardPage = () => {
         ...prevConfig,
         branding: { ...prevConfig.branding, [configKey]: result.filePath },
       }));
+<<<<<<< HEAD
       alert(
         "File berhasil diunggah! Jangan lupa simpan perubahan untuk menerapkan."
       );
     } catch (error) {
       alert(error.message);
+=======
+      showMessage(
+        "File berhasil diunggah! Jangan lupa simpan perubahan untuk menerapkan."
+      );
+    } catch (error) {
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -317,7 +349,11 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/superuser/config", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/superuser/config", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -326,7 +362,11 @@ const DeveloperDashboardPage = () => {
         body: JSON.stringify(localConfig),
       });
       if (!response.ok) throw new Error("Gagal menyimpan perubahan.");
+<<<<<<< HEAD
       alert(
+=======
+      showMessage(
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         "Konfigurasi berhasil diperbarui! Muat ulang halaman untuk melihat perubahan global."
       );
       const root = document.documentElement;
@@ -336,7 +376,11 @@ const DeveloperDashboardPage = () => {
         }
       });
     } catch (err) {
+<<<<<<< HEAD
       alert(err.message);
+=======
+      showMessage(err.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }
@@ -346,7 +390,11 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/superuser/config/payment", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/superuser/config/payment", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -356,9 +404,15 @@ const DeveloperDashboardPage = () => {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
+<<<<<<< HEAD
       alert(result.message);
     } catch (error) {
       alert(`Error: ${error.message}`);
+=======
+      showMessage(result.message);
+    } catch (error) {
+      showMessage(`Error: ${error.message}`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }
@@ -372,15 +426,25 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/superuser/maintenance/clear-cache", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/superuser/maintenance/clear-cache", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
+<<<<<<< HEAD
       alert(result.message);
     } catch (err) {
       alert(`Error: ${err.message}`);
+=======
+      showMessage(result.message);
+    } catch (err) {
+      showMessage(`Error: ${err.message}`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }
@@ -388,18 +452,30 @@ const DeveloperDashboardPage = () => {
 
   const handleResetDatabase = async () => {
     if (resetConfirmText !== "RESET") {
+<<<<<<< HEAD
       alert("Teks konfirmasi salah. Silakan ketik 'RESET' untuk melanjutkan.");
+=======
+      showMessage("Teks konfirmasi salah. Silakan ketik 'RESET' untuk melanjutkan.");
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       return;
     }
     setShowResetModal(false);
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       alert(
         "Proses reset database dimulai. Ini mungkin memakan waktu beberapa saat. Halaman akan dimuat ulang setelah selesai."
       );
       const response = await fetch(
         "/api/superuser/maintenance/reseed-database",
+=======
+      showMessage(
+        "Proses reset database dimulai. Ini mungkin memakan waktu beberapa saat. Halaman akan dimuat ulang setelah selesai."
+      );
+      const response = await fetch(
+        "import.meta.env.VITE_API_BASE_URL + "/api/superuser/maintenance/reseed-database",
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -407,10 +483,17 @@ const DeveloperDashboardPage = () => {
       );
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
+<<<<<<< HEAD
       alert(result.message);
       window.location.reload();
     } catch (err) {
       alert(`Error: ${err.message}`);
+=======
+      showMessage(result.message);
+      window.location.reload();
+    } catch (err) {
+      showMessage(`Error: ${err.message}`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
       setResetConfirmText("");
@@ -425,7 +508,11 @@ const DeveloperDashboardPage = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
+<<<<<<< HEAD
         `/api/superuser/approval-requests/${requestId}/resolve`,
+=======
+        `import.meta.env.VITE_API_BASE_URL + "/api/superuser/approval-requests/${requestId}/resolve`,
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         {
           method: "POST",
           headers: {
@@ -439,11 +526,19 @@ const DeveloperDashboardPage = () => {
       if (!response.ok)
         throw new Error(data.message || "Gagal memproses permintaan.");
 
+<<<<<<< HEAD
       alert(data.message);
       setApprovalRequests((prev) => prev.filter((req) => req.id !== requestId));
     } catch (error) {
       console.error(error);
       alert(error.message);
+=======
+      showMessage(data.message);
+      setApprovalRequests((prev) => prev.filter((req) => req.id !== requestId));
+    } catch (error) {
+      console.error(error);
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -612,7 +707,11 @@ const DeveloperDashboardPage = () => {
                         <img
                           src={
                             logoPreview ||
+<<<<<<< HEAD
                             `http://localhost:5000${config.branding?.logoUrl}`
+=======
+                            `${config.branding?.logoUrl}`
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                           }
                           alt="Logo"
                           style={{
@@ -638,7 +737,11 @@ const DeveloperDashboardPage = () => {
                         <img
                           src={
                             faviconPreview ||
+<<<<<<< HEAD
                             `http://localhost:5000${config.branding?.faviconUrl}`
+=======
+                            `${config.branding?.faviconUrl}`
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                           }
                           alt="Favicon"
                           style={{ height: "32px", marginRight: "1rem" }}

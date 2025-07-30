@@ -24,8 +24,13 @@ const PartnerPromosPage = () => {
     try {
       // Pastikan kedua URL ini bersih dan benar
       const [promosRes, storeRes] = await Promise.all([
+<<<<<<< HEAD
         fetch("/api/partner/promos", { headers: { Authorization: `Bearer ${token}` } }),
         fetch("/api/partner/settings", { headers: { Authorization: `Bearer ${token}` } })
+=======
+        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/promos", { headers: { Authorization: `Bearer ${token}` } }),
+        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", { headers: { Authorization: `Bearer ${token}` } })
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       ]);
 
       if (!promosRes.ok || !storeRes.ok) {
@@ -80,8 +85,13 @@ const PartnerPromosPage = () => {
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
+<<<<<<< HEAD
       ? `/api/partner/promos/${currentPromo.id}`
       : "/api/partner/promos";
+=======
+      ? `import.meta.env.VITE_API_BASE_URL + "/api/partner/promos/${currentPromo.id}`
+      : "import.meta.env.VITE_API_BASE_URL + "/api/partner/promos";
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
     try {
       const response = await fetch(url, {
@@ -91,11 +101,19 @@ const PartnerPromosPage = () => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
+<<<<<<< HEAD
       alert(`Promo berhasil ${isEditing ? 'diperbarui' : 'dibuat'}!`);
       handleCloseModal();
       fetchData();
     } catch (err) {
       alert(`Error: ${err.message}`);
+=======
+      showMessage(`Promo berhasil ${isEditing ? 'diperbarui' : 'dibuat'}!`);
+      handleCloseModal();
+      fetchData();
+    } catch (err) {
+      showMessage(`Error: ${err.message}`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -103,16 +121,27 @@ const PartnerPromosPage = () => {
     if (!confirm("Yakin ingin menghapus promo ini?")) return;
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/partner/promos/${promoId}`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/partner/promos/${promoId}`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
+<<<<<<< HEAD
       alert('Promo berhasil dihapus.');
       fetchData();
     } catch (err) {
       alert(`Error: ${err.message}`);
+=======
+      showMessage('Promo berhasil dihapus.');
+      fetchData();
+    } catch (err) {
+      showMessage(`Error: ${err.message}`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 

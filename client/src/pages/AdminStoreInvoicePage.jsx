@@ -35,10 +35,17 @@ const AdminStoreInvoicePage = () => {
     const token = localStorage.getItem("token");
     try {
       const [storeRes, invoicesRes] = await Promise.all([
+<<<<<<< HEAD
         fetch(`/api/stores/${storeId}`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`/api/admin/stores/${storeId}/invoices`, {
+=======
+        fetch(`import.meta.env.VITE_API_BASE_URL + "/api/stores/${storeId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${storeId}/invoices`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -126,7 +133,11 @@ const AdminStoreInvoicePage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/admin/stores/${storeId}/invoices`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${storeId}/invoices`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,11 +149,19 @@ const AdminStoreInvoicePage = () => {
       if (!response.ok)
         throw new Error(result.message || "Gagal menyimpan invoice.");
 
+<<<<<<< HEAD
       alert("Invoice baru berhasil dibuat!");
       handleCloseCreateModal();
       fetchInvoiceData();
     } catch (error) {
       alert(error.message);
+=======
+      showMessage("Invoice baru berhasil dibuat!");
+      handleCloseCreateModal();
+      fetchInvoiceData();
+    } catch (error) {
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }
@@ -155,7 +174,11 @@ const AdminStoreInvoicePage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/admin/invoices/${invoiceId}/status`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/invoices/${invoiceId}/status`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -166,11 +189,19 @@ const AdminStoreInvoicePage = () => {
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
 
+<<<<<<< HEAD
       alert(`Invoice berhasil ditandai sebagai ${newStatus}.`);
       handleCloseDetailModal();
       fetchInvoiceData();
     } catch (error) {
       alert(error.message);
+=======
+      showMessage(`Invoice berhasil ditandai sebagai ${newStatus}.`);
+      handleCloseDetailModal();
+      fetchInvoiceData();
+    } catch (error) {
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }
@@ -186,18 +217,30 @@ const AdminStoreInvoicePage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/admin/invoices/${invoiceId}/overdue`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/invoices/${invoiceId}/overdue`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
 
+<<<<<<< HEAD
       alert("Denda keterlambatan berhasil diterapkan.");
       handleCloseDetailModal();
       fetchInvoiceData();
     } catch (error) {
       alert(error.message);
+=======
+      showMessage("Denda keterlambatan berhasil diterapkan.");
+      handleCloseDetailModal();
+      fetchInvoiceData();
+    } catch (error) {
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }
@@ -206,7 +249,11 @@ const AdminStoreInvoicePage = () => {
   const handleShowDetailModal = async (invoiceId) => {
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/admin/invoices/${invoiceId}`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/invoices/${invoiceId}`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Detail invoice tidak ditemukan.");
@@ -214,7 +261,11 @@ const AdminStoreInvoicePage = () => {
       setViewingInvoice(data);
       setShowDetailModal(true);
     } catch (err) {
+<<<<<<< HEAD
       alert(err.message);
+=======
+      showMessage(err.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -248,18 +299,30 @@ const AdminStoreInvoicePage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
+<<<<<<< HEAD
       const response = await fetch(`/api/admin/invoices/${invoiceId}/send`, {
+=======
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/invoices/${invoiceId}/send`, {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
 
+<<<<<<< HEAD
       alert("Invoice berhasil dikirim!");
       handleCloseDetailModal();
       fetchInvoiceData(); // Refresh data
     } catch (error) {
       alert(error.message);
+=======
+      showMessage("Invoice berhasil dikirim!");
+      handleCloseDetailModal();
+      fetchInvoiceData(); // Refresh data
+    } catch (error) {
+      showMessage(error.message);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setIsSaving(false);
     }

@@ -70,7 +70,11 @@ const StorePage = () => {
       params.append("openNow", "true");
     }
 
+<<<<<<< HEAD
     const apiUrl = `/api/stores?${params.toString()}`;
+=======
+    const apiUrl = `import.meta.env.VITE_API_BASE_URL + "/api/stores?${params.toString()}`;
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
     try {
       const response = await fetch(apiUrl);
@@ -123,14 +127,22 @@ const StorePage = () => {
           setSortBy("distance");
         },
         (error) => {
+<<<<<<< HEAD
           alert(
+=======
+          showMessage(
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             "Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi."
           );
           console.error(error);
         }
       );
     } else {
+<<<<<<< HEAD
       alert("Geolocation tidak didukung oleh browser Anda.");
+=======
+      showMessage("Geolocation tidak didukung oleh browser Anda.");
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 

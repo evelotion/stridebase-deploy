@@ -65,7 +65,11 @@ const PartnerReviewsPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
+<<<<<<< HEAD
       const response = await fetch("/api/partner/reviews", {
+=======
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/reviews", {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -105,7 +109,11 @@ const PartnerReviewsPage = () => {
 
     try {
       const response = await fetch(
+<<<<<<< HEAD
         `/api/partner/reviews/${currentReview.id}/reply`,
+=======
+        `import.meta.env.VITE_API_BASE_URL + "/api/partner/reviews/${currentReview.id}/reply`,
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         {
           method: "POST",
           headers: {
@@ -120,11 +128,19 @@ const PartnerReviewsPage = () => {
       if (!response.ok)
         throw new Error(data.message || "Gagal mengirim balasan.");
 
+<<<<<<< HEAD
       alert("Balasan berhasil dikirim!");
       handleCloseReplyModal();
       fetchReviews(); // Muat ulang data untuk menampilkan balasan
     } catch (err) {
       alert(`Error: ${err.message}`);
+=======
+      showMessage("Balasan berhasil dikirim!");
+      handleCloseReplyModal();
+      fetchReviews(); // Muat ulang data untuk menampilkan balasan
+    } catch (err) {
+      showMessage(`Error: ${err.message}`);
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       setIsSaving(false);
     }
   };

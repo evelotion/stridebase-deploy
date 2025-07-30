@@ -19,14 +19,14 @@ const AdminBannersPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/banners", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/banners", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Gagal mengambil data banner.");
       const data = await response.json();
       setBanners(data);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ const AdminBannersPage = () => {
     const token = localStorage.getItem("token");
 
     if (!newBannerData.imageFile || !newBannerData.linkUrl) {
-      alert("File gambar dan Link Tujuan wajib diisi.");
+      showMessage("File gambar dan Link Tujuan wajib diisi.");
       return;
     }
 
@@ -62,7 +62,7 @@ const AdminBannersPage = () => {
     formData.append("image", newBannerData.imageFile);
 
     try {
-      const uploadRes = await fetch("/api/upload", {
+      const uploadRes = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -78,7 +78,7 @@ const AdminBannersPage = () => {
         linkUrl: newBannerData.linkUrl,
       };
 
-      const saveRes = await fetch("/api/admin/banners", {
+      const saveRes = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/banners", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -93,9 +93,9 @@ const AdminBannersPage = () => {
 
       handleCloseAddModal();
       fetchBanners(); // Refresh tabel
-      alert("Banner baru berhasil ditambahkan.");
+      showMessage("Banner baru berhasil ditambahkan.");
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -105,7 +105,7 @@ const AdminBannersPage = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/banners/${bannerId}`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/banners/${bannerId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -114,9 +114,9 @@ const AdminBannersPage = () => {
         throw new Error(data.message || "Gagal menghapus banner.");
 
       fetchBanners(); // Refresh tabel
-      alert(data.message);
+      showMessage(data.message);
     } catch (error) {
-      alert(error.message);
+      showMessage(error.message);
     }
   };
 
@@ -138,7 +138,7 @@ const AdminBannersPage = () => {
               <div className="card shadow-sm">
                 {/* Tambahkan base URL server jika perlu */}
                 <img
-                  src={`http://localhost:5000${banner.imageUrl}`}
+                  src={`${banner.imageUrl}`}
                   className="card-img-top"
                   alt="Banner"
                   style={{ height: "150px", objectFit: "cover" }}

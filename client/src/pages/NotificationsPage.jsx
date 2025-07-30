@@ -11,7 +11,11 @@ const NotificationsPage = () => {
         const fetchAllNotifications = async () => {
             const token = localStorage.getItem('token');
             try {
+<<<<<<< HEAD
                 const response = await fetch('/api/user/notifications', {
+=======
+                const response = await fetch('import.meta.env.VITE_API_BASE_URL + "/api/user/notifications', {
+>>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error("Gagal memuat notifikasi.");
