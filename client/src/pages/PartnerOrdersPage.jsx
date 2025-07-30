@@ -1,3 +1,5 @@
+// File: client/src/pages/PartnerOrdersPage.jsx
+
 import React, { useState, useEffect } from "react";
 
 const PartnerOrdersPage = () => {
@@ -28,33 +30,44 @@ const PartnerOrdersPage = () => {
     fetchOrders();
   }, []);
 
-  const handleStatusChange = async (bookingId, newStatus) => {
+  // ===================================================================
+  // === FUNGSI BARU UNTUK MENGUBAH STATUS PENGERJAAN (WORK STATUS) ===
+  // ===================================================================
+  const handleWorkStatusChange = async (bookingId, newWorkStatus) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/bookings/${bookingId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newStatus }),
-      });
+      // Panggil endpoint baru yang sudah kita buat di backend
+      const response = await fetch(
+        `/api/partner/orders/${bookingId}/work-status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ newWorkStatus }),
+        }
+      );
 
       const data = await response.json();
       if (!response.ok)
-        throw new Error(data.message || "Gagal mengubah status pesanan.");
+        throw new Error(data.message || "Gagal mengubah status pengerjaan.");
 
-      alert("Status pesanan berhasil diperbarui.");
-      // Muat ulang data untuk melihat perubahan
+      // Perbarui state secara lokal agar UI langsung berubah
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order.id === bookingId ? { ...order, status: newStatus } : order
+          order.id === bookingId
+            ? { ...order, workStatus: newWorkStatus }
+            : order
         )
       );
+      // Notifikasi di sini opsional karena Socket.IO akan menangani pembaruan
+      // di sisi pelanggan secara otomatis.
     } catch (err) {
       alert(`Error: ${err.message}`);
     }
   };
+  // ===================================================================
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -62,12 +75,26 @@ const PartnerOrdersPage = () => {
       case "Reviewed":
         return "bg-success";
       case "Processing":
-        return "bg-warning text-dark";
+        return "bg-primary"; // Diubah agar lebih jelas
+      case "Pending Payment":
+        return "bg-warning text-dark"; // Diubah agar lebih jelas
       case "Cancelled":
         return "bg-danger";
       default:
         return "bg-secondary";
     }
+  };
+
+  // Fungsi baru untuk menerjemahkan workStatus menjadi teks yang mudah dibaca
+  const getWorkStatusLabel = (workStatus) => {
+    const labels = {
+      RECEIVED: "Diterima",
+      WASHING: "Pencucian",
+      DRYING: "Pengeringan",
+      QUALITY_CHECK: "Pengecekan Kualitas",
+      READY_FOR_PICKUP: "Siap Diambil",
+    };
+    return labels[workStatus] || "N/A";
   };
 
   if (loading) return <div className="p-4">Memuat data pesanan...</div>;
@@ -84,52 +111,58 @@ const PartnerOrdersPage = () => {
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
-                <th>ID Booking</th>
                 <th>Pelanggan</th>
-                <th>Layanan</th>
+                <th>Detail Pesanan</th>
                 <th>Jadwal</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th>Status Pembayaran</th>
+                <th>Status Pengerjaan</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id}>
                   <td>
-                    <small>{order.id}</small>
-                  </td>
-                  <td>
                     <span className="fw-bold">{order.user.name}</span>
                     <small className="d-block text-muted">
                       {order.user.email}
                     </small>
                   </td>
-                  <td>{order.serviceName}</td>
                   <td>
-                    {new Date(order.scheduleDate).toLocaleDateString("id-ID")}
+                    <span className="fw-bold">{order.serviceName}</span>
+                    <small className="d-block text-muted">ID: {order.id}</small>
                   </td>
-                  <td>Rp {order.totalPrice.toLocaleString("id-ID")}</td>
+                  <td>
+                    {new Date(order.scheduleDate).toLocaleDateString("id-ID", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
                   <td>
                     <span className={`badge ${getStatusBadge(order.status)}`}>
                       {order.status}
                     </span>
                   </td>
                   <td>
+                    {/* --- KODE DROPDOWN YANG DIMODIFIKASI --- */}
                     <select
                       className="form-select form-select-sm"
-                      value={order.status}
+                      value={order.workStatus || "RECEIVED"}
                       onChange={(e) =>
-                        handleStatusChange(order.id, e.target.value)
+                        handleWorkStatusChange(order.id, e.target.value)
                       }
+                      // Nonaktifkan jika pembayaran belum selesai atau pesanan dibatalkan
                       disabled={
-                        order.status === "Reviewed" ||
-                        order.status === "Cancelled"
+                        order.status !== "Processing" &&
+                        order.status !== "Completed" &&
+                        order.status !== "Reviewed"
                       }
                     >
-                      <option value="Processing">Processing</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
+                      <option value="RECEIVED">Diterima</option>
+                      <option value="WASHING">Pencucian</option>
+                      <option value="DRYING">Pengeringan</option>
+                      <option value="QUALITY_CHECK">Pengecekan Kualitas</option>
+                      <option value="READY_FOR_PICKUP">Siap Diambil</option>
                     </select>
                   </td>
                 </tr>

@@ -2,8 +2,7 @@ import { createClient } from 'redis';
 
 // Buat klien Redis
 const redisClient = createClient({
-  // URL default Redis adalah redis://localhost:6379,
-  // jadi kita tidak perlu menentukannya secara eksplisit jika menggunakan Docker di lokal.
+  url: process.env.REDIS_URL // Gunakan variabel lingkungan
 });
 
 // Tangani error koneksi

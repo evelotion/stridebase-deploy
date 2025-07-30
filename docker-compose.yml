@@ -1,37 +1,8 @@
-version: '3.8'
-
 services:
-  server:
-    build: ./server
-    container_name: stridebase_server
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./server:/app
-      - /app/node_modules
-    environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/stridebase_db
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - db
-      - redis
-    restart: unless-stopped
-
-  client:
-    build: ./client
-    container_name: stridebase_client
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    depends_on:
-      - server
-    restart: unless-stopped
-
   db:
     image: postgres:15-alpine
     container_name: stridebase_db
+    restart: always
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
@@ -39,15 +10,53 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432" # <-- Port ini sudah benar
-    restart: unless-stopped
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d stridebase_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:6-alpine
     container_name: stridebase_redis
-    ports: # <-- PENAMBAHAN PENTING DI SINI
+    restart: always
+    ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build: ./server
+    container_name: stridebase_server
     restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    env_file:
+      - ./server/.env  # <-- INI ADALAH PERBAIKAN UTAMA
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  client:
+    build: ./client
+    container_name: stridebase_client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
 
 volumes:
   postgres_data:

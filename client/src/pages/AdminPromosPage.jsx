@@ -11,6 +11,11 @@ const AdminPromosPage = () => {
     description: "",
     discountType: "percentage",
     value: "",
+    startDate: "",
+    endDate: "",
+    usageLimit: "",
+    minTransaction: "",
+    forNewUser: false,
   });
 
   // State untuk modal Edit
@@ -41,7 +46,6 @@ const AdminPromosPage = () => {
     }
   };
 
-  // Fungsi-fungsi untuk modal Tambah
   const handleShowAddModal = () => setShowAddModal(true);
   const handleCloseAddModal = () => {
     setShowAddModal(false);
@@ -50,15 +54,37 @@ const AdminPromosPage = () => {
       description: "",
       discountType: "percentage",
       value: "",
+      startDate: "",
+      endDate: "",
+      usageLimit: "",
+      minTransaction: "",
+      forNewUser: false,
     });
   };
+
   const handleAddFormChange = (e) => {
-    const { name, value } = e.target;
-    setNewPromoData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setNewPromoData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
+
   const handleSaveNewPromo = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
+    const payload = {
+      ...newPromoData,
+      value: parseInt(newPromoData.value, 10),
+      usageLimit: newPromoData.usageLimit
+        ? parseInt(newPromoData.usageLimit, 10)
+        : null,
+      minTransaction: newPromoData.minTransaction
+        ? parseInt(newPromoData.minTransaction, 10)
+        : null,
+      startDate: newPromoData.startDate || null,
+      endDate: newPromoData.endDate || null,
+    };
     try {
       const response = await fetch("/api/admin/promos", {
         method: "POST",
@@ -66,7 +92,7 @@ const AdminPromosPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newPromoData),
+        body: JSON.stringify(payload),
       });
       const createdPromo = await response.json();
       if (!response.ok) {
@@ -82,23 +108,49 @@ const AdminPromosPage = () => {
     }
   };
 
-  // Fungsi-fungsi untuk modal Edit
   const handleShowEditModal = (promo) => {
-    setEditingPromo({ ...promo });
+    const formattedPromo = {
+      ...promo,
+      startDate: promo.startDate
+        ? new Date(promo.startDate).toISOString().split("T")[0]
+        : "",
+      endDate: promo.endDate
+        ? new Date(promo.endDate).toISOString().split("T")[0]
+        : "",
+    };
+    setEditingPromo(formattedPromo);
     setShowEditModal(true);
   };
+
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setEditingPromo(null);
   };
+
   const handleEditFormChange = (e) => {
-    const { name, value } = e.target;
-    setEditingPromo((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setEditingPromo((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
+
   const handleUpdatePromo = async (e) => {
     e.preventDefault();
     if (!editingPromo) return;
     const token = localStorage.getItem("token");
+    const payload = {
+      ...editingPromo,
+      value: parseInt(editingPromo.value, 10),
+      usageLimit: editingPromo.usageLimit
+        ? parseInt(editingPromo.usageLimit, 10)
+        : null,
+      minTransaction: editingPromo.minTransaction
+        ? parseInt(editingPromo.minTransaction, 10)
+        : null,
+      startDate: editingPromo.startDate || null,
+      endDate: editingPromo.endDate || null,
+    };
     try {
       const response = await fetch(`/api/admin/promos/${editingPromo.id}`, {
         method: "PUT",
@@ -106,7 +158,7 @@ const AdminPromosPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editingPromo),
+        body: JSON.stringify(payload),
       });
       const updatedPromo = await response.json();
       if (!response.ok) {
@@ -120,14 +172,11 @@ const AdminPromosPage = () => {
     }
   };
 
-  // Fungsi untuk Ubah Status Promo
   const handleStatusChange = async (promoId, currentStatus) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     const actionText =
       newStatus === "active" ? "mengaktifkan" : "menonaktifkan";
-
     if (!confirm(`Apakah Anda yakin ingin ${actionText} promo ini?`)) return;
-
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(`/api/admin/promos/${promoId}/status`, {
@@ -149,13 +198,11 @@ const AdminPromosPage = () => {
     }
   };
 
-  // --- FUNGSI BARU UNTUK HAPUS PROMO ---
   const handleDeletePromo = async (promoId) => {
     if (
       !confirm("Apakah Anda yakin ingin menghapus promo ini secara permanen?")
     )
       return;
-
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(`/api/admin/promos/${promoId}`, {
@@ -166,17 +213,45 @@ const AdminPromosPage = () => {
       if (!response.ok) {
         throw new Error(data.message || "Gagal menghapus promo.");
       }
-      fetchPromos(); // Muat ulang data
+      fetchPromos();
       alert(data.message);
     } catch (error) {
       alert(error.message);
     }
   };
-  // ------------------------------------
 
   const getStatusBadge = (status) => {
     return status === "active" ? "bg-success" : "bg-secondary";
   };
+
+  // --- FUNGSI HELPER BARU UNTUK MENAMPILKAN DATA DI KOLOM BARU ---
+  const renderRuleType = (promo) => {
+    const rules = [];
+    if (promo.forNewUser) rules.push("Pengguna Baru");
+    if (promo.minTransaction)
+      rules.push(
+        `Min. Belanja Rp ${promo.minTransaction.toLocaleString("id-ID")}`
+      );
+    if (rules.length === 0) return "Umum";
+    return rules.join(", ");
+  };
+
+  const renderValidityPeriod = (promo) => {
+    if (promo.startDate && promo.endDate) {
+      const start = new Date(promo.startDate).toLocaleDateString("id-ID");
+      const end = new Date(promo.endDate).toLocaleDateString("id-ID");
+      return `${start} - ${end}`;
+    }
+    return "Selamanya";
+  };
+
+  const renderQuota = (promo) => {
+    if (promo.usageLimit) {
+      return `${promo.usageCount} / ${promo.usageLimit}`;
+    }
+    return "Tidak Terbatas";
+  };
+  // --- AKHIR FUNGSI HELPER BARU ---
 
   if (loading) return <div className="p-4">Memuat data promo...</div>;
 
@@ -192,14 +267,16 @@ const AdminPromosPage = () => {
 
         <div className="table-card p-3 shadow-sm">
           <div className="table-responsive">
+            {/* --- STRUKTUR TABEL DIMODIFIKASI --- */}
             <table className="table table-hover align-middle">
               <thead className="table-light">
                 <tr>
-                  <th>Kode Promo</th>
+                  <th>Kode</th>
                   <th>Deskripsi</th>
-                  <th>Tipe</th>
-                  <th>Nilai</th>
                   <th>Status</th>
+                  <th>Tipe Aturan</th>
+                  <th>Masa Berlaku</th>
+                  <th>Kuota</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
@@ -208,19 +285,21 @@ const AdminPromosPage = () => {
                   <tr key={promo.id}>
                     <td>
                       <span className="fw-bold">{promo.code}</span>
+                      <small className="d-block text-muted">
+                        {promo.discountType === "percentage"
+                          ? `${promo.value}%`
+                          : `Rp ${promo.value.toLocaleString("id-ID")}`}
+                      </small>
                     </td>
                     <td>{promo.description}</td>
-                    <td>{promo.discountType}</td>
-                    <td>
-                      {promo.discountType === "percentage"
-                        ? `${promo.value}%`
-                        : `Rp ${promo.value.toLocaleString("id-ID")}`}
-                    </td>
                     <td>
                       <span className={`badge ${getStatusBadge(promo.status)}`}>
                         {promo.status}
                       </span>
                     </td>
+                    <td>{renderRuleType(promo)}</td>
+                    <td>{renderValidityPeriod(promo)}</td>
+                    <td>{renderQuota(promo)}</td>
                     <td>
                       <div className="btn-group">
                         <button
@@ -266,18 +345,19 @@ const AdminPromosPage = () => {
                 ))}
               </tbody>
             </table>
+            {/* --- AKHIR MODIFIKASI TABEL --- */}
           </div>
         </div>
       </div>
 
-      {/* Modal Tambah Promo */}
+      {/* MODAL TAMBAH & EDIT TIDAK BERUBAH DARI SEBELUMNYA */}
       {showAddModal && (
         <div
           className="modal fade show"
           style={{ display: "block" }}
           tabIndex="-1"
         >
-          <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Tambah Promo Baru</h5>
@@ -348,6 +428,78 @@ const AdminPromosPage = () => {
                       />
                     </div>
                   </div>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="startDate" className="form-label">
+                        Tanggal Mulai (Opsional)
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="startDate"
+                        name="startDate"
+                        value={newPromoData.startDate}
+                        onChange={handleAddFormChange}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="endDate" className="form-label">
+                        Tanggal Berakhir (Opsional)
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="endDate"
+                        name="endDate"
+                        value={newPromoData.endDate}
+                        onChange={handleAddFormChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="usageLimit" className="form-label">
+                        Kuota Penggunaan (Opsional)
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="usageLimit"
+                        name="usageLimit"
+                        placeholder="Contoh: 100"
+                        value={newPromoData.usageLimit}
+                        onChange={handleAddFormChange}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="minTransaction" className="form-label">
+                        Min. Transaksi (Rp) (Opsional)
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="minTransaction"
+                        name="minTransaction"
+                        placeholder="Contoh: 50000"
+                        value={newPromoData.minTransaction}
+                        onChange={handleAddFormChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-check form-switch mb-3">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="forNewUser"
+                      name="forNewUser"
+                      checked={newPromoData.forNewUser}
+                      onChange={handleAddFormChange}
+                    />
+                    <label className="form-check-label" htmlFor="forNewUser">
+                      Hanya untuk Pengguna Baru
+                    </label>
+                  </div>
                 </div>
                 <div className="modal-footer">
                   <button
@@ -367,14 +519,13 @@ const AdminPromosPage = () => {
         </div>
       )}
 
-      {/* Modal Edit Promo */}
       {showEditModal && editingPromo && (
         <div
           className="modal fade show"
           style={{ display: "block" }}
           tabIndex="-1"
         >
-          <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Edit Promo: {editingPromo.code}</h5>
@@ -444,6 +595,84 @@ const AdminPromosPage = () => {
                         required
                       />
                     </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="edit-startDate" className="form-label">
+                        Tanggal Mulai (Opsional)
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="edit-startDate"
+                        name="startDate"
+                        value={editingPromo.startDate}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="edit-endDate" className="form-label">
+                        Tanggal Berakhir (Opsional)
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="edit-endDate"
+                        name="endDate"
+                        value={editingPromo.endDate}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="edit-usageLimit" className="form-label">
+                        Kuota Penggunaan (Opsional)
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="edit-usageLimit"
+                        name="usageLimit"
+                        placeholder="Contoh: 100"
+                        value={editingPromo.usageLimit || ""}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label
+                        htmlFor="edit-minTransaction"
+                        className="form-label"
+                      >
+                        Min. Transaksi (Rp) (Opsional)
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="edit-minTransaction"
+                        name="minTransaction"
+                        placeholder="Contoh: 50000"
+                        value={editingPromo.minTransaction || ""}
+                        onChange={handleEditFormChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="form-check form-switch mb-3">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="edit-forNewUser"
+                      name="forNewUser"
+                      checked={editingPromo.forNewUser}
+                      onChange={handleEditFormChange}
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor="edit-forNewUser"
+                    >
+                      Hanya untuk Pengguna Baru
+                    </label>
                   </div>
                 </div>
                 <div className="modal-footer">

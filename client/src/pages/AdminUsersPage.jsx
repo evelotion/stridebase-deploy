@@ -5,10 +5,14 @@ const AdminUsersPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchUsers();
+    // Memberi sedikit jeda agar skeleton loader terlihat (hanya untuk demonstrasi)
+    setTimeout(() => {
+      fetchUsers();
+    }, 500);
   }, []);
 
   const fetchUsers = async () => {
+    setLoading(true); // Pastikan loading true di awal fetch
     const token = localStorage.getItem("token");
     try {
       const response = await fetch("/api/admin/users", {
@@ -21,6 +25,7 @@ const AdminUsersPage = () => {
       setUsers(data);
     } catch (error) {
       console.error(error);
+      // Di aplikasi nyata, Anda mungkin ingin menampilkan notifikasi error di sini
     } finally {
       setLoading(false);
     }
@@ -67,7 +72,6 @@ const AdminUsersPage = () => {
     }
   };
 
-  // --- FUNGSI BARU UNTUK MENGUBAH STATUS PENGGUNA ---
   const handleStatusChange = async (userId, newStatus) => {
     const token = localStorage.getItem("token");
     const userName = users.find((u) => u.id === userId)?.name || "Pengguna";
@@ -94,7 +98,6 @@ const AdminUsersPage = () => {
         );
       }
 
-      // Perbarui state secara lokal
       setUsers((currentUsers) =>
         currentUsers.map((user) =>
           user.id === userId ? { ...user, status: updatedUser.status } : user
@@ -110,7 +113,6 @@ const AdminUsersPage = () => {
       alert(error.message);
     }
   };
-  // ------------------------------------------------
 
   const getInitials = (name) => {
     if (!name) return "?";
@@ -120,7 +122,88 @@ const AdminUsersPage = () => {
       : name.substring(0, 2).toUpperCase();
   };
 
-  if (loading) return <div className="p-4">Memuat data pengguna...</div>;
+  // ### PERUBAHAN 1: BLOK LOADING DENGAN SKELETON ###
+  if (loading) {
+    const SkeletonRow = () => (
+      <tr>
+        {/* Kolom Nama User */}
+        <td>
+          <div className="d-flex align-items-center">
+            <div className="skeleton skeleton-avatar me-3"></div>
+            <div style={{ flex: 1 }}>
+              <div className="skeleton skeleton-text"></div>
+            </div>
+          </div>
+        </td>
+        {/* Kolom Email */}
+        <td>
+          <div className="skeleton skeleton-text"></div>
+        </td>
+        {/* Kolom Total Belanja */}
+        <td>
+          <div className="skeleton skeleton-text"></div>
+        </td>
+        {/* Kolom Jml. Transaksi */}
+        <td>
+          <div
+            className="skeleton skeleton-text"
+            style={{ width: "50px" }}
+          ></div>
+        </td>
+        {/* Kolom Peran */}
+        <td>
+          <div
+            className="skeleton skeleton-text"
+            style={{ width: "100px" }}
+          ></div>
+        </td>
+        {/* Kolom Status */}
+        <td>
+          <div
+            className="skeleton skeleton-text"
+            style={{ width: "80px" }}
+          ></div>
+        </td>
+        {/* Kolom Aksi */}
+        <td>
+          <div
+            className="skeleton skeleton-text"
+            style={{ width: "80px" }}
+          ></div>
+        </td>
+      </tr>
+    );
+
+    // Tampilkan tabel dengan baris-baris skeleton
+    return (
+      <div className="container-fluid px-4">
+        <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
+        <div className="table-card p-3 shadow-sm">
+          <div className="table-responsive">
+            <table className="table table-hover align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>Nama User</th>
+                  <th>Email</th>
+                  <th>Total Belanja</th>
+                  <th>Jml. Transaksi</th>
+                  <th>Peran</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <SkeletonRow />
+                <SkeletonRow />
+                <SkeletonRow />
+                <SkeletonRow />
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid px-4">
@@ -132,8 +215,8 @@ const AdminUsersPage = () => {
               <tr>
                 <th>Nama User</th>
                 <th>Email</th>
-                <th>Total Belanja</th> {/* <-- KOLOM BARU */}
-                <th>Jml. Transaksi</th> {/* <-- KOLOM BARU */}
+                <th>Total Belanja</th>
+                <th>Jml. Transaksi</th>
                 <th>Peran</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -144,17 +227,15 @@ const AdminUsersPage = () => {
                 <tr key={user.id}>
                   <td>
                     <div className="d-flex align-items-center">
-                      <div className="user-avatar avatar-initials me-2">
+                      <div className="user-avatar avatar-initials me-3">
                         <span>{getInitials(user.name)}</span>
                       </div>
                       {user.name}
                     </div>
                   </td>
                   <td>{user.email}</td>
-                  {/* -- DATA BARU -- */}
                   <td>Rp {user.totalSpent.toLocaleString("id-ID")}</td>
                   <td>{user.transactionCount}</td>
-                  {/* ---------------- */}
                   <td>
                     <select
                       className="form-select form-select-sm"
@@ -164,7 +245,9 @@ const AdminUsersPage = () => {
                       }
                     >
                       <option value="customer">Customer</option>
+                      <option value="mitra">Mitra</option>
                       <option value="admin">Admin</option>
+                      <option value="developer">Developer</option>
                     </select>
                   </td>
                   <td>
@@ -178,30 +261,36 @@ const AdminUsersPage = () => {
                       {user.status || "active"}
                     </span>
                   </td>
+                  {/* ### PERUBAHAN 2: STANDARDISASI TOMBOL AKSI ### */}
                   <td>
-                    <button
-                      className="btn btn-sm btn-outline-secondary me-2"
-                      title="Edit"
-                    >
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    {(user.status || "active") === "active" ? (
+                    <div className="btn-group">
+                      {/* Tombol Ubah Status (Aktif/Blokir) */}
+                      {(user.status || "active") === "active" ? (
+                        <button
+                          className="btn btn-sm btn-outline-warning"
+                          title="Blokir Pengguna"
+                          onClick={() => handleStatusChange(user.id, "blocked")}
+                        >
+                          <i className="fas fa-ban"></i>
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-sm btn-outline-success"
+                          title="Aktifkan Pengguna"
+                          onClick={() => handleStatusChange(user.id, "active")}
+                        >
+                          <i className="fas fa-check-circle"></i>
+                        </button>
+                      )}
+
+                      {/* Tombol Edit (Aksi di masa depan) */}
                       <button
-                        className="btn btn-sm btn-outline-danger"
-                        title="Blokir"
-                        onClick={() => handleStatusChange(user.id, "blocked")}
+                        className="btn btn-sm btn-outline-secondary"
+                        title="Edit Pengguna"
                       >
-                        <i className="fas fa-ban"></i>
+                        <i className="fas fa-edit"></i>
                       </button>
-                    ) : (
-                      <button
-                        className="btn btn-sm btn-outline-success"
-                        title="Aktifkan"
-                        onClick={() => handleStatusChange(user.id, "active")}
-                      >
-                        <i className="fas fa-check-circle"></i>
-                      </button>
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))}

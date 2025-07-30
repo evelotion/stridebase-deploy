@@ -1,7 +1,11 @@
+// File: stridebase-app/client/src/pages/PartnerServicesPage.jsx
+
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const PartnerServicesPage = () => {
   const [services, setServices] = useState([]);
+  const [store, setStore] = useState(null); // State untuk menyimpan data toko
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -16,23 +20,32 @@ const PartnerServicesPage = () => {
     shoeType: "sneakers",
   });
 
-  // Fungsi untuk mengambil data layanan
+  // Fungsi untuk mengambil data layanan dan toko
   const fetchData = async () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      // Ambil layanan berdasarkan user yang login (backend akan mencari tokonya)
-      const servicesResponse = await fetch(
-        `/api/partner/services`, // URL sudah diperbaiki
-        {
+      // Ambil data toko dan layanan secara bersamaan
+      const [storeRes, servicesRes] = await Promise.all([
+        fetch("/api/partner/settings", {
           headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const servicesData = await servicesResponse.json();
-      if (!servicesResponse.ok)
+        }),
+        fetch("/api/partner/services", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      const storeData = await storeRes.json();
+      const servicesData = await servicesRes.json();
+
+      if (!storeRes.ok)
+        throw new Error(storeData.message || "Gagal mengambil data toko.");
+      if (!servicesRes.ok)
         throw new Error(
           servicesData.message || "Gagal mengambil data layanan."
         );
+
+      setStore(storeData);
       setServices(servicesData);
     } catch (err) {
       setError(err.message);
@@ -44,6 +57,9 @@ const PartnerServicesPage = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Cek apakah limit sudah tercapai
+ const isServiceLimitReached = store ? services.length >= store.serviceLimit : false;
 
   // Handler untuk membuka modal
   const handleOpenModal = (service = null) => {
@@ -136,10 +152,26 @@ const PartnerServicesPage = () => {
       <div className="container-fluid px-4">
         <div className="d-flex justify-content-between align-items-center m-4">
           <h2 className="fs-2 mb-0">Manajemen Layanan</h2>
-          <button className="btn btn-primary" onClick={() => handleOpenModal()}>
+          <button
+            className="btn btn-primary"
+            onClick={() => handleOpenModal()}
+            disabled={isServiceLimitReached}
+          >
             <i className="fas fa-plus me-2"></i>Tambah Layanan
           </button>
         </div>
+
+        {isServiceLimitReached && (
+          <div className="alert alert-warning mx-4">
+            Anda telah mencapai batas maksimal{" "}
+            <strong>{store.serviceLimit} layanan</strong> untuk tier BASIC.
+            <Link to="/partner/upgrade" className="alert-link">
+              {" "}
+              Upgrade ke PRO
+            </Link>{" "}
+            untuk menambah layanan tanpa batas.
+          </div>
+        )}
 
         <div className="table-card p-3 shadow-sm">
           <div className="table-responsive">
@@ -162,7 +194,9 @@ const PartnerServicesPage = () => {
                       </small>
                     </td>
                     <td>{service.shoeType}</td>
-                    <td>Rp {service.price.toLocaleString("id-ID")}</td>
+                    <td>
+                      Rp {parseInt(service.price).toLocaleString("id-ID")}
+                    </td>
                     <td>
                       <button
                         className="btn btn-sm btn-outline-secondary me-2"
@@ -187,7 +221,6 @@ const PartnerServicesPage = () => {
         </div>
       </div>
 
-      {/* Modal untuk Tambah/Edit Layanan */}
       {showModal && (
         <div
           className="modal fade show"

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const AboutPage = () => {
   return (
@@ -6,74 +7,65 @@ const AboutPage = () => {
       <div className="text-center mb-5">
         <h1 className="display-4 fw-bold">Tentang StrideBase</h1>
         <p className="lead text-muted">
-          Misi kami adalah merevolusi cara Anda merawat sepatu.
+          Platform modern yang memudahkan Anda menemukan dan memesan layanan
+          cuci sepatu profesional di seluruh Indonesia.
         </p>
       </div>
 
-      <div className="row g-5 align-items-center">
-        <div className="col-lg-6">
-          <h2 className="fw-semibold">Kisah Kami</h2>
-          <p>
-            StrideBase lahir dari ide sederhana: membuat layanan cuci sepatu
-            profesional dapat diakses oleh semua orang, di mana saja. Kami
-            melihat banyak orang kesulitan menemukan jasa cuci sepatu yang
-            tepercaya dan berkualitas. Di sisi lain, banyak penyedia jasa
-            berkualitas yang kesulitan menjangkau pelanggan baru.
-          </p>
-          <p>
-            Oleh karena itu, kami membangun sebuah platform yang menghubungkan
-            keduanya. StrideBase bukan hanya sebuah marketplace, tetapi sebuah
-            komunitas yang didedikasikan untuk seni merawat sepatu.
-          </p>
+      <div className="row g-4 justify-content-center">
+        {/* Card Kiri: Misi Kami */}
+        <div className="col-lg-6 d-flex">
+          <div className="card p-4 h-100 w-100">
+            <div className="card-body text-center">
+              <div
+                className="feature-icon-sm bg-primary bg-gradient text-white rounded-3 mb-4 fs-1 mx-auto d-inline-flex align-items-center justify-content-center"
+                style={{ width: "5rem", height: "5rem" }}
+              >
+                <i className="fas fa-bullseye"></i>
+              </div>
+              <h4 className="fw-semibold">Misi Kami</h4>
+              <p className="text-muted mt-3">
+                Kami berkomitmen untuk memberikan layanan berkualitas tinggi
+                dengan teknologi pembersih terkini dan bahan yang ramah
+                lingkungan.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="col-lg-6">
-          <img
-            src="https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=800"
-            className="img-fluid rounded-3 shadow"
-            alt="Tentang StrideBase"
-          />
-        </div>
-      </div>
 
-      <div className="row g-5 mt-5 text-center">
-        <div className="col-md-4">
-          <div
-            className="feature-icon-sm bg-primary bg-gradient text-white rounded-3 mb-3 fs-2 d-inline-flex align-items-center justify-content-center"
-            style={{ width: "3rem", height: "3rem" }}
-          >
-            <i className="fas fa-handshake"></i>
+        {/* Card Kanan: Kenapa Memilih Kami */}
+        <div className="col-lg-6 d-flex">
+          <div className="card p-4 h-100 w-100">
+            <div className="card-body">
+              <div className="text-center mb-4">
+                <div
+                  className="feature-icon-sm bg-success bg-gradient text-white rounded-3 mb-3 fs-1 mx-auto d-inline-flex align-items-center justify-content-center"
+                  style={{ width: "5rem", height: "5rem" }}
+                >
+                  <i className="fas fa-check-circle"></i>
+                </div>
+                <h4 className="fw-semibold">Kenapa Memilih StrideBase?</h4>
+              </div>
+              <ul className="list-unstyled">
+                <li className="mb-3 d-flex">
+                  <i className="fas fa-check text-success mt-1 me-2"></i>
+                  <span>Layanan dari toko terpercaya & terdekat</span>
+                </li>
+                <li className="mb-3 d-flex">
+                  <i className="fas fa-check text-success mt-1 me-2"></i>
+                  <span>Proses booking cepat dan transparan</span>
+                </li>
+                <li className="mb-3 d-flex">
+                  <i className="fas fa-check text-success mt-1 me-2"></i>
+                  <span>Customer support responsif</span>
+                </li>
+                <li className="d-flex">
+                  <i className="fas fa-check text-success mt-1 me-2"></i>
+                  <span>Update status layanan secara real-time</span>
+                </li>
+              </ul>
+            </div>
           </div>
-          <h4 className="fw-semibold">Mitra Terverifikasi</h4>
-          <p className="text-muted">
-            Kami hanya bekerja sama dengan penyedia jasa cuci sepatu terbaik
-            yang telah melalui proses verifikasi ketat.
-          </p>
-        </div>
-        <div className="col-md-4">
-          <div
-            className="feature-icon-sm bg-primary bg-gradient text-white rounded-3 mb-3 fs-2 d-inline-flex align-items-center justify-content-center"
-            style={{ width: "3rem", height: "3rem" }}
-          >
-            <i className="fas fa-shield-alt"></i>
-          </div>
-          <h4 className="fw-semibold">Booking Aman</h4>
-          <p className="text-muted">
-            Proses pemesanan yang mudah dan sistem pembayaran yang aman untuk
-            kenyamanan Anda.
-          </p>
-        </div>
-        <div className="col-md-4">
-          <div
-            className="feature-icon-sm bg-primary bg-gradient text-white rounded-3 mb-3 fs-2 d-inline-flex align-items-center justify-content-center"
-            style={{ width: "3rem", height: "3rem" }}
-          >
-            <i className="fas fa-headset"></i>
-          </div>
-          <h4 className="fw-semibold">Dukungan Pelanggan</h4>
-          <p className="text-muted">
-            Tim kami selalu siap membantu jika Anda mengalami kendala atau
-            memiliki pertanyaan.
-          </p>
         </div>
       </div>
     </div>

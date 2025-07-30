@@ -1,3 +1,5 @@
+# File: client/Dockerfile
+
 # Menggunakan image Node.js versi 18 yang ringan sebagai dasar
 FROM node:18-alpine
 
@@ -7,8 +9,8 @@ WORKDIR /app
 # Salin file package.json dan package-lock.json terlebih dahulu
 COPY package*.json ./
 
-# Instal semua dependensi (termasuk devDependencies untuk build)
-RUN npm install
+# Instal semua dependensi
+RUN npm install --legacy-peer-deps
 
 # Salin sisa kode aplikasi
 COPY . .
