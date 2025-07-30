@@ -28,13 +28,13 @@ const AdminStoresPage = () => {
       const token = localStorage.getItem("token");
       try {
         const [storesRes, usersRes, configRes] = await Promise.all([
-          fetch("process.env.API_BASE_URL + "/api/admin/stores", {
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stores", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("process.env.API_BASE_URL + "/api/admin/users", {
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/users", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("process.env.API_BASE_URL + "/api/public/theme-config"),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/public/theme-config"),
         ]);
 
         if (!storesRes.ok || !usersRes.ok || !configRes.ok) {
@@ -62,7 +62,7 @@ const AdminStoresPage = () => {
   const fetchStores = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/admin/stores", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stores", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Gagal mengambil data toko.");
@@ -95,7 +95,7 @@ const AdminStoresPage = () => {
   const handleStatusChange = async (storeId, newStatus, successMessage) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/stores/${storeId}/status`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${storeId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +126,7 @@ const AdminStoresPage = () => {
     const token = localStorage.getItem("token");
     try {
       // PERBAIKAN UTAMA ADA DI BARIS URL DI BAWAH INI
-      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/stores/${storeId}/tier`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${storeId}/tier`, {
         // Gunakan storeId
         method: "PATCH",
         headers: {
@@ -160,7 +160,7 @@ const AdminStoresPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/stores/${editingStore.id}`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/stores/${editingStore.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -199,7 +199,7 @@ const AdminStoresPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/admin/stores", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stores", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

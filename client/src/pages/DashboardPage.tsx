@@ -189,7 +189,7 @@ const DashboardPage: React.FC = () => {
 
   const fetchBookings = async (token: string) => {
     try {
-      const res = await fetch("process.env.API_BASE_URL + "/api/user/bookings", {
+      const res = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/bookings", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -222,7 +222,7 @@ const DashboardPage: React.FC = () => {
       // --- MODIFIKASI: Tambahkan fetch untuk promo yang sudah di-redeem ---
       const fetchRedeemedPromos = async (token: string) => {
         try {
-          const res = await fetch("process.env.API_BASE_URL + "/api/user/redeemed-promos", {
+          const res = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/redeemed-promos", {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) setRedeemedPromos(await res.json());
@@ -233,10 +233,10 @@ const DashboardPage: React.FC = () => {
 
       await Promise.all([
         fetchBookings(token),
-        fetch("process.env.API_BASE_URL + "/api/user/addresses", { headers })
+        fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/addresses", { headers })
           .then((res) => (res.ok ? res.json() : []))
           .then(setAddresses),
-        fetch("process.env.API_BASE_URL + "/api/user/loyalty", { headers })
+        fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/loyalty", { headers })
           .then((res) =>
             res.ok ? res.json() : { points: 0, transactions: [] }
           )
@@ -294,7 +294,7 @@ const DashboardPage: React.FC = () => {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/user/loyalty/redeem", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/loyalty/redeem", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify({ pointsToRedeem }),
@@ -305,9 +305,9 @@ const DashboardPage: React.FC = () => {
       showMessage(data.message);
 
       // Refresh data setelah berhasil
-      const loyaltyRes = await fetch("process.env.API_BASE_URL + "/api/user/loyalty", { headers });
+      const loyaltyRes = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/loyalty", { headers });
       setLoyaltyData(await loyaltyRes.json());
-      const promosRes = await fetch("process.env.API_BASE_URL + "/api/user/redeemed-promos", { headers });
+      const promosRes = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/redeemed-promos", { headers });
       setRedeemedPromos(await promosRes.json());
     } catch (error) {
       if (error instanceof Error) showMessage(`Error: ${error.message}`);
@@ -352,7 +352,7 @@ const DashboardPage: React.FC = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/user/addresses", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/addresses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -382,7 +382,7 @@ const DashboardPage: React.FC = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`process.env.API_BASE_URL + "/api/user/addresses/${addressId}`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/user/addresses/${addressId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -425,7 +425,7 @@ const DashboardPage: React.FC = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/upload", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -458,7 +458,7 @@ const DashboardPage: React.FC = () => {
       imageUrl: reviewImageUrl,
     };
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/reviews", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -508,7 +508,7 @@ const DashboardPage: React.FC = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/user/profile", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

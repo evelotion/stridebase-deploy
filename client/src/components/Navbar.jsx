@@ -23,7 +23,7 @@ const Navbar = ({
     if (unreadCount > 0) {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch("process.env.API_BASE_URL + "/api/user/notifications/mark-read", {
+        const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/notifications/mark-read", {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
         });

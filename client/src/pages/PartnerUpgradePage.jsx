@@ -9,7 +9,7 @@ const PartnerUpgradePage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/partner/upgrade/create-transaction", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/upgrade/create-transaction", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

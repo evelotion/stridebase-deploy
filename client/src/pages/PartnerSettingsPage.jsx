@@ -38,7 +38,7 @@ const PartnerSettingsPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/partner/settings", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -100,7 +100,7 @@ const PartnerSettingsPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/partner/upload-photo", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/upload-photo", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -150,7 +150,7 @@ const PartnerSettingsPage = () => {
     };
 
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/partner/settings", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

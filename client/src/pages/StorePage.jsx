@@ -70,7 +70,7 @@ const StorePage = () => {
       params.append("openNow", "true");
     }
 
-    const apiUrl = `process.env.API_BASE_URL + "/api/stores?${params.toString()}`;
+    const apiUrl = `import.meta.env.VITE_API_BASE_URL + "/api/stores?${params.toString()}`;
 
     try {
       const response = await fetch(apiUrl);

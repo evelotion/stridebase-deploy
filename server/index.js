@@ -112,7 +112,7 @@ app.use(cors({
 app.use(express.json());
 const themeConfigPath = path.join(__dirname, "config", "theme.json");
 
-app.get("process.env.API_BASE_URL + "/api/public/theme-config", (req, res) => {
+app.get(""/api/public/theme-config", (req, res) => {
   fs.readFile(themeConfigPath, "utf8", (err, data) => {
     if (err) {
       return res
@@ -129,10 +129,10 @@ const checkMaintenanceMode = (req, res, next) => {
     const config = JSON.parse(configData);
     if (config.featureFlags?.maintenanceMode) {
       if (
-        req.path.startsWith("process.env.API_BASE_URL + "/api/auth/login") ||
-        req.path.startsWith("process.env.API_BASE_URL + "/api/admin") ||
-        req.path.startsWith("process.env.API_BASE_URL + "/api/superuser") ||
-        req.path.startsWith("process.env.API_BASE_URL + "/api/public/theme-config")
+        req.path.startsWith(""/api/auth/login") ||
+        req.path.startsWith(""/api/admin") ||
+        req.path.startsWith(""/api/superuser") ||
+        req.path.startsWith(""/api/public/theme-config")
       ) {
         return next();
       }
@@ -176,7 +176,7 @@ const processAndSaveImage = async (fileBuffer, fieldname) => {
 
   await sharp(fileBuffer).resize(800).webp({ quality: 80 }).toFile(filepath);
 
-  return `process.env.API_BASE_URL + "/uploads/${filename}`; // INI SUDAH BENAR
+  return `"/uploads/${filename}`; // INI SUDAH BENAR
 };
 
 const authenticateToken = async (req, res, next) => {
@@ -231,7 +231,7 @@ const registerValidation = [
     .withMessage("Password minimal harus 8 karakter."),
 ];
 
-app.post("process.env.API_BASE_URL + "/api/auth/register", registerValidation, async (req, res) => {
+app.post(""/api/auth/register", registerValidation, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ message: errors.array()[0].msg });
@@ -254,7 +254,7 @@ app.post("process.env.API_BASE_URL + "/api/auth/register", registerValidation, a
   }
 });
 
-app.post("process.env.API_BASE_URL + "/api/auth/login", loginLimiter, async (req, res, next) => {
+app.post(""/api/auth/login", loginLimiter, async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
@@ -291,7 +291,7 @@ app.post("process.env.API_BASE_URL + "/api/auth/login", loginLimiter, async (req
   }
 });
 
-app.put("process.env.API_BASE_URL + "/api/user/profile", authenticateToken, async (req, res) => {
+app.put(""/api/user/profile", authenticateToken, async (req, res) => {
   const { name } = req.body;
   if (!name)
     return res.status(400).json({ message: "Nama tidak boleh kosong." });
@@ -314,7 +314,7 @@ app.put("process.env.API_BASE_URL + "/api/user/profile", authenticateToken, asyn
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/user/addresses", authenticateToken, async (req, res) => {
+app.get(""/api/user/addresses", authenticateToken, async (req, res) => {
   try {
     const addresses = await prisma.address.findMany({
       where: { userId: req.user.id },
@@ -326,7 +326,7 @@ app.get("process.env.API_BASE_URL + "/api/user/addresses", authenticateToken, as
   }
 });
 
-app.post("process.env.API_BASE_URL + "/api/user/addresses", authenticateToken, async (req, res) => {
+app.post(""/api/user/addresses", authenticateToken, async (req, res) => {
   const { label, recipientName, phoneNumber, fullAddress, city, postalCode } =
     req.body;
   if (
@@ -349,7 +349,7 @@ app.post("process.env.API_BASE_URL + "/api/user/addresses", authenticateToken, a
   }
 });
 
-app.delete("process.env.API_BASE_URL + "/api/user/addresses/:id", authenticateToken, async (req, res) => {
+app.delete(""/api/user/addresses/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   try {
     const address = await prisma.address.findFirst({
@@ -367,7 +367,7 @@ app.delete("process.env.API_BASE_URL + "/api/user/addresses/:id", authenticateTo
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/user/bookings", authenticateToken, async (req, res) => {
+app.get(""/api/user/bookings", authenticateToken, async (req, res) => {
   try {
     const userBookings = await prisma.booking.findMany({
       where: { userId: req.user.id },
@@ -399,7 +399,7 @@ app.get("process.env.API_BASE_URL + "/api/user/bookings", authenticateToken, asy
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/user/notifications", authenticateToken, async (req, res) => {
+app.get(""/api/user/notifications", authenticateToken, async (req, res) => {
   try {
     const notifications = await prisma.notification.findMany({
       where: { userId: req.user.id },
@@ -415,7 +415,7 @@ app.get("process.env.API_BASE_URL + "/api/user/notifications", authenticateToken
 });
 
 app.post(
-  "process.env.API_BASE_URL + "/api/user/notifications/mark-read",
+  ""/api/user/notifications/mark-read",
   authenticateToken,
   async (req, res) => {
     try {
@@ -429,7 +429,7 @@ app.post(
     }
   }
 );
-app.get("process.env.API_BASE_URL + "/api/user/loyalty", authenticateToken, async (req, res) => {
+app.get(""/api/user/loyalty", authenticateToken, async (req, res) => {
   try {
     const loyaltyData = await prisma.loyaltyPoint.findUnique({
       where: { userId: req.user.id },
@@ -453,7 +453,7 @@ app.get("process.env.API_BASE_URL + "/api/user/loyalty", authenticateToken, asyn
   }
 });
 
-app.post("process.env.API_BASE_URL + "/api/user/loyalty/redeem", authenticateToken, async (req, res) => {
+app.post(""/api/user/loyalty/redeem", authenticateToken, async (req, res) => {
   const { pointsToRedeem } = req.body;
   const userId = req.user.id;
 
@@ -527,7 +527,7 @@ app.post("process.env.API_BASE_URL + "/api/user/loyalty/redeem", authenticateTok
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/bookings/:id", authenticateToken, async (req, res) => {
+app.get(""/api/bookings/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
@@ -556,7 +556,7 @@ app.get("process.env.API_BASE_URL + "/api/bookings/:id", authenticateToken, asyn
   }
 });
 
-app.post("process.env.API_BASE_URL + "/api/bookings", authenticateToken, async (req, res) => {
+app.post(""/api/bookings", authenticateToken, async (req, res) => {
   const { storeId, service, deliveryOption, schedule, addressId, promoCode } =
     req.body;
 
@@ -659,7 +659,7 @@ app.post("process.env.API_BASE_URL + "/api/bookings", authenticateToken, async (
   }
 });
 
-app.post("process.env.API_BASE_URL + "/api/reviews", authenticateToken, async (req, res) => {
+app.post(""/api/reviews", authenticateToken, async (req, res) => {
   const { bookingId, storeId, rating, comment, imageUrl } = req.body;
 
   if (!bookingId || !storeId || !rating)
@@ -716,7 +716,7 @@ app.post("process.env.API_BASE_URL + "/api/reviews", authenticateToken, async (r
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/reviews/store/:storeId", async (req, res) => {
+app.get(""/api/reviews/store/:storeId", async (req, res) => {
   const { storeId } = req.params;
   try {
     const storeReviews = await prisma.review.findMany({
@@ -729,7 +729,7 @@ app.get("process.env.API_BASE_URL + "/api/reviews/store/:storeId", async (req, r
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/stores", async (req, res) => {
+app.get(""/api/stores", async (req, res) => {
   const { search, sortBy, lat, lng, minRating, services, openNow } = req.query;
   const cacheKey = `stores:${JSON.stringify(req.query)}`;
 
@@ -872,7 +872,7 @@ app.get("/sitemap.xml", async (req, res) => {
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/stores/:id", async (req, res) => {
+app.get(""/api/stores/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const store = await prisma.store.findUnique({ where: { id } });
@@ -883,7 +883,7 @@ app.get("process.env.API_BASE_URL + "/api/stores/:id", async (req, res) => {
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/stores/:storeId/services", async (req, res) => {
+app.get(""/api/stores/:storeId/services", async (req, res) => {
   const { storeId } = req.params;
   try {
     const storeExists = await prisma.store.findUnique({
@@ -907,7 +907,7 @@ app.get("process.env.API_BASE_URL + "/api/stores/:storeId/services", async (req,
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/banners", async (req, res) => {
+app.get(""/api/banners", async (req, res) => {
   try {
     const allBanners = await prisma.banner.findMany({
       where: { status: "active" },
@@ -918,11 +918,11 @@ app.get("process.env.API_BASE_URL + "/api/banners", async (req, res) => {
   }
 });
 
-app.get("process.env.API_BASE_URL + "/api/services", (req, res) => {
+app.get(""/api/services", (req, res) => {
   res.json(servicesData);
 });
 
-app.get("process.env.API_BASE_URL + "/api/user/recommendations", authenticateToken, async (req, res) => {
+app.get(""/api/user/recommendations", authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
   try {
@@ -1614,7 +1614,7 @@ partnerRouter.post(
   }
 );
 
-app.use("process.env.API_BASE_URL + "/api/partner", partnerRouter);
+app.use(""/api/partner", partnerRouter);
 
 const paymentRouter = express.Router();
 paymentRouter.use(authenticateToken);
@@ -1658,9 +1658,9 @@ paymentRouter.post("/create-transaction", async (req, res) => {
   }
 });
 
-app.use("process.env.API_BASE_URL + "/api/payments", paymentRouter);
+app.use(""/api/payments", paymentRouter);
 
-app.post("process.env.API_BASE_URL + "/api/webhooks/payment-notification", async (req, res) => {
+app.post(""/api/webhooks/payment-notification", async (req, res) => {
   const { order_id, transaction_status } = req.body;
   console.log(
     `Webhook diterima untuk ID ${order_id} dengan status ${transaction_status}`
@@ -2719,7 +2719,7 @@ adminRouter.get("/invoices/:id", async (req, res) => {
 });
 
 app.post(
-  "process.env.API_BASE_URL + "/api/upload",
+  ""/api/upload",
   authenticateToken,
   upload.single("image"),
   async (req, res) => {
@@ -2742,7 +2742,7 @@ app.post(
   }
 );
 
-app.use("process.env.API_BASE_URL + "/api/admin", adminRouter);
+app.use(""/api/admin", adminRouter);
 
 const isDeveloper = (req, res, next) => {
   if (req.user.role !== "developer") {
@@ -3044,7 +3044,7 @@ superUserRouter.post("/config/payment", async (req, res) => {
   }
 });
 
-app.use("process.env.API_BASE_URL + "/api/superuser", superUserRouter);
+app.use(""/api/superuser", superUserRouter);
 
 const errorLogger = async (err, req, res, next) => {
   if (err.status === 500 || !err.status) {

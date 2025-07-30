@@ -13,7 +13,7 @@ const AdminBookingsPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("process.env.API_BASE_URL + "/api/admin/bookings", {
+      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/bookings", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -39,7 +39,7 @@ const AdminBookingsPage = () => {
     setBookings(updatedBookings);
 
     try {
-      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/bookings/${bookingId}/status`, {
+      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/bookings/${bookingId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

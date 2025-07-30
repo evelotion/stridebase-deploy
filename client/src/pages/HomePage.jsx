@@ -16,11 +16,11 @@ const HomePage = () => {
 
         // Menggunakan Promise.all untuk mengambil semua data secara paralel
         const [storesRes, bannersRes, recommendationsRes] = await Promise.all([
-          fetch("process.env.API_BASE_URL + "/api/stores"),
-          fetch("process.env.API_BASE_URL + "/api/banners"),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/stores"),
+          fetch("import.meta.env.VITE_API_BASE_URL + "/api/banners"),
           // Fetch rekomendasi HANYA jika ada token
           token
-            ? fetch("process.env.API_BASE_URL + "/api/user/recommendations", { headers })
+            ? fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/recommendations", { headers })
             : Promise.resolve(null),
         ]);
 

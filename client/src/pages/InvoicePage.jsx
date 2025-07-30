@@ -11,7 +11,7 @@ const InvoicePage = () => {
         const fetchBookingDetails = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`process.env.API_BASE_URL + "/api/bookings/${id}`, {
+                const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/bookings/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {

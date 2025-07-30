@@ -14,8 +14,8 @@
   "globalAnnouncement": "Diskon 50% untuk semua layanan hingga akhir bulan!",
   "serverVersion": "1.5.0",
   "branding": {
-    "logoUrl": "process.env.API_BASE_URL + "/uploads/asset-1753538313486.png",
-    "faviconUrl": "process.env.API_BASE_URL + "/uploads/asset-1752927610848.png"
+    "logoUrl": ""/uploads/asset-1753538313486.png",
+    "faviconUrl": ""/uploads/asset-1752927610848.png"
   },
   "typography": {
     "fontFamily": "'Public Sans', sans-serif",
