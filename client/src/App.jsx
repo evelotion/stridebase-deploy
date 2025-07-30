@@ -16,11 +16,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AdminLayout from "./components/AdminLayout";
 import DeveloperLayout from "./components/DeveloperLayout";
-
-// GANTI MessageBox dengan Notification
 import Notification from "./components/Notification";
 
-// ... (impor komponen halaman lainnya tetap sama)
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));
 const ContactPage = React.lazy(() => import("./pages/ContactPage"));
@@ -85,7 +82,6 @@ const DeveloperDashboardPage = React.lazy(() =>
 
 let socket;
 
-// ... (Semua fungsi dan komponen lain seperti applyTheme, PageStatusWrapper, UserLayout, dll, tetap sama persis)
 const applyTheme = (theme) => {
   if (!theme) return;
   const root = document.documentElement;
@@ -322,12 +318,9 @@ function App() {
   const [theme, setTheme] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-
-  // GANTI state dan fungsi lama
   const [notification, setNotification] = useState(null);
 
   const showMessage = (message, title = "Pemberitahuan") => {
-    // Jika untuk login, gunakan title khusus
     const finalTitle = message === "Login berhasil!" ? "Login Berhasil" : title;
     setNotification({ title: finalTitle, message });
   };
@@ -335,12 +328,11 @@ function App() {
   const hideMessage = () => {
     setNotification(null);
   };
-  // AKHIR PERUBAHAN
 
   useEffect(() => {
     const fetchThemeConfig = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/public/theme-config`);
+        const response = await fetch("/api/public/theme-config");
         if (response.ok) {
           const data = await response.json();
           setTheme(data);
@@ -352,18 +344,17 @@ function App() {
     };
     fetchThemeConfig();
 
-     const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.id) {
-      // --- AWAL PERBAIKAN ---
-      // Tentukan URL server berdasarkan lingkungan (development vs production)
-      const socketUrl = import.meta.env.PROD
-        ? import.meta.env.VITE_API_PRODUCTION_URL
-        : "/"; // Gunakan path relatif untuk development agar proxy Vite bekerja
+    const user = JSON.parse(localStorage.getItem("user"));
 
+    // Define socketUrl which will be used for both user and theme sockets
+    const socketUrl = import.meta.env.PROD
+      ? import.meta.env.VITE_API_PRODUCTION_URL
+      : "/";
+
+    if (user && user.id) {
       socket = io(socketUrl, {
         query: { userId: user.id },
       });
-      // --- AKHIR PERBAIKAN ---
 
       socket.on("connect", () => {
         console.log(
@@ -381,7 +372,7 @@ function App() {
       const fetchNotifications = async () => {
         const token = localStorage.getItem("token");
         try {
-          const res = await fetch(`${API_BASE_URL}/api/user/notifications`, {
+          const res = await fetch("/api/user/notifications", {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
@@ -396,7 +387,8 @@ function App() {
       fetchNotifications();
     }
 
-    const themeSocket = io("");
+    // Use the same socketUrl for the theme socket
+    const themeSocket = io(socketUrl);
     themeSocket.on("themeUpdated", (newThemeConfig) => {
       console.log("Menerima pembaruan tema secara real-time:", newThemeConfig);
       setTheme(newThemeConfig);
@@ -421,7 +413,6 @@ function App() {
 
   return (
     <Router>
-      {/* --- PERBAIKAN DI SINI --- */}
       <Notification notification={notification} onClose={hideMessage} />
 
       <Suspense fallback={<LoadingFallback />}>
