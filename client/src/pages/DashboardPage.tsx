@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { io } from "socket.io-client";
+import API_BASE_URL from '../apiConfig.js';
 
 interface User {
   id: string;

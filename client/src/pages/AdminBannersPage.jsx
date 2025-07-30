@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_BASE_URL from '../apiConfig.js';
 
 const AdminBannersPage = () => {
   const [banners, setBanners] = useState([]);

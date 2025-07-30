@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
+import API_BASE_URL from '../apiConfig.js'; 
 
 const HomePage = () => {
   const [featuredStores, setFeaturedStores] = useState([]);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import API_BASE_URL from '../apiConfig.js';
 
 const PartnerUpgradePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
