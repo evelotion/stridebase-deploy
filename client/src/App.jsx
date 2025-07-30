@@ -17,7 +17,7 @@ import Footer from "./components/Footer";
 import AdminLayout from "./components/AdminLayout";
 import DeveloperLayout from "./components/DeveloperLayout";
 import Notification from "./components/Notification";
-import API_BASE_URL from './apiConfig.ts';
+import API_BASE_URL from './apiConfig';
 
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));

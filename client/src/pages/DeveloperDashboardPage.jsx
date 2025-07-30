@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import API_BASE_URL from '../apiConfig.js';
+import API_BASE_URL from '../apiConfig';
 
 // Komponen helper (tidak berubah)
 const HealthStatusIndicator = ({ service, status }) => {

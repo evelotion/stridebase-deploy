@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import API_BASE_URL from '../apiConfig.js';
+import API_BASE_URL from '../apiConfig';
 
 const LoginPage = ({ showMessage }) => {
   const [email, setEmail] = useState("");

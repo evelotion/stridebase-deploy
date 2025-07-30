@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import API_BASE_URL from '../apiConfig.js';
+import API_BASE_URL from '../apiConfig';
 
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   <div className="col-lg-3 col-md-6">

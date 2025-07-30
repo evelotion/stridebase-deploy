@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import API_BASE_URL from '../apiConfig.js';
+import API_BASE_URL from '../apiConfig';
 
 const ReviewCard = ({ review }) => (
   <div className="review-card mb-3">

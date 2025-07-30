@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import API_BASE_URL from '../apiConfig.js';
+import API_BASE_URL from '../apiConfig';
 
 // Terima props baru terkait notifikasi
 const Navbar = ({

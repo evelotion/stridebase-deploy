@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { io } from "socket.io-client";
-import API_BASE_URL from "../apiConfig.js";
+import API_BASE_URL from "../apiConfig";
 
 // Definisikan interface untuk props, termasuk showMessage
 interface DashboardPageProps {
