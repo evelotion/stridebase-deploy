@@ -14,7 +14,7 @@ const InvoicePrintPage = () => {
             const token = localStorage.getItem('token');
             try {
                 // Endpoint ini akan kita buat di backend
-                const response = await fetch(`/api/admin/invoices/${invoiceId}`, {
+                const response = await fetch(`process.env.API_BASE_URL + "/api/admin/invoices/${invoiceId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Gagal mengambil detail invoice.');

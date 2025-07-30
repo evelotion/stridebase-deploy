@@ -64,13 +64,13 @@ const PartnerDashboardPage = () => {
       setLoading(true);
       try {
         const [statsRes, invoicesRes, storeRes] = await Promise.all([
-          fetch("/api/partner/dashboard", {
+          fetch("process.env.API_BASE_URL + "/api/partner/dashboard", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/partner/invoices/outstanding", {
+          fetch("process.env.API_BASE_URL + "/api/partner/invoices/outstanding", {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/partner/settings", {
+          fetch("process.env.API_BASE_URL + "/api/partner/settings", {
             // Ambil juga data toko
             headers: { Authorization: `Bearer ${token}` },
           }),

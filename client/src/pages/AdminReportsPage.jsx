@@ -102,10 +102,10 @@ const AdminReportsPage = () => {
 
     try {
       const [statsRes, transactionsRes] = await Promise.all([
-        fetch("/api/admin/stats", {
+        fetch("process.env.API_BASE_URL + "/api/admin/stats", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch(`/api/admin/transactions?${params.toString()}`, {
+        fetch(`process.env.API_BASE_URL + "/api/admin/transactions?${params.toString()}`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -224,7 +224,7 @@ const AdminReportsPage = () => {
               </div>
               <div className="col-md-3">
                 <a
-                  href={`/api/admin/export/transactions?startDate=${startDate}&endDate=${endDate}`}
+                  href={`process.env.API_BASE_URL + "/api/admin/export/transactions?startDate=${startDate}&endDate=${endDate}`}
                   className="btn btn-outline-success w-100"
                   download
                 >

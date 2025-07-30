@@ -30,7 +30,7 @@ const AdminPromosPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/promos", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/admin/promos", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -86,7 +86,7 @@ const AdminPromosPage = () => {
       endDate: newPromoData.endDate || null,
     };
     try {
-      const response = await fetch("/api/admin/promos", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/admin/promos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,7 +152,7 @@ const AdminPromosPage = () => {
       endDate: editingPromo.endDate || null,
     };
     try {
-      const response = await fetch(`/api/admin/promos/${editingPromo.id}`, {
+      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/promos/${editingPromo.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -179,7 +179,7 @@ const AdminPromosPage = () => {
     if (!confirm(`Apakah Anda yakin ingin ${actionText} promo ini?`)) return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/promos/${promoId}/status`, {
+      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/promos/${promoId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -205,7 +205,7 @@ const AdminPromosPage = () => {
       return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/promos/${promoId}`, {
+      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/promos/${promoId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

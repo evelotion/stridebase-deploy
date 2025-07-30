@@ -11,7 +11,7 @@ const PartnerOrdersPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      const response = await fetch("/api/partner/orders", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/partner/orders", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -38,7 +38,7 @@ const PartnerOrdersPage = () => {
     try {
       // Panggil endpoint baru yang sudah kita buat di backend
       const response = await fetch(
-        `/api/partner/orders/${bookingId}/work-status`,
+        `process.env.API_BASE_URL + "/api/partner/orders/${bookingId}/work-status`,
         {
           method: "PATCH",
           headers: {

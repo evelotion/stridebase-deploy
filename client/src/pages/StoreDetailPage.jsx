@@ -94,7 +94,7 @@ const StoreDetailPage = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const res = await fetch("/api/user/addresses", {
+      const res = await fetch("process.env.API_BASE_URL + "/api/user/addresses", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -114,9 +114,9 @@ const StoreDetailPage = () => {
       setLoading(true);
       try {
         const [storeRes, servicesRes, reviewsRes] = await Promise.all([
-          fetch(`/api/stores/${id}`),
-          fetch(`/api/stores/${id}/services`),
-          fetch(`/api/reviews/store/${id}`),
+          fetch(`process.env.API_BASE_URL + "/api/stores/${id}`),
+          fetch(`process.env.API_BASE_URL + "/api/stores/${id}/services`),
+          fetch(`process.env.API_BASE_URL + "/api/reviews/store/${id}`),
         ]);
 
         if (!storeRes.ok) throw new Error("Toko tidak ditemukan");
@@ -208,7 +208,7 @@ const StoreDetailPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/user/addresses", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/user/addresses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

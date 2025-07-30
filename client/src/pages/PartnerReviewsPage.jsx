@@ -65,7 +65,7 @@ const PartnerReviewsPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      const response = await fetch("/api/partner/reviews", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/partner/reviews", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -105,7 +105,7 @@ const PartnerReviewsPage = () => {
 
     try {
       const response = await fetch(
-        `/api/partner/reviews/${currentReview.id}/reply`,
+        `process.env.API_BASE_URL + "/api/partner/reviews/${currentReview.id}/reply`,
         {
           method: "POST",
           headers: {

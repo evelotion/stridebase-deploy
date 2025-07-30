@@ -71,7 +71,7 @@ const DeveloperDashboardPage = () => {
     const token = localStorage.getItem("token");
     const fetchInitialConfig = async () => {
       try {
-        const response = await fetch("/api/superuser/config", {
+        const response = await fetch("process.env.API_BASE_URL + "/api/superuser/config", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error("Gagal mengambil data konfigurasi.");
@@ -139,7 +139,7 @@ const DeveloperDashboardPage = () => {
       setLoadingHealth(true);
       try {
         const response = await fetch(
-          "/api/superuser/maintenance/health-check",
+          "process.env.API_BASE_URL + "/api/superuser/maintenance/health-check",
           { headers }
         );
         const data = await response.json();
@@ -154,7 +154,7 @@ const DeveloperDashboardPage = () => {
       setLoadingLogs(true);
       try {
         const response = await fetch(
-          "/api/superuser/maintenance/security-logs",
+          "process.env.API_BASE_URL + "/api/superuser/maintenance/security-logs",
           { headers }
         );
         if (!response.ok) throw new Error("Gagal mengambil log keamanan.");
@@ -169,7 +169,7 @@ const DeveloperDashboardPage = () => {
     const fetchApprovalRequests = async () => {
       setLoadingRequests(true);
       try {
-        const response = await fetch("/api/superuser/approval-requests", {
+        const response = await fetch("process.env.API_BASE_URL + "/api/superuser/approval-requests", {
           headers,
         });
         if (!response.ok)
@@ -185,7 +185,7 @@ const DeveloperDashboardPage = () => {
     const fetchPaymentConfig = async () => {
       setLoadingPaymentConfig(true);
       try {
-        const response = await fetch("/api/superuser/config/payment", {
+        const response = await fetch("process.env.API_BASE_URL + "/api/superuser/config/payment", {
           headers,
         });
         if (!response.ok)
@@ -284,7 +284,7 @@ const DeveloperDashboardPage = () => {
     const formData = new FormData();
     formData.append("asset", file);
     try {
-      const response = await fetch("/api/superuser/upload-asset", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/superuser/upload-asset", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -317,7 +317,7 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/superuser/config", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/superuser/config", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -346,7 +346,7 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/superuser/config/payment", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/superuser/config/payment", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -372,7 +372,7 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/superuser/maintenance/clear-cache", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/superuser/maintenance/clear-cache", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -399,7 +399,7 @@ const DeveloperDashboardPage = () => {
         "Proses reset database dimulai. Ini mungkin memakan waktu beberapa saat. Halaman akan dimuat ulang setelah selesai."
       );
       const response = await fetch(
-        "/api/superuser/maintenance/reseed-database",
+        "process.env.API_BASE_URL + "/api/superuser/maintenance/reseed-database",
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -425,7 +425,7 @@ const DeveloperDashboardPage = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `/api/superuser/approval-requests/${requestId}/resolve`,
+        `process.env.API_BASE_URL + "/api/superuser/approval-requests/${requestId}/resolve`,
         {
           method: "POST",
           headers: {

@@ -27,10 +27,10 @@ const PartnerServicesPage = () => {
     try {
       // Ambil data toko dan layanan secara bersamaan
       const [storeRes, servicesRes] = await Promise.all([
-        fetch("/api/partner/settings", {
+        fetch("process.env.API_BASE_URL + "/api/partner/settings", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("/api/partner/services", {
+        fetch("process.env.API_BASE_URL + "/api/partner/services", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -96,8 +96,8 @@ const PartnerServicesPage = () => {
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `/api/partner/services/${currentService.id}`
-      : "/api/partner/services";
+      ? `process.env.API_BASE_URL + "/api/partner/services/${currentService.id}`
+      : "process.env.API_BASE_URL + "/api/partner/services";
 
     try {
       const response = await fetch(url, {
@@ -128,7 +128,7 @@ const PartnerServicesPage = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/partner/services/${serviceId}`, {
+      const response = await fetch(`process.env.API_BASE_URL + "/api/partner/services/${serviceId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

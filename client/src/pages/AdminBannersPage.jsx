@@ -19,7 +19,7 @@ const AdminBannersPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/banners", {
+      const response = await fetch("process.env.API_BASE_URL + "/api/admin/banners", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Gagal mengambil data banner.");
@@ -62,7 +62,7 @@ const AdminBannersPage = () => {
     formData.append("image", newBannerData.imageFile);
 
     try {
-      const uploadRes = await fetch("/api/upload", {
+      const uploadRes = await fetch("process.env.API_BASE_URL + "/api/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -78,7 +78,7 @@ const AdminBannersPage = () => {
         linkUrl: newBannerData.linkUrl,
       };
 
-      const saveRes = await fetch("/api/admin/banners", {
+      const saveRes = await fetch("process.env.API_BASE_URL + "/api/admin/banners", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ const AdminBannersPage = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/banners/${bannerId}`, {
+      const response = await fetch(`process.env.API_BASE_URL + "/api/admin/banners/${bannerId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

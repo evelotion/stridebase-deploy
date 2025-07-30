@@ -24,8 +24,8 @@ const PartnerPromosPage = () => {
     try {
       // Pastikan kedua URL ini bersih dan benar
       const [promosRes, storeRes] = await Promise.all([
-        fetch("/api/partner/promos", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("/api/partner/settings", { headers: { Authorization: `Bearer ${token}` } })
+        fetch("process.env.API_BASE_URL + "/api/partner/promos", { headers: { Authorization: `Bearer ${token}` } }),
+        fetch("process.env.API_BASE_URL + "/api/partner/settings", { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       if (!promosRes.ok || !storeRes.ok) {
@@ -80,8 +80,8 @@ const PartnerPromosPage = () => {
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `/api/partner/promos/${currentPromo.id}`
-      : "/api/partner/promos";
+      ? `process.env.API_BASE_URL + "/api/partner/promos/${currentPromo.id}`
+      : "process.env.API_BASE_URL + "/api/partner/promos";
 
     try {
       const response = await fetch(url, {
@@ -103,7 +103,7 @@ const PartnerPromosPage = () => {
     if (!confirm("Yakin ingin menghapus promo ini?")) return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/partner/promos/${promoId}`, {
+      const response = await fetch(`process.env.API_BASE_URL + "/api/partner/promos/${promoId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

@@ -13,7 +13,7 @@ const PartnerInvoicePage = () => {
         const fetchInvoice = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`/api/partner/invoices/${id}`, {
+                const response = await fetch(`process.env.API_BASE_URL + "/api/partner/invoices/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error('Invoice tidak ditemukan.');
@@ -31,7 +31,7 @@ const PartnerInvoicePage = () => {
     const handlePayNow = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`/api/partner/invoices/${id}/pay`, {
+            const response = await fetch(`process.env.API_BASE_URL + "/api/partner/invoices/${id}/pay`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

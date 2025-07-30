@@ -41,7 +41,7 @@ const TrackOrderPage = () => {
             }
             try {
                 // Endpoint ini harus dibuat/disesuaikan untuk mengambil detail booking tunggal
-                const response = await fetch(`/api/bookings/${bookingId}`, {
+                const response = await fetch(`process.env.API_BASE_URL + "/api/bookings/${bookingId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {
