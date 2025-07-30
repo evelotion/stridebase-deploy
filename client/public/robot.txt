@@ -4,8 +4,4 @@ Disallow: /partner/
 Disallow: /developer/
 Disallow: /dashboard/
 
-<<<<<<< HEAD
-Sitemap: http://localhost:5000/sitemap.xml
-=======
 Sitemap: /sitemap.xml
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3

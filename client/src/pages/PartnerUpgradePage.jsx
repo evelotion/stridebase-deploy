@@ -9,11 +9,7 @@ const PartnerUpgradePage = () => {
     const token = localStorage.getItem("token");
 
     try {
-<<<<<<< HEAD
       const response = await fetch("/api/partner/upgrade/create-transaction", {
-=======
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/upgrade/create-transaction", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,11 +25,7 @@ const PartnerUpgradePage = () => {
       // Arahkan pengguna ke halaman pembayaran
       window.location.href = data.redirectUrl;
     } catch (error) {
-<<<<<<< HEAD
-      alert(`Error: ${error.message}`);
-=======
       showMessage(`Error: ${error.message}`);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       setIsSubmitting(false);
     }
   };

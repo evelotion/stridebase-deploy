@@ -30,7 +30,7 @@ const AdminPromosPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/promos", {
+      const response = await fetch("/api/admin/promos", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -86,7 +86,7 @@ const AdminPromosPage = () => {
       endDate: newPromoData.endDate || null,
     };
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/promos", {
+      const response = await fetch("/api/admin/promos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,7 +152,7 @@ const AdminPromosPage = () => {
       endDate: editingPromo.endDate || null,
     };
     try {
-      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/promos/${editingPromo.id}`, {
+      const response = await fetch(`/api/admin/promos/${editingPromo.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -179,7 +179,7 @@ const AdminPromosPage = () => {
     if (!confirm(`Apakah Anda yakin ingin ${actionText} promo ini?`)) return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/promos/${promoId}/status`, {
+      const response = await fetch(`/api/admin/promos/${promoId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -205,7 +205,7 @@ const AdminPromosPage = () => {
       return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/promos/${promoId}`, {
+      const response = await fetch(`/api/admin/promos/${promoId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -214,11 +214,7 @@ const AdminPromosPage = () => {
         throw new Error(data.message || "Gagal menghapus promo.");
       }
       fetchPromos();
-<<<<<<< HEAD
-      alert(data.message);
-=======
       showMessage(data.message);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } catch (error) {
       showMessage(error.message);
     }
@@ -228,7 +224,6 @@ const AdminPromosPage = () => {
     return status === "active" ? "bg-success" : "bg-secondary";
   };
 
-  // --- FUNGSI HELPER BARU UNTUK MENAMPILKAN DATA DI KOLOM BARU ---
   const renderRuleType = (promo) => {
     const rules = [];
     if (promo.forNewUser) rules.push("Pengguna Baru");
@@ -255,7 +250,6 @@ const AdminPromosPage = () => {
     }
     return "Tidak Terbatas";
   };
-  // --- AKHIR FUNGSI HELPER BARU ---
 
   if (loading) return <div className="p-4">Memuat data promo...</div>;
 
@@ -271,7 +265,6 @@ const AdminPromosPage = () => {
 
         <div className="table-card p-3 shadow-sm">
           <div className="table-responsive">
-            {/* --- STRUKTUR TABEL DIMODIFIKASI --- */}
             <table className="table table-hover align-middle">
               <thead className="table-light">
                 <tr>
@@ -349,12 +342,10 @@ const AdminPromosPage = () => {
                 ))}
               </tbody>
             </table>
-            {/* --- AKHIR MODIFIKASI TABEL --- */}
           </div>
         </div>
       </div>
 
-      {/* MODAL TAMBAH & EDIT TIDAK BERUBAH DARI SEBELUMNYA */}
       {showAddModal && (
         <div
           className="modal fade show"

@@ -1,11 +1,14 @@
-// File: client/src/pages/AdminReviewsPage.jsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const StarRating = ({ rating }) => (
   <div>
     {[...Array(5)].map((_, index) => (
-      <i key={index} className={`fas fa-star ${index < rating ? 'text-warning' : 'text-secondary'}`}></i>
+      <i
+        key={index}
+        className={`fas fa-star ${
+          index < rating ? "text-warning" : "text-secondary"
+        }`}
+      ></i>
     ))}
   </div>
 );
@@ -20,62 +23,46 @@ const AdminReviewsPage = () => {
 
   const fetchReviews = async () => {
     setLoading(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     try {
-<<<<<<< HEAD
-      const response = await fetch('/api/admin/reviews', {
-=======
-      const response = await fetch('import.meta.env.VITE_API_BASE_URL + "/api/admin/reviews', {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await fetch("/api/admin/reviews", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
-        throw new Error('Gagal mengambil data ulasan.');
+        throw new Error("Gagal mengambil data ulasan.");
       }
       const data = await response.json();
       setReviews(data);
     } catch (error) {
       console.error(error);
-<<<<<<< HEAD
-      alert(error.message);
-=======
       showMessage(error.message);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (reviewId) => {
-    if (!window.confirm("Apakah Anda yakin ingin menghapus ulasan ini secara permanen?")) return;
+    if (
+      !window.confirm(
+        "Apakah Anda yakin ingin menghapus ulasan ini secara permanen?"
+      )
+    )
+      return;
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     try {
-<<<<<<< HEAD
       const response = await fetch(`/api/admin/reviews/${reviewId}`, {
-=======
-      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/reviews/${reviewId}`, {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
-        throw new Error('Gagal menghapus ulasan.');
+        throw new Error("Gagal menghapus ulasan.");
       }
-<<<<<<< HEAD
-      alert('Ulasan berhasil dihapus.');
-=======
-      showMessage('Ulasan berhasil dihapus.');
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
-      // Refresh data ulasan setelah menghapus
+      showMessage("Ulasan berhasil dihapus.");
       fetchReviews();
     } catch (error) {
       console.error(error);
-<<<<<<< HEAD
-      alert(error.message);
-=======
       showMessage(error.message);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -84,7 +71,7 @@ const AdminReviewsPage = () => {
   return (
     <div className="container-fluid px-4">
       <h2 className="fs-2 m-4">Manajemen Ulasan</h2>
-      
+
       <div className="table-card p-3 shadow-sm">
         <div className="table-responsive">
           <table className="table table-hover align-middle">
@@ -103,12 +90,14 @@ const AdminReviewsPage = () => {
                 <tr key={review.id}>
                   <td>{review.user.name}</td>
                   <td>{review.store.name}</td>
-                  <td><StarRating rating={review.rating} /></td>
-                  <td style={{ minWidth: '250px' }}>{review.comment || '-'}</td>
-                  <td>{new Date(review.date).toLocaleDateString('id-ID')}</td>
                   <td>
-                    <button 
-                      className="btn btn-sm btn-outline-danger" 
+                    <StarRating rating={review.rating} />
+                  </td>
+                  <td style={{ minWidth: "250px" }}>{review.comment || "-"}</td>
+                  <td>{new Date(review.date).toLocaleDateString("id-ID")}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
                       title="Hapus Ulasan"
                       onClick={() => handleDelete(review.id)}
                     >
@@ -120,7 +109,9 @@ const AdminReviewsPage = () => {
             </tbody>
           </table>
           {reviews.length === 0 && !loading && (
-            <div className="text-center p-4 text-muted">Belum ada ulasan yang masuk.</div>
+            <div className="text-center p-4 text-muted">
+              Belum ada ulasan yang masuk.
+            </div>
           )}
         </div>
       </div>

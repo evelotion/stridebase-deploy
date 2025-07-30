@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-// Komponen Peta sudah tidak diimpor lagi
 
 const ReviewCard = ({ review }) => (
   <div className="review-card mb-3">
@@ -32,19 +31,11 @@ const ReviewCard = ({ review }) => (
     {review.imageUrl && (
       <div className="mt-2" style={{ paddingLeft: "55px" }}>
         <img
-<<<<<<< HEAD
-          src={`http://localhost:5000${review.imageUrl}`}
-          alt={`Ulasan dari ${review.userName}`}
-          className="img-thumbnail"
-          style={{ maxWidth: "150px", cursor: "pointer" }}
-          onClick={() => window.open(`http://localhost:5000${review.imageUrl}`)}
-=======
           src={`${review.imageUrl}`}
           alt={`Ulasan dari ${review.userName}`}
           className="img-thumbnail"
           style={{ maxWidth: "150px", cursor: "pointer" }}
           onClick={() => window.open(`${review.imageUrl}`)}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         />
       </div>
     )}
@@ -65,7 +56,7 @@ const getServiceIcon = (serviceName) => {
   if (name.includes("unyellowing")) return "fa-sun";
   if (name.includes("leather") || name.includes("kulit")) return "fa-gem";
   if (name.includes("suede")) return "fa-leaf";
-  return "fa-shoe-prints"; // Ikon default
+  return "fa-shoe-prints";
 };
 
 const StoreDetailPage = () => {
@@ -102,7 +93,7 @@ const StoreDetailPage = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const res = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/addresses", {
+      const res = await fetch("/api/user/addresses", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -122,15 +113,9 @@ const StoreDetailPage = () => {
       setLoading(true);
       try {
         const [storeRes, servicesRes, reviewsRes] = await Promise.all([
-<<<<<<< HEAD
           fetch(`/api/stores/${id}`),
           fetch(`/api/stores/${id}/services`),
           fetch(`/api/reviews/store/${id}`),
-=======
-          fetch(`import.meta.env.VITE_API_BASE_URL + "/api/stores/${id}`),
-          fetch(`import.meta.env.VITE_API_BASE_URL + "/api/stores/${id}/services`),
-          fetch(`import.meta.env.VITE_API_BASE_URL + "/api/reviews/store/${id}`),
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         ]);
 
         if (!storeRes.ok) throw new Error("Toko tidak ditemukan");
@@ -184,11 +169,7 @@ const StoreDetailPage = () => {
 
   const handleBooking = () => {
     if (!localStorage.getItem("token")) {
-<<<<<<< HEAD
-      alert("Silakan login terlebih dahulu untuk melakukan pemesanan.");
-=======
       showMessage("Silakan login terlebih dahulu untuk melakukan pemesanan.");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       navigate("/login");
       return;
     }
@@ -201,11 +182,7 @@ const StoreDetailPage = () => {
       return;
     }
     if (deliveryOption === "pickup" && !selectedAddress) {
-<<<<<<< HEAD
-      alert("Silakan pilih atau tambah alamat penjemputan.");
-=======
       showMessage("Silakan pilih atau tambah alamat penjemputan.");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       return;
     }
 
@@ -230,7 +207,7 @@ const StoreDetailPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/addresses", {
+      const response = await fetch("/api/user/addresses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -283,11 +260,7 @@ const StoreDetailPage = () => {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       name: store.name,
-<<<<<<< HEAD
-      image: store.images.map((img) => `http://localhost:5000${img}`),
-=======
       image: store.images.map((img) => `${img}`),
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       address: { "@type": "PostalAddress", streetAddress: store.location },
       description:
         store.description ||
@@ -323,7 +296,6 @@ const StoreDetailPage = () => {
     );
 
   const availableShoeTypes = [...new Set(servicesData.map((s) => s.shoeType))];
-<<<<<<< HEAD
 
   return (
     <>
@@ -337,38 +309,6 @@ const StoreDetailPage = () => {
           <script type="application/ld+json">{generateStructuredData()}</script>
         </Helmet>
 
-        {/* --- KONTEN UTAMA --- */}
-        <div className="store-detail-main">
-          <div className="store-header">
-            {/* PINDAHKAN BADGE KE SINI DAN UBAH KELASNYA */}
-            {store.tier === "PRO" && (
-              <span
-                className="badge bg-warning text-dark position-absolute top-0 end-0 m-3 fs-6"
-                style={{ zIndex: 2 }}
-              >
-                <i className="fas fa-crown me-1"></i> PRO
-              </span>
-            )}
-
-            <img
-              src={
-                headerImage
-                  ? `http://localhost:5000${headerImage}`
-=======
-
-  return (
-    <>
-      <main className="store-detail-page-container">
-        <Helmet>
-          <title>{`${store.name} - Jasa Cuci Sepatu di ${store.location} | StrideBase`}</title>
-          <meta
-            name="description"
-            content={`Layanan cuci sepatu profesional di ${store.name}, ${store.location}. Lihat daftar layanan, harga, dan ulasan pelanggan. Pesan sekarang melalui StrideBase.`}
-          />
-          <script type="application/ld+json">{generateStructuredData()}</script>
-        </Helmet>
-
-        {/* --- KONTEN UTAMA --- */}
         <div className="store-detail-main">
           <div className="store-header">
             {store.tier === "PRO" && (
@@ -383,7 +323,6 @@ const StoreDetailPage = () => {
               src={
                 headerImage
                   ? `${headerImage}`
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                   : "https://via.placeholder.com/800x400.png?text=No+Header"
               }
               alt={store.name}
@@ -391,10 +330,6 @@ const StoreDetailPage = () => {
             />
             <div className="store-header-overlay">
               <h1>{store.name}</h1>
-<<<<<<< HEAD
-              {/* BADGE SUDAH DIPINDAHKAN DARI SINI */}
-=======
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
               <p className="lead">{store.location}</p>
               <div className="rating-badge">
                 <i className="fas fa-star"></i> {store.rating} ({reviews.length}{" "}
@@ -413,14 +348,7 @@ const StoreDetailPage = () => {
                     className="gallery-preview-item"
                     onClick={() => setShowGalleryModal(true)}
                   >
-                    <img
-<<<<<<< HEAD
-                      src={`http://localhost:5000${img}`}
-=======
-                      src={`${img}`}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
-                      alt={`Galeri ${index + 1}`}
-                    />
+                    <img src={`${img}`} alt={`Galeri ${index + 1}`} />
                   </div>
                 ))}
                 {galleryImages.length > 4 && (
@@ -428,14 +356,7 @@ const StoreDetailPage = () => {
                     className="gallery-preview-item gallery-view-all"
                     onClick={() => setShowGalleryModal(true)}
                   >
-                    <img
-<<<<<<< HEAD
-                      src={`http://localhost:5000${galleryImages[4]}`}
-=======
-                      src={`${galleryImages[4]}`}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
-                      alt="Lihat semua"
-                    />
+                    <img src={`${galleryImages[4]}`} alt="Lihat semua" />
                     <div className="gallery-view-all-overlay">
                       <span>+{galleryImages.length - 4} Lainnya</span>
                     </div>
@@ -445,7 +366,6 @@ const StoreDetailPage = () => {
             </div>
           )}
 
-          {/* --- KOTAK INFO --- */}
           <div className="info-box">
             <h5 className="section-title">
               <i className="fas fa-info-circle me-2"></i>Tentang Toko
@@ -456,7 +376,6 @@ const StoreDetailPage = () => {
           </div>
         </div>
 
-        {/* --- SIDEBAR (HANYA UNTUK PEMESANAN) --- */}
         <div className="store-detail-sidebar">
           <div className="info-box">
             <h5 className="section-title">Pesan Layanan</h5>
@@ -634,7 +553,6 @@ const StoreDetailPage = () => {
           </div>
         </div>
 
-        {/* --- BAGIAN ULASAN --- */}
         <div className="store-detail-reviews">
           <div className="info-box">
             <h5 className="section-title">
@@ -690,11 +608,7 @@ const StoreDetailPage = () => {
                           key={index}
                         >
                           <img
-<<<<<<< HEAD
-                            src={`http://localhost:5000${image}`}
-=======
                             src={`${image}`}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                             className="d-block w-100"
                             alt={`Galeri Penuh ${index + 1}`}
                           />

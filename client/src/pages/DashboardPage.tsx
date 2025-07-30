@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { io } from "socket.io-client";
 
-// --- DEFINISI TIPE DATA ---
 interface User {
   id: string;
   name: string;
@@ -54,7 +53,6 @@ interface ProfileData {
   name: string;
 }
 
-// --- INTERFACE BARU ---
 interface RedeemedPromo {
   id: string;
   code: string;
@@ -80,33 +78,6 @@ interface VisitedStoreCardProps {
   store: Store;
 }
 
-<<<<<<< HEAD
-const socket = io("http://localhost:5000");
-
-const EmptyState: React.FC<EmptyStateProps> = ({
-  icon,
-  title,
-  message,
-  buttonText,
-  buttonLink,
-}) => (
-  <div className="text-center p-5 card my-4">
-    <div className="fs-1 mb-3">
-      <i className={`fas ${icon} text-muted`}></i>
-    </div>
-    <h5 className="fw-bold">{title}</h5>
-    <p className="text-muted">{message}</p>
-    {buttonText && buttonLink && (
-      <div className="mt-3">
-        <Link to={buttonLink} className="btn btn-primary">
-          {buttonText}
-        </Link>
-      </div>
-    )}
-  </div>
-);
-
-=======
 const socket = io("");
 
 const EmptyState: React.FC<EmptyStateProps> = ({
@@ -132,7 +103,6 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   </div>
 );
 
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 const AddressCard: React.FC<AddressCardProps> = ({ address, onDelete }) => (
   <div className="address-card mb-3">
     <div className="address-card-body">
@@ -163,11 +133,7 @@ const VisitedStoreCard: React.FC<VisitedStoreCardProps> = ({ store }) => (
       className="card text-decoration-none text-dark h-100"
     >
       <img
-<<<<<<< HEAD
-        src={`http://localhost:5000${store.images[0]}`}
-=======
         src={`${store.images[0]}`}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         className="card-img-top"
         alt={store.name}
         style={{ height: "120px", objectFit: "cover" }}
@@ -190,7 +156,7 @@ const DashboardPage: React.FC = () => {
     points: 0,
     transactions: [],
   });
-  const [redeemedPromos, setRedeemedPromos] = useState<RedeemedPromo[]>([]); // State baru
+  const [redeemedPromos, setRedeemedPromos] = useState<RedeemedPromo[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -221,11 +187,7 @@ const DashboardPage: React.FC = () => {
 
   const fetchBookings = async (token: string) => {
     try {
-<<<<<<< HEAD
       const res = await fetch("/api/user/bookings", {
-=======
-      const res = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/bookings", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -255,14 +217,9 @@ const DashboardPage: React.FC = () => {
 
       const headers = { Authorization: `Bearer ${token}` };
 
-      // --- MODIFIKASI: Tambahkan fetch untuk promo yang sudah di-redeem ---
       const fetchRedeemedPromos = async (token: string) => {
         try {
-<<<<<<< HEAD
           const res = await fetch("/api/user/redeemed-promos", {
-=======
-          const res = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/redeemed-promos", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) setRedeemedPromos(await res.json());
@@ -273,22 +230,15 @@ const DashboardPage: React.FC = () => {
 
       await Promise.all([
         fetchBookings(token),
-<<<<<<< HEAD
         fetch("/api/user/addresses", { headers })
           .then((res) => (res.ok ? res.json() : []))
           .then(setAddresses),
         fetch("/api/user/loyalty", { headers })
-=======
-        fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/addresses", { headers })
-          .then((res) => (res.ok ? res.json() : []))
-          .then(setAddresses),
-        fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/loyalty", { headers })
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           .then((res) =>
             res.ok ? res.json() : { points: 0, transactions: [] }
           )
           .then(setLoyaltyData),
-        fetchRedeemedPromos(token), // Panggil fungsi baru
+        fetchRedeemedPromos(token),
       ]);
 
       setLoading(false);
@@ -327,15 +277,10 @@ const DashboardPage: React.FC = () => {
     }
   }, [user]);
 
-  // --- FUNGSI BARU UNTUK HANDLE PENUKARAN POIN ---
   const handleRedeemPoints = async () => {
-    const pointsToRedeem = 100; // Untuk saat ini kita buat statis 100 poin
+    const pointsToRedeem = 100;
     if (!loyaltyData || loyaltyData.points < pointsToRedeem) {
-<<<<<<< HEAD
-      alert("Poin Anda tidak cukup untuk melakukan penukaran.");
-=======
       showMessage("Poin Anda tidak cukup untuk melakukan penukaran.");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       return;
     }
     if (!confirm(`Anda akan menukarkan ${pointsToRedeem} poin. Lanjutkan?`))
@@ -345,11 +290,7 @@ const DashboardPage: React.FC = () => {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-<<<<<<< HEAD
       const response = await fetch("/api/user/loyalty/redeem", {
-=======
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/loyalty/redeem", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify({ pointsToRedeem }),
@@ -357,27 +298,14 @@ const DashboardPage: React.FC = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
 
-<<<<<<< HEAD
-      alert(data.message);
+      showMessage(data.message);
 
-      // Refresh data setelah berhasil
       const loyaltyRes = await fetch("/api/user/loyalty", { headers });
       setLoyaltyData(await loyaltyRes.json());
       const promosRes = await fetch("/api/user/redeemed-promos", { headers });
       setRedeemedPromos(await promosRes.json());
     } catch (error) {
-      if (error instanceof Error) alert(`Error: ${error.message}`);
-=======
-      showMessage(data.message);
-
-      // Refresh data setelah berhasil
-      const loyaltyRes = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/loyalty", { headers });
-      setLoyaltyData(await loyaltyRes.json());
-      const promosRes = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/redeemed-promos", { headers });
-      setRedeemedPromos(await promosRes.json());
-    } catch (error) {
       if (error instanceof Error) showMessage(`Error: ${error.message}`);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -419,7 +347,7 @@ const DashboardPage: React.FC = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/addresses", {
+      const response = await fetch("/api/user/addresses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -449,7 +377,7 @@ const DashboardPage: React.FC = () => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/user/addresses/${addressId}`, {
+      const response = await fetch(`/api/user/addresses/${addressId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -460,11 +388,7 @@ const DashboardPage: React.FC = () => {
       }
       console.log("Alamat berhasil dihapus dari server.");
     } catch (error) {
-<<<<<<< HEAD
-      alert((error as Error).message);
-=======
       showMessage((error as Error).message);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       setAddresses(originalAddresses);
     }
   };
@@ -496,11 +420,7 @@ const DashboardPage: React.FC = () => {
 
     const token = localStorage.getItem("token");
     try {
-<<<<<<< HEAD
       const response = await fetch("/api/upload", {
-=======
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/upload", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -511,11 +431,7 @@ const DashboardPage: React.FC = () => {
 
       setReviewImageUrl(result.imageUrl);
     } catch (err) {
-<<<<<<< HEAD
-      alert(`Error: ${(err as Error).message}`);
-=======
       showMessage(`Error: ${(err as Error).message}`);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       setReviewImageFile(null);
     } finally {
       setIsUploading(false);
@@ -537,7 +453,7 @@ const DashboardPage: React.FC = () => {
       imageUrl: reviewImageUrl,
     };
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/reviews", {
+      const response = await fetch("/api/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -587,7 +503,7 @@ const DashboardPage: React.FC = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/profile", {
+      const response = await fetch("/api/user/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -810,7 +726,6 @@ const DashboardPage: React.FC = () => {
                 <div>
                   <h6 className="fw-bold mb-3">Poin Loyalitas Anda</h6>
                   <div className="row g-3">
-                    {/* Kolom Kiri: Poin & Penukaran */}
                     <div className="col-md-5">
                       <div className="card text-center h-100">
                         <div className="card-body">
@@ -832,7 +747,6 @@ const DashboardPage: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    {/* Kolom Kanan: Voucher & Riwayat */}
                     <div className="col-md-7">
                       <div className="card h-100">
                         <div className="card-body">
@@ -1143,11 +1057,7 @@ const DashboardPage: React.FC = () => {
                       {reviewImageUrl ? (
                         <div className="d-inline-block position-relative">
                           <img
-<<<<<<< HEAD
-                            src={`http://localhost:5000${reviewImageUrl}`}
-=======
                             src={`${reviewImageUrl}`}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                             alt="Pratinjau Ulasan"
                             className="img-thumbnail"
                             width="150"

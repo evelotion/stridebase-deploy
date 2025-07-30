@@ -1,3 +1,5 @@
+// File: client/src/components/MapComponent.jsx
+
 import React from "react";
 
 /**
@@ -24,7 +26,8 @@ const MapComponent = ({ lat, lng, storeName }) => {
   }
 
   // Ganti 'YOUR_API_KEY' dengan kunci API Anda yang sebenarnya.
-  const apiKey = "YOUR_API_KEY";
+  // PERUBAHAN DI BARIS INI: Gunakan variabel lingkungan
+  const apiKey = import.meta.env.VITE_Maps_API_KEY;
 
   // 2. Persiapan URL: Membuat URL yang benar untuk Google Maps.
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;

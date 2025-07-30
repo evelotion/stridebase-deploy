@@ -7,19 +7,14 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // --- BAGIAN 1: TAMBAHKAN STATE BARU UNTUK MENAMPUNG ERROR FORM ---
   const [formErrors, setFormErrors] = useState({});
-
   const navigate = useNavigate();
 
-  // --- BAGIAN 2: TAMBAHKAN FUNGSI VALIDASI ---
   const validateForm = () => {
     const errors = {};
     if (!name.trim()) {
       errors.name = "Nama lengkap tidak boleh kosong.";
     }
-    // Regex sederhana untuk validasi email
     if (!/\S+@\S+\.\S+/.test(email)) {
       errors.email = "Format email tidak valid.";
     }
@@ -28,7 +23,6 @@ const RegisterPage = () => {
     }
 
     setFormErrors(errors);
-    // Return true jika tidak ada error
     return Object.keys(errors).length === 0;
   };
 
@@ -37,17 +31,12 @@ const RegisterPage = () => {
     setError("");
     setSuccess("");
 
-    // --- BAGIAN 3: PANGGIL FUNGSI VALIDASI SEBELUM SUBMIT ---
     if (!validateForm()) {
-      return; // Hentikan proses submit jika validasi gagal
+      return;
     }
 
     try {
-<<<<<<< HEAD
       const response = await fetch("/api/auth/register", {
-=======
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/auth/register", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -56,7 +45,6 @@ const RegisterPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Jika error dari server, prioritaskan untuk ditampilkan
         throw new Error(data.message || "Pendaftaran gagal.");
       }
 
@@ -89,8 +77,6 @@ const RegisterPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} noValidate>
-              {" "}
-              {/* Tambahkan noValidate */}
               {error && <div className="alert alert-danger">{error}</div>}
               {success && <div className="alert alert-success">{success}</div>}
               <div className="mb-3">
@@ -108,7 +94,6 @@ const RegisterPage = () => {
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
-                {/* --- BAGIAN 4: TAMPILKAN PESAN ERROR UNTUK NAMA --- */}
                 {formErrors.name && (
                   <div className="invalid-feedback">{formErrors.name}</div>
                 )}
@@ -128,7 +113,6 @@ const RegisterPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                {/* --- BAGIAN 5: TAMPILKAN PESAN ERROR UNTUK EMAIL --- */}
                 {formErrors.email && (
                   <div className="invalid-feedback">{formErrors.email}</div>
                 )}
@@ -148,7 +132,6 @@ const RegisterPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                {/* --- BAGIAN 6: TAMPILKAN PESAN ERROR UNTUK PASSWORD --- */}
                 {formErrors.password && (
                   <div className="invalid-feedback">{formErrors.password}</div>
                 )}

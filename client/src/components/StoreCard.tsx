@@ -29,16 +29,11 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
 
   const imageUrl =
     images && images.length > 0
-<<<<<<< HEAD
-      ? `http://localhost:5000${images[0]}`
-=======
       ? `${images[0]}`
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       : "https://via.placeholder.com/300x180.png?text=No+Image";
 
   return (
     <div className="store-grid__card">
-      {/* --- PERUBAHAN DI SINI --- */}
       {tier === "PRO" && (
         <span
           className="badge bg-warning text-dark position-absolute top-0 end-0 m-2"
@@ -47,7 +42,6 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
           <i className="fas fa-crown me-1"></i> PRO
         </span>
       )}
-      {/* --- AKHIR PERUBAHAN --- */}
 
       <div className="store-grid__image-wrapper">
         <img

@@ -1,0 +1,97 @@
+/* File: stridebase-app-current/client/src/components/Notification.css */
+
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  z-index: 2000;
+  transform: translateX(120%);
+  transition: transform 0.5s ease-in-out;
+}
+
+.notification-toast.show {
+  transform: translateX(0);
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+.notification-content {
+  flex-grow: 1;
+}
+
+.notification-title {
+  font-weight: 600;
+  margin: 0;
+  color: #333;
+}
+
+.notification-message {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Animasi Checklist SVG */
+.svg-container {
+  width: 50px;
+  height: 50px;
+}
+
+.ft-green-tick .circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: #5bb543;
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.ft-green-tick {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #5bb543;
+  animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.ft-green-tick .tick {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px #5bb543;
+  }
+}

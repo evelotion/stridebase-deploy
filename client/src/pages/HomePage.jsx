@@ -5,7 +5,7 @@ import StoreCard from "../components/StoreCard";
 const HomePage = () => {
   const [featuredStores, setFeaturedStores] = useState([]);
   const [banners, setBanners] = useState([]);
-  const [recommendedStores, setRecommendedStores] = useState([]); // <-- STATE BARU
+  const [recommendedStores, setRecommendedStores] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,21 +14,11 @@ const HomePage = () => {
         const token = localStorage.getItem("token");
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-        // Menggunakan Promise.all untuk mengambil semua data secara paralel
         const [storesRes, bannersRes, recommendationsRes] = await Promise.all([
-<<<<<<< HEAD
           fetch("/api/stores"),
           fetch("/api/banners"),
-          // Fetch rekomendasi HANYA jika ada token
           token
             ? fetch("/api/user/recommendations", { headers })
-=======
-          fetch("import.meta.env.VITE_API_BASE_URL + "/api/stores"),
-          fetch("import.meta.env.VITE_API_BASE_URL + "/api/banners"),
-          // Fetch rekomendasi HANYA jika ada token
-          token
-            ? fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/recommendations", { headers })
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             : Promise.resolve(null),
         ]);
 
@@ -39,12 +29,10 @@ const HomePage = () => {
         const storesData = await storesRes.json();
         const bannersData = await bannersRes.json();
 
-        // Ambil 3 toko dengan rating tertinggi sebagai featured
         const sortedStores = storesData.sort((a, b) => b.rating - a.rating);
         setFeaturedStores(sortedStores.slice(0, 3));
         setBanners(bannersData);
 
-        // Proses data rekomendasi jika ada
         if (recommendationsRes && recommendationsRes.ok) {
           const recommendationsData = await recommendationsRes.json();
           setRecommendedStores(recommendationsData);
@@ -61,7 +49,6 @@ const HomePage = () => {
 
   return (
     <>
-      {/* Hero Section yang Didesain Ulang */}
       <section className="hero-section text-center text-lg-start">
         <div className="container">
           <div className="row align-items-center">
@@ -137,7 +124,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* --- BAGIAN BARU: REKOMENDASI UNTUK ANDA --- */}
       {recommendedStores.length > 0 && (
         <section className="recommended-stores py-5">
           <div className="container">
@@ -158,9 +144,7 @@ const HomePage = () => {
           </div>
         </section>
       )}
-      {/* --- AKHIR BAGIAN BARU --- */}
 
-      {/* Featured Stores Section yang Didesain Ulang */}
       <section className="featured-stores py-5 bg-light">
         <div className="container">
           <div className="text-center mb-5 section-header">
@@ -180,7 +164,6 @@ const HomePage = () => {
             <div className="row g-4">
               {featuredStores.map((store) => (
                 <div className="col-lg-4 col-md-6" key={store.id}>
-                  {/* Komponen StoreCard akan kita styling ulang di CSS */}
                   <StoreCard store={store} />
                 </div>
               ))}

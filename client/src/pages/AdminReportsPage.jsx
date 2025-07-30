@@ -1,5 +1,3 @@
-// File: stridebase-app/client/src/pages/AdminReportsPage.jsx
-
 import React, { useState, useEffect } from "react";
 
 const KpiCard = ({ title, value, icon, colorClass }) => (
@@ -16,9 +14,7 @@ const KpiCard = ({ title, value, icon, colorClass }) => (
   </div>
 );
 
-// --- KOMPONEN BARU UNTUK GRAFIK ---
 const RevenueChart = ({ data }) => {
-  // Mengelompokkan pendapatan per hari dari data transaksi
   const dailyRevenue = data.reduce((acc, payment) => {
     if (payment.status === "SUCCESS") {
       const date = new Date(payment.createdAt).toLocaleDateString("id-ID");
@@ -81,7 +77,6 @@ const AdminReportsPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- STATE BARU UNTUK FILTER TANGGAL ---
   const today = new Date();
   const sevenDaysAgo = new Date(today);
   sevenDaysAgo.setDate(today.getDate() - 7);
@@ -93,7 +88,7 @@ const AdminReportsPage = () => {
 
   useEffect(() => {
     fetchReportsData();
-  }, []); // Hanya dijalankan sekali saat mount
+  }, []);
 
   const fetchReportsData = async () => {
     setLoading(true);
@@ -102,17 +97,10 @@ const AdminReportsPage = () => {
 
     try {
       const [statsRes, transactionsRes] = await Promise.all([
-<<<<<<< HEAD
         fetch("/api/admin/stats", {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`/api/admin/transactions?${params.toString()}`, {
-=======
-        fetch("import.meta.env.VITE_API_BASE_URL + "/api/admin/stats", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`import.meta.env.VITE_API_BASE_URL + "/api/admin/transactions?${params.toString()}`, {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -148,7 +136,6 @@ const AdminReportsPage = () => {
     }
   };
 
-  // Fungsi untuk handle klik tombol filter
   const handleFilter = () => {
     fetchReportsData();
   };
@@ -157,7 +144,6 @@ const AdminReportsPage = () => {
     <div className="container-fluid px-4">
       <h2 className="fs-2 m-4">Laporan & Analitik</h2>
 
-      {/* --- KPI Cards tidak berubah, hanya data loading dipindah --- */}
       {!loading && stats && (
         <div className="row g-3 my-2">
           <KpiCard
@@ -166,16 +152,12 @@ const AdminReportsPage = () => {
             icon="fa-money-bill-wave"
             colorClass="primary-text"
           />
-
-          {/* ### TAMBAHKAN KARTU BARU INI ### */}
           <KpiCard
             title="Pendapatan Platform"
             value={`Rp ${stats.platformRevenue.toLocaleString("id-ID")}`}
             icon="fa-hand-holding-usd"
             colorClass="secondary-text"
           />
-          {/* ################################# */}
-
           <KpiCard
             title="Total Pengguna"
             value={stats.totalUsers}
@@ -191,7 +173,6 @@ const AdminReportsPage = () => {
         </div>
       )}
 
-      {/* --- BLOK FILTER DIMODIFIKASI --- */}
       <div className="row g-3 my-4">
         <div className="col-12">
           <div className="table-card p-3 shadow-sm">
@@ -231,11 +212,7 @@ const AdminReportsPage = () => {
               </div>
               <div className="col-md-3">
                 <a
-<<<<<<< HEAD
                   href={`/api/admin/export/transactions?startDate=${startDate}&endDate=${endDate}`}
-=======
-                  href={`import.meta.env.VITE_API_BASE_URL + "/api/admin/export/transactions?startDate=${startDate}&endDate=${endDate}`}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                   className="btn btn-outline-success w-100"
                   download
                 >
@@ -253,7 +230,6 @@ const AdminReportsPage = () => {
           )}
         </div>
       </div>
-      {/* --- AKHIR BLOK BARU --- */}
 
       <div className="row g-3 my-4">
         <div className="col-12">

@@ -1,10 +1,5 @@
 // File: server/index.js
 
-<<<<<<< HEAD
-import "./redis-client.js";
-=======
-// import "./redis-client.js";
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -13,19 +8,14 @@ import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
-// import redisClient from "./redis-client.js";
-// import emailQueue from "./queues/emailQueue.js";
-import { servicesData } from "./data-stores.js";
 import { exec } from "child_process";
 import rateLimit from "express-rate-limit";
 import fs from "fs";
 import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import sharp from "sharp";
-<<<<<<< HEAD
-=======
 import cors from "cors";
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
+import redisClient from "./redis-client.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,11 +65,7 @@ const PORT = 5000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-<<<<<<< HEAD
-    origin: "http://localhost:5173",
-=======
     origin: ["http://localhost:5173", "https://stridebase-client.onrender.com"], // <-- TAMBAHKAN URL RENDER DI SINI
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
   },
 });
@@ -115,19 +101,16 @@ io.on("connection", (socket) => {
   });
 });
 
-
-app.use(cors({ 
-    origin: ["http://localhost:5173", "https://stridebase-client.onrender.com"] 
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://stridebase-client.onrender.com"],
+  })
+);
 
 app.use(express.json());
 const themeConfigPath = path.join(__dirname, "config", "theme.json");
 
-<<<<<<< HEAD
 app.get("/api/public/theme-config", (req, res) => {
-=======
-app.get(""/api/public/theme-config", (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   fs.readFile(themeConfigPath, "utf8", (err, data) => {
     if (err) {
       return res
@@ -144,17 +127,10 @@ const checkMaintenanceMode = (req, res, next) => {
     const config = JSON.parse(configData);
     if (config.featureFlags?.maintenanceMode) {
       if (
-<<<<<<< HEAD
         req.path.startsWith("/api/auth/login") ||
         req.path.startsWith("/api/admin") ||
         req.path.startsWith("/api/superuser") ||
         req.path.startsWith("/api/public/theme-config")
-=======
-        req.path.startsWith(""/api/auth/login") ||
-        req.path.startsWith(""/api/admin") ||
-        req.path.startsWith(""/api/superuser") ||
-        req.path.startsWith(""/api/public/theme-config")
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       ) {
         return next();
       }
@@ -198,11 +174,7 @@ const processAndSaveImage = async (fileBuffer, fieldname) => {
 
   await sharp(fileBuffer).resize(800).webp({ quality: 80 }).toFile(filepath);
 
-<<<<<<< HEAD
-  return `/uploads/${filename}`;
-=======
-  return `"/uploads/${filename}`; // INI SUDAH BENAR
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
+  return `/uploads/${filename}`; // INI SUDAH BENAR
 };
 
 const authenticateToken = async (req, res, next) => {
@@ -257,11 +229,7 @@ const registerValidation = [
     .withMessage("Password minimal harus 8 karakter."),
 ];
 
-<<<<<<< HEAD
 app.post("/api/auth/register", registerValidation, async (req, res) => {
-=======
-app.post(""/api/auth/register", registerValidation, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ message: errors.array()[0].msg });
@@ -284,11 +252,7 @@ app.post(""/api/auth/register", registerValidation, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
-=======
-app.post(""/api/auth/login", loginLimiter, async (req, res, next) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
@@ -325,11 +289,7 @@ app.post(""/api/auth/login", loginLimiter, async (req, res, next) => {
   }
 });
 
-<<<<<<< HEAD
 app.put("/api/user/profile", authenticateToken, async (req, res) => {
-=======
-app.put(""/api/user/profile", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { name } = req.body;
   if (!name)
     return res.status(400).json({ message: "Nama tidak boleh kosong." });
@@ -352,7 +312,7 @@ app.put(""/api/user/profile", authenticateToken, async (req, res) => {
   }
 });
 
-app.get(""/api/user/addresses", authenticateToken, async (req, res) => {
+app.get("/api/user/addresses", authenticateToken, async (req, res) => {
   try {
     const addresses = await prisma.address.findMany({
       where: { userId: req.user.id },
@@ -364,7 +324,7 @@ app.get(""/api/user/addresses", authenticateToken, async (req, res) => {
   }
 });
 
-app.post(""/api/user/addresses", authenticateToken, async (req, res) => {
+app.post("/api/user/addresses", authenticateToken, async (req, res) => {
   const { label, recipientName, phoneNumber, fullAddress, city, postalCode } =
     req.body;
   if (
@@ -387,7 +347,7 @@ app.post(""/api/user/addresses", authenticateToken, async (req, res) => {
   }
 });
 
-app.delete(""/api/user/addresses/:id", authenticateToken, async (req, res) => {
+app.delete("/api/user/addresses/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   try {
     const address = await prisma.address.findFirst({
@@ -405,7 +365,7 @@ app.delete(""/api/user/addresses/:id", authenticateToken, async (req, res) => {
   }
 });
 
-app.get(""/api/user/bookings", authenticateToken, async (req, res) => {
+app.get("/api/user/bookings", authenticateToken, async (req, res) => {
   try {
     const userBookings = await prisma.booking.findMany({
       where: { userId: req.user.id },
@@ -437,11 +397,7 @@ app.get(""/api/user/bookings", authenticateToken, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.get("/api/user/notifications", authenticateToken, async (req, res) => {
-=======
-app.get(""/api/user/notifications", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   try {
     const notifications = await prisma.notification.findMany({
       where: { userId: req.user.id },
@@ -457,11 +413,7 @@ app.get(""/api/user/notifications", authenticateToken, async (req, res) => {
 });
 
 app.post(
-<<<<<<< HEAD
   "/api/user/notifications/mark-read",
-=======
-  ""/api/user/notifications/mark-read",
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   authenticateToken,
   async (req, res) => {
     try {
@@ -475,11 +427,7 @@ app.post(
     }
   }
 );
-<<<<<<< HEAD
 app.get("/api/user/loyalty", authenticateToken, async (req, res) => {
-=======
-app.get(""/api/user/loyalty", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   try {
     const loyaltyData = await prisma.loyaltyPoint.findUnique({
       where: { userId: req.user.id },
@@ -503,11 +451,7 @@ app.get(""/api/user/loyalty", authenticateToken, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.post("/api/user/loyalty/redeem", authenticateToken, async (req, res) => {
-=======
-app.post(""/api/user/loyalty/redeem", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { pointsToRedeem } = req.body;
   const userId = req.user.id;
 
@@ -515,11 +459,9 @@ app.post(""/api/user/loyalty/redeem", authenticateToken, async (req, res) => {
   const VOUCHER_VALUE_RP = 10000;
 
   if (pointsToRedeem < REDEMPTION_RATE_POINTS) {
-    return res
-      .status(400)
-      .json({
-        message: `Minimal penukaran adalah ${REDEMPTION_RATE_POINTS} poin.`,
-      });
+    return res.status(400).json({
+      message: `Minimal penukaran adalah ${REDEMPTION_RATE_POINTS} poin.`,
+    });
   }
 
   try {
@@ -581,11 +523,30 @@ app.post(""/api/user/loyalty/redeem", authenticateToken, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
+app.get("/api/user/redeemed-promos", authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== "customer") {
+      return res.json([]);
+    }
+
+    const promos = await prisma.promo.findMany({
+      where: {
+        userId: req.user.id,
+        isRedeemed: true,
+      },
+      orderBy: {
+        // --- PERBAIKAN DI SINI ---
+        startDate: "desc", // Ganti 'createdAt' menjadi 'startDate'
+      },
+    });
+    res.json(promos);
+  } catch (error) {
+    console.error("Gagal mengambil promo hasil redeem:", error);
+    res.status(500).json({ message: "Gagal mengambil data promo." });
+  }
+});
+
 app.get("/api/bookings/:id", authenticateToken, async (req, res) => {
-=======
-app.get(""/api/bookings/:id", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { id } = req.params;
   const userId = req.user.id;
 
@@ -614,11 +575,7 @@ app.get(""/api/bookings/:id", authenticateToken, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.post("/api/bookings", authenticateToken, async (req, res) => {
-=======
-app.post(""/api/bookings", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { storeId, service, deliveryOption, schedule, addressId, promoCode } =
     req.body;
 
@@ -657,11 +614,9 @@ app.post(""/api/bookings", authenticateToken, async (req, res) => {
       }
 
       if (promo.storeId && promo.storeId !== storeId) {
-        return res
-          .status(400)
-          .json({
-            message: "Kode promo ini tidak berlaku untuk toko yang Anda pilih.",
-          });
+        return res.status(400).json({
+          message: "Kode promo ini tidak berlaku untuk toko yang Anda pilih.",
+        });
       }
 
       if (promo.discountType === "percentage") {
@@ -721,11 +676,7 @@ app.post(""/api/bookings", authenticateToken, async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.post("/api/reviews", authenticateToken, async (req, res) => {
-=======
-app.post(""/api/reviews", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { bookingId, storeId, rating, comment, imageUrl } = req.body;
 
   if (!bookingId || !storeId || !rating)
@@ -782,7 +733,7 @@ app.post(""/api/reviews", authenticateToken, async (req, res) => {
   }
 });
 
-app.get(""/api/reviews/store/:storeId", async (req, res) => {
+app.get("/api/reviews/store/:storeId", async (req, res) => {
   const { storeId } = req.params;
   try {
     const storeReviews = await prisma.review.findMany({
@@ -795,26 +746,11 @@ app.get(""/api/reviews/store/:storeId", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.get("/api/stores", async (req, res) => {
-=======
-app.get(""/api/stores", async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { search, sortBy, lat, lng, minRating, services, openNow } = req.query;
   const cacheKey = `stores:${JSON.stringify(req.query)}`;
 
   try {
-<<<<<<< HEAD
-    const cachedStores = await redisClient.get(cacheKey);
-    if (cachedStores) {
-      console.log(`✅ Mengambil data toko dari cache: ${cacheKey}`);
-      return res.json(JSON.parse(cachedStores));
-    }
-
-    console.log(
-      `❌ Cache miss. Mengambil data toko dari database: ${cacheKey}`
-    );
-=======
     // const cachedStores = await redisClient.get(cacheKey);
     // if (cachedStores) {
     //   console.log(`✅ Mengambil data toko dari cache: ${cacheKey}`);
@@ -824,7 +760,6 @@ app.get(""/api/stores", async (req, res) => {
     // console.log(
     //   `❌ Cache miss. Mengambil data toko dari database: ${cacheKey}`
     // );
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
     const whereClause = {
       storeStatus: "active",
@@ -901,11 +836,7 @@ app.get(""/api/stores", async (req, res) => {
       stores.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
 
-<<<<<<< HEAD
-    await redisClient.set(cacheKey, JSON.stringify(stores), "EX", 300);
-=======
     // await redisClient.set(cacheKey, JSON.stringify(stores), "EX", 300);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
     res.json(stores);
   } catch (error) {
@@ -958,11 +889,7 @@ app.get("/sitemap.xml", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.get("/api/stores/:id", async (req, res) => {
-=======
-app.get(""/api/stores/:id", async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { id } = req.params;
   try {
     const store = await prisma.store.findUnique({ where: { id } });
@@ -973,11 +900,7 @@ app.get(""/api/stores/:id", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.get("/api/stores/:storeId/services", async (req, res) => {
-=======
-app.get(""/api/stores/:storeId/services", async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { storeId } = req.params;
   try {
     const storeExists = await prisma.store.findUnique({
@@ -1001,11 +924,7 @@ app.get(""/api/stores/:storeId/services", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 app.get("/api/banners", async (req, res) => {
-=======
-app.get(""/api/banners", async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   try {
     const allBanners = await prisma.banner.findMany({
       where: { status: "active" },
@@ -1016,15 +935,11 @@ app.get(""/api/banners", async (req, res) => {
   }
 });
 
-app.get(""/api/services", (req, res) => {
+app.get("/api/services", (req, res) => {
   res.json(servicesData);
 });
 
-<<<<<<< HEAD
 app.get("/api/user/recommendations", authenticateToken, async (req, res) => {
-=======
-app.get(""/api/user/recommendations", authenticateToken, async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const userId = req.user.id;
 
   try {
@@ -1308,7 +1223,7 @@ partnerRouter.get("/services", findMyStore, async (req, res) => {
 partnerRouter.post("/services", findMyStore, async (req, res) => {
   const { name, description, price, shoeType } = req.body;
 
-    const currentServiceCount = await prisma.service.count({
+  const currentServiceCount = await prisma.service.count({
     where: { storeId: req.store.id },
   });
 
@@ -1384,8 +1299,9 @@ partnerRouter.post(
   findMyStore,
   upload.single("photo"),
   async (req, res) => {
-
-     const storeData = await prisma.store.findUnique({ where: { id: req.store.id } });
+    const storeData = await prisma.store.findUnique({
+      where: { id: req.store.id },
+    });
     const currentPhotoCount = storeData.images.length;
 
     if (currentPhotoCount >= req.store.photoLimit) {
@@ -1393,7 +1309,7 @@ partnerRouter.post(
         message: `Batas maksimal ${req.store.photoLimit} foto untuk tier Anda telah tercapai. Silakan upgrade ke PRO.`,
       });
     }
-    
+
     if (!req.file) {
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
@@ -1440,11 +1356,9 @@ partnerRouter.post("/promos", findMyStore, async (req, res) => {
 
     const PROMO_LIMIT_BASIC = 3;
     if (req.store.tier === "BASIC" && currentPromoCount >= PROMO_LIMIT_BASIC) {
-      return res
-        .status(403)
-        .json({
-          message: `Anda telah mencapai batas maksimal ${PROMO_LIMIT_BASIC} promo untuk tier BASIC. Upgrade ke PRO untuk promo tanpa batas.`,
-        });
+      return res.status(403).json({
+        message: `Anda telah mencapai batas maksimal ${PROMO_LIMIT_BASIC} promo untuk tier BASIC. Upgrade ke PRO untuk promo tanpa batas.`,
+      });
     }
 
     const newPromo = await prisma.promo.create({
@@ -1566,11 +1480,9 @@ partnerRouter.post(
       });
 
       if (!review) {
-        return res
-          .status(404)
-          .json({
-            message: "Ulasan tidak ditemukan atau Anda tidak memiliki akses.",
-          });
+        return res.status(404).json({
+          message: "Ulasan tidak ditemukan atau Anda tidak memiliki akses.",
+        });
       }
 
       const updatedReview = await prisma.review.update({
@@ -1716,11 +1628,7 @@ partnerRouter.post(
   }
 );
 
-<<<<<<< HEAD
 app.use("/api/partner", partnerRouter);
-=======
-app.use(""/api/partner", partnerRouter);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
 const paymentRouter = express.Router();
 paymentRouter.use(authenticateToken);
@@ -1764,13 +1672,9 @@ paymentRouter.post("/create-transaction", async (req, res) => {
   }
 });
 
-app.use(""/api/payments", paymentRouter);
+app.use("/api/payments", paymentRouter);
 
-<<<<<<< HEAD
 app.post("/api/webhooks/payment-notification", async (req, res) => {
-=======
-app.post(""/api/webhooks/payment-notification", async (req, res) => {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const { order_id, transaction_status } = req.body;
   console.log(
     `Webhook diterima untuk ID ${order_id} dengan status ${transaction_status}`
@@ -2530,6 +2434,38 @@ adminRouter.get("/promos", async (req, res) => {
   }
 });
 
+adminRouter.post("/promos/validate", async (req, res) => {
+  const { code, storeId } = req.body;
+  if (!code) {
+    return res.status(400).json({ message: "Kode promo dibutuhkan." });
+  }
+
+  try {
+    const promo = await prisma.promo.findFirst({
+      where: {
+        code: code.toUpperCase(),
+        status: "active",
+      },
+    });
+
+    if (!promo) {
+      return res
+        .status(404)
+        .json({ message: "Kode promo tidak valid atau sudah tidak aktif." });
+    }
+
+    if (promo.storeId && promo.storeId !== storeId) {
+      return res
+        .status(400)
+        .json({ message: "Kode promo tidak berlaku untuk toko ini." });
+    }
+
+    res.json(promo);
+  } catch (error) {
+    res.status(500).json({ message: "Gagal memvalidasi promo." });
+  }
+});
+
 adminRouter.post("/promos", async (req, res) => {
   const { code, description, discountType, value } = req.body;
   if (!code || !description || !discountType || !value)
@@ -2829,11 +2765,7 @@ adminRouter.get("/invoices/:id", async (req, res) => {
 });
 
 app.post(
-<<<<<<< HEAD
   "/api/upload",
-=======
-  ""/api/upload",
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   authenticateToken,
   upload.single("image"),
   async (req, res) => {
@@ -2856,7 +2788,6 @@ app.post(
   }
 );
 
-<<<<<<< HEAD
 app.use("/api/admin", adminRouter);
 
 const isDeveloper = (req, res, next) => {
@@ -3187,338 +3118,6 @@ const errorLogger = async (err, req, res, next) => {
 
 app.use(errorLogger);
 
-=======
-app.use(""/api/admin", adminRouter);
-
-const isDeveloper = (req, res, next) => {
-  if (req.user.role !== "developer") {
-    return res
-      .status(403)
-      .json({ message: "Akses ditolak. Hanya untuk Developer." });
-  }
-  next();
-};
-
-const superUserRouter = express.Router();
-superUserRouter.use(authenticateToken);
-superUserRouter.use(isDeveloper);
-
-superUserRouter.get("/config", (req, res) => {
-  fs.readFile(themeConfigPath, "utf8", (err, data) => {
-    if (err) {
-      return res
-        .status(500)
-        .json({ message: "Gagal membaca file konfigurasi." });
-    }
-    res.json(JSON.parse(data));
-  });
-});
-
-superUserRouter.post("/config", (req, res) => {
-  const newConfig = req.body;
-  fs.writeFile(
-    themeConfigPath,
-    JSON.stringify(newConfig, null, 2),
-    "utf8",
-    (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ message: "Gagal menyimpan file konfigurasi." });
-      }
-      io.emit("themeUpdated", newConfig);
-      console.log("Event themeUpdated telah dikirim ke semua client.");
-      res.status(200).json({ message: "Konfigurasi berhasil diperbarui." });
-    }
-  );
-});
-
-superUserRouter.post(
-  "/upload-asset",
-  upload.single("asset"),
-  async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ message: "Tidak ada file yang diunggah." });
-    }
-    try {
-      const publicPath = await processAndSaveImage(
-        req.file.buffer,
-        req.file.fieldname
-      );
-      res.status(200).json({
-        message: "File berhasil diunggah.",
-        filePath: publicPath,
-      });
-    } catch (error) {
-      console.error("Gagal memproses aset:", error);
-      res.status(500).json({ message: "Gagal memproses aset." });
-    }
-  }
-);
-
-superUserRouter.get("/maintenance/health-check", async (req, res) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    const dbStatus = "Operasional";
-    await redisClient.ping();
-    const redisStatus = "Operasional";
-    res.status(200).json({
-      database: dbStatus,
-      redis: redisStatus,
-      overallStatus: "Semua Sistem Berjalan Normal",
-    });
-  } catch (error) {
-    console.error("Health check failed:", error);
-    res.status(503).json({
-      database: error.message.includes("database")
-        ? "Bermasalah"
-        : "Operasional",
-      redis: error.message.includes("Redis") ? "Bermasalah" : "Operasional",
-      overallStatus: "Masalah Kritis Terdeteksi",
-    });
-  }
-});
-
-superUserRouter.post("/maintenance/clear-cache", (req, res) => {
-  redisClient
-    .flushDb()
-    .then(() => {
-      console.log("Cache Redis berhasil dibersihkan oleh Developer.");
-      res
-        .status(200)
-        .json({ message: "Cache aplikasi (Redis) berhasil dibersihkan." });
-    })
-    .catch((err) => {
-      console.error("Gagal membersihkan cache Redis:", err);
-      res.status(500).json({ message: "Gagal membersihkan cache." });
-    });
-});
-
-superUserRouter.post("/maintenance/reseed-database", (req, res) => {
-  console.log("Menerima permintaan untuk reset & seed database...");
-  exec(
-    "npx prisma migrate reset --force",
-    { cwd: __dirname },
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error saat menjalankan db seed: ${error.message}`);
-        return res.status(500).json({ message: `Error: ${error.message}` });
-      }
-      if (stderr) {
-        console.warn(`Stderr saat menjalankan db seed: ${stderr}`);
-      }
-      console.log(`Stdout dari db seed: ${stdout}`);
-      res.status(200).json({
-        message: "Database berhasil di-reset dan di-seed ulang.",
-        log: stdout,
-      });
-    }
-  );
-});
-
-superUserRouter.get("/maintenance/security-logs", async (req, res) => {
-  try {
-    const logs = await prisma.securityLog.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 100,
-    });
-    res.status(200).json(logs);
-  } catch (error) {
-    console.error("Gagal mengambil log keamanan:", error);
-    res.status(500).json({ message: "Gagal mengambil log keamanan." });
-  }
-});
-
-superUserRouter.get("/approval-requests", async (req, res) => {
-  try {
-    const requests = await prisma.approvalRequest.findMany({
-      where: { status: "PENDING" },
-      include: {
-        requestedBy: { select: { name: true, email: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(requests);
-  } catch (error) {
-    res.status(500).json({ message: "Gagal mengambil daftar permintaan." });
-  }
-});
-
-superUserRouter.post("/approval-requests/:id/resolve", async (req, res) => {
-  const { id } = req.params;
-  const { resolution } = req.body;
-  const resolver = req.user;
-
-  if (!["APPROVED", "REJECTED"].includes(resolution)) {
-    return res.status(400).json({ message: "Resolusi tidak valid." });
-  }
-
-  try {
-    const request = await prisma.approvalRequest.findUnique({
-      where: { id },
-    });
-    if (!request || request.status !== "PENDING") {
-      return res
-        .status(404)
-        .json({ message: "Permintaan tidak ditemukan atau sudah diproses." });
-    }
-
-    if (resolution === "REJECTED") {
-      await prisma.approvalRequest.update({
-        where: { id },
-        data: {
-          status: "REJECTED",
-          resolvedById: resolver.id,
-          resolvedAt: new Date(),
-        },
-      });
-      return res.json({ message: "Permintaan berhasil ditolak." });
-    }
-
-    if (resolution === "APPROVED") {
-      await prisma.$transaction(async (tx) => {
-        switch (request.actionType) {
-          case "CHANGE_USER_ROLE":
-            const { targetUserId, newRole } = request.payload;
-            await tx.user.update({
-              where: { id: targetUserId },
-              data: { role: newRole },
-            });
-            break;
-          case "UPDATE_COMMISSION_RATE":
-            const { storeId, newCommissionRate } = request.payload;
-            await tx.store.update({
-              where: { id: storeId },
-              data: { commissionRate: newCommissionRate },
-            });
-            break;
-          case "DELETE_STORE":
-            const { storeId: storeIdToDelete } = request.payload;
-            await tx.store.delete({ where: { id: storeIdToDelete } });
-            break;
-          case "DELETE_USER":
-            const { userId: userIdToDelete } = request.payload;
-            await tx.user.delete({ where: { id: userIdToDelete } });
-            break;
-          case "DELETE_REVIEW":
-            const { reviewId: reviewIdToDelete } = request.payload;
-            await tx.review.delete({ where: { id: reviewIdToDelete } });
-            break;
-          case "UPDATE_GLOBAL_SETTINGS":
-            fs.writeFileSync(
-              themeConfigPath,
-              JSON.stringify(request.payload, null, 2),
-              "utf8"
-            );
-            io.emit("themeUpdated", request.payload);
-            break;
-          default:
-            throw new Error("Tipe aksi tidak dikenal.");
-        }
-
-        await tx.approvalRequest.update({
-          where: { id },
-          data: {
-            status: "APPROVED",
-            resolvedById: resolver.id,
-            resolvedAt: new Date(),
-          },
-        });
-      });
-      return res.json({
-        message: `Aksi "${request.actionType}" berhasil dieksekusi.`,
-      });
-    }
-  } catch (error) {
-    console.error("Gagal memproses permintaan:", error);
-    res
-      .status(500)
-      .json({ message: `Gagal memproses permintaan: ${error.message}` });
-  }
-});
-
-superUserRouter.get("/config/payment", (req, res) => {
-  try {
-    const currentMode = process.env.PAYMENT_GATEWAY_MODE || "sandbox";
-    res.status(200).json({
-      mode: currentMode,
-    });
-  } catch (error) {
-    console.error("Gagal membaca konfigurasi payment gateway:", error);
-    res.status(500).json({ message: "Gagal membaca konfigurasi." });
-  }
-});
-
-superUserRouter.post("/config/payment", async (req, res) => {
-  const { mode } = req.body;
-  const requester = req.user;
-
-  if (!["sandbox", "production"].includes(mode)) {
-    return res.status(400).json({ message: "Mode tidak valid." });
-  }
-
-  try {
-    const envPath = path.join(__dirname, ".env");
-    let envFileContent = fs.readFileSync(envPath, "utf8");
-
-    const oldMode = process.env.PAYMENT_GATEWAY_MODE;
-    process.env.PAYMENT_GATEWAY_MODE = mode;
-
-    envFileContent = envFileContent.replace(
-      /PAYMENT_GATEWAY_MODE=.*/g,
-      `PAYMENT_GATEWAY_MODE="${mode}"`
-    );
-
-    fs.writeFileSync(envPath, envFileContent);
-
-    await prisma.securityLog.create({
-      data: {
-        eventType: "PAYMENT_CONFIG_UPDATED",
-        ipAddress: req.ip,
-        details: `Developer ${requester.name} mengubah mode payment gateway dari '${oldMode}' menjadi '${mode}'.`,
-      },
-    });
-
-    res.status(200).json({
-      message: `Mode Payment Gateway berhasil diubah menjadi '${mode}'. Server mungkin perlu di-restart untuk menerapkan sepenuhnya.`,
-    });
-  } catch (error) {
-    console.error("Gagal mengubah konfigurasi payment gateway:", error);
-    res.status(500).json({ message: "Gagal menyimpan perubahan konfigurasi." });
-  }
-});
-
-app.use(""/api/superuser", superUserRouter);
-
-const errorLogger = async (err, req, res, next) => {
-  if (err.status === 500 || !err.status) {
-    try {
-      await prisma.errorLog.create({
-        data: {
-          statusCode: err.status || 500,
-          message: err.message,
-          stackTrace: err.stack,
-          requestInfo: `Method: ${req.method}, Path: ${
-            req.originalUrl
-          }, Body: ${JSON.stringify(req.body)}`,
-        },
-      });
-      console.error("Critical error logged to database:", err.message);
-    } catch (dbError) {
-      console.error("Failed to log error to database:", dbError);
-      console.error("Original error:", err);
-    }
-  }
-  res.status(err.status || 500).json({
-    message: err.message || "Terjadi kesalahan pada server.",
-  });
-};
-
-app.use(errorLogger);
-
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 server.listen(PORT, () => {
   console.log(
     `🚀 Server berjalan di http://localhost:${PORT} dan siap untuk koneksi real-time.`

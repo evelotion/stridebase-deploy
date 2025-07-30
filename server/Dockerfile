@@ -8,14 +8,15 @@ WORKDIR /app
 
 # Salin file package.json dan package-lock.json terlebih dahulu
 COPY package*.json ./
-# Juga salin skema prisma agar generate bisa berjalan
+
+# Salin skema prisma agar generate bisa berjalan
 COPY prisma ./prisma/
 
-# Instal SEMUA dependensi
+# Instal SEMUA dependensi (termasuk devDependencies seperti prisma)
 RUN npm install
 
-# Hasilkan Prisma Client yang sesuai untuk lingkungan Alpine Linux
-# (Langkah ini tetap baik untuk caching saat build)
+# PERBAIKAN 1: Jalankan prisma generate setelah instalasi
+# Ini akan membuat Prisma Client yang kompatibel dengan environment Alpine Linux di dalam container
 RUN npx prisma generate
 
 # Salin sisa kode aplikasi
@@ -26,10 +27,6 @@ EXPOSE 5000
 
 # PERINTAH YANG DIPERBAIKI:
 # Gunakan shell form untuk menjalankan dua perintah secara berurutan.
-# Ini memastikan Prisma Client selalu di-generate ulang sesuai lingkungan container
-# setiap kali container dimulai, sebelum server dijalankan.
-<<<<<<< HEAD
-CMD ["sh", "-c", "npx prisma generate && npm start"]
-=======
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
+# Ini memastikan migrasi database (migrate deploy) dijalankan setiap kali container dimulai,
+# sebelum server aplikasi (npm start) dijalankan.
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npm start"]

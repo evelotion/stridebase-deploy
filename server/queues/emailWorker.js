@@ -15,8 +15,9 @@ const sendEmail = async (data) => {
 const worker = new Worker('email-queue', async job => {
   await sendEmail(job.data);
 }, {
+  // PERUBAHAN PADA BAGIAN KONEKSI
   connection: {
-    host: '127.0.0.1',
+    host: process.env.REDIS_HOST || 'redis', // Menggunakan nama service 'redis' dari docker-compose
     port: 6379,
   },
 });

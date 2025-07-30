@@ -18,28 +18,26 @@ const PartnerPromosPage = () => {
     status: "active",
   });
 
-   const fetchData = async () => {
+  const fetchData = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      // Pastikan kedua URL ini bersih dan benar
       const [promosRes, storeRes] = await Promise.all([
-<<<<<<< HEAD
-        fetch("/api/partner/promos", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("/api/partner/settings", { headers: { Authorization: `Bearer ${token}` } })
-=======
-        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/promos", { headers: { Authorization: `Bearer ${token}` } }),
-        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", { headers: { Authorization: `Bearer ${token}` } })
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
+        fetch("/api/partner/promos", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch("/api/partner/settings", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
       if (!promosRes.ok || !storeRes.ok) {
         throw new Error("Gagal memuat data promo atau toko.");
       }
-      
+
       const promosData = await promosRes.json();
       const storeData = await storeRes.json();
-      
+
       setPromos(promosData);
       setStore(storeData);
     } catch (err) {
@@ -52,8 +50,9 @@ const PartnerPromosPage = () => {
   useEffect(() => {
     fetchData();
   }, []);
-  
-  const isPromoLimitReached = store && store.tier === 'BASIC' && promos.length >= 3;
+
+  const isPromoLimitReached =
+    store && store.tier === "BASIC" && promos.length >= 3;
 
   const handleOpenModal = (promo = null) => {
     if (promo) {
@@ -85,35 +84,25 @@ const PartnerPromosPage = () => {
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-<<<<<<< HEAD
       ? `/api/partner/promos/${currentPromo.id}`
       : "/api/partner/promos";
-=======
-      ? `import.meta.env.VITE_API_BASE_URL + "/api/partner/promos/${currentPromo.id}`
-      : "import.meta.env.VITE_API_BASE_URL + "/api/partner/promos";
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
     try {
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(currentPromo),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-<<<<<<< HEAD
-      alert(`Promo berhasil ${isEditing ? 'diperbarui' : 'dibuat'}!`);
-      handleCloseModal();
-      fetchData();
-    } catch (err) {
-      alert(`Error: ${err.message}`);
-=======
-      showMessage(`Promo berhasil ${isEditing ? 'diperbarui' : 'dibuat'}!`);
+      showMessage(`Promo berhasil ${isEditing ? "diperbarui" : "dibuat"}!`);
       handleCloseModal();
       fetchData();
     } catch (err) {
       showMessage(`Error: ${err.message}`);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -121,27 +110,16 @@ const PartnerPromosPage = () => {
     if (!confirm("Yakin ingin menghapus promo ini?")) return;
     const token = localStorage.getItem("token");
     try {
-<<<<<<< HEAD
       const response = await fetch(`/api/partner/promos/${promoId}`, {
-=======
-      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/partner/promos/${promoId}`, {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-<<<<<<< HEAD
-      alert('Promo berhasil dihapus.');
-      fetchData();
-    } catch (err) {
-      alert(`Error: ${err.message}`);
-=======
-      showMessage('Promo berhasil dihapus.');
+      showMessage("Promo berhasil dihapus.");
       fetchData();
     } catch (err) {
       showMessage(`Error: ${err.message}`);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -153,15 +131,22 @@ const PartnerPromosPage = () => {
       <div className="container-fluid px-4">
         <div className="d-flex justify-content-between align-items-center m-4">
           <h2 className="fs-2 mb-0">Manajemen Promo Toko</h2>
-          <button className="btn btn-primary" onClick={() => handleOpenModal()} disabled={isPromoLimitReached}>
+          <button
+            className="btn btn-primary"
+            onClick={() => handleOpenModal()}
+            disabled={isPromoLimitReached}
+          >
             <i className="fas fa-plus me-2"></i>Buat Promo Baru
           </button>
         </div>
-        
+
         {isPromoLimitReached && (
           <div className="alert alert-warning mx-4">
-            Anda telah mencapai batas maksimal 3 promo untuk tier BASIC. 
-            <Link to="/partner/upgrade" className="alert-link"> Upgrade ke PRO </Link> 
+            Anda telah mencapai batas maksimal 3 promo untuk tier BASIC.
+            <Link to="/partner/upgrade" className="alert-link">
+              {" "}
+              Upgrade ke PRO{" "}
+            </Link>
             untuk membuat promo tanpa batas.
           </div>
         )}
@@ -179,60 +164,144 @@ const PartnerPromosPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {promos.map(promo => (
+                {promos.map((promo) => (
                   <tr key={promo.id}>
-                    <td><span className="fw-bold">{promo.code}</span></td>
-                    <td>{promo.description}</td>
-                    <td>{promo.discountType === 'percentage' ? `${promo.value}%` : `Rp ${promo.value.toLocaleString('id-ID')}`}</td>
-                    <td><span className={`badge bg-${promo.status === 'active' ? 'success' : 'secondary'}`}>{promo.status}</span></td>
                     <td>
-                      <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => handleOpenModal(promo)}><i className="fas fa-edit"></i></button>
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(promo.id)}><i className="fas fa-trash-alt"></i></button>
+                      <span className="fw-bold">{promo.code}</span>
+                    </td>
+                    <td>{promo.description}</td>
+                    <td>
+                      {promo.discountType === "percentage"
+                        ? `${promo.value}%`
+                        : `Rp ${promo.value.toLocaleString("id-ID")}`}
+                    </td>
+                    <td>
+                      <span
+                        className={`badge bg-${
+                          promo.status === "active" ? "success" : "secondary"
+                        }`}
+                      >
+                        {promo.status}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-sm btn-outline-secondary me-2"
+                        onClick={() => handleOpenModal(promo)}
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDelete(promo.id)}
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {promos.length === 0 && <p className="text-center text-muted p-4">Anda belum memiliki promo.</p>}
+            {promos.length === 0 && (
+              <p className="text-center text-muted p-4">
+                Anda belum memiliki promo.
+              </p>
+            )}
           </div>
         </div>
       </div>
 
       {showModal && (
-        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
+        <div
+          className="modal fade show"
+          style={{ display: "block" }}
+          tabIndex="-1"
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <form onSubmit={handleFormSubmit}>
                 <div className="modal-header">
-                  <h5 className="modal-title">{isEditing ? 'Edit Promo' : 'Buat Promo Baru'}</h5>
-                  <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+                  <h5 className="modal-title">
+                    {isEditing ? "Edit Promo" : "Buat Promo Baru"}
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseModal}
+                  ></button>
                 </div>
                 <div className="modal-body">
                   <div className="mb-3">
-                    <label htmlFor="code" className="form-label">Kode Promo</label>
-                    <input type="text" className="form-control" id="code" name="code" value={currentPromo.code} onChange={handleFormChange} required />
+                    <label htmlFor="code" className="form-label">
+                      Kode Promo
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="code"
+                      name="code"
+                      value={currentPromo.code}
+                      onChange={handleFormChange}
+                      required
+                    />
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="description" className="form-label">Deskripsi</label>
-                    <input type="text" className="form-control" id="description" name="description" value={currentPromo.description} onChange={handleFormChange} required />
+                    <label htmlFor="description" className="form-label">
+                      Deskripsi
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="description"
+                      name="description"
+                      value={currentPromo.description}
+                      onChange={handleFormChange}
+                      required
+                    />
                   </div>
                   <div className="row">
                     <div className="col-md-6 mb-3">
-                      <label htmlFor="discountType" className="form-label">Tipe Diskon</label>
-                      <select className="form-select" id="discountType" name="discountType" value={currentPromo.discountType} onChange={handleFormChange}>
+                      <label htmlFor="discountType" className="form-label">
+                        Tipe Diskon
+                      </label>
+                      <select
+                        className="form-select"
+                        id="discountType"
+                        name="discountType"
+                        value={currentPromo.discountType}
+                        onChange={handleFormChange}
+                      >
                         <option value="percentage">Persentase (%)</option>
                         <option value="fixed">Potongan Tetap (Rp)</option>
                       </select>
                     </div>
                     <div className="col-md-6 mb-3">
-                      <label htmlFor="value" className="form-label">Nilai</label>
-                      <input type="number" className="form-control" id="value" name="value" value={currentPromo.value} onChange={handleFormChange} required />
+                      <label htmlFor="value" className="form-label">
+                        Nilai
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="value"
+                        name="value"
+                        value={currentPromo.value}
+                        onChange={handleFormChange}
+                        required
+                      />
                     </div>
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>Batal</button>
-                  <button type="submit" className="btn btn-primary">Simpan</button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={handleCloseModal}
+                  >
+                    Batal
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Simpan
+                  </button>
                 </div>
               </form>
             </div>

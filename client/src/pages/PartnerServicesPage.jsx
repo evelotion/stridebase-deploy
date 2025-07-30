@@ -1,15 +1,12 @@
-// File: stridebase-app/client/src/pages/PartnerServicesPage.jsx
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const PartnerServicesPage = () => {
   const [services, setServices] = useState([]);
-  const [store, setStore] = useState(null); // State untuk menyimpan data toko
+  const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // State untuk modal
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentService, setCurrentService] = useState({
@@ -20,24 +17,15 @@ const PartnerServicesPage = () => {
     shoeType: "sneakers",
   });
 
-  // Fungsi untuk mengambil data layanan dan toko
   const fetchData = async () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      // Ambil data toko dan layanan secara bersamaan
       const [storeRes, servicesRes] = await Promise.all([
-<<<<<<< HEAD
         fetch("/api/partner/settings", {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch("/api/partner/services", {
-=======
-        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/services", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -65,10 +53,10 @@ const PartnerServicesPage = () => {
     fetchData();
   }, []);
 
-  // Cek apakah limit sudah tercapai
- const isServiceLimitReached = store ? services.length >= store.serviceLimit : false;
+  const isServiceLimitReached = store
+    ? services.length >= store.serviceLimit
+    : false;
 
-  // Handler untuk membuka modal
   const handleOpenModal = (service = null) => {
     if (service) {
       setIsEditing(true);
@@ -86,25 +74,22 @@ const PartnerServicesPage = () => {
     setShowModal(true);
   };
 
-  // Handler untuk menutup modal
   const handleCloseModal = () => {
     setShowModal(false);
   };
 
-  // Handler untuk perubahan input form
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setCurrentService((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handler untuk submit form (tambah/edit)
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `import.meta.env.VITE_API_BASE_URL + "/api/partner/services/${currentService.id}`
-      : "import.meta.env.VITE_API_BASE_URL + "/api/partner/services";
+      ? `/api/partner/services/${currentService.id}`
+      : "/api/partner/services";
 
     try {
       const response = await fetch(url, {
@@ -120,22 +105,23 @@ const PartnerServicesPage = () => {
       if (!response.ok)
         throw new Error(data.message || "Gagal memproses layanan.");
 
-      showMessage(`Layanan berhasil ${isEditing ? "diperbarui" : "ditambahkan"}!`);
+      showMessage(
+        `Layanan berhasil ${isEditing ? "diperbarui" : "ditambahkan"}!`
+      );
       handleCloseModal();
-      fetchData(); // Muat ulang data
+      fetchData();
     } catch (err) {
       showMessage(`Error: ${err.message}`);
     }
   };
 
-  // Handler untuk hapus layanan
   const handleDelete = async (serviceId) => {
     if (!window.confirm("Apakah Anda yakin ingin menghapus layanan ini?"))
       return;
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`import.meta.env.VITE_API_BASE_URL + "/api/partner/services/${serviceId}`, {
+      const response = await fetch(`/api/partner/services/${serviceId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -145,7 +131,7 @@ const PartnerServicesPage = () => {
         throw new Error(data.message || "Gagal menghapus layanan.");
 
       showMessage("Layanan berhasil dihapus.");
-      fetchData(); // Muat ulang data
+      fetchData();
     } catch (err) {
       showMessage(`Error: ${err.message}`);
     }

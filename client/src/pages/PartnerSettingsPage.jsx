@@ -20,13 +20,13 @@ const dayLabels = {
   sunday: "Minggu",
 };
 
-const PartnerSettingsPage = () => {
+const PartnerSettingsPage = ({ showMessage }) => {
   const [activeTab, setActiveTab] = useState("profile");
   const [store, setStore] = useState({
     name: "",
     description: "",
     images: [],
-    headerImage: "", // Tambahkan state untuk headerImage
+    headerImage: "",
     photoLimit: 3,
   });
   const [schedule, setSchedule] = useState({});
@@ -38,11 +38,7 @@ const PartnerSettingsPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-<<<<<<< HEAD
       const response = await fetch("/api/partner/settings", {
-=======
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -54,7 +50,7 @@ const PartnerSettingsPage = () => {
         description: data.description || "",
         images: data.images || [],
         headerImage:
-          data.headerImage || (data.images.length > 0 ? data.images[0] : ""), // Set header default jika belum ada
+          data.headerImage || (data.images.length > 0 ? data.images[0] : ""),
         photoLimit: data.photoLimit || 3,
       });
 
@@ -83,7 +79,6 @@ const PartnerSettingsPage = () => {
     setStore((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Fungsi baru untuk memilih header image
   const handleSetHeaderImage = (imageUrl) => {
     setStore((prev) => ({ ...prev, headerImage: imageUrl }));
   };
@@ -104,11 +99,7 @@ const PartnerSettingsPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-<<<<<<< HEAD
       const response = await fetch("/api/partner/upload-photo", {
-=======
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/upload-photo", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -120,18 +111,11 @@ const PartnerSettingsPage = () => {
       setStore((prev) => ({
         ...prev,
         images: [...prev.images, result.filePath],
-        // Jika ini gambar pertama, otomatis jadikan header
         headerImage: prev.headerImage ? prev.headerImage : result.filePath,
       }));
-<<<<<<< HEAD
-      alert("Foto berhasil diunggah! Jangan lupa simpan perubahan.");
-    } catch (err) {
-      alert(`Error: ${err.message}`);
-=======
       showMessage("Foto berhasil diunggah! Jangan lupa simpan perubahan.");
     } catch (err) {
       showMessage(`Error: ${err.message}`);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -139,7 +123,6 @@ const PartnerSettingsPage = () => {
     if (!confirm("Apakah Anda yakin ingin menghapus foto ini?")) return;
     setStore((prev) => {
       const newImages = prev.images.filter((img) => img !== imageToDelete);
-      // Jika gambar yang dihapus adalah header, set header baru ke gambar pertama (jika ada)
       const newHeader =
         prev.headerImage === imageToDelete
           ? newImages.length > 0
@@ -159,12 +142,12 @@ const PartnerSettingsPage = () => {
       name: store.name,
       description: store.description,
       images: store.images,
-      headerImage: store.headerImage, // Kirim headerImage ke backend
+      headerImage: store.headerImage,
       schedule: schedule,
     };
 
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
+      const response = await fetch("/api/partner/settings", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -175,11 +158,7 @@ const PartnerSettingsPage = () => {
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.message || "Gagal menyimpan perubahan.");
-<<<<<<< HEAD
-      alert("Pengaturan toko berhasil disimpan!");
-=======
       showMessage("Pengaturan toko berhasil disimpan!");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     } catch (err) {
       showMessage(`Error: ${err.message}`);
     } finally {
@@ -274,11 +253,7 @@ const PartnerSettingsPage = () => {
                 <div className="col-md-3" key={index}>
                   <div className="photo-gallery-item position-relative">
                     <img
-<<<<<<< HEAD
-                      src={`http://localhost:5000${img}`}
-=======
                       src={`${img}`}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                       alt={`Store view ${index + 1}`}
                       className="img-fluid rounded"
                       style={{
@@ -288,7 +263,6 @@ const PartnerSettingsPage = () => {
                       }}
                     />
 
-                    {/* --- TOMBOL-TOMBOL AKSI BARU --- */}
                     <div className="position-absolute top-0 end-0 m-2">
                       <button
                         className="btn btn-sm btn-danger"

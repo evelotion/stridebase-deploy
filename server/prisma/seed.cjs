@@ -51,7 +51,7 @@ async function main() {
     ],
   });
   console.log(`✅ ${users.length} users created.`);
-  
+
   // =================================================================
   // 2. SEED ALAMAT UNTUK CUSTOMER
   // =================================================================
@@ -70,17 +70,10 @@ async function main() {
   console.log("🏪 Seeding stores...");
   const stores = await prisma.store.createManyAndReturn({
     data: [
-<<<<<<< HEAD
       { id: "store-01-pro", name: "CleanStep Express (PRO)", location: "Mall Grand Indonesia, Jakarta", ownerId: "user-mitra-01", storeStatus: "active", tier: "PRO", billingType: "INVOICE", commissionRate: 0, isFeatured: true, rating: 4.8, images: ["/uploads/image-1752427316280.jpg"], latitude: -6.1954, longitude: 106.8221 },
       { id: "store-02-basic", name: "Ani Shoe Laundry (BASIC)", location: "Jl. Dago No. 123, Bandung", ownerId: "user-mitra-02", storeStatus: "active", tier: "BASIC", billingType: "COMMISSION", commissionRate: 12.5, isFeatured: false, rating: 4.5, images: ["/uploads/image-1752427316280.jpg"], latitude: -6.8943, longitude: 107.6111 },
       { id: "store-03-pending", name: "Tono's Premium Care", location: "Jl. Malioboro, Yogyakarta", ownerId: "user-mitra-03", storeStatus: "pending", tier: "BASIC", billingType: "COMMISSION", commissionRate: 10, isFeatured: false, rating: 0, images: ["/uploads/image-1752427316280.jpg"], latitude: -7.7928, longitude: 110.3659 },
       { id: "store-04-inactive", name: "Dina Kicks (Nonaktif)", location: "Jl. Basuki Rahmat, Surabaya", ownerId: "user-mitra-04", storeStatus: "inactive", tier: "BASIC", billingType: "COMMISSION", commissionRate: 10, isFeatured: false, rating: 4.2, images: ["/uploads/image-1752427316280.jpg"], latitude: -7.2657, longitude: 112.7399 },
-=======
-      { id: "store-01-pro", name: "CleanStep Express (PRO)", location: "Mall Grand Indonesia, Jakarta", ownerId: "user-mitra-01", storeStatus: "active", tier: "PRO", billingType: "INVOICE", commissionRate: 0, isFeatured: true, rating: 4.8, images: [""/uploads/image-1752427316280.jpg"], latitude: -6.1954, longitude: 106.8221 },
-      { id: "store-02-basic", name: "Ani Shoe Laundry (BASIC)", location: "Jl. Dago No. 123, Bandung", ownerId: "user-mitra-02", storeStatus: "active", tier: "BASIC", billingType: "COMMISSION", commissionRate: 12.5, isFeatured: false, rating: 4.5, images: [""/uploads/image-1752427316280.jpg"], latitude: -6.8943, longitude: 107.6111 },
-      { id: "store-03-pending", name: "Tono's Premium Care", location: "Jl. Malioboro, Yogyakarta", ownerId: "user-mitra-03", storeStatus: "pending", tier: "BASIC", billingType: "COMMISSION", commissionRate: 10, isFeatured: false, rating: 0, images: [""/uploads/image-1752427316280.jpg"], latitude: -7.7928, longitude: 110.3659 },
-      { id: "store-04-inactive", name: "Dina Kicks (Nonaktif)", location: "Jl. Basuki Rahmat, Surabaya", ownerId: "user-mitra-04", storeStatus: "inactive", tier: "BASIC", billingType: "COMMISSION", commissionRate: 10, isFeatured: false, rating: 4.2, images: [""/uploads/image-1752427316280.jpg"], latitude: -7.2657, longitude: 112.7399 },
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     ]
   });
   console.log(`✅ ${stores.length} stores created.`);
@@ -125,38 +118,34 @@ async function main() {
   });
   await prisma.platformEarning.create({ data: { bookingId: "booking-03-processing", storeId: "store-02-basic", grossAmount: 72000, commissionRate: 12.5, earnedAmount: 72000 * 0.125 } });
   console.log("✅ Payments and earnings seeded.");
-  
+
   // =================================================================
   // 7. SEED ULASAN (REVIEWS)
   // =================================================================
   console.log("⭐ Seeding reviews...");
-  // --- PERBAIKAN DI SINI: Beri ID eksplisit pada review ---
   await prisma.review.create({
     data: {
-      id: "review-to-delete-id", // <-- ID INI DITAMBAHKAN
-      bookingId: "booking-01-reviewed", 
-      userId: "user-customer-01", 
-      storeId: "store-01-pro", 
-      userName: "Siti Rahayu", 
-      rating: 5, 
-      comment: "Pelayanannya cepat dan hasilnya bersih sekali!" 
+      id: "review-to-delete-id",
+      bookingId: "booking-01-reviewed",
+      userId: "user-customer-01",
+      storeId: "store-01-pro",
+      userName: "Siti Rahayu",
+      rating: 5,
+      comment: "Pelayanannya cepat dan hasilnya bersih sekali!"
     }
   });
   console.log("✅ 1 review created.");
-  
+
   // =================================================================
   // 8. SEED INVOICES & PERMINTAAN PERSETUJUAN (APPROVAL)
   // =================================================================
   console.log("📄🔔 Seeding invoices and approval requests...");
   const invoice = await prisma.invoice.create({ data: { storeId: "store-01-pro", invoiceNumber: `INV-${new Date().getFullYear()}-00001`, dueDate: daysLater(14), status: "SENT", totalAmount: 99000, notes: "Tagihan langganan StrideBase PRO." } });
   await prisma.invoiceItem.create({ data: { invoiceId: invoice.id, description: "Langganan StrideBase PRO", quantity: 1, unitPrice: 99000, total: 99000 } });
-
-  // --- PERBAIKAN DI SINI: Payload menggunakan ID review yang benar ---
   await prisma.approvalRequest.create({
     data: {
       requestedById: "user-admin-01",
       actionType: "DELETE_REVIEW",
-      // Payload sekarang merujuk ke ID review yang benar-benar ada
       payload: { reviewId: "review-to-delete-id", comment: "Ulasan ini mengandung SARA." },
       status: "PENDING",
     }
@@ -165,11 +154,7 @@ async function main() {
 
   console.log("🎉 Seeding promos and banners...");
   await prisma.promo.create({ data: { code: "STRIDEBARU", description: "Diskon 15% untuk pengguna baru!", discountType: "percentage", value: 15, forNewUser: true, minTransaction: 50000 } });
-<<<<<<< HEAD
   await prisma.banner.create({ data: { imageUrl: "/uploads/asset-1752737852107.png", linkUrl: "/store" } });
-=======
-  await prisma.banner.create({ data: { imageUrl: ""/uploads/asset-1752737852107.png", linkUrl: "/store" } });
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   console.log("✅ Promos and banners seeded.");
 
   console.log("✅ Seeding finished successfully!");

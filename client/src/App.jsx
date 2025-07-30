@@ -1,3 +1,5 @@
+// File: stridebase-app-current/client/src/App.jsx
+
 import React, { useEffect, useState, Suspense } from "react";
 import {
   BrowserRouter as Router,
@@ -14,12 +16,11 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AdminLayout from "./components/AdminLayout";
 import DeveloperLayout from "./components/DeveloperLayout";
-<<<<<<< HEAD
-=======
-import MessageBox from "./components/MessageBox"; // <-- 1. IMPORT KOMPONEN BARU
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
-// Lazy load semua komponen halaman
+// GANTI MessageBox dengan Notification
+import Notification from "./components/Notification";
+
+// ... (impor komponen halaman lainnya tetap sama)
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));
 const ContactPage = React.lazy(() => import("./pages/ContactPage"));
@@ -40,60 +41,9 @@ const NotFoundPage = React.lazy(() => import("./pages/NotFoundPage"));
 const PaymentFinishPage = React.lazy(() => import("./pages/PaymentFinishPage"));
 const TrackOrderPage = React.lazy(() => import("./pages/TrackOrderPage"));
 const NotificationsPage = React.lazy(() => import("./pages/NotificationsPage"));
-<<<<<<< HEAD
-// *** IMPORT HALAMAN BARU ***
-const MaintenanceNoticePage = React.lazy(() => import("./pages/MaintenanceNoticePage.jsx"));
-
-// Lazy load untuk panel Admin
-const AdminDashboardPage = React.lazy(() =>
-  import("./pages/AdminDashboardPage")
-);
-const AdminStoresPage = React.lazy(() => import("./pages/AdminStoresPage"));
-const AdminUsersPage = React.lazy(() => import("./pages/AdminUsersPage"));
-const AdminReportsPage = React.lazy(() => import("./pages/AdminReportsPage"));
-const AdminPromosPage = React.lazy(() => import("./pages/AdminPromosPage"));
-const AdminBannersPage = React.lazy(() => import("./pages/AdminBannersPage"));
-const AdminBookingsPage = React.lazy(() => import("./pages/AdminBookingsPage"));
-const AdminReviewsPage = React.lazy(() => import("./pages/AdminReviewsPage"));
-const AdminSettingsPage = React.lazy(() => import("./pages/AdminSettingsPage"));
-const AdminStoreInvoicePage = React.lazy(() =>
-  import("./pages/AdminStoreInvoicePage")
-);
-const InvoicePrintPage = React.lazy(() => import("./pages/InvoicePrintPage"));
-
-// Lazy load untuk panel Mitra
-const PartnerDashboardPage = React.lazy(() =>
-  import("./pages/PartnerDashboardPage")
-);
-const PartnerServicesPage = React.lazy(() =>
-  import("./pages/PartnerServicesPage")
-);
-const PartnerOrdersPage = React.lazy(() => import("./pages/PartnerOrdersPage"));
-const PartnerSettingsPage = React.lazy(() =>
-  import("./pages/PartnerSettingsPage")
-);
-const PartnerReviewsPage = React.lazy(() =>
-  import("./pages/PartnerReviewsPage")
-);
-const PartnerUpgradePage = React.lazy(() =>
-  import("./pages/PartnerUpgradePage")
-);
-const PartnerInvoicePage = React.lazy(() =>
-  import("./pages/PartnerInvoicePage")
-);
-const PartnerPromosPage = React.lazy(() => import("./pages/PartnerPromosPage"));
-
-// Lazy load untuk panel Developer
-const DeveloperDashboardPage = React.lazy(() =>
-  import("./pages/DeveloperDashboardPage")
-);
-
-=======
 const MaintenanceNoticePage = React.lazy(() =>
   import("./pages/MaintenanceNoticePage.jsx")
 );
-
-// Lazy load untuk panel Admin
 const AdminDashboardPage = React.lazy(() =>
   import("./pages/AdminDashboardPage")
 );
@@ -109,8 +59,6 @@ const AdminStoreInvoicePage = React.lazy(() =>
   import("./pages/AdminStoreInvoicePage")
 );
 const InvoicePrintPage = React.lazy(() => import("./pages/InvoicePrintPage"));
-
-// Lazy load untuk panel Mitra
 const PartnerDashboardPage = React.lazy(() =>
   import("./pages/PartnerDashboardPage")
 );
@@ -131,26 +79,20 @@ const PartnerInvoicePage = React.lazy(() =>
   import("./pages/PartnerInvoicePage")
 );
 const PartnerPromosPage = React.lazy(() => import("./pages/PartnerPromosPage"));
-
-// Lazy load untuk panel Developer
 const DeveloperDashboardPage = React.lazy(() =>
   import("./pages/DeveloperDashboardPage")
 );
 
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 let socket;
 
+// ... (Semua fungsi dan komponen lain seperti applyTheme, PageStatusWrapper, UserLayout, dll, tetap sama persis)
 const applyTheme = (theme) => {
   if (!theme) return;
   const root = document.documentElement;
   const favicon = document.querySelector("link[rel='icon']");
 
   if (favicon && theme.branding?.faviconUrl) {
-<<<<<<< HEAD
-    favicon.href = `http://localhost:5000${theme.branding.faviconUrl}`;
-=======
     favicon.href = `${theme.branding.faviconUrl}`;
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   }
 
   if (theme.colors) {
@@ -214,11 +156,7 @@ const applyTheme = (theme) => {
 
   if (theme.background) {
     if (theme.background.type === "image" && theme.background.imageUrl) {
-<<<<<<< HEAD
-      document.body.style.backgroundImage = `url(http://localhost:5000${theme.background.imageUrl})`;
-=======
       document.body.style.backgroundImage = `url(${theme.background.imageUrl})`;
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       document.body.style.backgroundColor = "";
       document.body.style.backgroundSize = "cover";
       document.body.style.backgroundPosition = "center";
@@ -230,10 +168,6 @@ const applyTheme = (theme) => {
   }
 };
 
-<<<<<<< HEAD
-// *** KOMPONEN PEMBUNGKUS BARU UNTUK MEMERIKSA STATUS HALAMAN ***
-=======
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 const PageStatusWrapper = ({ children, path, theme }) => {
   const isEnabled = theme?.featureFlags?.pageStatus?.[path] ?? true;
 
@@ -389,33 +323,24 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-<<<<<<< HEAD
+  // GANTI state dan fungsi lama
+  const [notification, setNotification] = useState(null);
+
+  const showMessage = (message, title = "Pemberitahuan") => {
+    // Jika untuk login, gunakan title khusus
+    const finalTitle = message === "Login berhasil!" ? "Login Berhasil" : title;
+    setNotification({ title: finalTitle, message });
+  };
+
+  const hideMessage = () => {
+    setNotification(null);
+  };
+  // AKHIR PERUBAHAN
+
   useEffect(() => {
     const fetchThemeConfig = async () => {
       try {
         const response = await fetch("/api/public/theme-config");
-=======
-  // <-- 2. TAMBAHKAN STATE UNTUK MESSAGE BOX -->
-  const [messageBox, setMessageBox] = useState({
-    show: false,
-    title: "",
-    message: "",
-  });
-
-  // <-- 3. BUAT FUNGSI UNTUK MENAMPILKAN DAN MENYEMBUNYIKAN MESSAGE BOX -->
-  const showMessage = (message, title = "Pemberitahuan") => {
-    setMessageBox({ show: true, title, message });
-  };
-
-  const hideMessage = () => {
-    setMessageBox({ show: false, title: "", message: "" });
-  };
-
-  useEffect(() => {
-    const fetchThemeConfig = async () => {
-      try {
-        const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/public/theme-config");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
         if (response.ok) {
           const data = await response.json();
           setTheme(data);
@@ -427,16 +352,18 @@ function App() {
     };
     fetchThemeConfig();
 
-    const user = JSON.parse(localStorage.getItem("user"));
+     const user = JSON.parse(localStorage.getItem("user"));
     if (user && user.id) {
-<<<<<<< HEAD
-      socket = io("http://localhost:5000", {
-=======
-      // Gunakan URL Render untuk koneksi socket
-      socket = io("https://stridebase-server.onrender.com", { // <-- PERBAIKAN
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
+      // --- AWAL PERBAIKAN ---
+      // Tentukan URL server berdasarkan lingkungan (development vs production)
+      const socketUrl = import.meta.env.PROD
+        ? import.meta.env.VITE_API_PRODUCTION_URL
+        : "/"; // Gunakan path relatif untuk development agar proxy Vite bekerja
+
+      socket = io(socketUrl, {
         query: { userId: user.id },
       });
+      // --- AKHIR PERBAIKAN ---
 
       socket.on("connect", () => {
         console.log(
@@ -448,22 +375,13 @@ function App() {
         console.log("Menerima notifikasi baru:", notification);
         setNotifications((prev) => [notification, ...prev]);
         setUnreadCount((prev) => prev + 1);
-<<<<<<< HEAD
-        alert(`Notifikasi Baru: ${notification.message}`);
-=======
-        // Ganti alert dengan message box baru
         showMessage(`Notifikasi Baru: ${notification.message}`);
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       });
 
       const fetchNotifications = async () => {
         const token = localStorage.getItem("token");
         try {
-<<<<<<< HEAD
           const res = await fetch("/api/user/notifications", {
-=======
-          const res = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/user/notifications", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
@@ -478,21 +396,12 @@ function App() {
       fetchNotifications();
     }
 
-<<<<<<< HEAD
-    const themeSocket = io("http://localhost:5000");
-=======
     const themeSocket = io("");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     themeSocket.on("themeUpdated", (newThemeConfig) => {
       console.log("Menerima pembaruan tema secara real-time:", newThemeConfig);
       setTheme(newThemeConfig);
       applyTheme(newThemeConfig);
-<<<<<<< HEAD
-      alert("Tampilan tema telah diperbarui oleh administrator.");
-=======
-      // Ganti alert dengan message box baru
       showMessage("Tampilan tema telah diperbarui oleh administrator.");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     });
 
     return () => {
@@ -506,23 +415,15 @@ function App() {
     };
   }, []);
 
-  // <-- 4. TERUSKAN FUNGSI `showMessage` KE SEMUA RUTE (INI BAGIAN PENTING) -->
   const renderWithProps = (Component) => (
     <Component showMessage={showMessage} />
   );
 
   return (
     <Router>
-<<<<<<< HEAD
-=======
-      {/* <-- 5. TAMPILKAN MESSAGE BOX DI SINI --> */}
-      <MessageBox
-        show={messageBox.show}
-        title={messageBox.title}
-        message={messageBox.message}
-        onOk={hideMessage}
-      />
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
+      {/* --- PERBAIKAN DI SINI --- */}
+      <Notification notification={notification} onClose={hideMessage} />
+
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route
@@ -533,14 +434,10 @@ function App() {
               </ProtectedRoute>
             }
           >
-<<<<<<< HEAD
-            <Route path="dashboard" element={<DeveloperDashboardPage />} />
-=======
             <Route
               path="dashboard"
               element={renderWithProps(DeveloperDashboardPage)}
             />
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           </Route>
 
           <Route
@@ -552,15 +449,6 @@ function App() {
             }
           >
             <Route path="dashboard" element={<PartnerDashboardPage />} />
-<<<<<<< HEAD
-            <Route path="services" element={<PartnerServicesPage />} />
-            <Route path="orders" element={<PartnerOrdersPage />} />
-            <Route path="settings" element={<PartnerSettingsPage />} />
-            <Route path="reviews" element={<PartnerReviewsPage />} />
-            <Route path="upgrade" element={<PartnerUpgradePage />} />
-            <Route path="invoices/:id" element={<PartnerInvoicePage />} />
-            <Route path="promos" element={<PartnerPromosPage />} />
-=======
             <Route
               path="services"
               element={renderWithProps(PartnerServicesPage)}
@@ -583,7 +471,6 @@ function App() {
               element={renderWithProps(PartnerInvoicePage)}
             />
             <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
           </Route>
 
           <Route
@@ -598,20 +485,6 @@ function App() {
             <Route path="bookings" element={<AdminBookingsPage />} />
             <Route path="reviews" element={<AdminReviewsPage />} />
             <Route path="reports" element={<AdminReportsPage />} />
-<<<<<<< HEAD
-            <Route path="stores" element={<AdminStoresPage />} />
-            <Route
-              path="stores/:storeId/invoices"
-              element={<AdminStoreInvoicePage />}
-            />
-            <Route path="users" element={<AdminUsersPage />} />
-            <Route path="promos" element={<AdminPromosPage />} />
-            <Route path="banners" element={<AdminBannersPage />} />
-            <Route path="settings" element={<AdminSettingsPage />} />
-            <Route
-              path="stores/:storeId/invoices"
-              element={<AdminStoreInvoicePage />}
-=======
             <Route path="stores" element={renderWithProps(AdminStoresPage)} />
             <Route
               path="stores/:storeId/invoices"
@@ -624,7 +497,6 @@ function App() {
             <Route
               path="stores/:storeId/invoices"
               element={renderWithProps(AdminStoreInvoicePage)}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             />
             <Route
               path="invoice/print/:invoiceId"
@@ -644,10 +516,6 @@ function App() {
               >
                 <Routes>
                   <Route path="/" element={<HomePage />} />
-<<<<<<< HEAD
-                  {/* *** BUNGKUS RUTE DENGAN PAGESTATUSWRAPPER *** */}
-=======
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                   <Route
                     path="/about"
                     element={
@@ -682,12 +550,6 @@ function App() {
                   />
 
                   <Route path="/invoice/:id" element={<InvoicePage />} />
-<<<<<<< HEAD
-                  <Route path="/store/:id" element={<StoreDetailPage />} />
-                  <Route
-                    path="/booking-confirmation"
-                    element={<BookingConfirmationPage />}
-=======
                   <Route
                     path="/store/:id"
                     element={renderWithProps(StoreDetailPage)}
@@ -695,22 +557,16 @@ function App() {
                   <Route
                     path="/booking-confirmation"
                     element={renderWithProps(BookingConfirmationPage)}
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                   />
                   <Route
                     path="/booking-success"
                     element={<BookingSuccessPage />}
                   />
-<<<<<<< HEAD
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-=======
                   <Route path="/login" element={renderWithProps(LoginPage)} />
                   <Route
                     path="/register"
                     element={renderWithProps(RegisterPage)}
                   />
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route
                     path="/track/:bookingId"

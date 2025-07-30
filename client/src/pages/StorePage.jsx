@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import StoreCard from "../components/StoreCard";
 import { useSearchParams } from "react-router-dom";
 
-// Daftar layanan unik untuk filter (bisa juga diambil dari API di masa depan)
 const UNIQUE_SERVICES = [
   "Fast Clean Sneakers",
   "Deep Clean Leather",
@@ -34,7 +33,6 @@ const StorePage = () => {
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // State untuk semua filter
   const [searchTerm, setSearchTerm] = useState(
     searchParams.get("search") || ""
   );
@@ -70,11 +68,7 @@ const StorePage = () => {
       params.append("openNow", "true");
     }
 
-<<<<<<< HEAD
     const apiUrl = `/api/stores?${params.toString()}`;
-=======
-    const apiUrl = `import.meta.env.VITE_API_BASE_URL + "/api/stores?${params.toString()}`;
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
 
     try {
       const response = await fetch(apiUrl);
@@ -127,22 +121,14 @@ const StorePage = () => {
           setSortBy("distance");
         },
         (error) => {
-<<<<<<< HEAD
-          alert(
-=======
           showMessage(
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
             "Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi."
           );
           console.error(error);
         }
       );
     } else {
-<<<<<<< HEAD
-      alert("Geolocation tidak didukung oleh browser Anda.");
-=======
       showMessage("Geolocation tidak didukung oleh browser Anda.");
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     }
   };
 
@@ -167,7 +153,6 @@ const StorePage = () => {
     <div className="store-page-redesigned">
       <div className="filter-panel-top">
         <div className="container d-flex flex-wrap align-items-center gap-2">
-          {/* Filter Utama yang Selalu Terlihat */}
           <div className="search-input-wrapper flex-grow-1">
             <i className="fas fa-search"></i>
             <input
@@ -179,7 +164,6 @@ const StorePage = () => {
             />
           </div>
 
-          {/* Tombol Filter Lanjutan */}
           <div className="dropdown">
             <button
               className={`btn ${

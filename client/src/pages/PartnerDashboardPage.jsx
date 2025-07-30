@@ -1,9 +1,6 @@
-// File: stridebase-app/client/src/pages/PartnerDashboardPage.jsx
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-// Komponen KPI Card untuk menampilkan statistik
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   <div className="col-lg-3 col-md-6">
     <Link to={linkTo} className="text-decoration-none">
@@ -20,9 +17,8 @@ const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   </div>
 );
 
-// --- KOMPONEN BARU UNTUK GRAFIK (SIMULASI) ---
 const RevenueChart = ({ data }) => {
-  const maxValue = Math.max(...data.map((d) => d.revenue), 1); // Hindari pembagian dengan nol
+  const maxValue = Math.max(...data.map((d) => d.revenue), 1);
   return (
     <div className="table-card p-3 shadow-sm">
       <h5 className="mb-3">Pendapatan 7 Hari Terakhir</h5>
@@ -48,23 +44,20 @@ const RevenueChart = ({ data }) => {
     </div>
   );
 };
-// --- AKHIR KOMPONEN BARU ---
 
 const PartnerDashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [outstandingInvoices, setOutstandingInvoices] = useState([]);
-  const [store, setStore] = useState(null); // State baru untuk data toko
+  const [store, setStore] = useState(null);
 
-  // ... (useEffect untuk fetch data tidak berubah) ...
   useEffect(() => {
     const fetchPartnerStats = async () => {
       const token = localStorage.getItem("token");
       setLoading(true);
       try {
         const [statsRes, invoicesRes, storeRes] = await Promise.all([
-<<<<<<< HEAD
           fetch("/api/partner/dashboard", {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -72,16 +65,6 @@ const PartnerDashboardPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("/api/partner/settings", {
-=======
-          fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/dashboard", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/invoices/outstanding", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch("import.meta.env.VITE_API_BASE_URL + "/api/partner/settings", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
-            // Ambil juga data toko
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -96,7 +79,7 @@ const PartnerDashboardPage = () => {
 
         setStats(statsData);
         setOutstandingInvoices(invoicesData);
-        setStore(storeData); // Simpan data toko
+        setStore(storeData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -125,12 +108,10 @@ const PartnerDashboardPage = () => {
 
   return (
     <div className="container-fluid px-4">
-      {/* --- BAGIAN JUDUL YANG DIMODIFIKASI --- */}
       <div className="d-flex align-items-center m-4">
         <h2 className="fs-2 mb-0 me-3">
           Dashboard: {stats?.storeName || "Toko Anda"}
         </h2>
-        {/* --- PERUBAHAN DI SINI --- */}
         {store?.tier === "PRO" && (
           <span className="badge bg-warning text-dark fs-6">
             <i className="fas fa-crown me-1"></i> PRO
@@ -139,9 +120,7 @@ const PartnerDashboardPage = () => {
         {store?.tier === "BASIC" && (
           <span className="badge bg-light text-dark fs-6">BASIC</span>
         )}
-        {/* --- AKHIR PERUBAHAN --- */}
       </div>
-      {/* --- AKHIR BAGIAN JUDUL --- */}
 
       {outstandingInvoices.length > 0 && (
         <div className="alert alert-warning d-flex justify-content-between align-items-center">
@@ -159,7 +138,6 @@ const PartnerDashboardPage = () => {
         </div>
       )}
       <div className="row g-3 my-2">
-        {/* ... (KPI Cards tidak berubah) ... */}
         <KpiCard
           title="Total Pendapatan"
           value={`Rp ${stats?.totalRevenue.toLocaleString("id-ID") || 0}`}
@@ -190,7 +168,6 @@ const PartnerDashboardPage = () => {
         />
       </div>
 
-      {/* --- BAGIAN BARU UNTUK GRAFIK DAN TABEL PESANAN --- */}
       <div className="row g-3 my-4">
         <div className="col-md-7">
           {stats?.revenueLast7Days && (
@@ -231,7 +208,6 @@ const PartnerDashboardPage = () => {
           </div>
         </div>
       </div>
-      {/* --- AKHIR BAGIAN BARU --- */}
     </div>
   );
 };

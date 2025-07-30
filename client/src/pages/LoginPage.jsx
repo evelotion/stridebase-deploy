@@ -1,20 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-<<<<<<< HEAD
-const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  // --- BAGIAN 1: TAMBAHKAN STATE BARU UNTUK ERROR FORM ---
-  const [formErrors, setFormErrors] = useState({});
-
-  const navigate = useNavigate();
-
-  // --- BAGIAN 2: TAMBAHKAN FUNGSI VALIDASI ---
-=======
-// 1. Terima `showMessage` sebagai prop
 const LoginPage = ({ showMessage }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +8,6 @@ const LoginPage = ({ showMessage }) => {
   const [formErrors, setFormErrors] = useState({});
   const navigate = useNavigate();
 
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
   const validateForm = () => {
     const errors = {};
     if (!/\S+@\S+\.\S+/.test(email)) {
@@ -31,10 +16,7 @@ const LoginPage = ({ showMessage }) => {
     if (!password) {
       errors.password = "Password tidak boleh kosong.";
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -43,22 +25,12 @@ const LoginPage = ({ showMessage }) => {
     e.preventDefault();
     setError("");
 
-<<<<<<< HEAD
-    // --- BAGIAN 3: PANGGIL FUNGSI VALIDASI SEBELUM SUBMIT ---
-    if (!validateForm()) {
-      return; // Hentikan submit jika validasi gagal
-    }
-
-    try {
-      const response = await fetch("/api/auth/login", {
-=======
     if (!validateForm()) {
       return;
     }
 
     try {
-      const response = await fetch("import.meta.env.VITE_API_BASE_URL + "/api/auth/login", {
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -71,15 +43,9 @@ const LoginPage = ({ showMessage }) => {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-<<<<<<< HEAD
 
-      alert("Login berhasil!");
-=======
-
-      // 2. Ganti `alert` dengan `showMessage`
       showMessage("Login berhasil!");
 
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
       navigate("/dashboard");
       window.location.reload();
     } catch (err) {
@@ -108,11 +74,6 @@ const LoginPage = ({ showMessage }) => {
             </div>
 
             <form onSubmit={handleSubmit} noValidate>
-<<<<<<< HEAD
-              {" "}
-              {/* Tambahkan noValidate */}
-=======
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
               {error && <div className="alert alert-danger">{error}</div>}
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
@@ -129,10 +90,6 @@ const LoginPage = ({ showMessage }) => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-<<<<<<< HEAD
-                {/* --- BAGIAN 4: TAMPILKAN PESAN ERROR UNTUK EMAIL --- */}
-=======
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                 {formErrors.email && (
                   <div className="invalid-feedback">{formErrors.email}</div>
                 )}
@@ -152,10 +109,6 @@ const LoginPage = ({ showMessage }) => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-<<<<<<< HEAD
-                {/* --- BAGIAN 5: TAMPILKAN PESAN ERROR UNTUK PASSWORD --- */}
-=======
->>>>>>> 405187dd8cd3db9bd57ddb0aeaf8c32d9ee8bdc3
                 {formErrors.password && (
                   <div className="invalid-feedback">{formErrors.password}</div>
                 )}
