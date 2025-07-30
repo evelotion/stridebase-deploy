@@ -22,10 +22,10 @@ const PartnerServicesPage = () => {
     setLoading(true);
     try {
       const [storeRes, servicesRes] = await Promise.all([
-        fetch("/api/partner/settings", {
+        fetch(`${API_BASE_URL}/api/partner/settings`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("/api/partner/services", {
+        fetch(`${API_BASE_URL}/api/partner/services`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);

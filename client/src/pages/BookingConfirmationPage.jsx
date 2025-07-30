@@ -49,7 +49,7 @@ const BookingConfirmationPage = () => {
     setPromoError("");
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/promos/validate", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/promos/validate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const BookingConfirmationPage = () => {
     };
 
     try {
-      const bookingResponse = await fetch("/api/bookings", {
+      const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ const BookingConfirmationPage = () => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      const paymentResponse = await fetch("/api/payments/create-transaction", {
+      const paymentResponse = await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

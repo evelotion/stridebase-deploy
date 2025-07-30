@@ -30,7 +30,7 @@ const AdminPromosPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/promos", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/promos`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -86,7 +86,7 @@ const AdminPromosPage = () => {
       endDate: newPromoData.endDate || null,
     };
     try {
-      const response = await fetch("/api/admin/promos", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/promos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

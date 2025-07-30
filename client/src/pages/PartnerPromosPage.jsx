@@ -23,10 +23,10 @@ const PartnerPromosPage = () => {
     const token = localStorage.getItem("token");
     try {
       const [promosRes, storeRes] = await Promise.all([
-        fetch("/api/partner/promos", {
+        fetch(`${API_BASE_URL}/api/partner/promos`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("/api/partner/settings", {
+        fetch(`${API_BASE_URL}/api/partner/settings`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);

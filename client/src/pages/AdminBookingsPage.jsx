@@ -13,7 +13,7 @@ const AdminBookingsPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/bookings", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/bookings`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {

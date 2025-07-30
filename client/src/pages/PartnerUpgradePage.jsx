@@ -9,7 +9,7 @@ const PartnerUpgradePage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("/api/partner/upgrade/create-transaction", {
+      const response = await fetch(`${API_BASE_URL}/api/partner/upgrade/create-transaction`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

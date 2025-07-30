@@ -15,10 +15,10 @@ const HomePage = () => {
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
         const [storesRes, bannersRes, recommendationsRes] = await Promise.all([
-          fetch("/api/stores"),
-          fetch("/api/banners"),
+          fetch(`${API_BASE_URL}/api/stores`), 
+          fetch(`${API_BASE_URL}/api/banners`),
           token
-            ? fetch("/api/user/recommendations", { headers })
+            ? fetch(`${API_BASE_URL}/api/user/recommendations`, { headers }) // <-- UBAH JUGA DI SINI
             : Promise.resolve(null),
         ]);
 

@@ -28,13 +28,13 @@ const AdminStoresPage = () => {
       const token = localStorage.getItem("token");
       try {
         const [storesRes, usersRes, configRes] = await Promise.all([
-          fetch("/api/admin/stores", {
+          fetch(`${API_BASE_URL}/api/admin/stores`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/admin/users", {
+          fetch(`${API_BASE_URL}/api/admin/users`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/public/theme-config"),
+          fetch(`${API_BASE_URL}/api/public/theme-config`),
         ]);
 
         if (!storesRes.ok || !usersRes.ok || !configRes.ok) {
@@ -62,7 +62,7 @@ const AdminStoresPage = () => {
   const fetchStores = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/stores", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/stores`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Gagal mengambil data toko.");
@@ -198,7 +198,7 @@ const AdminStoresPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/stores", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/stores`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

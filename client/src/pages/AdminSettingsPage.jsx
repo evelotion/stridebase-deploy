@@ -16,7 +16,7 @@ const AdminSettingsPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/config", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/config`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Gagal mengambil data konfigurasi.");
@@ -49,7 +49,7 @@ const AdminSettingsPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/config", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/config`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

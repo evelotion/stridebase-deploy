@@ -93,7 +93,7 @@ const StoreDetailPage = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const res = await fetch("/api/user/addresses", {
+      const res = await fetch(`${API_BASE_URL}/api/user/addresses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -207,7 +207,7 @@ const StoreDetailPage = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/user/addresses", {
+      const response = await fetch(`${API_BASE_URL}/api/user/addresses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

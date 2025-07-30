@@ -25,7 +25,7 @@ const AdminReviewsPage = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("/api/admin/reviews", {
+      const response = await fetch(`${API_BASE_URL}/api/admin/reviews`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {

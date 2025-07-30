@@ -97,7 +97,7 @@ const AdminReportsPage = () => {
 
     try {
       const [statsRes, transactionsRes] = await Promise.all([
-        fetch("/api/admin/stats", {
+        fetch(`${API_BASE_URL}/api/admin/stats`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`/api/admin/transactions?${params.toString()}`, {

@@ -58,13 +58,13 @@ const PartnerDashboardPage = () => {
       setLoading(true);
       try {
         const [statsRes, invoicesRes, storeRes] = await Promise.all([
-          fetch("/api/partner/dashboard", {
+          fetch(`${API_BASE_URL}/api/partner/dashboard`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/partner/invoices/outstanding", {
+          fetch(`${API_BASE_URL}/api/partner/invoices/outstanding`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("/api/partner/settings", {
+          fetch(`${API_BASE_URL}/api/partner/settings`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

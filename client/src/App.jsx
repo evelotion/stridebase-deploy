@@ -340,7 +340,7 @@ function App() {
   useEffect(() => {
     const fetchThemeConfig = async () => {
       try {
-        const response = await fetch("/api/public/theme-config");
+        const response = await fetch(`${API_BASE_URL}/api/public/theme-config`);
         if (response.ok) {
           const data = await response.json();
           setTheme(data);
@@ -381,7 +381,7 @@ function App() {
       const fetchNotifications = async () => {
         const token = localStorage.getItem("token");
         try {
-          const res = await fetch("/api/user/notifications", {
+          const res = await fetch(`${API_BASE_URL}/api/user/notifications`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();

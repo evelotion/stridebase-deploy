@@ -38,7 +38,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      const response = await fetch("/api/partner/settings", {
+      const response = await fetch(`${API_BASE_URL}/api/partner/settings`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -99,7 +99,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("/api/partner/upload-photo", {
+      const response = await fetch(`${API_BASE_URL}/api/partner/upload-photo`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -147,7 +147,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
     };
 
     try {
-      const response = await fetch("/api/partner/settings", {
+      const response = await fetch(`${API_BASE_URL}/api/partner/settings`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

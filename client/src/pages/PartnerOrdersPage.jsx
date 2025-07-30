@@ -9,7 +9,7 @@ const PartnerOrdersPage = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
     try {
-      const response = await fetch("/api/partner/orders", {
+      const response = await fetch(`${API_BASE_URL}/api/partner/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
