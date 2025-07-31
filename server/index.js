@@ -108,6 +108,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const themeConfigPath = path.join(__dirname, "config", "theme.json");
 
 app.get("/api/public/theme-config", (req, res) => {
