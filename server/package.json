@@ -20,6 +20,7 @@
   "dependencies": {
     "@prisma/client": "^6.11.1",
     "bcryptjs": "^3.0.2",
+   "prisma": "^6.11.1",
     "bullmq": "^5.56.4",
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
@@ -31,7 +32,6 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
-    "prisma": "^6.11.1"
+    "nodemon": "^3.1.10"
   }
 }
