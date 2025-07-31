@@ -11,8 +11,12 @@ const daysLater = (days) => new Date(new Date().setDate(new Date().getDate() + d
 async function main() {
   console.log("🚀 Start seeding comprehensive dummy data...");
 
-  // Hapus data lama untuk memastikan seeding yang bersih
   console.log("🔥 Deleting old data...");
+  // HANYA MENGHAPUS USER UNTUK MEMPERCEPAT PROSES
+  await prisma.user.deleteMany();
+
+  /*
+  // Data lain dinonaktifkan sementara untuk menghindari timeout di Render Free Tier
   await prisma.notification.deleteMany();
   await prisma.pointTransaction.deleteMany();
   await prisma.loyaltyPoint.deleteMany();
@@ -27,13 +31,13 @@ async function main() {
   await prisma.subscription.deleteMany();
   await prisma.store.deleteMany();
   await prisma.address.deleteMany();
-  await prisma.user.deleteMany();
   await prisma.promo.deleteMany();
   await prisma.banner.deleteMany();
+  */
   console.log("✅ Old data deleted.");
 
   // =================================================================
-  // 1. SEED PENGGUNA (USERS) DENGAN SEMUA PERAN
+  // 1. SEED PENGGUNA (USERS) DENGAN SEMUA PERAN (BAGIAN INI TETAP AKTIF)
   // =================================================================
   console.log("👤 Seeding users...");
   const passwordHash = await bcrypt.hash("password123", 10);
@@ -52,8 +56,9 @@ async function main() {
   });
   console.log(`✅ ${users.length} users created.`);
 
+  /*
   // =================================================================
-  // 2. SEED ALAMAT UNTUK CUSTOMER
+  // 2. SEED ALAMAT UNTUK CUSTOMER (DINONAKTIFKAN)
   // =================================================================
   console.log("🏠 Seeding addresses...");
   await prisma.address.createMany({
@@ -65,7 +70,7 @@ async function main() {
   console.log("✅ 2 addresses created.");
 
   // =================================================================
-  // 3. SEED 4 TOKO (STORES) UNTUK PARA MITRA
+  // 3. SEED 4 TOKO (STORES) UNTUK PARA MITRA (DINONAKTIFKAN)
   // =================================================================
   console.log("🏪 Seeding stores...");
   const stores = await prisma.store.createManyAndReturn({
@@ -79,7 +84,7 @@ async function main() {
   console.log(`✅ ${stores.length} stores created.`);
 
   // =================================================================
-  // 4. SEED LAYANAN (SERVICES) UNTUK TOKO YANG AKTIF
+  // 4. SEED LAYANAN (SERVICES) UNTUK TOKO YANG AKTIF (DINONAKTIFKAN)
   // =================================================================
   console.log("🧼 Seeding services...");
   const services = await prisma.service.createManyAndReturn({
@@ -93,7 +98,7 @@ async function main() {
   console.log(`✅ ${services.length} services created.`);
 
   // =================================================================
-  // 5. SEED BOOKING (TRANSAKSI)
+  // 5. SEED BOOKING (TRANSAKSI) (DINONAKTIFKAN)
   // =================================================================
   console.log("🧾 Seeding bookings...");
   const bookings = await prisma.booking.createManyAndReturn({
@@ -106,7 +111,7 @@ async function main() {
   console.log(`✅ ${bookings.length} bookings created.`);
 
   // =================================================================
-  // 6. SEED PEMBAYARAN & PLATFORM EARNINGS
+  // 6. SEED PEMBAYARAN & PLATFORM EARNINGS (DINONAKTIFKAN)
   // =================================================================
   console.log("💳 Seeding payments & earnings...");
   await prisma.payment.createMany({
@@ -120,7 +125,7 @@ async function main() {
   console.log("✅ Payments and earnings seeded.");
 
   // =================================================================
-  // 7. SEED ULASAN (REVIEWS)
+  // 7. SEED ULASAN (REVIEWS) (DINONAKTIFKAN)
   // =================================================================
   console.log("⭐ Seeding reviews...");
   await prisma.review.create({
@@ -137,7 +142,7 @@ async function main() {
   console.log("✅ 1 review created.");
 
   // =================================================================
-  // 8. SEED INVOICES & PERMINTAAN PERSETUJUAN (APPROVAL)
+  // 8. SEED INVOICES & PERMINTAAN PERSETUJUAN (APPROVAL) (DINONAKTIFKAN)
   // =================================================================
   console.log("📄🔔 Seeding invoices and approval requests...");
   const invoice = await prisma.invoice.create({ data: { storeId: "store-01-pro", invoiceNumber: `INV-${new Date().getFullYear()}-00001`, dueDate: daysLater(14), status: "SENT", totalAmount: 99000, notes: "Tagihan langganan StrideBase PRO." } });
@@ -156,6 +161,7 @@ async function main() {
   await prisma.promo.create({ data: { code: "STRIDEBARU", description: "Diskon 15% untuk pengguna baru!", discountType: "percentage", value: 15, forNewUser: true, minTransaction: 50000 } });
   await prisma.banner.create({ data: { imageUrl: "/uploads/asset-1752737852107.png", linkUrl: "/store" } });
   console.log("✅ Promos and banners seeded.");
+  */
 
   console.log("✅ Seeding finished successfully!");
 }
