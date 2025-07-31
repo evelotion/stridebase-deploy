@@ -838,11 +838,11 @@ app.get("/api/stores", async (req, res) => {
 
     // await redisClient.set(cacheKey, JSON.stringify(stores), "EX", 300);
 
-    res.json(stores);
-  } catch (error) {
-    console.error("Gagal mengambil data toko:", error);
-    res.status(500).json({ message: "Gagal mengambil data toko." });
-  }
+    res.json(stores || []); // Pastikan mengirim array kosong jika tidak ada
+    } catch (error) {
+        console.error("Gagal mengambil data toko:", error);
+        res.status(500).json([]); // Kirim array kosong jika error
+    }
 });
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -929,9 +929,12 @@ app.get("/api/banners", async (req, res) => {
     const allBanners = await prisma.banner.findMany({
       where: { status: "active" },
     });
-    res.json(allBanners);
+    // JIKA TIDAK ADA BANNER, KIRIM ARRAY KOSONG
+    res.json(allBanners || []); 
   } catch (error) {
-    res.status(500).json({ message: "Gagal mengambil data banner." });
+    // JIKA ADA ERROR, KIRIM ARRAY KOSONG
+    console.error("Gagal mengambil banner:", error);
+    res.status(500).json([]); 
   }
 });
 
