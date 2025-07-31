@@ -2860,8 +2860,8 @@ superUserRouter.get("/maintenance/health-check", async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     const dbStatus = "Operasional";
-    await redisClient.ping();
-    const redisStatus = "Operasional";
+    // await redisClient.ping();
+    const redisStatus = "Tidak Digunakan";
     res.status(200).json({
       database: dbStatus,
       redis: redisStatus,
