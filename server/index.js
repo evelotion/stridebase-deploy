@@ -16,6 +16,7 @@ import { body, validationResult } from "express-validator";
 import sharp from "sharp";
 import cors from "cors";
 import redisClient from "./redis-client.js";
+import { v2 as cloudinary } from 'cloudinary';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,6 +61,12 @@ prisma.$use(async (params, next) => {
 });
 
 const app = express();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const PORT = 5000;
 
 const server = http.createServer(app);
@@ -103,7 +110,7 @@ io.on("connection", (socket) => {
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://stridebase-client.onrender.com"],
+    origin: ["http://localhost:5173", "https://stridebase-app.onrender.com"],
   })
 );
 
@@ -169,14 +176,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const processAndSaveImage = async (fileBuffer, fieldname) => {
-  const filename = `${fieldname}-${Date.now()}.webp`;
-  const filepath = path.join(__dirname, "uploads", filename);
-
-  await sharp(fileBuffer).resize(800).webp({ quality: 80 }).toFile(filepath);
-
-  return `/uploads/${filename}`; // INI SUDAH BENAR
-};
 
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -2777,17 +2776,22 @@ app.post(
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
     try {
-      const imageUrl = await processAndSaveImage(
-        req.file.buffer,
-        req.file.fieldname
-      );
+      // Logika yang sama seperti upload-asset
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: "stridebase_reviews", // Folder terpisah untuk ulasan
+        public_id: `review-${req.user.id}-${Date.now()}`
+      });
+
       res.status(200).json({
         message: "Gambar berhasil diunggah dan dioptimalkan.",
-        imageUrl: imageUrl,
+        imageUrl: result.secure_url, // <-- PENTING: Gunakan secure_url
       });
     } catch (error) {
       console.error("Gagal memproses gambar:", error);
-      res.status(500).json({ message: "Gagal memproses gambar." });
+      res.status(500).json({ message: `Gagal memproses gambar: ${error.message}` });
     }
   }
 );
@@ -2845,17 +2849,24 @@ superUserRouter.post(
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
     try {
-      const publicPath = await processAndSaveImage(
-        req.file.buffer,
-        req.file.fieldname
-      );
+      // Mengubah buffer menjadi data URI yang bisa di-stream
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+      // Mengunggah ke Cloudinary
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: "stridebase_assets", // Membuat folder di Cloudinary
+        public_id: `${req.file.fieldname}-${Date.now()}` // Nama file unik
+      });
+
+      // Mengirim kembali URL aman dari Cloudinary
       res.status(200).json({
-        message: "File berhasil diunggah.",
-        filePath: publicPath,
+        message: "File berhasil diunggah ke Cloudinary.",
+        filePath: result.secure_url, // <-- PENTING: Gunakan secure_url
       });
     } catch (error) {
       console.error("Gagal memproses aset:", error);
-      res.status(500).json({ message: "Gagal memproses aset." });
+      res.status(500).json({ message: `Gagal memproses aset: ${error.message}` });
     }
   }
 );
