@@ -72,7 +72,7 @@ const PORT = 5000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "https://stridebase-client.onrender.com"], // <-- TAMBAHKAN URL RENDER DI SINI
+    origin: ["http://localhost:5173", "https://stridebase-app.onrender.com"], // <-- TAMBAHKAN URL RENDER DI SINI
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
   },
 });
