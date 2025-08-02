@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const LoginPage = ({ showMessage }) => {
   const [email, setEmail] = useState("");
@@ -47,8 +47,24 @@ const LoginPage = ({ showMessage }) => {
 
       showMessage("Login berhasil!");
 
-      navigate("/dashboard");
-      window.location.reload();
+      // --- PERUBAHAN DIMULAI DI SINI ---
+      // Arahkan berdasarkan peran pengguna
+      switch (data.user.role) {
+        case "admin":
+          navigate("/admin/dashboard");
+          break;
+        case "developer":
+          navigate("/developer/dashboard");
+          break;
+        case "mitra":
+          navigate("/partner/dashboard");
+          break;
+        default:
+          navigate("/dashboard");
+      }
+      // --- PERUBAHAN SELESAI ---
+
+      window.location.reload(); // Reload tetap diperlukan untuk memperbarui state aplikasi
     } catch (err) {
       setError(err.message);
     }
