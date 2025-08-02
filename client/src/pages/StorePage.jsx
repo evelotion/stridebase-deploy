@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import StoreCard from "../components/StoreCard";
 import { useSearchParams } from "react-router-dom";
+import API_BASE_URL from "../apiConfig";
 
 const UNIQUE_SERVICES = [
   "Fast Clean Sneakers",
