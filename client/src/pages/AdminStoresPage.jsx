@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API_BASE_URL from '../apiConfig';
 
-const AdminStoresPage = () => {
+const AdminStoresPage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);

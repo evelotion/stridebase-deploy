@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 
-const AdminStoreInvoicePage = () => {
+const AdminStoreInvoicePage = ({ showMessage }) => {
   const { storeId } = useParams();
   const [store, setStore] = useState(null);
   const [invoices, setInvoices] = useState([]);

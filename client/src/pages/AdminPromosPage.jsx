@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from '../apiConfig';
 
-const AdminPromosPage = () => {
+const AdminPromosPage = ({ showMessage }) => {
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
 
