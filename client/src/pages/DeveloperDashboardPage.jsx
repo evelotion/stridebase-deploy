@@ -140,7 +140,7 @@ const DeveloperDashboardPage = () => {
       setLoadingHealth(true);
       try {
         const response = await fetch(
-          "/api/superuser/maintenance/health-check",
+         `${API_BASE_URL}/api/superuser/maintenance/health-check`,
           { headers }
         );
         const data = await response.json();

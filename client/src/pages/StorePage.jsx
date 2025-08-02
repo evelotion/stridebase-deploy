@@ -68,7 +68,7 @@ const StorePage = () => {
       params.append("openNow", "true");
     }
 
-    const apiUrl = `/api/stores?${params.toString()}`;
+    const apiUrl = `${API_BASE_URL}/api/stores?${params.toString()}`;
 
     try {
       const response = await fetch(apiUrl);
