@@ -1317,19 +1317,24 @@ partnerRouter.post(
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
 
-    try {
-      const publicPath = await processAndSaveImage(
-        req.file.buffer,
-        req.file.fieldname
-      );
+     try {
+      // --- LOGIKA BARU DIMULAI DI SINI ---
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: "stridebase_photos", // Folder baru untuk foto toko
+        public_id: `photo-${req.store.id}-${Date.now()}`
+      });
 
       res.status(200).json({
-        message: "Foto berhasil diunggah dan dioptimalkan.",
-        filePath: publicPath,
+        message: "Foto berhasil diunggah.",
+        filePath: result.secure_url, // Mengirim kembali URL Cloudinary
       });
+      // --- LOGIKA BARU SELESAI ---
     } catch (error) {
       console.error("Gagal memproses gambar:", error);
-      res.status(500).json({ message: "Gagal memproses gambar." });
+      res.status(500).json({ message: `Gagal memproses gambar: ${error.message}` });
     }
   }
 );
