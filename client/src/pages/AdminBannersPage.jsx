@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const AdminBannersPage = ({ showMessage }) => {
   const [banners, setBanners] = useState([]);
@@ -106,10 +106,13 @@ const AdminBannersPage = ({ showMessage }) => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/banners/${bannerId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/banners/${bannerId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const data = await response.json();
       if (!response.ok)
         throw new Error(data.message || "Gagal menghapus banner.");
