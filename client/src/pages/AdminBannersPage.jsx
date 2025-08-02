@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from '../apiConfig';
 
-const AdminBannersPage = () => {
+const AdminBannersPage = ({ showMessage }) => {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
 
