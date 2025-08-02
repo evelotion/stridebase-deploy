@@ -5,10 +5,10 @@
     "enableProTierUpgrade": false,
     "enableTierSystem": true,
     "pageStatus": {
-      "/about": false,
-      "/contact": false,
+      "/about": true,
+      "/contact": true,
       "/store": true,
-      "/faq": false
+      "/faq": true
     }
   },
   "globalAnnouncement": "Diskon 50% untuk semua layanan hingga akhir bulan!",
