@@ -3387,20 +3387,32 @@ main.store-detail {
 
 /* client/src/style.css */
 
-/* === Global Announcement Bar === */
+/* client/src/style.css */
+
+/* === Global Announcement Bar (Versi Rounded & Transparan) === */
 .global-announcement-bar {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  padding: 0.5rem 1rem;
   position: fixed;
-  top: 56px; /* Tinggi default navbar Anda */
-  left: 0;
-  width: 100%;
-  z-index: 999; /* Di bawah navbar (1000) tapi di atas konten lain */
+  top: 70px; /* Sedikit jarak dari navbar */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%; /* Tidak 100% agar terlihat mengambang */
+  max-width: 900px; /* Lebar maksimum agar tidak terlalu lebar di layar besar */
+  z-index: 999;
+  
+  /* Efek Kaca Transparan */
+  background: rgba(28, 64, 212, 0.85); /* Warna primer dengan 85% opacity */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Untuk Safari */
+  
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 999px; /* Membuat sudut sangat rounded seperti pil */
+  
   text-align: center;
   font-size: 0.9rem;
   font-weight: 500;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .global-announcement-bar p {
@@ -3418,5 +3430,5 @@ main.store-detail {
 
 /* Penyesuaian padding konten utama agar tidak tertutup bar */
 main {
-  padding-top: 96px; /* Navbar (56px) + Announcement (40px) */
+  padding-top: 120px; /* Navbar (56px) + Announcement + Jarak (64px) */
 }

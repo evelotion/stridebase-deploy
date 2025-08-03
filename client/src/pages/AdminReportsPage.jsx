@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const KpiCard = ({ title, value, icon, colorClass }) => (
   <div className="col-lg-3 col-md-6">
@@ -101,7 +101,8 @@ const AdminReportsPage = () => {
         fetch(`${API_BASE_URL}/api/admin/stats`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch(`/api/admin/transactions?${params.toString()}`, {
+        fetch(`${API_BASE_URL}/api/admin/transactions?${params.toString()}`, {
+          // PERBAIKAN DI SINI
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
