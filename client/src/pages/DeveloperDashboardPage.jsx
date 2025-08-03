@@ -39,7 +39,7 @@ const ColorInput = ({ label, name, value, onChange }) => (
 );
 
 // Komponen utama
-const DeveloperDashboardPage = () => {
+const DeveloperDashboardPage = ({ showMessage }) => {
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -172,8 +172,8 @@ const DeveloperDashboardPage = () => {
       setLoadingRequests(true);
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/superuser/approval-requests`,
-          {
+  `${API_BASE_URL}/api/superuser/approval-requests/${requestId}/resolve`,
+  {
             headers,
           }
         );
