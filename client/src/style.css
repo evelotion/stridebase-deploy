@@ -3390,7 +3390,7 @@ main.store-detail {
 /* === Global Announcement Bar (Versi Floating / Overlay) === */
 .global-announcement-bar {
   position: fixed;
-  top: 70px; /* Jarak dari atas (di bawah navbar) */
+  top: 50px; /* Jarak dari atas (di bawah navbar) */
   left: 50%;
   transform: translateX(-50%);
   width: 90%; /* Tidak 100% agar terlihat mengambang */

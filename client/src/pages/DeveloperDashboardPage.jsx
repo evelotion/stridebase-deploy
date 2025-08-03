@@ -865,30 +865,6 @@ const DeveloperDashboardPage = () => {
                     className="form-check-input"
                     type="checkbox"
                     role="switch"
-                    id="enableGlobalAnnouncement"
-                    name="featureFlags.enableGlobalAnnouncement"
-                    checked={
-                      localConfig.featureFlags?.enableGlobalAnnouncement ||
-                      false
-                    }
-                    onChange={handleConfigChange}
-                  />
-                  <label
-                    className="form-check-label"
-                    htmlFor="enableGlobalAnnouncement"
-                  >
-                    Tampilkan Pengumuman Global
-                  </label>
-                  <div className="form-text mt-1">
-                    Jika aktif, bar pengumuman akan muncul di bawah navbar untuk
-                    semua pengguna.
-                  </div>
-                </div>
-                <div className="form-check form-switch mb-3">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
                     id="enableTierSystem"
                     name="featureFlags.enableTierSystem"
                     checked={

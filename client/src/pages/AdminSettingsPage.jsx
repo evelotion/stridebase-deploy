@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const AdminSettingsPage = ({ showMessage }) => {
   const [config, setConfig] = useState({
@@ -98,7 +98,29 @@ const AdminSettingsPage = ({ showMessage }) => {
             onChange={handleConfigChange}
           ></textarea>
         </div>
-
+        <div className="form-check form-switch mb-3">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="enableGlobalAnnouncement"
+            name="featureFlags.enableGlobalAnnouncement"
+            checked={
+              localConfig.featureFlags?.enableGlobalAnnouncement || false
+            }
+            onChange={handleConfigChange}
+          />
+          <label
+            className="form-check-label"
+            htmlFor="enableGlobalAnnouncement"
+          >
+            Tampilkan Pengumuman Global
+          </label>
+          <div className="form-text mt-1">
+            Jika aktif, bar pengumuman akan muncul di bawah navbar untuk semua
+            pengguna.
+          </div>
+        </div>
         <hr className="my-4" />
         <h5 className="mb-3">Pengaturan Situs</h5>
         <div className="form-check form-switch">
