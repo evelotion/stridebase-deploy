@@ -172,8 +172,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       setLoadingRequests(true);
       try {
         const response = await fetch(
-  `${API_BASE_URL}/api/superuser/approval-requests/${requestId}/resolve`,
-  {
+          `${API_BASE_URL}/api/superuser/approval-requests/${requestId}/resolve`,
+          {
             headers,
           }
         );
@@ -436,13 +436,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
   const handleResolveRequest = async (requestId, resolution) => {
     const actionText = resolution === "APPROVED" ? "menyetujui" : "menolak";
-    if (!confirm(`Apakah Anda yakin ingin ${actionText} permintaan ini?`))
+    if (!confirm(`Apakah Anda yakin ingin ${actionText} permintaan ini?`)) {
       return;
+    }
 
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `/api/superuser/approval-requests/${requestId}/resolve`,
+        `${API_BASE_URL}/api/superuser/approval-requests/${requestId}/resolve`,
         {
           method: "POST",
           headers: {
@@ -452,12 +453,22 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           body: JSON.stringify({ resolution }),
         }
       );
+
       const data = await response.json();
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(data.message || "Gagal memproses permintaan.");
+      }
 
       alert(data.message);
-      setApprovalRequests((prev) => prev.filter((req) => req.id !== requestId));
+      // Memuat ulang daftar permintaan setelah berhasil
+      const newRequestsResponse = await fetch(
+        `${API_BASE_URL}/api/superuser/approval-requests`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const freshData = await newRequestsResponse.json();
+      setApprovalRequests(freshData);
     } catch (error) {
       console.error(error);
       alert(error.message);
