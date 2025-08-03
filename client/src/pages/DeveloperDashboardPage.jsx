@@ -107,7 +107,8 @@ const DeveloperDashboardPage = () => {
   // useEffect untuk memuat font
   useEffect(() => {
     const fetchFonts = async () => {
-      const GOOGLE_FONTS_API_KEY = "AIzaSyDCKI5YkotYi9FRiGE3Mf2Z3f0ZMvXm7JA"; // Ganti dengan API Key Anda
+      // Ganti dengan variabel dari .env
+      const GOOGLE_FONTS_API_KEY = import.meta.env.VITE_GOOGLE_FONTS_API_KEY;
       try {
         const response = await fetch(
           `https://www.googleapis.com/webfonts/v1/webfonts?key=${GOOGLE_FONTS_API_KEY}&sort=popularity`
