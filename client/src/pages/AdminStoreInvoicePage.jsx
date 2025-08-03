@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
+import API_BASE_URL from "../apiConfig";
 
 const AdminStoreInvoicePage = ({ showMessage }) => {
   const { storeId } = useParams();
@@ -32,13 +33,9 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
     try {
       const [storeRes, invoicesRes] = await Promise.all([
-        fetch(`/api/stores/${storeId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`/api/admin/stores/${storeId}/invoices`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
+  fetch(`${API_BASE_URL}/api/stores/${storeId}`, { /* ... */ }),
+  fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/invoices`, { /* ... */ }),
+]);
       if (!storeRes.ok) throw new Error("Gagal mengambil detail toko.");
       if (!invoicesRes.ok) throw new Error("Gagal mengambil data invoice.");
       const storeData = await storeRes.json();
@@ -123,7 +120,7 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/stores/${storeId}/invoices`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/invoices`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,7 +149,7 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/invoices/${invoiceId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/invoices/${invoiceId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -183,7 +180,7 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/invoices/${invoiceId}/overdue`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/invoices/${invoiceId}/overdue`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -203,7 +200,7 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
   const handleShowDetailModal = async (invoiceId) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/invoices/${invoiceId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/invoices/${invoiceId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Detail invoice tidak ditemukan.");
@@ -245,7 +242,7 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/invoices/${invoiceId}/send`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/invoices/${invoiceId}/send`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
