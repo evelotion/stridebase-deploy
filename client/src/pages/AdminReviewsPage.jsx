@@ -52,7 +52,7 @@ const AdminReviewsPage = ({ showMessage }) => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/reviews/${reviewId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/reviews/${reviewId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

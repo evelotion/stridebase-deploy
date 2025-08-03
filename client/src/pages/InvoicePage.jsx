@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import API_BASE_URL from '../apiConfig';
 
 const InvoicePage = () => {
     const { id } = useParams();
@@ -11,7 +12,7 @@ const InvoicePage = () => {
         const fetchBookingDetails = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`/api/bookings/${id}`, {
+                const response = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {

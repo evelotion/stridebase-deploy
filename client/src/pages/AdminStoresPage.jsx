@@ -96,7 +96,7 @@ const AdminStoresPage = ({ showMessage }) => {
   const handleStatusChange = async (storeId, newStatus, successMessage) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/stores/${storeId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +125,7 @@ const AdminStoresPage = ({ showMessage }) => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/stores/${storeId}/tier`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/tier`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -160,7 +160,7 @@ const AdminStoresPage = ({ showMessage }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/admin/stores/${editingStore.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${editingStore.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

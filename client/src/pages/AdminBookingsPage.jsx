@@ -40,7 +40,7 @@ const AdminBookingsPage = ({ showMessage }) => {
     setBookings(updatedBookings);
 
     try {
-      const response = await fetch(`/api/admin/bookings/${bookingId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/bookings/${bookingId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

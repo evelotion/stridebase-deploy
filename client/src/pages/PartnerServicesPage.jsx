@@ -89,11 +89,11 @@ const PartnerServicesPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-      ? `/api/partner/services/${currentService.id}`
-      : "/api/partner/services";
+  ? `${API_BASE_URL}/api/partner/services/${currentService.id}`
+  : `${API_BASE_URL}/api/partner/services`;
 
-    try {
-      const response = await fetch(url, {
+try {
+  const response = await fetch(url, {
         method: method,
         headers: {
           "Content-Type": "application/json",
@@ -122,7 +122,7 @@ const PartnerServicesPage = ({ showMessage }) => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/partner/services/${serviceId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/partner/services/${serviceId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

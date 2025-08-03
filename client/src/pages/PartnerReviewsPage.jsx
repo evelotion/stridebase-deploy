@@ -101,7 +101,7 @@ const PartnerReviewsPage = ({ showMessage }) => {
 
     try {
       const response = await fetch(
-        `/api/partner/reviews/${currentReview.id}/reply`,
+  `${API_BASE_URL}/api/partner/reviews/${currentReview.id}/reply`,
         {
           method: "POST",
           headers: {

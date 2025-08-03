@@ -33,7 +33,7 @@ const PartnerOrdersPage = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `/api/partner/orders/${bookingId}/work-status`,
+  `${API_BASE_URL}/api/partner/orders/${bookingId}/work-status`,
         {
           method: "PATCH",
           headers: {
