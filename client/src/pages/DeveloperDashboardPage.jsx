@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 // Komponen helper (tidak berubah)
 const HealthStatusIndicator = ({ service, status }) => {
@@ -140,7 +140,7 @@ const DeveloperDashboardPage = () => {
       setLoadingHealth(true);
       try {
         const response = await fetch(
-         `${API_BASE_URL}/api/superuser/maintenance/health-check`,
+          `${API_BASE_URL}/api/superuser/maintenance/health-check`,
           { headers }
         );
         const data = await response.json();
@@ -170,9 +170,12 @@ const DeveloperDashboardPage = () => {
     const fetchApprovalRequests = async () => {
       setLoadingRequests(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/superuser/approval-requests`, {
-          headers,
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/superuser/approval-requests`,
+          {
+            headers,
+          }
+        );
         if (!response.ok)
           throw new Error("Gagal mengambil permintaan persetujuan.");
         const data = await response.json();
@@ -186,9 +189,12 @@ const DeveloperDashboardPage = () => {
     const fetchPaymentConfig = async () => {
       setLoadingPaymentConfig(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/superuser/config/payment`, {
-          headers,
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/superuser/config/payment`,
+          {
+            headers,
+          }
+        );
         if (!response.ok)
           throw new Error("Gagal mengambil konfigurasi pembayaran.");
         const data = await response.json();
@@ -285,11 +291,14 @@ const DeveloperDashboardPage = () => {
     const formData = new FormData();
     formData.append("asset", file);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/superuser/upload-asset`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/superuser/upload-asset`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        }
+      );
       const result = await response.json();
       if (!response.ok)
         throw new Error(result.message || "Gagal mengunggah file.");
@@ -347,14 +356,17 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/superuser/config/payment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(paymentConfig),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/superuser/config/payment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(paymentConfig),
+        }
+      );
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
       alert(result.message);
@@ -373,10 +385,13 @@ const DeveloperDashboardPage = () => {
     setIsSaving(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/superuser/maintenance/clear-cache`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/superuser/maintenance/clear-cache`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
       alert(result.message);
@@ -845,6 +860,30 @@ const DeveloperDashboardPage = () => {
 
               <div className="table-card p-4 shadow-sm mt-4">
                 <h5 className="mb-3">Pengaturan Fitur</h5>
+                <div className="form-check form-switch mb-3">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="enableGlobalAnnouncement"
+                    name="featureFlags.enableGlobalAnnouncement"
+                    checked={
+                      localConfig.featureFlags?.enableGlobalAnnouncement ||
+                      false
+                    }
+                    onChange={handleConfigChange}
+                  />
+                  <label
+                    className="form-check-label"
+                    htmlFor="enableGlobalAnnouncement"
+                  >
+                    Tampilkan Pengumuman Global
+                  </label>
+                  <div className="form-text mt-1">
+                    Jika aktif, bar pengumuman akan muncul di bawah navbar untuk
+                    semua pengguna.
+                  </div>
+                </div>
                 <div className="form-check form-switch mb-3">
                   <input
                     className="form-check-input"

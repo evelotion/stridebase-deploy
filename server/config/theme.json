@@ -1,5 +1,6 @@
 {
   "featureFlags": {
+    "enableGlobalAnnouncement": true,
     "enableNewTheme": true,
     "maintenanceMode": false,
     "enableProTierUpgrade": false,
