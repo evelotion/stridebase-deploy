@@ -34,6 +34,7 @@ const AdminSettingsPage = ({ showMessage }) => {
     const { name, value, type, checked } = e.target;
 
     if (type === "checkbox") {
+      // Ini akan menangani SEMUA checkbox/switch untuk featureFlags
       setConfig((prev) => ({
         ...prev,
         featureFlags: {
@@ -42,6 +43,7 @@ const AdminSettingsPage = ({ showMessage }) => {
         },
       }));
     } else {
+      // Ini menangani input teks seperti "Pengumuman Global"
       setConfig((prev) => ({ ...prev, [name]: value }));
     }
   };
@@ -104,10 +106,8 @@ const AdminSettingsPage = ({ showMessage }) => {
             type="checkbox"
             role="switch"
             id="enableGlobalAnnouncement"
-            name="featureFlags.enableGlobalAnnouncement"
-            checked={
-              config.featureFlags?.enableGlobalAnnouncement || false
-            }
+            name="enableGlobalAnnouncement"
+            checked={config.featureFlags?.enableGlobalAnnouncement || false}
             onChange={handleConfigChange}
           />
           <label
