@@ -457,11 +457,11 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       if (!response.ok)
         throw new Error(data.message || "Gagal memproses permintaan.");
 
-      alert(data.message);
+      showMessage(data.message);
       setApprovalRequests((prev) => prev.filter((req) => req.id !== requestId));
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      showMessage(error.message, "Error");
     }
   };
 
