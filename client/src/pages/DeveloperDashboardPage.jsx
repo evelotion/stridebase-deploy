@@ -153,12 +153,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       }
     };
     const fetchSecurityLogs = async () => {
-      setLoadingLogs(true);
-      try {
-        const response = await fetch(
-          "/api/superuser/maintenance/security-logs",
-          { headers }
-        );
+  setLoadingLogs(true);
+  try {
+    // Alamatnya kini lengkap: https://stridebase-server.onrender.com/api/...
+    const response = await fetch(
+      `${API_BASE_URL}/api/superuser/maintenance/security-logs`,
+      { headers }
+    );
         if (!response.ok) throw new Error("Gagal mengambil log keamanan.");
         const data = await response.json();
         setSecurityLogs(data);
@@ -415,13 +416,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       alert(
         "Proses reset database dimulai. Ini mungkin memakan waktu beberapa saat. Halaman akan dimuat ulang setelah selesai."
       );
-      const response = await fetch(
-        "/api/superuser/maintenance/reseed-database",
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+       const response = await fetch(
+      `${API_BASE_URL}/api/superuser/maintenance/reseed-database`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
       alert(result.message);
@@ -442,9 +443,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `/api/superuser/approval-requests/${requestId}/resolve`,
-        {
-          method: "POST",
+      `${API_BASE_URL}/api/superuser/approval-requests/${requestId}/resolve`,
+      {
+        method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
