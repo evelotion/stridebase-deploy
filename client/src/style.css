@@ -3387,32 +3387,43 @@ main.store-detail {
 
 /* client/src/style.css */
 
-/* client/src/style.css */
-
-/* === Global Announcement Bar (Versi Rounded & Transparan) === */
+/* === Global Announcement Bar (Versi Floating / Overlay) === */
 .global-announcement-bar {
   position: fixed;
-  top: 50px; /* Sedikit jarak dari navbar */
+  top: 70px; /* Jarak dari atas (di bawah navbar) */
   left: 50%;
   transform: translateX(-50%);
   width: 90%; /* Tidak 100% agar terlihat mengambang */
-  max-width: 900px; /* Lebar maksimum agar tidak terlalu lebar di layar besar */
-  z-index: 999;
+  max-width: 900px;
+  z-index: 999; /* Pastikan berada di atas konten lain, tapi di bawah navbar (1000) */
   
   /* Efek Kaca Transparan */
-  background: rgba(28, 64, 212, 0.85); /* Warna primer dengan 85% opacity */
+  background: rgba(28, 64, 212, 0.85); /* Warna primer dengan opacity */
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* Untuk Safari */
+  -webkit-backdrop-filter: blur(10px);
   
   color: white;
   padding: 0.75rem 1rem;
-  border-radius: 999px; /* Membuat sudut sangat rounded seperti pil */
-  
+  border-radius: 999px; /* Sudut seperti kapsul */
   text-align: center;
   font-size: 0.9rem;
   font-weight: 500;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  
+  /* Animasi saat muncul */
+  animation: fadeInDown 0.5s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .global-announcement-bar p {
@@ -3428,7 +3439,12 @@ main.store-detail {
   opacity: 1;
 }
 
-/* Penyesuaian padding konten utama agar tidak tertutup bar */
-main {
-  padding-top: 120px; /* Navbar (56px) + Announcement + Jarak (64px) */
+/* Pastikan semua padding-top yang kita tambahkan sebelumnya dihapus */
+/* Hapus semua aturan seperti ini dari CSS Anda: */
+/* main {
+  padding-top: 120px; 
 }
+body.has-global-announcement .hero-section {
+  padding-top: 140px;
+}
+*/
