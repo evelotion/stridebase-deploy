@@ -490,7 +490,7 @@ function App() {
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="promos" element={renderWithProps(AdminPromosPage)} />
             <Route path="banners" element={renderWithProps(AdminBannersPage)} />
-            <Route path="settings" element={<AdminSettingsPage />} />
+            <Route path="settings" element={renderWithProps(AdminSettingsPage)} />
             <Route
               path="stores/:storeId/invoices"
               element={renderWithProps(AdminStoreInvoicePage)}
