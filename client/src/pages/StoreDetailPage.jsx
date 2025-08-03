@@ -60,7 +60,7 @@ const getServiceIcon = (serviceName) => {
   return "fa-shoe-prints";
 };
 
-const StoreDetailPage = () => {
+const StoreDetailPage = ({ showMessage }) => {
   const { id } = useParams();
   const navigate = useNavigate();
 

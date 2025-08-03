@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from '../apiConfig';
 
-const AdminSettingsPage = () => {
+const AdminSettingsPage = ({ showMessage }) => {
   const [config, setConfig] = useState({
     globalAnnouncement: "",
     featureFlags: { maintenanceMode: false },

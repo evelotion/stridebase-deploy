@@ -14,7 +14,7 @@ const StarRating = ({ rating }) => (
   </div>
 );
 
-const AdminReviewsPage = () => {
+const AdminReviewsPage = ({ showMessage }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 

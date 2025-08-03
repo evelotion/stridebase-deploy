@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API_BASE_URL from '../apiConfig';
 
-const PartnerPromosPage = () => {
+const PartnerPromosPage = ({ showMessage }) => {
   const [promos, setPromos] = useState([]);
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from '../apiConfig';
 
-const AdminBookingsPage = () => {
+const AdminBookingsPage = ({ showMessage }) => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");

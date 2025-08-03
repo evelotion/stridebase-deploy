@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import API_BASE_URL from '../apiConfig';
 
-const AdminUsersPage = () => {
+const AdminUsersPage = ({ showMessage }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 

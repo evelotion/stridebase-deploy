@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "../invoice.css";
 
-const PartnerInvoicePage = () => {
+const PartnerInvoicePage = ({ showMessage }) => {
   const { id } = useParams();
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);

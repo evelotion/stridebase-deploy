@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import API_BASE_URL from '../apiConfig';
 
-const PartnerUpgradePage = () => {
+const PartnerUpgradePage = ({ showMessage }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleUpgradeClick = async () => {

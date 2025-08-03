@@ -49,7 +49,7 @@ const ReviewCard = ({ review, onReplyClick }) => (
   </div>
 );
 
-const PartnerReviewsPage = () => {
+const PartnerReviewsPage = ({ showMessage }) => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
