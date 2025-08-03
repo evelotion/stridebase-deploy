@@ -3392,7 +3392,7 @@ main.store-detail {
 /* === Global Announcement Bar (Versi Rounded & Transparan) === */
 .global-announcement-bar {
   position: fixed;
-  top: 10px; /* Sedikit jarak dari navbar */
+  top: 50px; /* Sedikit jarak dari navbar */
   left: 50%;
   transform: translateX(-50%);
   width: 90%; /* Tidak 100% agar terlihat mengambang */
