@@ -14,6 +14,7 @@ import { io } from "socket.io-client";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import GlobalAnnouncement from './components/GlobalAnnouncement';
 import AdminLayout from "./components/AdminLayout";
 import DeveloperLayout from "./components/DeveloperLayout";
 import Notification from "./components/Notification";
@@ -200,6 +201,7 @@ const UserLayout = ({
         setNotifications={setNotifications}
         setUnreadCount={setUnreadCount}
       />
+      <GlobalAnnouncement message={theme?.globalAnnouncement} /> 
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
     </div>

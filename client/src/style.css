@@ -3384,3 +3384,39 @@ main.store-detail {
 .service-card input[type="radio"]:checked + .service-card-content .service-card-checkmark {
   color: var(--primary-color); /* Warna checkmark menjadi aktif */
 }
+
+/* client/src/style.css */
+
+/* === Global Announcement Bar === */
+.global-announcement-bar {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 0.5rem 1rem;
+  position: fixed;
+  top: 56px; /* Tinggi default navbar Anda */
+  left: 0;
+  width: 100%;
+  z-index: 999; /* Di bawah navbar (1000) tapi di atas konten lain */
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.global-announcement-bar p {
+  margin: 0;
+}
+
+.global-announcement-bar .btn-close {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.global-announcement-bar .btn-close:hover {
+  opacity: 1;
+}
+
+/* Penyesuaian padding konten utama agar tidak tertutup bar */
+main {
+  padding-top: 96px; /* Navbar (56px) + Announcement (40px) */
+}
