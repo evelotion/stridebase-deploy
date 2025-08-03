@@ -106,7 +106,7 @@ const AdminSettingsPage = ({ showMessage }) => {
             id="enableGlobalAnnouncement"
             name="featureFlags.enableGlobalAnnouncement"
             checked={
-              localConfig.featureFlags?.enableGlobalAnnouncement || false
+              config.featureFlags?.enableGlobalAnnouncement || false
             }
             onChange={handleConfigChange}
           />
