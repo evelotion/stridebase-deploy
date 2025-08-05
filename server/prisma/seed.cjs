@@ -154,7 +154,12 @@ async function main() {
 
   console.log("🎉 Seeding promos and banners...");
   await prisma.promo.create({ data: { code: "STRIDEBARU", description: "Diskon 15% untuk pengguna baru!", discountType: "percentage", value: 15, forNewUser: true, minTransaction: 50000 } });
-  await prisma.banner.create({ data: { imageUrl: "https://res.cloudinary.com/divbjgs3g/image/upload/v1/stridebase_assets/asset-1752737852107.png", linkUrl: "/store" } });
+  await prisma.banner.createMany({
+    data: [
+      { imageUrl: "https://res.cloudinary.com/divbjgs3g/image/upload/v1/stridebase_assets/asset-1752737852107.png", linkUrl: "/store" },
+      { imageUrl: "https://res.cloudinary.com/divbjgs3g/image/upload/v1754140481/stridebase_assets/asset-1754140479109.png", linkUrl: "/about" }
+    ]
+});
   console.log("✅ Promos and banners seeded.");
 
   console.log("✅ Seeding finished successfully!");
