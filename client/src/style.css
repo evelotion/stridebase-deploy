@@ -3454,3 +3454,103 @@ body.has-global-announcement .hero-section {
   padding-top: 140px;
 }
 */
+
+/* =============================================== */
+/* === GAYA BARU: NAVIGASI MOBILE (V2) === */
+/* =============================================== */
+
+/* --- Mobile Header (Logo di tengah, User di kanan) --- */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.mobile-logo-container {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.mobile-logo-container .navbar-brand img {
+  max-height: 30px;
+}
+
+.mobile-user-container {
+  position: absolute;
+  right: 1rem;
+}
+
+/* --- Mobile Floating Bottom Navigation --- */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-bottom-nav .nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.mobile-bottom-nav .nav-link i {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+/* Status aktif untuk link di navigasi bawah */
+.mobile-bottom-nav .nav-link.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Menambahkan padding di bawah konten utama agar tidak tertutup nav bawah */
+main {
+  padding-bottom: 70px; /* Sedikit lebih besar dari tinggi nav bawah */
+}
+
+/* Sembunyikan navbar desktop di mobile */
+@media (max-width: 991.98px) {
+  .navbar.d-none.d-lg-flex {
+    display: none !important;
+  }
+}
+
+/* Tampilkan elemen mobile hanya di layar kecil */
+@media (min-width: 992px) {
+  .mobile-header.d-lg-none,
+  .mobile-bottom-nav.d-lg-none {
+    display: none !important;
+  }
+  /* Hapus padding bawah di desktop */
+  main {
+    padding-bottom: 0;
+  }
+}
