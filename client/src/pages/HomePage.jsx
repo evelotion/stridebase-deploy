@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
-import API_BASE_URL from '../apiConfig'; 
+import API_BASE_URL from "../apiConfig";
 
 const HomePage = () => {
   const [featuredStores, setFeaturedStores] = useState([]);
@@ -16,7 +16,7 @@ const HomePage = () => {
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
         const [storesRes, bannersRes, recommendationsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/stores`), 
+          fetch(`${API_BASE_URL}/api/stores`),
           fetch(`${API_BASE_URL}/api/banners`),
           token
             ? fetch(`${API_BASE_URL}/api/user/recommendations`, { headers }) // <-- UBAH JUGA DI SINI
@@ -75,6 +75,22 @@ const HomePage = () => {
                   className="carousel slide shadow-lg rounded-4"
                   data-bs-ride="carousel"
                 >
+                  {/* Bagian 1: Indikator Lingkaran Ditambahkan di Sini */}
+                  <div className="carousel-indicators">
+                    {banners.map((banner, index) => (
+                      <button
+                        type="button"
+                        data-bs-target="#heroBannerCarousel"
+                        data-bs-slide-to={index}
+                        className={index === 0 ? "active" : ""}
+                        aria-current={index === 0 ? "true" : "false"}
+                        aria-label={`Slide ${index + 1}`}
+                        key={banner.id}
+                      ></button>
+                    ))}
+                  </div>
+
+                  {/* Bagian 2: Isi Carousel (Tidak Berubah) */}
                   <div className="carousel-inner rounded-4">
                     {banners.map((banner, index) => (
                       <div
@@ -94,30 +110,9 @@ const HomePage = () => {
                       </div>
                     ))}
                   </div>
-                  <button
-                    className="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#heroBannerCarousel"
-                    data-bs-slide="prev"
-                  >
-                    <span
-                      className="carousel-control-prev-icon"
-                      aria-hidden="true"
-                    ></span>
-                    <span className="visually-hidden">Previous</span>
-                  </button>
-                  <button
-                    className="carousel-control-next"
-                    type="button"
-                    data-bs-target="#heroBannerCarousel"
-                    data-bs-slide="next"
-                  >
-                    <span
-                      className="carousel-control-next-icon"
-                      aria-hidden="true"
-                    ></span>
-                    <span className="visually-hidden">Next</span>
-                  </button>
+
+                  {/* Bagian 3: Tombol Panah Kiri dan Kanan Dihapus */}
+                  {/* Kode <button> untuk carousel-control-prev dan carousel-control-next sudah dihapus dari sini */}
                 </div>
               )}
             </div>
