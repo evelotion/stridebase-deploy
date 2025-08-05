@@ -664,3 +664,67 @@ body.dark-mode .dark-mode-tab {
   border-color: var(--border-color) var(--border-color) var(--bg-white);
   font-weight: 600;
 }
+
+/* =============================================== */
+/* === GAYA BARU: NAVIGASI MOBILE ADMIN PANEL === */
+/* =============================================== */
+
+.admin-mobile-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+@media (max-width: 991.98px) {
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+  }
+}
+/* ======================================================= */
+/* === GAYA BARU: TAMPILAN KARTU UNTUK TABEL ADMIN === */
+/* ======================================================= */
+.mobile-card-list {
+  padding: 0 1rem;
+}
+.mobile-card {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.mobile-card-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mobile-card-body {
+  padding: 1rem;
+}
+.mobile-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+.mobile-card-row small {
+  color: var(--text-muted);
+}
+.mobile-card-footer {
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-light);
+  border-top: 1px solid var(--border-color);
+  text-align: right;
+}
+
+/* Sembunyikan tabel di mobile dan tampilkan daftar kartu */
+@media (max-width: 991.98px) {
+  .table-responsive {
+    display: none;
+  }
+  .mobile-card-list {
+    display: block;
+  }
+}

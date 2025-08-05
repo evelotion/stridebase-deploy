@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react"; // Import useState
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import "../admin.css";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  // State untuk mengontrol visibilitas sidebar di mobile
+  const [isToggled, setIsToggled] = useState(false);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -15,14 +17,20 @@ const AdminLayout = () => {
     }
   };
 
+  const handleToggleSidebar = () => {
+    setIsToggled(!isToggled);
+  };
+
   return (
-    <div className="d-flex" id="wrapper">
+    // Tambahkan class 'toggled' secara dinamis
+    <div className={`d-flex ${isToggled ? "toggled" : ""}`} id="wrapper">
       <aside id="sidebar-wrapper">
         <div className="sidebar-heading">
           <NavLink className="navbar-brand" to="/admin/dashboard">
             <span className="fs-5">StrideBase Admin</span>
           </NavLink>
         </div>
+        {/* ... Isi ul (menu) tetap sama ... */}
         <ul className="list-group list-group-flush">
           <li className="list-group-item">
             <NavLink to="/" className="nav-link-admin">
@@ -87,6 +95,15 @@ const AdminLayout = () => {
         </ul>
       </aside>
       <main id="page-content-wrapper">
+        {/* === HEADER MOBILE BARU DITAMBAHKAN DI SINI === */}
+        <nav className="navbar navbar-light bg-light border-bottom d-lg-none admin-mobile-nav">
+          <div className="container-fluid">
+            <button className="btn" type="button" onClick={handleToggleSidebar}>
+              <i className="fas fa-bars"></i>
+            </button>
+            <span className="navbar-brand mb-0 h1">Admin Panel</span>
+          </div>
+        </nav>
         <Outlet />
       </main>
     </div>

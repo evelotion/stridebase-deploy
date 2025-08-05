@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const AdminStoresPage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
@@ -96,14 +96,17 @@ const AdminStoresPage = ({ showMessage }) => {
   const handleStatusChange = async (storeId, newStatus, successMessage) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newStatus }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/stores/${storeId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ newStatus }),
+        }
+      );
       if (!response.ok) throw new Error("Gagal mengubah status toko.");
       fetchStores();
       showMessage(
@@ -125,14 +128,17 @@ const AdminStoresPage = ({ showMessage }) => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/tier`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newTier }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/stores/${storeId}/tier`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ newTier }),
+        }
+      );
 
       if (!response.ok) throw new Error("Gagal mengubah tingkatan toko.");
       fetchStores();
@@ -160,14 +166,17 @@ const AdminStoresPage = ({ showMessage }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${editingStore.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(editingStore),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/stores/${editingStore.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(editingStore),
+        }
+      );
       if (!response.ok) throw new Error("Gagal memperbarui data toko.");
       handleCloseEditModal();
       fetchStores();
@@ -440,6 +449,69 @@ const AdminStoresPage = ({ showMessage }) => {
             )}
           </div>
         </div>
+
+        {/* === KODE BARU UNTUK TAMPILAN MOBILE === */}
+        <div className="mobile-card-list d-lg-none">
+          {filteredStores.map((store) => (
+            <div className="mobile-card" key={store.id}>
+              <div className="mobile-card-header">
+                <span className="fw-bold">{store.name}</span>
+                <span
+                  className={`badge bg-${
+                    store.storeStatus === "active"
+                      ? "success"
+                      : "warning text-dark"
+                  }`}
+                >
+                  {store.storeStatus}
+                </span>
+              </div>
+              <div className="mobile-card-body">
+                <div className="mobile-card-row">
+                  <small>Pemilik</small>
+                  <span>{store.owner || "N/A"}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Lokasi</small>
+                  <span>{store.location}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Tipe Penagihan</small>
+                  <span
+                    className={`badge ${
+                      store.billingType === "INVOICE"
+                        ? "bg-primary"
+                        : "bg-secondary"
+                    }`}
+                  >
+                    {store.billingType}
+                  </span>
+                </div>
+              </div>
+              <div className="mobile-card-footer">
+                <div className="btn-group">
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    title="Edit"
+                    onClick={() => handleShowEditModal(store)}
+                  >
+                    <i className="fas fa-edit"></i> Edit
+                  </button>
+                  {store.billingType === "INVOICE" && (
+                    <Link
+                      to={`/admin/stores/${store.id}/invoices`}
+                      className="btn btn-sm btn-outline-primary"
+                      title="Lihat & Kelola Invoice"
+                    >
+                      <i className="fas fa-file-invoice-dollar"></i> Invoice
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* === AKHIR DARI KODE BARU UNTUK MOBILE === */}
       </div>
 
       {showEditModal && editingStore && (
