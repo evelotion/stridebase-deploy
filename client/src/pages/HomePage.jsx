@@ -102,9 +102,8 @@ const HomePage = () => {
                         <Link to={banner.linkUrl}>
                           <img
                             src={`${banner.imageUrl}`}
-                            className="d-block w-100"
+                            className="d-block w-100 hero-banner-img" // Perubahan di sini
                             alt={`Banner ${index + 1}`}
-                            style={{ height: "400px", objectFit: "cover" }}
                           />
                         </Link>
                       </div>

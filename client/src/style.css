@@ -3554,3 +3554,69 @@ main {
     padding-bottom: 0;
   }
 }
+
+/* ======================================================= */
+/* === GAYA BARU: PENYESUAIAN MOBILE HOMEPAGE V2 === */
+/* ======================================================= */
+
+/* --- Solusi untuk Banner Hero Proporsional --- */
+.hero-banner-img {
+  height: 400px;
+  object-fit: cover;
+  border-radius: 1rem; /* Menambahkan sudut melengkung pada gambar */
+}
+
+/* --- Solusi untuk Kartu Toko Horizontal --- */
+/* Gaya ini berlaku untuk semua kartu toko, termasuk di halaman /store */
+.store-grid__card {
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+}
+
+/* Aturan khusus untuk layar mobile (lebar di bawah 576px) */
+@media (max-width: 575.98px) {
+  /* Atur tinggi banner hero menjadi lebih pendek */
+  .hero-banner-img {
+    height: 220px;
+  }
+  
+  /* Ubah tata letak kartu toko menjadi horizontal */
+  .store-grid__card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0; /* Hapus padding default */
+    background: none; /* Hapus gradien di mobile */
+  }
+
+  .store-grid__image-wrapper {
+    width: 120px; /* Lebar tetap untuk gambar */
+    height: 120px;
+    flex-shrink: 0;
+    border-radius: 0.75rem; /* Sudut melengkung untuk gambar */
+    overflow: hidden;
+  }
+  
+  .store-grid__content {
+    border-radius: 0 0.75rem 0.75rem 0; /* Sesuaikan sudut */
+    padding: 0.75rem 1rem;
+    height: 120px;
+    justify-content: center;
+  }
+
+  .store-grid__title {
+    font-size: 1rem; /* Kecilkan sedikit judul */
+  }
+
+  .store-grid__location,
+  .store-grid__rating {
+    font-size: 0.8rem; /* Kecilkan teks lokasi dan rating */
+    margin-bottom: 0.25rem;
+  }
+
+  /* Sembunyikan tombol 'Lihat Detail' di tampilan kartu horizontal
+     karena seluruh kartu akan menjadi tautan. */
+  .store-grid__card .btn-gradient {
+    display: none;
+  }
+}
