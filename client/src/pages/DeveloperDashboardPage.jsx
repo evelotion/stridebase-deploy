@@ -45,6 +45,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [logoPreview, setLogoPreview] = useState("");
   const [faviconPreview, setFaviconPreview] = useState("");
+  const [loginImagePreview, setLoginImagePreview] = useState("");
+  const [registerImagePreview, setRegisterImagePreview] = useState("");
+
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
   const [localConfig, setLocalConfig] = useState(null);
@@ -153,13 +156,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       }
     };
     const fetchSecurityLogs = async () => {
-  setLoadingLogs(true);
-  try {
-    // Alamatnya kini lengkap: https://stridebase-server.onrender.com/api/...
-    const response = await fetch(
-      `${API_BASE_URL}/api/superuser/maintenance/security-logs`,
-      { headers }
-    );
+      setLoadingLogs(true);
+      try {
+        // Alamatnya kini lengkap: https://stridebase-server.onrender.com/api/...
+        const response = await fetch(
+          `${API_BASE_URL}/api/superuser/maintenance/security-logs`,
+          { headers }
+        );
         if (!response.ok) throw new Error("Gagal mengambil log keamanan.");
         const data = await response.json();
         setSecurityLogs(data);
@@ -322,6 +325,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     const previewUrl = URL.createObjectURL(file);
     if (configKey === "logoUrl") setLogoPreview(previewUrl);
     else if (configKey === "faviconUrl") setFaviconPreview(previewUrl);
+    // Tambahkan dua kondisi ini
+    else if (configKey === "loginImageUrl") setLoginImagePreview(previewUrl);
+    else if (configKey === "registerImageUrl")
+      setRegisterImagePreview(previewUrl);
     handleFileUpload(file, configKey);
   };
 
@@ -416,13 +423,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       alert(
         "Proses reset database dimulai. Ini mungkin memakan waktu beberapa saat. Halaman akan dimuat ulang setelah selesai."
       );
-       const response = await fetch(
-      `${API_BASE_URL}/api/superuser/maintenance/reseed-database`,
-      {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+      const response = await fetch(
+        `${API_BASE_URL}/api/superuser/maintenance/reseed-database`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const result = await response.json();
       if (!response.ok) throw new Error(result.message);
       alert(result.message);
@@ -443,9 +450,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-      `${API_BASE_URL}/api/superuser/approval-requests/${requestId}/resolve`,
-      {
-        method: "POST",
+        `${API_BASE_URL}/api/superuser/approval-requests/${requestId}/resolve`,
+        {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -655,6 +662,62 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                           className="form-control"
                           accept="image/x-icon, image/svg+xml, image/png"
                           onChange={(e) => handleFileChange(e, "faviconUrl")}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Gambar Halaman Login</label>
+                      <div className="d-flex align-items-center">
+                        <img
+                          src={
+                            loginImagePreview ||
+                            `${config.branding?.loginImageUrl}`
+                          }
+                          alt="Login Page Image"
+                          style={{
+                            height: "40px",
+                            marginRight: "1rem",
+                            border: "1px solid #ddd",
+                            padding: "5px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <input
+                          type="file"
+                          className="form-control"
+                          accept="image/png, image/jpeg, image/webp"
+                          onChange={(e) => handleFileChange(e, "loginImageUrl")}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Uploader Gambar Halaman Register */}
+                    <div className="mb-3">
+                      <label className="form-label">
+                        Gambar Halaman Register
+                      </label>
+                      <div className="d-flex align-items-center">
+                        <img
+                          src={
+                            registerImagePreview ||
+                            `${config.branding?.registerImageUrl}`
+                          }
+                          alt="Register Page Image"
+                          style={{
+                            height: "40px",
+                            marginRight: "1rem",
+                            border: "1px solid #ddd",
+                            padding: "5px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <input
+                          type="file"
+                          className="form-control"
+                          accept="image/png, image/jpeg, image/webp"
+                          onChange={(e) =>
+                            handleFileChange(e, "registerImageUrl")
+                          }
                         />
                       </div>
                     </div>

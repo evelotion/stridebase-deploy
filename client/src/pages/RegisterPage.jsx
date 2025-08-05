@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
-const RegisterPage = () => {
+const RegisterPage = ({ theme }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,7 +62,12 @@ const RegisterPage = () => {
     <div className="auth-container">
       <div className="row g-0 vh-100">
         <div className="col-lg-7 d-none d-lg-block">
-          <div className="auth-image-panel register-image-side">
+          <div
+            className="auth-image-panel register-image-side"
+            style={{
+              backgroundImage: `url(${theme?.branding?.registerImageUrl})`,
+            }}
+          >
             <div className="auth-image-overlay">
               <h1 className="display-4 fw-bold">
                 Bergabunglah dengan Komunitas Perawatan Sepatu Terbaik.

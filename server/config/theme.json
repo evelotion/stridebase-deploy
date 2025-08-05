@@ -15,9 +15,11 @@
   "globalAnnouncement": "Diskon 50% untuk semua layanan hingga akhir bulan!",
   "serverVersion": "1.5.0",
   "branding": {
-  "logoUrl": "https://res.cloudinary.com/divbjgs3g/image/upload/v1754140481/stridebase_assets/asset-1754140479109.png",
-  "faviconUrl": "https://res.cloudinary.com/divbjgs3g/image/upload/v1754130136/stridebase_assets/asset-1754130134094.png"
-},
+    "logoUrl": "https://res.cloudinary.com/divbjgs3g/image/upload/v1754140481/stridebase_assets/asset-1754140479109.png",
+    "faviconUrl": "https://res.cloudinary.com/divbjgs3g/image/upload/v1754130136/stridebase_assets/asset-1754130134094.png",
+    "loginImageUrl": "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=2670&auto=format&fit=crop",
+    "registerImageUrl": "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2574&auto=format&fit=crop"
+  },
   "typography": {
     "fontFamily": "'Public Sans', sans-serif",
     "baseFontSize": "15px",

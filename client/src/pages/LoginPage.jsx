@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 
-const LoginPage = ({ showMessage }) => {
+const LoginPage = ({ showMessage, theme }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -74,7 +74,12 @@ const LoginPage = ({ showMessage }) => {
     <div className="auth-container">
       <div className="row g-0 vh-100">
         <div className="col-lg-7 d-none d-lg-block">
-          <div className="auth-image-panel login-image-side">
+          <div
+            className="auth-image-panel login-image-side"
+            style={{
+              backgroundImage: `url(${theme?.branding?.loginImageUrl})`,
+            }}
+          >
             <div className="auth-image-overlay">
               <h1 className="display-4 fw-bold">
                 Solusi Perawatan Sepatu, <br />

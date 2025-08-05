@@ -490,7 +490,10 @@ function App() {
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="promos" element={renderWithProps(AdminPromosPage)} />
             <Route path="banners" element={renderWithProps(AdminBannersPage)} />
-            <Route path="settings" element={renderWithProps(AdminSettingsPage)} />
+            <Route
+              path="settings"
+              element={renderWithProps(AdminSettingsPage)}
+            />
             <Route
               path="stores/:storeId/invoices"
               element={renderWithProps(AdminStoreInvoicePage)}
@@ -559,10 +562,15 @@ function App() {
                     path="/booking-success"
                     element={<BookingSuccessPage />}
                   />
-                  <Route path="/login" element={renderWithProps(LoginPage)} />
+                  <Route
+                    path="/login"
+                    element={
+                      <LoginPage showMessage={showMessage} theme={theme} />
+                    }
+                  />
                   <Route
                     path="/register"
-                    element={renderWithProps(RegisterPage)}
+                    element={<RegisterPage theme={theme} />}
                   />
                   <Route path="/dashboard" element={<DashboardPage />} />
                   <Route
