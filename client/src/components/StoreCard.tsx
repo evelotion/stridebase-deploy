@@ -16,7 +16,14 @@ interface StoreCardProps {
 }
 
 const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
-  const { id, name, location, rating, images, tier } = store;
+  const {
+    id,
+    name,
+    location,
+    rating,
+    images,
+    tier,
+  } = store;
 
   const imageUrl =
     images && images.length > 0
