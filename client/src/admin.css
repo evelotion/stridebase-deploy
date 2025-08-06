@@ -728,3 +728,50 @@ body.dark-mode .dark-mode-tab {
     display: block;
   }
 }
+
+/* ======================================================= */
+/* === GAYA BARU: KONSISTENSI & RESPONSIVITAS ADMIN PANEL === */
+/* ======================================================= */
+
+/* --- Perbaikan Konsistensi Kartu KPI --- */
+.kpi-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.kpi-card-text {
+  text-align: left;
+}
+
+/* --- Navigasi Mobile Baru untuk Admin & Developer --- */
+.admin-mobile-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.admin-mobile-nav .navbar-brand {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Aturan untuk menyembunyikan/menampilkan elemen di mobile vs desktop */
+@media (max-width: 991.98px) {
+  #wrapper {
+    flex-direction: column;
+  }
+  #page-content-wrapper {
+    width: 100%;
+  }
+  #sidebar-wrapper.d-none {
+    display: none !important;
+  }
+}
+
+@media (min-width: 992px) {
+  #page-content-wrapper {
+    width: calc(100% - 250px);
+  }
+}

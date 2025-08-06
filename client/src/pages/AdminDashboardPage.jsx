@@ -27,18 +27,18 @@ const AdminDashboardPage = () => {
   }, []);
 
   const KpiCard = ({ title, value, icon, colorClass }) => (
-    <div className="col-md-3">
-      <div className="kpi-card p-3 shadow-sm d-flex justify-content-around align-items-center">
-        <div>
+  <div className="col-lg-3 col-md-6">
+    <div className="kpi-card p-3 shadow-sm">
+      <div className="kpi-card-content">
+        <div className="kpi-card-text">
           <h3 className="fs-2">{value}</h3>
-          <p className="fs-5 text-muted">{title}</p>
+          <p className="fs-5 text-muted mb-0">{title}</p>
         </div>
-        <i
-          className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}
-        ></i>
+        <i className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}></i>
       </div>
     </div>
-  );
+  </div>
+);
 
   if (loading) return <div className="p-4">Memuat statistik...</div>;
 

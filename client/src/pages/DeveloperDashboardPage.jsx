@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import API_BASE_URL from "../apiConfig";
 
-// Komponen helper (tidak berubah)
+// Komponen helper
 const HealthStatusIndicator = ({ service, status }) => {
   const isOperational = status === "Operasional";
   return (
@@ -47,7 +47,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [faviconPreview, setFaviconPreview] = useState("");
   const [loginImagePreview, setLoginImagePreview] = useState("");
   const [registerImagePreview, setRegisterImagePreview] = useState("");
-
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
   const [localConfig, setLocalConfig] = useState(null);
@@ -62,8 +61,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [loadingPaymentConfig, setLoadingPaymentConfig] = useState(true);
   const [fontOptions, setFontOptions] = useState([]);
   const [isLoadingFonts, setIsLoadingFonts] = useState(true);
-
-  // State terpisah untuk setiap preview font size
   const [previewBaseSize, setPreviewBaseSize] = useState(16);
   const [previewH1Size, setPreviewH1Size] = useState(48);
   const [previewButtonSize, setPreviewButtonSize] = useState(13.6);
@@ -82,8 +79,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         const data = await response.json();
         setConfig(data);
         setLocalConfig(JSON.parse(JSON.stringify(data)));
-
-        // Set nilai awal slider dari config
         setPreviewBaseSize(parseFloat(data.typography?.baseFontSize) || 16);
         setPreviewH1Size(parseFloat(data.typography?.h1FontSize) * 16 || 48);
         setPreviewButtonSize(
@@ -107,10 +102,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     fetchInitialConfig();
   }, []);
 
-  // useEffect untuk memuat font
   useEffect(() => {
     const fetchFonts = async () => {
-      // Ganti dengan variabel dari .env
       const GOOGLE_FONTS_API_KEY = import.meta.env.VITE_GOOGLE_FONTS_API_KEY;
       try {
         const response = await fetch(
@@ -136,7 +129,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     fetchFonts();
   }, []);
 
-  // useEffect untuk data tab
   useEffect(() => {
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -158,7 +150,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     const fetchSecurityLogs = async () => {
       setLoadingLogs(true);
       try {
-        // Alamatnya kini lengkap: https://stridebase-server.onrender.com/api/...
         const response = await fetch(
           `${API_BASE_URL}/api/superuser/maintenance/security-logs`,
           { headers }
@@ -325,7 +316,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     const previewUrl = URL.createObjectURL(file);
     if (configKey === "logoUrl") setLogoPreview(previewUrl);
     else if (configKey === "faviconUrl") setFaviconPreview(previewUrl);
-    // Tambahkan dua kondisi ini
     else if (configKey === "loginImageUrl") setLoginImagePreview(previewUrl);
     else if (configKey === "registerImageUrl")
       setRegisterImagePreview(previewUrl);
@@ -575,434 +565,430 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
         <div className="tab-content py-3">
           {activeTab === "theming" && (
-            <div>
-              <div className="row mb-4">
-                <div className="col-12">
-                  <div className="table-card p-3 shadow-sm">
-                    <h5 className="mb-3">Status Kesehatan Platform</h5>
-                    {loadingHealth ? (
-                      <div className="text-center text-muted p-3">
-                        <div
-                          className="spinner-border spinner-border-sm me-2"
-                          role="status"
-                        ></div>
-                        Memeriksa status layanan...
+            <div className="row g-4">
+              <div className="col-12">
+                <div className="table-card p-3 shadow-sm">
+                  <h5 className="mb-3">Status Kesehatan Platform</h5>
+                  {loadingHealth ? (
+                    <div className="text-center text-muted p-3">
+                      <div
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                      ></div>
+                      Memeriksa status layanan...
+                    </div>
+                  ) : healthStatus ? (
+                    <div>
+                      <HealthStatusIndicator
+                        service="Database (PostgreSQL)"
+                        status={healthStatus.database}
+                      />
+                      <HealthStatusIndicator
+                        service="Cache & Antrian (Redis)"
+                        status={healthStatus.redis}
+                      />
+                      <div className="mt-3 text-center">
+                        <h6 className="mb-0">Status Keseluruhan:</h6>
+                        <p
+                          className={`fw-bold fs-5 ${
+                            healthStatus.overallStatus.includes("Masalah")
+                              ? "text-danger"
+                              : "text-success"
+                          }`}
+                        >
+                          {healthStatus.overallStatus}
+                        </p>
                       </div>
-                    ) : healthStatus ? (
-                      <div>
-                        <HealthStatusIndicator
-                          service="Database (PostgreSQL)"
-                          status={healthStatus.database}
-                        />
-                        <HealthStatusIndicator
-                          service="Cache & Antrian (Redis)"
-                          status={healthStatus.redis}
-                        />
-                        <div className="mt-3 text-center">
-                          <h6 className="mb-0">Status Keseluruhan:</h6>
-                          <p
-                            className={`fw-bold fs-5 ${
-                              healthStatus.overallStatus.includes("Masalah")
-                                ? "text-danger"
-                                : "text-success"
-                            }`}
-                          >
-                            {healthStatus.overallStatus}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center text-danger p-3">
-                        Gagal memuat status kesehatan. Periksa koneksi ke
-                        server.
-                      </div>
-                    )}
+                    </div>
+                  ) : (
+                    <div className="text-center text-danger p-3">
+                      Gagal memuat status kesehatan. Periksa koneksi ke server.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="col-lg-6">
+                <div className="table-card p-4 shadow-sm h-100">
+                  <h5 className="mb-4">Branding & Tampilan</h5>
+                  <div className="mb-3">
+                    <label className="form-label">Logo Website</label>
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={logoPreview || `${config.branding?.logoUrl}`}
+                        alt="Logo"
+                        style={{
+                          height: "40px",
+                          marginRight: "1rem",
+                          border: "1px solid #ddd",
+                          padding: "5px",
+                        }}
+                      />
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/png, image/jpeg, image/svg+xml"
+                        onChange={(e) => handleFileChange(e, "logoUrl")}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Favicon (.ico, .svg, .png)
+                    </label>
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={faviconPreview || `${config.branding?.faviconUrl}`}
+                        alt="Favicon"
+                        style={{ height: "32px", marginRight: "1rem" }}
+                      />
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/x-icon, image/svg+xml, image/png"
+                        onChange={(e) => handleFileChange(e, "faviconUrl")}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Gambar Halaman Login</label>
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={
+                          loginImagePreview ||
+                          `${config.branding?.loginImageUrl}`
+                        }
+                        alt="Login Page Image"
+                        style={{
+                          height: "40px",
+                          marginRight: "1rem",
+                          border: "1px solid #ddd",
+                          padding: "5px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/png, image/jpeg, image/webp"
+                        onChange={(e) => handleFileChange(e, "loginImageUrl")}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Gambar Halaman Register
+                    </label>
+                    <div className="d-flex align-items-center">
+                      <img
+                        src={
+                          registerImagePreview ||
+                          `${config.branding?.registerImageUrl}`
+                        }
+                        alt="Register Page Image"
+                        style={{
+                          height: "40px",
+                          marginRight: "1rem",
+                          border: "1px solid #ddd",
+                          padding: "5px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <input
+                        type="file"
+                        className="form-control"
+                        accept="image/png, image/jpeg, image/webp"
+                        onChange={(e) =>
+                          handleFileChange(e, "registerImageUrl")
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="row g-4">
-                <div className="col-md-6">
-                  <div className="table-card p-4 shadow-sm mb-4">
-                    <h5 className="mb-4">Branding & Logo</h5>
-                    <div className="mb-3">
-                      <label className="form-label">Logo Website</label>
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={logoPreview || `${config.branding?.logoUrl}`}
-                          alt="Logo"
-                          style={{
-                            height: "40px",
-                            marginRight: "1rem",
-                            border: "1px solid #ddd",
-                            padding: "5px",
-                          }}
-                        />
-                        <input
-                          type="file"
-                          className="form-control"
-                          accept="image/png, image/jpeg, image/svg+xml"
-                          onChange={(e) => handleFileChange(e, "logoUrl")}
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">
-                        Favicon (.ico, .svg, .png)
-                      </label>
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={
-                            faviconPreview || `${config.branding?.faviconUrl}`
-                          }
-                          alt="Favicon"
-                          style={{ height: "32px", marginRight: "1rem" }}
-                        />
-                        <input
-                          type="file"
-                          className="form-control"
-                          accept="image/x-icon, image/svg+xml, image/png"
-                          onChange={(e) => handleFileChange(e, "faviconUrl")}
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Gambar Halaman Login</label>
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={
-                            loginImagePreview ||
-                            `${config.branding?.loginImageUrl}`
-                          }
-                          alt="Login Page Image"
-                          style={{
-                            height: "40px",
-                            marginRight: "1rem",
-                            border: "1px solid #ddd",
-                            padding: "5px",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <input
-                          type="file"
-                          className="form-control"
-                          accept="image/png, image/jpeg, image/webp"
-                          onChange={(e) => handleFileChange(e, "loginImageUrl")}
-                        />
-                      </div>
-                    </div>
 
-                    {/* Uploader Gambar Halaman Register */}
-                    <div className="mb-3">
-                      <label className="form-label">
-                        Gambar Halaman Register
-                      </label>
-                      <div className="d-flex align-items-center">
-                        <img
-                          src={
-                            registerImagePreview ||
-                            `${config.branding?.registerImageUrl}`
-                          }
-                          alt="Register Page Image"
-                          style={{
-                            height: "40px",
-                            marginRight: "1rem",
-                            border: "1px solid #ddd",
-                            padding: "5px",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <input
-                          type="file"
-                          className="form-control"
-                          accept="image/png, image/jpeg, image/webp"
-                          onChange={(e) =>
-                            handleFileChange(e, "registerImageUrl")
-                          }
-                        />
-                      </div>
-                    </div>
+              <div className="col-lg-6">
+                <div className="table-card p-4 shadow-sm h-100">
+                  <h5 className="mb-4">Warna & Latar Belakang</h5>
+                  <div className="row">
+                    <ColorInput
+                      label="Warna Primer"
+                      name="colors.primary"
+                      value={localConfig.colors?.primary}
+                      onChange={handleConfigChange}
+                    />
+                    <ColorInput
+                      label="Warna Sekunder"
+                      name="colors.secondary"
+                      value={localConfig.colors?.secondary}
+                      onChange={handleConfigChange}
+                    />
+                    <ColorInput
+                      label="Warna Aksen (Kartu Profil)"
+                      name="colors.accent"
+                      value={localConfig.colors?.accent}
+                      onChange={handleConfigChange}
+                    />
                   </div>
-                  <div className="table-card p-4 shadow-sm">
-                    <h5 className="mb-4">Warna & Tampilan</h5>
-                    <div className="row">
-                      <ColorInput
-                        label="Warna Primer"
-                        name="colors.primary"
-                        value={localConfig.colors?.primary}
+                  <div className="mb-3">
+                    <label className="form-label">Warna Latar Belakang</label>
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        className="form-control"
+                        style={{ maxWidth: "120px" }}
+                        name="background.value"
+                        value={localConfig.background?.value || ""}
                         onChange={handleConfigChange}
+                        placeholder="#RRGGBB"
                       />
-                      <ColorInput
-                        label="Warna Sekunder"
-                        name="colors.secondary"
-                        value={localConfig.colors?.secondary}
-                        onChange={handleConfigChange}
-                      />
-                      <ColorInput
-                        label="Warna Aksen (Kartu Profil)"
-                        name="colors.accent"
-                        value={localConfig.colors?.accent}
+                      <input
+                        type="color"
+                        className="form-control form-control-color"
+                        name="background.value"
+                        value={localConfig.background?.value || "#f8f9fa"}
                         onChange={handleConfigChange}
                       />
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="col-md-6">
-                  <div className="table-card p-4 shadow-sm mb-4">
-                    <h5 className="mb-4">Latar Belakang Website</h5>
-                    <div className="mb-3">
-                      <label className="form-label">Warna Latar Belakang</label>
-                      <div className="input-group">
-                        <input
-                          type="text"
-                          className="form-control"
-                          style={{ maxWidth: "120px" }}
-                          name="background.value"
-                          value={localConfig.background?.value || ""}
-                          onChange={handleConfigChange}
-                          placeholder="#RRGGBB"
-                        />
-                        <input
-                          type="color"
-                          className="form-control form-control-color"
-                          name="background.value"
-                          value={localConfig.background?.value || "#f8f9fa"}
-                          onChange={handleConfigChange}
-                        />
-                      </div>
-                    </div>
+              <div className="col-12">
+                <div className="table-card p-4 shadow-sm">
+                  <h5 className="mb-4">Tipografi</h5>
+                  <div className="mb-3">
+                    <label className="form-label">Pilih Font Global</label>
+                    <Select
+                      options={fontOptions}
+                      isLoading={isLoadingFonts}
+                      value={fontOptions.find(
+                        (opt) =>
+                          opt.value === localConfig.typography?.fontFamily
+                      )}
+                      onChange={handleFontChange}
+                      placeholder="Cari atau pilih font..."
+                    />
                   </div>
-                  <div className="table-card p-4 shadow-sm">
-                    <h5 className="mb-4">Tipografi</h5>
-                    <div className="mb-3">
-                      <label className="form-label">Pilih Font Global</label>
-                      <Select
-                        options={fontOptions}
-                        isLoading={isLoadingFonts}
-                        value={fontOptions.find(
-                          (opt) =>
-                            opt.value === localConfig.typography?.fontFamily
-                        )}
-                        onChange={handleFontChange}
-                        placeholder="Cari atau pilih font..."
-                      />
-                    </div>
 
-                    <div className="row">
-                      <div className="col-md-8">
-                        <div className="mb-3">
-                          <label
-                            htmlFor="displaySizeRange"
-                            className="form-label"
-                          >
-                            Display Title:{" "}
-                            <strong>{previewDisplaySize}px</strong>
-                          </label>
-                          <input
-                            type="range"
-                            className="form-range"
-                            min="40"
-                            max="72"
-                            step="1"
-                            id="displaySizeRange"
-                            value={previewDisplaySize}
-                            onChange={(e) => handleSizeChange(e, "display")}
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label htmlFor="leadSizeRange" className="form-label">
-                            Lead Paragraph: <strong>{previewLeadSize}px</strong>
-                          </label>
-                          <input
-                            type="range"
-                            className="form-range"
-                            min="16"
-                            max="24"
-                            step="0.5"
-                            id="leadSizeRange"
-                            value={previewLeadSize}
-                            onChange={(e) => handleSizeChange(e, "lead")}
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label htmlFor="baseSizeRange" className="form-label">
-                            Paragraf (Dasar):{" "}
-                            <strong>{previewBaseSize}px</strong>
-                          </label>
-                          <input
-                            type="range"
-                            className="form-range"
-                            min="14"
-                            max="18"
-                            step="0.5"
-                            id="baseSizeRange"
-                            value={previewBaseSize}
-                            onChange={(e) => handleSizeChange(e, "base")}
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label
-                            htmlFor="btnLgSizeRange"
-                            className="form-label"
-                          >
-                            Tombol Besar: <strong>{previewBtnLgSize}px</strong>
-                          </label>
-                          <input
-                            type="range"
-                            className="form-range"
-                            min="14"
-                            max="20"
-                            step="0.5"
-                            id="btnLgSizeRange"
-                            value={previewBtnLgSize}
-                            onChange={(e) => handleSizeChange(e, "btnLg")}
-                          />
-                        </div>
+                  <div className="row">
+                    <div className="col-md-8">
+                      <div className="mb-3">
+                        <label
+                          htmlFor="displaySizeRange"
+                          className="form-label"
+                        >
+                          Display Title: <strong>{previewDisplaySize}px</strong>
+                        </label>
+                        <input
+                          type="range"
+                          className="form-range"
+                          min="40"
+                          max="72"
+                          step="1"
+                          id="displaySizeRange"
+                          value={previewDisplaySize}
+                          onChange={(e) => handleSizeChange(e, "display")}
+                        />
                       </div>
-                      <div className="col-md-4 d-flex flex-column justify-content-around">
-                        <div className="p-2 border rounded bg-light text-center">
-                          <h1
-                            className="display-4"
-                            style={{
-                              fontSize: `${previewDisplaySize / 16}rem`,
-                              margin: 0,
-                            }}
-                          >
-                            Title
-                          </h1>
-                        </div>
-                        <div className="p-2 border rounded bg-light text-center">
-                          <p
-                            className="lead"
-                            style={{
-                              fontSize: `${previewLeadSize / 16}rem`,
-                              margin: 0,
-                            }}
-                          >
-                            Lead
-                          </p>
-                        </div>
-                        <div className="p-2 border rounded bg-light text-center">
-                          <p
-                            style={{
-                              fontSize: `${previewBaseSize}px`,
-                              margin: 0,
-                            }}
-                          >
-                            Paragraf
-                          </p>
-                        </div>
-                        <div className="p-2 border rounded bg-light text-center">
-                          <button
-                            className="btn btn-lg btn-primary"
-                            style={{ fontSize: `${previewBtnLgSize / 16}rem` }}
-                          >
-                            Button
-                          </button>
-                        </div>
+                      <div className="mb-3">
+                        <label htmlFor="leadSizeRange" className="form-label">
+                          Lead Paragraph: <strong>{previewLeadSize}px</strong>
+                        </label>
+                        <input
+                          type="range"
+                          className="form-range"
+                          min="16"
+                          max="24"
+                          step="0.5"
+                          id="leadSizeRange"
+                          value={previewLeadSize}
+                          onChange={(e) => handleSizeChange(e, "lead")}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="baseSizeRange" className="form-label">
+                          Paragraf (Dasar): <strong>{previewBaseSize}px</strong>
+                        </label>
+                        <input
+                          type="range"
+                          className="form-range"
+                          min="14"
+                          max="18"
+                          step="0.5"
+                          id="baseSizeRange"
+                          value={previewBaseSize}
+                          onChange={(e) => handleSizeChange(e, "base")}
+                        />
+                      </div>
+                      <div className="mb-3">
+                        <label htmlFor="btnLgSizeRange" className="form-label">
+                          Tombol Besar: <strong>{previewBtnLgSize}px</strong>
+                        </label>
+                        <input
+                          type="range"
+                          className="form-range"
+                          min="14"
+                          max="20"
+                          step="0.5"
+                          id="btnLgSizeRange"
+                          value={previewBtnLgSize}
+                          onChange={(e) => handleSizeChange(e, "btnLg")}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 d-flex flex-column justify-content-around">
+                      <div className="p-2 border rounded bg-light text-center">
+                        <h1
+                          className="display-4"
+                          style={{
+                            fontSize: `${previewDisplaySize / 16}rem`,
+                            margin: 0,
+                          }}
+                        >
+                          Title
+                        </h1>
+                      </div>
+                      <div className="p-2 border rounded bg-light text-center">
+                        <p
+                          className="lead"
+                          style={{
+                            fontSize: `${previewLeadSize / 16}rem`,
+                            margin: 0,
+                          }}
+                        >
+                          Lead
+                        </p>
+                      </div>
+                      <div className="p-2 border rounded bg-light text-center">
+                        <p
+                          style={{
+                            fontSize: `${previewBaseSize}px`,
+                            margin: 0,
+                          }}
+                        >
+                          Paragraf
+                        </p>
+                      </div>
+                      <div className="p-2 border rounded bg-light text-center">
+                        <button
+                          className="btn btn-lg btn-primary"
+                          style={{ fontSize: `${previewBtnLgSize / 16}rem` }}
+                        >
+                          Button
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="table-card p-4 shadow-sm mt-4">
-                <h5 className="mb-3">Pengaturan Ketersediaan Halaman</h5>
-                <p className="small text-muted">
-                  Pilih halaman mana saja yang harus aktif dan dapat diakses
-                  oleh publik. Halaman yang tidak dipilih akan menampilkan
-                  halaman perbaikan.
-                </p>
-                <Select
-                  isMulti
-                  name="pageStatus"
-                  options={pageStatusOptions}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  value={selectedPageStatus}
-                  onChange={handlePageSelectionChange}
-                />
-              </div>
 
-              <div className="table-card p-4 shadow-sm mt-4">
-                <h5 className="mb-3">Pengaturan Fitur</h5>
-                <div className="form-check form-switch mb-3">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    id="enableTierSystem"
-                    name="featureFlags.enableTierSystem"
-                    checked={
-                      localConfig.featureFlags?.enableTierSystem || false
-                    }
-                    onChange={handleConfigChange}
+              <div className="col-12">
+                <div className="table-card p-4 shadow-sm">
+                  <h5 className="mb-3">Pengaturan Ketersediaan Halaman</h5>
+                  <p className="small text-muted">
+                    Pilih halaman mana saja yang harus aktif dan dapat diakses
+                    oleh publik. Halaman yang tidak dipilih akan menampilkan
+                    halaman perbaikan.
+                  </p>
+                  <Select
+                    isMulti
+                    name="pageStatus"
+                    options={pageStatusOptions}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    value={selectedPageStatus}
+                    onChange={handlePageSelectionChange}
                   />
-                  <label
-                    className="form-check-label"
-                    htmlFor="enableTierSystem"
-                  >
-                    Aktifkan Sistem Tier (BASIC/PRO)
-                  </label>
-                  <div className="form-text mt-1">
-                    Jika nonaktif, semua fitur terkait Tier (termasuk upgrade)
-                    akan disembunyikan.
-                  </div>
                 </div>
-                {localConfig.featureFlags?.enableTierSystem && (
-                  <div className="form-check form-switch ms-4">
+              </div>
+
+              <div className="col-12">
+                <div className="table-card p-4 shadow-sm">
+                  <h5 className="mb-3">Pengaturan Fitur</h5>
+                  <div className="form-check form-switch mb-3">
                     <input
                       className="form-check-input"
                       type="checkbox"
                       role="switch"
-                      id="enableProTierUpgrade"
-                      name="featureFlags.enableProTierUpgrade"
+                      id="enableTierSystem"
+                      name="featureFlags.enableTierSystem"
                       checked={
-                        localConfig.featureFlags?.enableProTierUpgrade || false
+                        localConfig.featureFlags?.enableTierSystem || false
                       }
                       onChange={handleConfigChange}
                     />
                     <label
                       className="form-check-label"
-                      htmlFor="enableProTierUpgrade"
+                      htmlFor="enableTierSystem"
                     >
-                      Aktifkan Fitur "Upgrade ke PRO" untuk Mitra
+                      Aktifkan Sistem Tier (BASIC/PRO)
                     </label>
                     <div className="form-text mt-1">
-                      Jika nonaktif, tombol dan halaman upgrade tidak akan
-                      muncul di panel mitra.
+                      Jika nonaktif, semua fitur terkait Tier (termasuk upgrade)
+                      akan disembunyikan.
                     </div>
                   </div>
-                )}
+                  {localConfig.featureFlags?.enableTierSystem && (
+                    <div className="form-check form-switch ms-4">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="enableProTierUpgrade"
+                        name="featureFlags.enableProTierUpgrade"
+                        checked={
+                          localConfig.featureFlags?.enableProTierUpgrade ||
+                          false
+                        }
+                        onChange={handleConfigChange}
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="enableProTierUpgrade"
+                      >
+                        Aktifkan Fitur "Upgrade ke PRO" untuk Mitra
+                      </label>
+                      <div className="form-text mt-1">
+                        Jika nonaktif, tombol dan halaman upgrade tidak akan
+                        muncul di panel mitra.
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="row g-4 mt-2">
-                <div className="col-12">
-                  <div className="table-card p-4 shadow-sm">
-                    <h5 className="mb-4 text-danger">
-                      Zona Berbahaya - Alat Maintenance
-                    </h5>
-                    <div className="d-flex flex-wrap gap-3">
-                      <div className="p-3 border rounded">
+
+              <div className="col-12">
+                <div className="table-card p-4 shadow-sm">
+                  <h5 className="mb-4 text-danger">
+                    Zona Berbahaya - Alat Maintenance
+                  </h5>
+                  <div className="row g-3">
+                    <div className="col-md-6 col-lg-4">
+                      <div className="p-3 border rounded h-100 d-flex flex-column">
                         <h6 className="fw-bold">Bersihkan Cache Aplikasi</h6>
-                        <p className="small text-muted mb-2">
+                        <p className="small text-muted mb-2 flex-grow-1">
                           Menghapus semua data cache di Redis. Berguna jika ada
                           data lama yang tidak mau diperbarui.
                         </p>
                         <button
-                          className="btn btn-warning"
+                          className="btn btn-warning mt-auto"
                           onClick={handleClearCache}
                           disabled={isSaving}
                         >
                           <i className="fas fa-broom me-2"></i>Bersihkan Cache
                         </button>
                       </div>
-                      <div className="p-3 border rounded">
+                    </div>
+                    <div className="col-md-6 col-lg-4">
+                      <div className="p-3 border rounded h-100 d-flex flex-column">
                         <h6 className="fw-bold">Reset & Seed Ulang Database</h6>
-                        <p className="small text-muted mb-2">
+                        <p className="small text-muted mb-2 flex-grow-1">
                           Menghapus SEMUA data dan mengembalikannya ke kondisi
                           awal sesuai seeder.
                         </p>
                         <button
-                          className="btn btn-danger"
+                          className="btn btn-danger mt-auto"
                           onClick={() => setShowResetModal(true)}
                           disabled={isSaving}
                         >
@@ -1224,6 +1210,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       </label>
                     </div>
                   </div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSavePaymentConfig}
+                    disabled={isSaving}
+                  >
+                    {isSaving ? "Menyimpan..." : "Simpan Pengaturan Pembayaran"}
+                  </button>
                 </div>
               )}
             </div>

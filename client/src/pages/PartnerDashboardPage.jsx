@@ -5,14 +5,14 @@ import API_BASE_URL from '../apiConfig';
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   <div className="col-lg-3 col-md-6">
     <Link to={linkTo} className="text-decoration-none">
-      <div className="kpi-card p-3 shadow-sm d-flex justify-content-around align-items-center h-100">
-        <div>
-          <h3 className="fs-2">{value}</h3>
-          <p className="fs-5 text-muted mb-0">{title}</p>
+      <div className="kpi-card p-3 shadow-sm h-100">
+        <div className="kpi-card-content">
+          <div className="kpi-card-text">
+            <h3 className="fs-2">{value}</h3>
+            <p className="fs-5 text-muted mb-0">{title}</p>
+          </div>
+          <i className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}></i>
         </div>
-        <i
-          className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}
-        ></i>
       </div>
     </Link>
   </div>

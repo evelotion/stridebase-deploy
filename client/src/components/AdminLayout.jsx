@@ -1,11 +1,9 @@
-import React, { useState } from "react"; // Import useState
+import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import "../admin.css";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
-  // State untuk mengontrol visibilitas sidebar di mobile
-  const [isToggled, setIsToggled] = useState(false);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -17,21 +15,17 @@ const AdminLayout = () => {
     }
   };
 
-  const handleToggleSidebar = () => {
-    setIsToggled(!isToggled);
-  };
-
   return (
-    // Tambahkan class 'toggled' secara dinamis
-    <div className={`d-flex ${isToggled ? "toggled" : ""}`} id="wrapper">
-      <aside id="sidebar-wrapper">
+    <div className="d-flex" id="wrapper">
+      {/* --- Sidebar untuk Desktop (d-none d-lg-flex) --- */}
+      <aside id="sidebar-wrapper" className="d-none d-lg-flex">
         <div className="sidebar-heading">
           <NavLink className="navbar-brand" to="/admin/dashboard">
             <span className="fs-5">StrideBase Admin</span>
           </NavLink>
         </div>
-        {/* ... Isi ul (menu) tetap sama ... */}
         <ul className="list-group list-group-flush">
+          {/* ... (Isi menu navigasi tetap sama) ... */}
           <li className="list-group-item">
             <NavLink to="/" className="nav-link-admin">
               <i className="fas fa-home me-2"></i>Kembali ke Situs
@@ -94,14 +88,81 @@ const AdminLayout = () => {
           </li>
         </ul>
       </aside>
+
       <main id="page-content-wrapper">
-        {/* === HEADER MOBILE BARU DITAMBAHKAN DI SINI === */}
+        {/* --- Header Mobile Baru (d-lg-none) --- */}
         <nav className="navbar navbar-light bg-light border-bottom d-lg-none admin-mobile-nav">
           <div className="container-fluid">
-            <button className="btn" type="button" onClick={handleToggleSidebar}>
-              <i className="fas fa-bars"></i>
-            </button>
+            <div className="dropdown">
+              <button
+                className="btn"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i className="fas fa-bars"></i>
+              </button>
+              <ul className="dropdown-menu">
+                {/* Isi dropdown sama dengan menu sidebar */}
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/dashboard">
+                    Dashboard
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/bookings">
+                    Bookings
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/stores">
+                    Stores
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/users">
+                    Users
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/reviews">
+                    Reviews
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/banners">
+                    Banners
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/promos">
+                    Promos
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/reports">
+                    Reports
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/settings">
+                    Settings
+                  </NavLink>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/">
+                    Kembali ke Situs
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
             <span className="navbar-brand mb-0 h1">Admin Panel</span>
+            <a href="#" onClick={handleLogout} className="btn text-danger">
+              <i className="fas fa-sign-out-alt"></i>
+            </a>
           </div>
         </nav>
         <Outlet />
