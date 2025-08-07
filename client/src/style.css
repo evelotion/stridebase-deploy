@@ -1,3 +1,5 @@
+/* File: stridebase-app-render/client/src/style.css */
+
 /* General Styles */
 :root {
   --primary-color: #0dcaf0;
@@ -22,7 +24,7 @@ body {
   font-size: var(--font-size-base, 16px);
   margin: 0;
   padding: 0;
-  background-color: #f8f9fa; 
+  background-color: #f8f9fa;
 }
 
 body.is-user-layout {
@@ -891,14 +893,14 @@ footer {
 }
 
 .login-image-side {
-   /* background-image properti sudah dihapus */
+  /* background-image properti sudah dihapus */
   background-size: cover;
   background-position: center;
   position: relative;
 }
 
 .register-image-side {
- /* background-image properti sudah dihapus */
+  /* background-image properti sudah dihapus */
   background-size: cover;
   background-position: center;
   position: relative;
@@ -1720,7 +1722,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   display: flex;
   flex-direction: column;
   text-align: center;
-  
+
   /* HAPUS: justify-content dan align-items dihapus */
   /* Cukup atur padding atas untuk mendorong konten ke bawah */
   padding-top: 15vh; /* NAIKKAN LAGI: Coba nilai antara 15vh - 25vh */
@@ -2569,7 +2571,11 @@ body:has(.store-page-container) {
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   padding: 1px; /* Ini akan menjadi tebal border kita */
-  background: linear-gradient(to top, var(--primary-color), transparent); /* Gradien dipindah ke background utama */
+  background: linear-gradient(
+    to top,
+    var(--primary-color),
+    transparent
+  ); /* Gradien dipindah ke background utama */
 }
 
 .store-grid__card:hover {
@@ -2802,7 +2808,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   width: 100vw;
   background-color: var(--bg-white);
   /* PERUBAHAN: Memberi padding atas setinggi navbar (misal: 56px) */
-  padding-top: 40px !important; 
+  padding-top: 40px !important;
 }
 
 .auth-image-panel {
@@ -2817,7 +2823,7 @@ PENINGKATAN UX PENCARIAN & FILTER
 
 .login-image-side {
   /* Ganti dengan URL gambar yang Anda inginkan */
-  background-image: url('https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=2574&auto=format&fit=crop');
+  background-image: url("https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=2574&auto=format&fit=crop");
 }
 
 .auth-image-overlay {
@@ -2829,14 +2835,14 @@ PENINGKATAN UX PENCARIAN & FILTER
   display: flex;
   flex-direction: column;
   text-align: center;
-  align-items: center; 
+  align-items: center;
 }
 
 /* KODE BARU: Langsung targetkan judulnya */
 .auth-image-overlay h1 {
   font-size: 2.2rem;
   /* DIUBAH: Gunakan margin-top untuk mendorongnya ke bawah dari atas */
-  margin-top: 50vh; 
+  margin-top: 50vh;
 }
 
 .auth-form-container {
@@ -2857,22 +2863,22 @@ PENINGKATAN UX PENCARIAN & FILTER
 
 /* === PENYESUAIAN UKURAN FONT HALAMAN LOGIN === */
 .auth-form-container .form-label {
-  font-size: 0.9rem; 
+  font-size: 0.9rem;
 }
 
 .auth-form-container .form-control {
-  font-size: 0.9rem; 
+  font-size: 0.9rem;
   /* DIUBAH: Mengurangi padding atas & bawah agar lebih kurus */
-  padding: 0.5rem 1.25rem; 
+  padding: 0.5rem 1.25rem;
 }
 
 .auth-form-container .btn {
   /* DIUBAH: Mengurangi padding atas & bawah agar lebih kurus */
   padding: 0.5rem 1rem;
-  font-size: 0.9rem;   
+  font-size: 0.9rem;
 }
 
-.auth-form-container p, 
+.auth-form-container p,
 .auth-form-container a {
   font-size: 0.9rem;
 }
@@ -2880,7 +2886,7 @@ PENINGKATAN UX PENCARIAN & FILTER
 /* === PENYESUAIAN LANJUTAN FORM LOGIN === */
 .auth-form-container form {
   max-width: 250px; /* Atur lebar maksimum form agar lebih pendek */
-  margin-left: auto;   /* Pusatkan form di dalam container */
+  margin-left: auto; /* Pusatkan form di dalam container */
   margin-right: auto;
 }
 
@@ -2892,7 +2898,7 @@ PENINGKATAN UX PENCARIAN & FILTER
 .auth-form-container .btn {
   border-radius: 30px; /* Membuat tombol mengikuti lengkungan input */
   padding: 0.75rem 1rem; /* Menyesuaikan padding internal tombol */
-  font-size: 0.9rem;  
+  font-size: 0.9rem;
 }
 
 /* === MENGECILKAN FONT DI PANEL GAMBAR LOGIN === */
@@ -2901,7 +2907,7 @@ PENINGKATAN UX PENCARIAN & FILTER
 }
 
 .auth-image-overlay p.lead {
-  font-size: 1rem;   /* Ukuran font subjudul diperkecil */
+  font-size: 1rem; /* Ukuran font subjudul diperkecil */
 }
 /* === GAYA BARU UNTUK HALAMAN /STORE === */
 
@@ -2969,7 +2975,11 @@ PENINGKATAN UX PENCARIAN & FILTER
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   padding: 1px; /* Ini akan menjadi tebal border kita */
-  background: linear-gradient(to top, var(--primary-color), transparent); /* Gradien dipindah ke background utama */
+  background: linear-gradient(
+    to top,
+    var(--primary-color),
+    transparent
+  ); /* Gradien dipindah ke background utama */
 }
 
 .store-grid__card:hover {
@@ -3008,8 +3018,7 @@ body.is-user-layout .dashboard,
 body.is-user-layout .store-page,
 body.is-user-layout .terms-content,
 body.is-user-layout .store-page-redesigned,
-body.is-user-layout main 
-body.is-user-layout .hero-section { 
+body.is-user-layout main body.is-user-layout .hero-section {
   background-color: transparent !important;
 }
 
@@ -3128,7 +3137,7 @@ main.store-detail {
   right: 0;
   padding: 1.5rem;
   color: white;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
 }
 
 .store-header-overlay h1 {
@@ -3144,7 +3153,7 @@ main.store-detail {
 }
 
 .rating-badge {
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 99px;
@@ -3161,7 +3170,7 @@ main.store-detail {
   border-radius: 1rem;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   border: 1px solid #e9ecef;
 }
 
@@ -3222,12 +3231,12 @@ main.store-detail {
 
 .store-header .carousel,
 .store-header .carousel-inner {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .store-header .carousel-item {
-    height: 100%;
+  height: 100%;
 }
 
 /* =============================================== */
@@ -3312,7 +3321,7 @@ main.store-detail {
 
 /* Menghentikan penutupan dropdown saat checkbox di dalamnya diklik */
 .dropdown-menu[data-bs-auto-close="outside"] .form-check {
-  padding: .25rem 1rem;
+  padding: 0.25rem 1rem;
 }
 
 .dropdown-menu[data-bs-auto-close="outside"] .form-check-label {
@@ -3387,7 +3396,10 @@ main.store-detail {
   box-shadow: 0 0 0 2px var(--primary-color);
 }
 
-.service-card input[type="radio"]:checked + .service-card-content .service-card-checkmark {
+.service-card
+  input[type="radio"]:checked
+  + .service-card-content
+  .service-card-checkmark {
   color: var(--primary-color); /* Warna checkmark menjadi aktif */
 }
 
@@ -3402,12 +3414,12 @@ main.store-detail {
   width: 90%; /* Tidak 100% agar terlihat mengambang */
   max-width: 900px;
   z-index: 999; /* Pastikan berada di atas konten lain, tapi di bawah navbar (1000) */
-  
+
   /* Efek Kaca Transparan */
   background: rgba(28, 64, 212, 0.85); /* Warna primer dengan opacity */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  
+
   color: white;
   padding: 0.75rem 1rem;
   border-radius: 999px; /* Sudut seperti kapsul */
@@ -3416,7 +3428,7 @@ main.store-detail {
   font-weight: 500;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  
+
   /* Animasi saat muncul */
   animation: fadeInDown 0.5s ease-out forwards;
 }
@@ -3531,9 +3543,16 @@ body.has-global-announcement .hero-section {
   font-weight: 600;
 }
 
-/* Menambahkan padding di bawah konten utama agar tidak tertutup nav bawah */
-main {
-  padding-bottom: 70px; /* Sedikit lebih besar dari tinggi nav bawah */
+/* =======================================================
+  === PERBAIKAN: FOOTER TIDAK TERTUTUP DI MOBILE VIEW ===
+  =======================================================
+*/
+@media (max-width: 991.98px) {
+  /* Terapkan padding bawah pada body HANYA di layar mobile.
+     Nilainya sedikit lebih besar dari tinggi nav bawah (60px) */
+  body {
+    padding-bottom: 70px;
+  }
 }
 
 /* Sembunyikan navbar desktop di mobile */
@@ -3548,10 +3567,6 @@ main {
   .mobile-header.d-lg-none,
   .mobile-bottom-nav.d-lg-none {
     display: none !important;
-  }
-  /* Hapus padding bawah di desktop */
-  main {
-    padding-bottom: 0;
   }
 }
 
@@ -3579,7 +3594,7 @@ main {
   .hero-banner-img {
     height: 220px;
   }
-  
+
   /* Ubah tata letak kartu toko menjadi horizontal */
   .store-grid__card {
     display: flex;
@@ -3596,7 +3611,7 @@ main {
     border-radius: 0.75rem; /* Sudut melengkung untuk gambar */
     overflow: hidden;
   }
-  
+
   .store-grid__content {
     border-radius: 0 0.75rem 0.75rem 0; /* Sesuaikan sudut */
     padding: 0.75rem 1rem;
@@ -3620,4 +3635,3 @@ main {
     display: none;
   }
 }
-
