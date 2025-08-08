@@ -1,4 +1,4 @@
-/* File: stridebase-app-render/client/src/admin.css (Final & Terlengkap) */
+/* File: stridebase-app-render/client/src/admin.css (Perbaikan Final v4) */
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -188,19 +188,22 @@ body {
     width: 100%;
   }
 
-  /* --- Perbaikan Tampilan Navigasi Tab di Mobile --- */
+  /* === KODE BARU: PERBAIKAN FINAL UNTUK .nav-tabs DI MOBILE === */
   .nav-tabs {
-    flex-wrap: nowrap; /* Mencegah tab turun ke bawah */
-    overflow-x: auto;  /* Aktifkan scroll horizontal */
-    -ms-overflow-style: none; /* Sembunyikan scrollbar di IE dan Edge */
-    scrollbar-width: none; /* Sembunyikan scrollbar di Firefox */
+    display: block;      /* Override display: flex dari Bootstrap */
+    white-space: nowrap; /* Paksa semua item berada dalam satu baris */
+    overflow-x: auto;    /* Buat bisa di-scroll secara horizontal */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 10px; /* Beri sedikit ruang agar shadow tidak terpotong */
+    margin-bottom: 1rem; /* Jaga jarak dengan konten di bawahnya */
   }
-  /* Sembunyikan scrollbar di Chrome, Safari, dan Opera */
   .nav-tabs::-webkit-scrollbar {
-    display: none;
+    display: none; /* Sembunyikan scrollbar di browser Webkit */
   }
   .nav-tabs .nav-item {
-    flex-shrink: 0; /* Mencegah tab menyusut */
+    display: inline-block; /* Buat item sejajar dalam satu baris */
+    float: none;
   }
 }
 
