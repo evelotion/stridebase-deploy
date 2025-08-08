@@ -1,3 +1,5 @@
+/* File: stridebase-app-render/client/src/admin.css */
+
 /* Import Font */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -148,12 +150,17 @@ body.dark-mode #dark-mode-toggler .form-check-input {
   margin-left: -250px;
 }
 
-/* Mengembalikan area konten utama seperti semula */
+/* =======================================================
+  === PERBAIKAN: JUDUL TERTUTUP NAVBAR DI ADMIN PANEL ===
+  =======================================================
+*/
 #page-content-wrapper {
-  width: calc(100% - 250px);
-  transition: width 0.3s ease;
+  width: 100%;
+  padding-top: 56px; /* Menambahkan padding atas setinggi navbar mobile */
+  transition: all 0.3s ease;
   padding-bottom: 3rem;
 }
+
 #wrapper.toggled #page-content-wrapper {
   width: 100%;
 }
@@ -691,7 +698,7 @@ body.dark-mode .dark-mode-tab {
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
   margin-bottom: 1rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 .mobile-card-header {
   padding: 0.75rem 1rem;
@@ -764,7 +771,8 @@ body.dark-mode .dark-mode-tab {
   }
   #page-content-wrapper {
     width: 100%;
-    padding-top: 56px; 
+    /* Hapus padding-top di mobile karena navbar sudah sticky */
+    padding-top: 56px;
   }
   #sidebar-wrapper.d-none {
     display: none !important;
@@ -774,5 +782,7 @@ body.dark-mode .dark-mode-tab {
 @media (min-width: 992px) {
   #page-content-wrapper {
     width: calc(100% - 250px);
+    /* Kembalikan padding-top untuk desktop */
+    padding-top: 0;
   }
 }

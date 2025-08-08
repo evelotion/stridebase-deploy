@@ -1,0 +1,55 @@
+/* ======================================================= */
+/* === PERBAIKAN TAHAP 2 DIMULAI DI SINI === */
+/* ======================================================= */
+
+/* Aturan khusus untuk layar mobile kecil (lebar di bawah 576px) */
+@media (max-width: 575.98px) {
+  /* Atur tinggi banner hero menjadi lebih pendek agar tidak terlalu dominan */
+  .hero-banner-img {
+    height: 220px;
+  }
+  
+  /* Ubah tata letak kartu toko menjadi horizontal */
+  .store-grid__card {
+    display: flex;
+    flex-direction: row; /* Membuat gambar di kiri, konten di kanan */
+    align-items: center;
+    padding: 0; /* Hapus padding default dari kartu */
+    background: none; /* Hapus gradien background di mobile */
+  }
+
+  .store-grid__image-wrapper {
+    width: 120px; /* Atur lebar tetap untuk gambar */
+    height: 120px; /* Atur tinggi tetap untuk gambar */
+    flex-shrink: 0; /* Mencegah gambar menyusut */
+    border-radius: 0.75rem; /* Beri sudut melengkung pada gambar */
+    overflow: hidden;
+  }
+  
+  .store-grid__content {
+    border-radius: 0 0.75rem 0.75rem 0; /* Sesuaikan sudut melengkung pada konten */
+    padding: 0.75rem 1rem;
+    height: 120px;
+    justify-content: center;
+  }
+
+  .store-grid__title {
+    font-size: 1rem; /* Kecilkan sedikit judul toko */
+  }
+
+  .store-grid__location,
+  .store-grid__rating {
+    font-size: 0.8rem; /* Kecilkan teks lokasi dan rating */
+    margin-bottom: 0.25rem;
+  }
+
+  /* Sembunyikan tombol 'Lihat Detail' di dalam kartu horizontal,
+     karena seluruh kartu akan menjadi tautan. */
+  .store-grid__card .btn-gradient {
+    display: none;
+  }
+}
+
+/* ======================================================= */
+/* === AKHIR PERBAIKAN TAHAP 2 === */
+/* ======================================================= */
