@@ -1,4 +1,4 @@
-/* File: stridebase-app-render/client/src/admin.css (Final & Terlengkap) */
+/* File: stridebase-app-render/client/src/admin.css (Final & Disempurnakan) */
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -28,7 +28,6 @@ body {
   width: 250px;
   background: var(--bg-white);
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-  transition: margin 0.3s ease, background-color 0.3s ease;
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -66,6 +65,49 @@ body {
   z-index: 1020;
 }
 
+/* =============================================== */
+/* === GAYA BARU: KONSISTENSI & RESPONSIVITAS === */
+/* =============================================== */
+
+/* --- Pengaturan Header Halaman (Judul & Tombol) --- */
+.container-fluid > .d-flex.justify-content-between {
+  flex-direction: row;
+  align-items: center;
+}
+/* Di mobile, buat judul dan tombol menjadi vertikal */
+@media (max-width: 767.98px) {
+  .container-fluid > .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem; /* Memberi jarak antara judul dan tombol */
+  }
+  .container-fluid > .d-flex.justify-content-between .btn {
+    width: 100%; /* Buat tombol memenuhi lebar */
+  }
+}
+
+/* --- Pengaturan Navigasi Tab (Pending, Active) --- */
+.nav-pills {
+  display: inline-flex;
+  background-color: #e9ecef; /* Memberi container abu-abu */
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  border: none; /* Hapus border bawah yg tidak perlu */
+}
+.nav-pills .nav-link {
+  border-radius: 0.5rem !important; /* Membuat setiap tab lebih rounded */
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border: none;
+}
+.nav-pills .nav-link.active {
+  background-color: var(--bg-white); /* Tab aktif menjadi putih */
+  color: var(--text-dark);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Memberi efek timbul */
+}
+
+
 @media (max-width: 991.98px) {
   #wrapper {
     flex-direction: column;
@@ -99,7 +141,7 @@ body {
 .kpi-card {
   background: var(--bg-white);
   border-radius: 1rem;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -126,6 +168,13 @@ body {
   font-weight: 500;
 }
 
+.table-card {
+  background: var(--bg-white);
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  border-color: var(--border-color);
+}
+
 .table-responsive {
   overflow-x: auto;
 }
@@ -150,7 +199,7 @@ body {
 
 /* Tampilan Kartu untuk Tabel di Mobile */
 .mobile-card-list {
-  padding: 0 1rem;
+  padding: 0;
 }
 .mobile-card {
   background-color: var(--bg-white);
@@ -183,4 +232,11 @@ body {
   background-color: var(--bg-light);
   border-top: 1px solid var(--border-color);
   text-align: right;
+}
+
+@media (min-width: 992px) {
+  /* Di desktop, sembunyikan tampilan kartu */
+  .mobile-card-list {
+    display: none;
+  }
 }
