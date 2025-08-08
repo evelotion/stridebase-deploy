@@ -1,4 +1,4 @@
-/* File: stridebase-app-render/client/src/admin.css (Final Lengkap v3) */
+/* File: stridebase-app-render/client/src/admin.css (Final & Terlengkap) */
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -174,7 +174,7 @@ body {
 }
 
 /* =============================================== */
-/* === KODE BARU UNTUK RESPONSIVITAS === */
+/* === KODE RESPONSIVE UTAMA (MOHON JANGAN DIUBAH) === */
 /* =============================================== */
 
 /* --- Pengaturan Header Halaman (Judul & Tombol) --- */
@@ -188,7 +188,7 @@ body {
     width: 100%;
   }
 
-  /* --- PERBAIKAN Tampilan Navigasi Tab di Mobile --- */
+  /* --- Perbaikan Tampilan Navigasi Tab di Mobile --- */
   .nav-tabs {
     flex-wrap: nowrap; /* Mencegah tab turun ke bawah */
     overflow-x: auto;  /* Aktifkan scroll horizontal */
