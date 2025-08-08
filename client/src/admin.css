@@ -1,4 +1,4 @@
-/* File: stridebase-app-render/client/src/admin.css (Final & Disempurnakan) */
+/* File: stridebase-app-render/client/src/admin.css (Final Lengkap v3) */
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -65,66 +65,6 @@ body {
   z-index: 1020;
 }
 
-/* =============================================== */
-/* === GAYA BARU: KONSISTENSI & RESPONSIVITAS === */
-/* =============================================== */
-
-/* --- Pengaturan Header Halaman (Judul & Tombol) --- */
-.container-fluid > .d-flex.justify-content-between {
-  flex-direction: row;
-  align-items: center;
-}
-/* Di mobile, buat judul dan tombol menjadi vertikal */
-@media (max-width: 767.98px) {
-  .container-fluid > .d-flex.justify-content-between {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem; /* Memberi jarak antara judul dan tombol */
-  }
-  .container-fluid > .d-flex.justify-content-between .btn {
-    width: 100%; /* Buat tombol memenuhi lebar */
-  }
-}
-
-/* --- Pengaturan Navigasi Tab (Pending, Active) --- */
-.nav-pills {
-  display: inline-flex;
-  background-color: #e9ecef; /* Memberi container abu-abu */
-  border-radius: 0.75rem;
-  padding: 0.25rem;
-  border: none; /* Hapus border bawah yg tidak perlu */
-}
-.nav-pills .nav-link {
-  border-radius: 0.5rem !important; /* Membuat setiap tab lebih rounded */
-  font-weight: 500;
-  color: var(--text-muted);
-  padding: 0.5rem 1rem;
-  border: none;
-}
-.nav-pills .nav-link.active {
-  background-color: var(--bg-white); /* Tab aktif menjadi putih */
-  color: var(--text-dark);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Memberi efek timbul */
-}
-
-
-@media (max-width: 991.98px) {
-  #wrapper {
-    flex-direction: column;
-  }
-  #page-content-wrapper {
-    width: 100%;
-    padding-top: 56px; 
-  }
-}
-
-@media (min-width: 992px) {
-  #page-content-wrapper {
-    width: calc(100% - 250px);
-    padding-top: 0; 
-  }
-}
-
 .primary-text {
   color: var(--primary-color);
 }
@@ -171,8 +111,7 @@ body {
 .table-card {
   background: var(--bg-white);
   border-radius: 1rem;
-  border: 1px solid transparent;
-  border-color: var(--border-color);
+  border: 1px solid var(--border-color);
 }
 
 .table-responsive {
@@ -234,7 +173,73 @@ body {
   text-align: right;
 }
 
+/* =============================================== */
+/* === KODE BARU UNTUK RESPONSIVITAS === */
+/* =============================================== */
+
+/* --- Pengaturan Header Halaman (Judul & Tombol) --- */
+@media (max-width: 767.98px) {
+  .container-fluid > .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .container-fluid > .d-flex.justify-content-between .btn {
+    width: 100%;
+  }
+
+  /* --- PERBAIKAN Tampilan Navigasi Tab di Mobile --- */
+  .nav-tabs {
+    flex-wrap: nowrap; /* Mencegah tab turun ke bawah */
+    overflow-x: auto;  /* Aktifkan scroll horizontal */
+    -ms-overflow-style: none; /* Sembunyikan scrollbar di IE dan Edge */
+    scrollbar-width: none; /* Sembunyikan scrollbar di Firefox */
+  }
+  /* Sembunyikan scrollbar di Chrome, Safari, dan Opera */
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-tabs .nav-item {
+    flex-shrink: 0; /* Mencegah tab menyusut */
+  }
+}
+
+/* --- Pengaturan Navigasi Tab (Pending, Active, dll.) --- */
+.nav-pills {
+  display: inline-flex;
+  background-color: #e9ecef;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  border: none;
+}
+.nav-pills .nav-link {
+  border-radius: 0.5rem !important;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border: none;
+}
+.nav-pills .nav-link.active {
+  background-color: var(--bg-white);
+  color: var(--text-dark);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 991.98px) {
+  #wrapper {
+    flex-direction: column;
+  }
+  #page-content-wrapper {
+    width: 100%;
+    padding-top: 56px; 
+  }
+}
+
 @media (min-width: 992px) {
+  #page-content-wrapper {
+    width: calc(100% - 250px);
+    padding-top: 0; 
+  }
   /* Di desktop, sembunyikan tampilan kartu */
   .mobile-card-list {
     display: none;
