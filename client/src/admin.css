@@ -1,4 +1,4 @@
-/* File: stridebase-app-render/client/src/admin.css (Perbaikan Final v2) */
+/* File: stridebase-app-render/client/src/admin.css (Perbaikan Final Lengkap) */
 
 /* Import Font */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -13,18 +13,6 @@
   --bg-white: #ffffff;
   --border-color: #dee2e6;
   --table-hover-color: #f1f1f1;
-}
-
-/* Dark Mode Color Definitions */
-body.dark-mode {
-  --primary-color: #0dcaf0;
-  --secondary-color: #28a745;
-  --text-dark: #e1e1e1;
-  --text-muted: #a0a0a0;
-  --bg-light: #1c1c22;
-  --bg-white: #25252b;
-  --border-color: #404040;
-  --table-hover-color: #313138;
 }
 
 /* Base Layout */
@@ -106,17 +94,23 @@ body {
   margin-left: -250px;
 }
 
+/* ========================================= */
+/* === PERBAIKAN TATA LETAK UTAMA DIMULAI SINI === */
+/* ========================================= */
+
 #page-content-wrapper {
   width: calc(100% - 250px);
   transition: width 0.3s ease;
   padding-bottom: 3rem;
-  background-color: var(--bg-light);
+  /* Mengembalikan warna latar belakang abu-abu */
+  background-color: var(--bg-light); 
 }
 
 #wrapper.toggled #page-content-wrapper {
   width: 100%;
 }
 
+/* --- Navigasi Mobile --- */
 .admin-mobile-nav {
   position: fixed;
   top: 0;
@@ -130,28 +124,17 @@ body {
   font-weight: 600;
 }
 
-/* =======================================================
-  === PERBAIKAN UTAMA UNTUK TAMPILAN MOBILE ADMIN PANEL ===
-  =======================================================
-*/
 @media (max-width: 991.98px) {
   #wrapper {
     flex-direction: column;
   }
   #page-content-wrapper {
     width: 100%;
+    /* Memberi ruang di atas untuk navbar mobile yang fixed */
     padding-top: 56px; 
   }
   #sidebar-wrapper.d-none {
     display: none !important;
-  }
-  /* PERBAIKAN: Aturan '.table-responsive { display: none; }' yang salah 
-    telah DIHAPUS dari sini. Ini akan membuat tabel kembali muncul.
-  */
-
-  /* Aturan ini tetap ada untuk halaman yg punya view kartu (spt Hal. Toko) */
-  .mobile-card-list {
-    display: block;
   }
 }
 
@@ -160,14 +143,67 @@ body {
     width: calc(100% - 250px);
     padding-top: 0; 
   }
-  /* Sembunyikan kartu mobile di desktop */
-  .mobile-card-list {
-    display: none;
-  }
 }
-/* Sisa kode CSS lainnya tetap sama */
-/* ... (sisa kode CSS Anda dari baris ini ke bawah tidak perlu diubah) ... */
+/* ========================================= */
+/* === AKHIR PERBAIKAN TATA LETAK UTAMA === */
+/* ========================================= */
 
+
+/* General Styles & Utilities */
+.primary-text {
+  color: var(--primary-color);
+}
+.secondary-text {
+  color: var(--secondary-color);
+}
+/* Mengembalikan style untuk ikon bulat */
+.rounded-full {
+  border-radius: 999px !important;
+  padding: 1rem !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Card Styles */
+.kpi-card,
+.chart-card,
+.table-card,
+.card {
+  background: var(--bg-white);
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.kpi-card:hover,
+.chart-card:hover,
+.table-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08) !important;
+}
+
+.kpi-card .fs-2 {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.kpi-card .fs-5 {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Mengembalikan tata letak KPI Card yang benar */
+.kpi-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.kpi-card-text {
+  text-align: left;
+}
+
+/* Table Styles */
 .table-responsive {
   overflow-x: auto;
 }
