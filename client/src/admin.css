@@ -1,4 +1,4 @@
-/* File: stridebase-app-render/client/src/admin.css (Perbaikan Final) */
+/* File: stridebase-app-render/client/src/admin.css (Perbaikan Final v2) */
 
 /* Import Font */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
@@ -130,24 +130,67 @@ body {
   font-weight: 600;
 }
 
+/* =======================================================
+  === PERBAIKAN UTAMA UNTUK TAMPILAN MOBILE ADMIN PANEL ===
+  =======================================================
+*/
 @media (max-width: 991.98px) {
   #wrapper {
     flex-direction: column;
   }
   #page-content-wrapper {
     width: 100%;
-    /* INI ADALAH PERBAIKAN UTAMA: Memberi ruang untuk navbar mobile */
     padding-top: 56px; 
   }
   #sidebar-wrapper.d-none {
     display: none !important;
+  }
+  /* PERBAIKAN: Aturan '.table-responsive { display: none; }' yang salah 
+    telah DIHAPUS dari sini. Ini akan membuat tabel kembali muncul.
+  */
+
+  /* Aturan ini tetap ada untuk halaman yg punya view kartu (spt Hal. Toko) */
+  .mobile-card-list {
+    display: block;
   }
 }
 
 @media (min-width: 992px) {
   #page-content-wrapper {
     width: calc(100% - 250px);
-    /* Pastikan padding-top kembali ke 0 di desktop */
     padding-top: 0; 
   }
+  /* Sembunyikan kartu mobile di desktop */
+  .mobile-card-list {
+    display: none;
+  }
+}
+/* Sisa kode CSS lainnya tetap sama */
+/* ... (sisa kode CSS Anda dari baris ini ke bawah tidak perlu diubah) ... */
+
+.table-responsive {
+  overflow-x: auto;
+}
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+.table thead th {
+  border-bottom-width: 1px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+.table-hover tbody tr:hover {
+  background-color: var(--table-hover-color);
+}
+.table thead.table-light {
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border-color);
 }
