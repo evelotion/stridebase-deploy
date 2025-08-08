@@ -270,7 +270,7 @@ const AdminStoresPage = ({ showMessage }) => {
         </ul>
 
         <div className="table-card p-3 shadow-sm">
-          <div className="table-responsive">
+          <div className="table-responsive d-none d-lg-block">
             <table className="table table-hover align-middle">
               <thead className="table-light">
                 <tr>
@@ -448,70 +448,88 @@ const AdminStoresPage = ({ showMessage }) => {
               </div>
             )}
           </div>
-        </div>
 
-        {/* === KODE BARU UNTUK TAMPILAN MOBILE === */}
-        <div className="mobile-card-list d-lg-none">
-          {filteredStores.map((store) => (
-            <div className="mobile-card" key={store.id}>
-              <div className="mobile-card-header">
-                <span className="fw-bold">{store.name}</span>
-                <span
-                  className={`badge bg-${
-                    store.storeStatus === "active"
-                      ? "success"
-                      : "warning text-dark"
-                  }`}
-                >
-                  {store.storeStatus}
-                </span>
-              </div>
-              <div className="mobile-card-body">
-                <div className="mobile-card-row">
-                  <small>Pemilik</small>
-                  <span>{store.owner || "N/A"}</span>
-                </div>
-                <div className="mobile-card-row">
-                  <small>Lokasi</small>
-                  <span>{store.location}</span>
-                </div>
-                <div className="mobile-card-row">
-                  <small>Tipe Penagihan</small>
+          <div className="mobile-card-list d-lg-none">
+            {filteredStores.map((store) => (
+              <div className="mobile-card" key={store.id}>
+                <div className="mobile-card-header">
+                  <span className="fw-bold">{store.name}</span>
                   <span
-                    className={`badge ${
-                      store.billingType === "INVOICE"
-                        ? "bg-primary"
-                        : "bg-secondary"
+                    className={`badge bg-${
+                      store.storeStatus === "active"
+                        ? "success"
+                        : store.storeStatus === "inactive"
+                        ? "secondary"
+                        : "warning text-dark"
                     }`}
                   >
-                    {store.billingType}
+                    {store.storeStatus}
                   </span>
                 </div>
-              </div>
-              <div className="mobile-card-footer">
-                <div className="btn-group">
-                  <button
-                    className="btn btn-sm btn-outline-secondary"
-                    title="Edit"
-                    onClick={() => handleShowEditModal(store)}
-                  >
-                    <i className="fas fa-edit"></i> Edit
-                  </button>
-                  {store.billingType === "INVOICE" && (
-                    <Link
-                      to={`/admin/stores/${store.id}/invoices`}
-                      className="btn btn-sm btn-outline-primary"
-                      title="Lihat & Kelola Invoice"
+                <div className="mobile-card-body">
+                  <div className="mobile-card-row">
+                    <small>Pemilik</small>
+                    <span>{store.owner || "N/A"}</span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Lokasi</small>
+                    <span className="text-end">{store.location}</span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Tipe Penagihan</small>
+                    <span
+                      className={`badge ${
+                        store.billingType === "INVOICE"
+                          ? "bg-primary"
+                          : "bg-secondary"
+                      }`}
                     >
-                      <i className="fas fa-file-invoice-dollar"></i> Invoice
-                    </Link>
-                  )}
+                      {store.billingType}
+                    </span>
+                  </div>
+                </div>
+                <div className="mobile-card-footer">
+                  <div className="btn-group">
+                    {store.storeStatus === "pending" && (
+                      <>
+                        <button
+                          onClick={() => handleApproval(store.id, "approve")}
+                          className="btn btn-sm btn-outline-success"
+                          title="Setujui"
+                        >
+                          <i className="fas fa-check"></i>
+                        </button>
+                        <button
+                          onClick={() => handleApproval(store.id, "reject")}
+                          className="btn btn-sm btn-outline-danger"
+                          title="Tolak"
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                      </>
+                    )}
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      title="Edit"
+                      onClick={() => handleShowEditModal(store)}
+                    >
+                      <i className="fas fa-edit"></i>
+                    </button>
+                    {store.billingType === "INVOICE" && (
+                      <Link
+                        to={`/admin/stores/${store.id}/invoices`}
+                        className="btn btn-sm btn-outline-primary"
+                        title="Invoices"
+                      >
+                        <i className="fas fa-file-invoice-dollar"></i>
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        {/* === AKHIR DARI KODE BARU UNTUK MOBILE === */}
       </div>
 
       {showEditModal && editingStore && (

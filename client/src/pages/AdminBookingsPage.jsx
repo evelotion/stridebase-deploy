@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const AdminBookingsPage = ({ showMessage }) => {
   const [bookings, setBookings] = useState([]);
@@ -40,14 +40,17 @@ const AdminBookingsPage = ({ showMessage }) => {
     setBookings(updatedBookings);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/bookings/${bookingId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newStatus }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/bookings/${bookingId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ newStatus }),
+        }
+      );
 
       if (!response.ok) {
         setBookings(originalBookings);
@@ -104,7 +107,7 @@ const AdminBookingsPage = ({ showMessage }) => {
       </div>
 
       <div className="table-card p-3 shadow-sm">
-        <div className="table-responsive">
+        <div className="table-responsive d-none d-lg-block">
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
@@ -203,6 +206,43 @@ const AdminBookingsPage = ({ showMessage }) => {
               Data booking tidak ditemukan.
             </div>
           )}
+        </div>
+
+        <div className="mobile-card-list d-lg-none">
+          {filteredBookings.map((booking) => (
+            <div className="mobile-card" key={booking.id}>
+              <div className="mobile-card-header">
+                <div>
+                  <span className="fw-bold">{booking.user?.name || "N/A"}</span>
+                  <small className="d-block text-muted">{booking.id}</small>
+                </div>
+                <span className={`badge ${getStatusBadge(booking.status)}`}>
+                  {booking.status}
+                </span>
+              </div>
+              <div className="mobile-card-body">
+                <div className="mobile-card-row">
+                  <small>Toko</small>
+                  <span>{booking.store?.name || "N/A"}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Layanan</small>
+                  <span>{booking.serviceName}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Total</small>
+                  <span>Rp {booking.totalPrice.toLocaleString("id-ID")}</span>
+                </div>
+              </div>
+              <div className="mobile-card-footer">
+                {/* Aksi mobile bisa ditambahkan di sini jika perlu */}
+                <small>
+                  Tanggal:{" "}
+                  {new Date(booking.scheduleDate).toLocaleDateString("id-ID")}
+                </small>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const StarRating = ({ rating }) => (
   <div>
@@ -52,10 +52,13 @@ const AdminReviewsPage = ({ showMessage }) => {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/reviews/${reviewId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/reviews/${reviewId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!response.ok) {
         throw new Error("Gagal menghapus ulasan.");
       }
@@ -74,7 +77,7 @@ const AdminReviewsPage = ({ showMessage }) => {
       <h2 className="fs-2 m-4">Manajemen Ulasan</h2>
 
       <div className="table-card p-3 shadow-sm">
-        <div className="table-responsive">
+        <div className="table-responsive d-none d-lg-block">
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
@@ -114,6 +117,35 @@ const AdminReviewsPage = ({ showMessage }) => {
               Belum ada ulasan yang masuk.
             </div>
           )}
+        </div>
+
+        <div className="mobile-card-list d-lg-none">
+          {reviews.map((review) => (
+            <div className="mobile-card" key={review.id}>
+              <div className="mobile-card-header">
+                <span className="fw-bold">{review.user.name}</span>
+                <StarRating rating={review.rating} />
+              </div>
+              <div className="mobile-card-body">
+                <div className="mobile-card-row">
+                  <small>Toko</small>
+                  <span>{review.store.name}</span>
+                </div>
+                <p className="mt-2 mb-0">{review.comment || "-"}</p>
+              </div>
+              <div className="mobile-card-footer d-flex justify-content-between align-items-center">
+                <small className="text-muted">
+                  {new Date(review.date).toLocaleDateString("id-ID")}
+                </small>
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => handleDelete(review.id)}
+                >
+                  <i className="fas fa-trash-alt"></i> Hapus
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

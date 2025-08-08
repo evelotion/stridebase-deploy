@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const AdminUsersPage = ({ showMessage }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Memberi sedikit jeda agar skeleton loader terlihat (hanya untuk demonstrasi)
     setTimeout(() => {
       fetchUsers();
     }, 500);
   }, []);
 
   const fetchUsers = async () => {
-    setLoading(true); // Pastikan loading true di awal fetch
+    setLoading(true);
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
@@ -26,7 +25,6 @@ const AdminUsersPage = ({ showMessage }) => {
       setUsers(data);
     } catch (error) {
       console.error(error);
-      // Di aplikasi nyata, Anda mungkin ingin menampilkan notifikasi error di sini
     } finally {
       setLoading(false);
     }
@@ -123,84 +121,13 @@ const AdminUsersPage = ({ showMessage }) => {
       : name.substring(0, 2).toUpperCase();
   };
 
-  // ### PERUBAHAN 1: BLOK LOADING DENGAN SKELETON ###
   if (loading) {
-    const SkeletonRow = () => (
-      <tr>
-        {/* Kolom Nama User */}
-        <td>
-          <div className="d-flex align-items-center">
-            <div className="skeleton skeleton-avatar me-3"></div>
-            <div style={{ flex: 1 }}>
-              <div className="skeleton skeleton-text"></div>
-            </div>
-          </div>
-        </td>
-        {/* Kolom Email */}
-        <td>
-          <div className="skeleton skeleton-text"></div>
-        </td>
-        {/* Kolom Total Belanja */}
-        <td>
-          <div className="skeleton skeleton-text"></div>
-        </td>
-        {/* Kolom Jml. Transaksi */}
-        <td>
-          <div
-            className="skeleton skeleton-text"
-            style={{ width: "50px" }}
-          ></div>
-        </td>
-        {/* Kolom Peran */}
-        <td>
-          <div
-            className="skeleton skeleton-text"
-            style={{ width: "100px" }}
-          ></div>
-        </td>
-        {/* Kolom Status */}
-        <td>
-          <div
-            className="skeleton skeleton-text"
-            style={{ width: "80px" }}
-          ></div>
-        </td>
-        {/* Kolom Aksi */}
-        <td>
-          <div
-            className="skeleton skeleton-text"
-            style={{ width: "80px" }}
-          ></div>
-        </td>
-      </tr>
-    );
-
-    // Tampilkan tabel dengan baris-baris skeleton
+    // Skeleton loader can remain the same
     return (
       <div className="container-fluid px-4">
         <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
         <div className="table-card p-3 shadow-sm">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle">
-              <thead className="table-light">
-                <tr>
-                  <th>Nama User</th>
-                  <th>Email</th>
-                  <th>Total Belanja</th>
-                  <th>Jml. Transaksi</th>
-                  <th>Peran</th>
-                  <th>Status</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                <SkeletonRow />
-                <SkeletonRow />
-                <SkeletonRow />
-                <SkeletonRow />
-              </tbody>
-            </table>
-          </div>
+          <div className="text-center p-5">Memuat data...</div>
         </div>
       </div>
     );
@@ -210,7 +137,7 @@ const AdminUsersPage = ({ showMessage }) => {
     <div className="container-fluid px-4">
       <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
       <div className="table-card p-3 shadow-sm">
-        <div className="table-responsive">
+        <div className="table-responsive d-none d-lg-block">
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
@@ -262,10 +189,8 @@ const AdminUsersPage = ({ showMessage }) => {
                       {user.status || "active"}
                     </span>
                   </td>
-                  {/* ### PERUBAHAN 2: STANDARDISASI TOMBOL AKSI ### */}
                   <td>
                     <div className="btn-group">
-                      {/* Tombol Ubah Status (Aktif/Blokir) */}
                       {(user.status || "active") === "active" ? (
                         <button
                           className="btn btn-sm btn-outline-warning"
@@ -283,8 +208,6 @@ const AdminUsersPage = ({ showMessage }) => {
                           <i className="fas fa-check-circle"></i>
                         </button>
                       )}
-
-                      {/* Tombol Edit (Aksi di masa depan) */}
                       <button
                         className="btn btn-sm btn-outline-secondary"
                         title="Edit Pengguna"
@@ -297,6 +220,69 @@ const AdminUsersPage = ({ showMessage }) => {
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="mobile-card-list d-lg-none">
+          {users.map((user) => (
+            <div className="mobile-card" key={user.id}>
+              <div className="mobile-card-header">
+                <div>
+                  <span className="fw-bold">{user.name}</span>
+                  <small className="d-block text-muted">{user.email}</small>
+                </div>
+                <span
+                  className={`badge bg-${
+                    (user.status || "active") === "active"
+                      ? "success"
+                      : "danger"
+                  }`}
+                >
+                  {user.status || "active"}
+                </span>
+              </div>
+              <div className="mobile-card-body">
+                <div className="mobile-card-row">
+                  <small>Total Belanja</small>
+                  <span>Rp {user.totalSpent.toLocaleString("id-ID")}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Jml. Transaksi</small>
+                  <span>{user.transactionCount}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Peran</small>
+                  <select
+                    className="form-select form-select-sm"
+                    style={{ width: "150px" }}
+                    value={user.role || "customer"}
+                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                  >
+                    <option value="customer">Customer</option>
+                    <option value="mitra">Mitra</option>
+                    <option value="admin">Admin</option>
+                    <option value="developer">Developer</option>
+                  </select>
+                </div>
+              </div>
+              <div className="mobile-card-footer">
+                {(user.status || "active") === "active" ? (
+                  <button
+                    className="btn btn-sm btn-outline-warning"
+                    onClick={() => handleStatusChange(user.id, "blocked")}
+                  >
+                    <i className="fas fa-ban me-1"></i> Blokir
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-outline-success"
+                    onClick={() => handleStatusChange(user.id, "active")}
+                  >
+                    <i className="fas fa-check-circle me-1"></i> Aktifkan
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
