@@ -168,6 +168,7 @@ body.is-user-layout {
   overflow: hidden;
   display: flex;
   align-items: center;
+  justify-content: center; /* Tambahkan baris ini */
 }
 
 .hero-section h1 {
@@ -1590,17 +1591,36 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   }
 
   /* --- Hero Section on Mobile --- */
-  .hero-section {
+.hero-section {
     min-height: auto;
-    padding-top: 80px; /* Mengurangi padding atas */
-    padding-bottom: 4rem; /* Mengurangi padding bawah */
+    padding-top: 80px;
+    padding-bottom: 4rem;
     text-align: center;
     overflow: hidden;
   }
 
+  .hero-section .row {
+    flex-direction: column-reverse; /* Pindahkan gambar ke atas teks */
+  }
+
   .hero-section h1 {
-    font-size: 2rem; /* Mengecilkan ukuran judul */
-    line-height: 1.3; /* Mengatur jarak antar baris */
+    font-size: 2.2rem; /* Sedikit lebih besar agar tetap impactful */
+    line-height: 1.3;
+    margin-bottom: 1rem !important; /* Kurangi margin bawah */
+  }
+  
+  .hero-section p.lead {
+    font-size: 1rem; /* Kecilkan subjudul */
+    margin-bottom: 2rem !important; /* Beri jarak ke tombol */
+  }
+
+  /* Mengganti gambar statis dengan carousel banner */
+  .hero-section .col-lg-6:has(img) {
+      display: none; /* Sembunyikan kolom gambar statis */
+  }
+  .hero-section .col-lg-6:has(.carousel) {
+      display: block !important; /* Tampilkan kolom carousel banner */
+      margin-bottom: 2rem;
   }
 
   .hero-cards-container {
