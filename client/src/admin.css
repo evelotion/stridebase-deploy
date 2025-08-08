@@ -1,9 +1,7 @@
-/* File: stridebase-app-render/client/src/admin.css (Perbaikan Final Lengkap) */
+/* File: stridebase-app-render/client/src/admin.css (Final & Terlengkap) */
 
-/* Import Font */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-/* Color Palette */
 :root {
   --primary-color: #0dcaf0;
   --secondary-color: #28a745;
@@ -15,7 +13,6 @@
   --table-hover-color: #f1f1f1;
 }
 
-/* Base Layout */
 body {
   font-family: "Poppins", sans-serif;
   overflow-x: hidden;
@@ -37,42 +34,6 @@ body {
   flex-direction: column;
 }
 
-#sidebar-wrapper .list-group {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-#sidebar-wrapper .sidebar-heading {
-  padding: 1.5rem 1.25rem;
-  text-align: center;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.3s ease;
-}
-
-#sidebar-wrapper .sidebar-heading .logo,
-#sidebar-wrapper .sidebar-heading .store-logo {
-  max-height: 28px;
-  width: 28px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-#sidebar-wrapper .sidebar-heading span {
-  font-weight: 600;
-  color: var(--text-dark);
-}
-
-#sidebar-wrapper .list-group-item {
-  border: none;
-  background-color: transparent;
-  padding: 0;
-}
-
 #sidebar-wrapper .list-group-item a {
   display: block;
   padding: 0.9rem 1.5rem;
@@ -90,27 +51,13 @@ body {
   border-left-color: var(--primary-color);
 }
 
-#wrapper.toggled #sidebar-wrapper {
-  margin-left: -250px;
-}
-
-/* ========================================= */
-/* === PERBAIKAN TATA LETAK UTAMA DIMULAI SINI === */
-/* ========================================= */
-
 #page-content-wrapper {
   width: calc(100% - 250px);
   transition: width 0.3s ease;
   padding-bottom: 3rem;
-  /* Mengembalikan warna latar belakang abu-abu */
   background-color: var(--bg-light); 
 }
 
-#wrapper.toggled #page-content-wrapper {
-  width: 100%;
-}
-
-/* --- Navigasi Mobile --- */
 .admin-mobile-nav {
   position: fixed;
   top: 0;
@@ -119,22 +66,13 @@ body {
   z-index: 1020;
 }
 
-.admin-mobile-nav .navbar-brand {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
 @media (max-width: 991.98px) {
   #wrapper {
     flex-direction: column;
   }
   #page-content-wrapper {
     width: 100%;
-    /* Memberi ruang di atas untuk navbar mobile yang fixed */
     padding-top: 56px; 
-  }
-  #sidebar-wrapper.d-none {
-    display: none !important;
   }
 }
 
@@ -144,55 +82,32 @@ body {
     padding-top: 0; 
   }
 }
-/* ========================================= */
-/* === AKHIR PERBAIKAN TATA LETAK UTAMA === */
-/* ========================================= */
 
-
-/* General Styles & Utilities */
 .primary-text {
   color: var(--primary-color);
 }
 .secondary-text {
   color: var(--secondary-color);
 }
-/* Mengembalikan style untuk ikon bulat */
+
 .rounded-full {
   border-radius: 999px !important;
   padding: 1rem !important;
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Card Styles */
-.kpi-card,
-.chart-card,
-.table-card,
-.card {
+.kpi-card {
   background: var(--bg-white);
   border-radius: 1rem;
   border: 1px solid transparent;
-  transition: transform 0.3s ease, box-shadow 0.3s ease,
-    background-color 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.kpi-card:hover,
-.chart-card:hover,
-.table-card:hover {
+.kpi-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08) !important;
 }
 
-.kpi-card .fs-2 {
-  font-weight: 700;
-  color: var(--text-dark);
-}
-
-.kpi-card .fs-5 {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-/* Mengembalikan tata letak KPI Card yang benar */
 .kpi-card-content {
   display: flex;
   justify-content: space-between;
@@ -202,16 +117,25 @@ body {
 .kpi-card-text {
   text-align: left;
 }
+.kpi-card .fs-2 {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+.kpi-card .fs-5 {
+  color: var(--text-muted);
+  font-weight: 500;
+}
 
-/* Table Styles */
 .table-responsive {
   overflow-x: auto;
 }
+
 .table {
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 0;
 }
+
 .table thead th {
   border-bottom-width: 1px;
   text-transform: uppercase;
@@ -219,14 +143,44 @@ body {
   color: var(--text-muted);
   font-weight: 600;
 }
-.table tbody tr {
-  transition: background-color 0.2s ease;
-}
+
 .table-hover tbody tr:hover {
   background-color: var(--table-hover-color);
 }
-.table thead.table-light {
-  background-color: var(--bg-light);
-  color: var(--text-dark);
+
+/* Tampilan Kartu untuk Tabel di Mobile */
+.mobile-card-list {
+  padding: 0 1rem;
+}
+.mobile-card {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.mobile-card-header {
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mobile-card-body {
+  padding: 1rem;
+}
+.mobile-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+.mobile-card-row small {
+  color: var(--text-muted);
+}
+.mobile-card-footer {
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-light);
+  border-top: 1px solid var(--border-color);
+  text-align: right;
 }
