@@ -1695,7 +1695,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
 }
 
 .mobile-home-header .btn-icon {
-  color: white;
+  color:  var(--primary-color);
   position: relative;
   width: 40px;
   height: 40px;
