@@ -281,15 +281,6 @@ const HomePage = ({
                           className="mobile-hero-card-img"
                           alt={`Banner ${index + 1}`}
                         />
-                        <div className="mobile-hero-card-overlay">
-                          <h5 className="fw-bold">Solusi Perawatan Sepatu</h5>
-                          <p className="small">
-                            Temukan layanan terbaik hanya untukmu!
-                          </p>
-                          <span className="btn btn-light btn-sm mt-2">
-                            Lihat Promo
-                          </span>
-                        </div>
                       </div>
                     </Link>
                   </div>
