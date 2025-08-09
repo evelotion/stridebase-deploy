@@ -1670,7 +1670,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
 
 /* --- Mobile Header & Search --- */
 .mobile-home-header {
-  background-color: var(--primary-color); /* Menggunakan variabel warna primer */
+  background-color:   #ffffff; /* Menggunakan variabel warna primer */
   color: white;
   padding: 1rem 1.5rem 1.5rem;
   border-bottom-left-radius: 2rem;
@@ -3819,7 +3819,7 @@ body.has-global-announcement .hero-section {
 
   /* --- Mobile Header & Search --- */
   .mobile-home-header {
-    background-color: var(--primary-color); /* Warna hijau teal seperti di contoh */
+    background-color:  #ffffff; /* Warna hijau teal seperti di contoh */
     color: white;
     padding: 1.5rem 1.5rem 1.5rem; /* Padding bawah lebih besar untuk efek melengkung */
     border-bottom-left-radius: 2rem;
