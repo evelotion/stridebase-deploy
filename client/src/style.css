@@ -3818,49 +3818,93 @@ body.has-global-announcement .hero-section {
   }
 
   /* --- Mobile Header & Search --- */
-  .mobile-home-header {
-    background-color:  #ffffff; /* Warna hijau teal seperti di contoh */
-    color: white;
-    padding: 1.5rem 1.5rem 1.5rem; /* Padding bawah lebih besar untuk efek melengkung */
-    border-bottom-left-radius: 2rem;
-    border-bottom-right-radius: 2rem;
-  }
+  /* --- Mobile Header & Search --- */
+.mobile-home-header {
+  background-color: var(--primary-color); /* Menggunakan variabel warna primer */
+  color: white;
+  padding: 1rem 1.5rem 2rem; /* Padding bawah untuk ruang di bawah search bar */
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
 
-  .location-selector {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .search-bar-container {
+.mobile-home-header .top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mobile-home-header .mobile-logo img {
+  max-height: 32px;
+}
+
+.mobile-home-header .actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mobile-home-header .btn-icon {
+  color: white;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.mobile-home-header .user-avatar-sm {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.mobile-home-header .btn-icon .notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--primary-color);
+}
+
+/* --- Notifikasi Global (Mobile) --- */
+.global-announcement-bar {
     position: relative;
-  }
-
-  .search-bar-container .fa-search {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-  }
-  
-  .search-bar-container input {
+    top: auto;
+    left: auto;
+    transform: none;
     width: 100%;
-    height: 50px;
-    border-radius: 999px;
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
     border: none;
-    padding-left: 3rem;
-    font-size: 1rem;
-  }
+    background-color: var(--primary-color);
+    color: white;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
 
-  /* --- Hero Section (diubah menjadi Card) --- */
-  .hero-section {
-    padding-top: 0 !important;
-    margin-top: 2rem; /* Tarik ke atas agar menimpa header */
-    min-height: auto;
-    padding-bottom: 2rem;
-  }
+/* --- Hero Section (diubah menjadi Card) --- */
+.hero-section {
+  padding-top: 0 !important;
+  margin-top: -1.5rem; /* Sedikit naik agar menempel di bawah header */
+  min-height: auto;
+  padding-bottom: 2rem; /* Jarak di bawah banner */
+}
 
   .mobile-hero-card {
     position: relative;
