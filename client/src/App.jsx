@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
-  BrowserRouter as Router,
+  BrowserRouter as Router, // Ganti nama BrowserRouter menjadi Router
   Routes,
   Route,
   Outlet,
@@ -18,6 +18,7 @@ import GlobalAnnouncement from "./components/GlobalAnnouncement";
 import Notification from "./components/Notification";
 import API_BASE_URL from "./apiConfig";
 
+// Lazy load all page components
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));
 const ContactPage = React.lazy(() => import("./pages/ContactPage"));
@@ -57,7 +58,7 @@ const AdminStoreInvoicePage = React.lazy(() =>
   import("./pages/AdminStoreInvoicePage")
 );
 const InvoicePrintPage = React.lazy(() => import("./pages/InvoicePrintPage"));
-const PartnerLayout = React.lazy(() => import("./components/PartnerLayout")); // Anda mungkin perlu membuat file ini
+const PartnerLayout = React.lazy(() => import("./components/PartnerLayout"));
 const PartnerDashboardPage = React.lazy(() =>
   import("./pages/PartnerDashboardPage")
 );
@@ -233,7 +234,8 @@ const LoadingFallback = () => (
   </div>
 );
 
-function App() {
+// Komponen App dipisah agar bisa menggunakan hook useNavigate
+function AppContent() {
   const [theme, setTheme] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -338,200 +340,166 @@ function App() {
   );
 
   return (
-    <Router>
+    <Suspense fallback={<LoadingFallback />}>
       <Notification notification={notification} onClose={hideMessage} />
-
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
+      <Routes>
+        <Route
+          path="/developer/*"
+          element={
+            <ProtectedRoute role="developer">
+              <DeveloperLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route
-            path="/developer/*"
-            element={
-              <ProtectedRoute role="developer">
-                <DeveloperLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route
-              path="dashboard"
-              element={renderWithProps(DeveloperDashboardPage)}
-            />
-          </Route>
+            path="dashboard"
+            element={renderWithProps(DeveloperDashboardPage)}
+          />
+        </Route>
 
+        <Route
+          path="/partner/*"
+          element={
+            <ProtectedRoute role="mitra">
+              <PartnerLayout theme={theme} />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<PartnerDashboardPage />} />
           <Route
-            path="/partner/*"
-            element={
-              <ProtectedRoute role="mitra">
-                <PartnerLayout theme={theme} />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<PartnerDashboardPage />} />
-            <Route
-              path="services"
-              element={renderWithProps(PartnerServicesPage)}
-            />
-            <Route path="orders" element={<PartnerOrdersPage />} />
-            <Route
-              path="settings"
-              element={renderWithProps(PartnerSettingsPage)}
-            />
-            <Route
-              path="reviews"
-              element={renderWithProps(PartnerReviewsPage)}
-            />
-            <Route
-              path="upgrade"
-              element={renderWithProps(PartnerUpgradePage)}
-            />
-            <Route
-              path="invoices/:id"
-              element={renderWithProps(PartnerInvoicePage)}
-            />
-            <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
-          </Route>
+            path="services"
+            element={renderWithProps(PartnerServicesPage)}
+          />
+          <Route path="orders" element={<PartnerOrdersPage />} />
+          <Route
+            path="settings"
+            element={renderWithProps(PartnerSettingsPage)}
+          />
+          <Route path="reviews" element={renderWithProps(PartnerReviewsPage)} />
+          <Route path="upgrade" element={renderWithProps(PartnerUpgradePage)} />
+          <Route
+            path="invoices/:id"
+            element={renderWithProps(PartnerInvoicePage)}
+          />
+          <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
+        </Route>
 
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<AdminDashboardPage />} />
+          <Route path="bookings" element={<AdminBookingsPage />} />
+          <Route path="reviews" element={<AdminReviewsPage />} />
+          <Route path="reports" element={<AdminReportsPage />} />
+          <Route path="stores" element={renderWithProps(AdminStoresPage)} />
           <Route
-            path="/admin/*"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="bookings" element={<AdminBookingsPage />} />
-            <Route path="reviews" element={<AdminReviewsPage />} />
-            <Route path="reports" element={<AdminReportsPage />} />
-            <Route path="stores" element={renderWithProps(AdminStoresPage)} />
-            <Route
-              path="stores/:storeId/invoices"
-              element={renderWithProps(AdminStoreInvoicePage)}
-            />
-            <Route path="users" element={<AdminUsersPage />} />
-            <Route path="promos" element={renderWithProps(AdminPromosPage)} />
-            <Route path="banners" element={renderWithProps(AdminBannersPage)} />
-            <Route
-              path="settings"
-              element={renderWithProps(AdminSettingsPage)}
-            />
-            <Route
-              path="stores/:storeId/invoices"
-              element={renderWithProps(AdminStoreInvoicePage)}
-            />
-            <Route
-              path="invoice/print/:invoiceId"
-              element={<InvoicePrintPage />}
-            />
-          </Route>
+            path="stores/:storeId/invoices"
+            element={renderWithProps(AdminStoreInvoicePage)}
+          />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="promos" element={renderWithProps(AdminPromosPage)} />
+          <Route path="banners" element={renderWithProps(AdminBannersPage)} />
+          <Route path="settings" element={renderWithProps(AdminSettingsPage)} />
+          <Route
+            path="invoice/print/:invoiceId"
+            element={<InvoicePrintPage />}
+          />
+        </Route>
 
+        <Route
+          path="/*"
+          element={
+            <UserLayout
+              theme={theme}
+              notifications={notifications}
+              unreadCount={unreadCount}
+              setNotifications={setNotifications}
+              setUnreadCount={setUnreadCount}
+            >
+              {/* Outlet akan merender nested Routes di bawah ini */}
+              <Outlet />
+            </UserLayout>
+          }
+        >
           <Route
-            path="/*"
+            index // Menggunakan 'index' untuk path="/" agar lebih jelas
             element={
-              <UserLayout
+              <HomePage
                 theme={theme}
+                user={user}
                 notifications={notifications}
                 unreadCount={unreadCount}
-                setNotifications={setNotifications}
-                setUnreadCount={setUnreadCount}
-              >
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <HomePage
-                        theme={theme}
-                        user={user}
-                        notifications={notifications}
-                        unreadCount={unreadCount}
-                        handleLogout={handleLogout}
-                      />
-                    }
-                  />
-                  <Route
-                    path="/about"
-                    element={
-                      <PageStatusWrapper path="/about" theme={theme}>
-                        <AboutPage />
-                      </PageStatusWrapper>
-                    }
-                  />
-                  <Route
-                    path="/contact"
-                    element={
-                      <PageStatusWrapper path="/contact" theme={theme}>
-                        <ContactPage />
-                      </PageStatusWrapper>
-                    }
-                  />
-                  <Route
-                    path="/faq"
-                    element={
-                      <PageStatusWrapper path="/faq" theme={theme}>
-                        <FAQPage />
-                      </PageStatusWrapper>
-                    }
-                  />
-                  <Route
-                    path="/store"
-                    element={
-                      <PageStatusWrapper path="/store" theme={theme}>
-                        <StorePage />
-                      </PageStatusWrapper>
-                    }
-                  />
-
-                  <Route path="/invoice/:id" element={<InvoicePage />} />
-                  <Route
-                    path="/store/:id"
-                    element={renderWithProps(StoreDetailPage)}
-                  />
-                  <Route
-                    path="/booking-confirmation"
-                    element={renderWithProps(BookingConfirmationPage)}
-                  />
-                  <Route
-                    path="/booking-success"
-                    element={<BookingSuccessPage />}
-                  />
-                  <Route
-                    path="/login"
-                    element={
-                      <LoginPage showMessage={showMessage} theme={theme} />
-                    }
-                  />
-                  <Route
-                    path="/register"
-                    element={<RegisterPage theme={theme} />}
-                  />
-                  <Route path="/dashboard" element={<DashboardPage />} />
-                  <Route
-                    path="/track/:bookingId"
-                    element={<TrackOrderPage />}
-                  />
-                  <Route
-                    path="/payment-finish"
-                    element={<PaymentFinishPage />}
-                  />
-                  <Route
-                    path="/notifications"
-                    element={<NotificationsPage />}
-                  />
-                  <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-              </UserLayout>
+                handleLogout={handleLogout}
+              />
             }
           />
-        </Routes>
-      </Suspense>
-    </Router>
+          <Route
+            path="about"
+            element={
+              <PageStatusWrapper path="/about" theme={theme}>
+                <AboutPage />
+              </PageStatusWrapper>
+            }
+          />
+          <Route
+            path="contact"
+            element={
+              <PageStatusWrapper path="/contact" theme={theme}>
+                <ContactPage />
+              </PageStatusWrapper>
+            }
+          />
+          <Route
+            path="faq"
+            element={
+              <PageStatusWrapper path="/faq" theme={theme}>
+                <FAQPage />
+              </PageStatusWrapper>
+            }
+          />
+          <Route
+            path="store"
+            element={
+              <PageStatusWrapper path="/store" theme={theme}>
+                <StorePage />
+              </PageStatusWrapper>
+            }
+          />
+          <Route path="invoice/:id" element={<InvoicePage />} />
+          <Route path="store/:id" element={renderWithProps(StoreDetailPage)} />
+          <Route
+            path="booking-confirmation"
+            element={renderWithProps(BookingConfirmationPage)}
+          />
+          <Route path="booking-success" element={<BookingSuccessPage />} />
+          <Route
+            path="login"
+            element={<LoginPage showMessage={showMessage} theme={theme} />}
+          />
+          <Route path="register" element={<RegisterPage theme={theme} />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="track/:bookingId" element={<TrackOrderPage />} />
+          <Route path="payment-finish" element={<PaymentFinishPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }
 
-// Dibungkus dengan Router agar useNavigate bisa digunakan di dalam App
-const AppWrapper = () => (
-  <Router>
-    <App />
-  </Router>
-);
+// Komponen App utama sekarang hanya membungkus Router
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+};
 
 export default App;
