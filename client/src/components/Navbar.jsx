@@ -1,6 +1,7 @@
 import React from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+// TAMBAHKAN 'useLocation' DARI REACT ROUTER
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import API_BASE_URL from "../apiConfig";
 
 const Navbar = ({
   theme,
@@ -11,6 +12,10 @@ const Navbar = ({
 }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
+
+  // KODE BARU: Mendeteksi path saat ini
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -23,10 +28,13 @@ const Navbar = ({
     if (unreadCount > 0) {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch(`${API_BASE_URL}/api/user/notifications/mark-read`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/user/notifications/mark-read`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (response.ok) {
           setUnreadCount(0);
           setNotifications((prev) =>
@@ -41,7 +49,7 @@ const Navbar = ({
 
   return (
     <>
-      {/* --- Navbar untuk Desktop --- */}
+      {/* --- Navbar untuk Desktop (Tidak berubah) --- */}
       <nav className="navbar navbar-expand-lg d-none d-lg-flex">
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
@@ -56,15 +64,33 @@ const Navbar = ({
             )}
           </Link>
           <ul className="nav-menu-list list-unstyled d-flex mb-0 ms-auto">
-            <li><NavLink to="/" className="nav-link">Home</NavLink></li>
-            <li><NavLink to="/about" className="nav-link">About</NavLink></li>
-            <li><NavLink to="/store" className="nav-link">Store</NavLink></li>
-            <li><NavLink to="/contact" className="nav-link">Contact</NavLink></li>
+            <li>
+              <NavLink to="/" className="nav-link">
+                Home
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/about" className="nav-link">
+                About
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/store" className="nav-link">
+                Store
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/contact" className="nav-link">
+                Contact
+              </NavLink>
+            </li>
           </ul>
-          <div id="navbarAuth" className="ms-lg-4 d-flex align-items-center gap-2">
+          <div
+            id="navbarAuth"
+            className="ms-lg-4 d-flex align-items-center gap-2"
+          >
             {user ? (
               <>
-                {/* ... (Konten notifikasi dan dropdown pengguna tetap sama) ... */}
                 <div className="dropdown">
                   <button
                     className="btn btn-light rounded-circle"
@@ -207,88 +233,90 @@ const Navbar = ({
       </nav>
 
       {/* --- Header & Navigasi Bawah untuk Mobile --- */}
-      <div className="mobile-header d-lg-none">
-        <div className="mobile-logo-container">
-          <Link className="navbar-brand" to="/">
-            {theme?.branding?.logoUrl ? (
-              <img src={`${theme.branding.logoUrl}`} alt="StrideBase Logo" />
-            ) : (
-              <span>StrideBase</span>
-            )}
-          </Link>
-        </div>
-        <div className="mobile-user-container">
-          {user ? (
-            <div className="dropdown">
-              <button
-                className="btn btn-user-profile"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <img
-                  src="/user-avatar-placeholder.png"
-                  alt="User"
-                  className="user-avatar-sm"
-                  onError={(e) => { e.currentTarget.src = "https://i.pravatar.cc/32"; }}
-                />
-              </button>
-              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
-                {/* ... (Dropdown menu sama seperti di desktop) ... */}
-                {user.role === "developer" && (
-                      <li>
-                        <Link
-                          to="/developer/dashboard"
-                          className="dropdown-item"
-                        >
-                          <i className="fas fa-crown fa-fw me-2"></i>
-                          SuperUser Panel
-                        </Link>
-                      </li>
-                    )}
-                    {user.role === "admin" && (
-                      <li>
-                        <Link to="/admin/dashboard" className="dropdown-item">
-                          <i className="fas fa-user-shield fa-fw me-2"></i>
-                          Panel Admin
-                        </Link>
-                      </li>
-                    )}
-                    {user.role === "mitra" && (
-                      <li>
-                        <Link to="/partner/dashboard" className="dropdown-item">
-                          <i className="fas fa-store fa-fw me-2"></i>
-                          Panel Toko Saya
-                        </Link>
-                      </li>
-                    )}
+      {/* KONDISI BARU: JANGAN RENDER JIKA isHomePage true */}
+      {!isHomePage && (
+        <div className="mobile-header d-lg-none">
+          <div className="mobile-logo-container">
+            <Link className="navbar-brand" to="/">
+              {theme?.branding?.logoUrl ? (
+                <img src={`${theme.branding.logoUrl}`} alt="StrideBase Logo" />
+              ) : (
+                <span>StrideBase</span>
+              )}
+            </Link>
+          </div>
+          <div className="mobile-user-container">
+            {user ? (
+              <div className="dropdown">
+                <button
+                  className="btn btn-user-profile"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <img
+                    src="/user-avatar-placeholder.png"
+                    alt="User"
+                    className="user-avatar-sm"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://i.pravatar.cc/32";
+                    }}
+                  />
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                  {user.role === "developer" && (
                     <li>
-                      <Link to="/dashboard" className="dropdown-item">
-                        <i className="fas fa-tachometer-alt fa-fw me-2"></i>
-                        Dashboard Pengguna
+                      <Link to="/developer/dashboard" className="dropdown-item">
+                        <i className="fas fa-crown fa-fw me-2"></i>SuperUser
+                        Panel
                       </Link>
                     </li>
+                  )}
+                  {user.role === "admin" && (
                     <li>
-                      <hr className="dropdown-divider" />
+                      <Link to="/admin/dashboard" className="dropdown-item">
+                        <i className="fas fa-user-shield fa-fw me-2"></i>Panel
+                        Admin
+                      </Link>
                     </li>
+                  )}
+                  {user.role === "mitra" && (
                     <li>
-                      <button
-                        onClick={handleLogout}
-                        className="dropdown-item dropdown-item-danger"
-                      >
-                        <i className="fas fa-sign-out-alt fa-fw me-2"></i>Logout
-                      </button>
+                      <Link to="/partner/dashboard" className="dropdown-item">
+                        <i className="fas fa-store fa-fw me-2"></i>Panel Toko
+                        Saya
+                      </Link>
                     </li>
-              </ul>
-            </div>
-          ) : (
-            <Link to="/login" className="btn btn-gradient btn-sm">
-              Login
-            </Link>
-          )}
+                  )}
+                  <li>
+                    <Link to="/dashboard" className="dropdown-item">
+                      <i className="fas fa-tachometer-alt fa-fw me-2"></i>
+                      Dashboard Pengguna
+                    </Link>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="dropdown-item dropdown-item-danger"
+                    >
+                      <i className="fas fa-sign-out-alt fa-fw me-2"></i>Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <Link to="/login" className="btn btn-gradient btn-sm">
+                Login
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
+      {/* Navigasi Bawah tetap ada di semua halaman mobile */}
       <div className="mobile-bottom-nav d-lg-none">
         <NavLink to="/" className="nav-link">
           <i className="fas fa-home"></i>

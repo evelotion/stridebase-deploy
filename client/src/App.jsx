@@ -1,4 +1,4 @@
-// File: stridebase-app-current/client/src/App.jsx
+// File: stridebase-app-render/client/src/App.jsx
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
@@ -15,8 +15,6 @@ import { io } from "socket.io-client";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import GlobalAnnouncement from "./components/GlobalAnnouncement";
-import AdminLayout from "./components/AdminLayout";
-import DeveloperLayout from "./components/DeveloperLayout";
 import Notification from "./components/Notification";
 import API_BASE_URL from "./apiConfig";
 
@@ -43,6 +41,7 @@ const NotificationsPage = React.lazy(() => import("./pages/NotificationsPage"));
 const MaintenanceNoticePage = React.lazy(() =>
   import("./pages/MaintenanceNoticePage.jsx")
 );
+const AdminLayout = React.lazy(() => import("./components/AdminLayout"));
 const AdminDashboardPage = React.lazy(() =>
   import("./pages/AdminDashboardPage")
 );
@@ -58,6 +57,7 @@ const AdminStoreInvoicePage = React.lazy(() =>
   import("./pages/AdminStoreInvoicePage")
 );
 const InvoicePrintPage = React.lazy(() => import("./pages/InvoicePrintPage"));
+const PartnerLayout = React.lazy(() => import("./components/PartnerLayout")); // Anda mungkin perlu membuat file ini
 const PartnerDashboardPage = React.lazy(() =>
   import("./pages/PartnerDashboardPage")
 );
@@ -78,6 +78,9 @@ const PartnerInvoicePage = React.lazy(() =>
   import("./pages/PartnerInvoicePage")
 );
 const PartnerPromosPage = React.lazy(() => import("./pages/PartnerPromosPage"));
+const DeveloperLayout = React.lazy(() =>
+  import("./components/DeveloperLayout")
+);
 const DeveloperDashboardPage = React.lazy(() =>
   import("./pages/DeveloperDashboardPage")
 );
@@ -211,96 +214,6 @@ const UserLayout = ({
   );
 };
 
-const PartnerLayout = ({ theme }) => {
-  const navigate = useNavigate();
-
-  const showUpgradeMenu =
-    theme?.featureFlags?.enableTierSystem &&
-    theme?.featureFlags?.enableProTierUpgrade;
-
-  const handleLogout = (e) => {
-    e.preventDefault();
-    if (confirm("Apakah Anda yakin ingin logout?")) {
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      navigate("/");
-      window.location.reload();
-    }
-  };
-
-  return (
-    <div className="d-flex" id="wrapper">
-      <aside id="sidebar-wrapper">
-        <div className="sidebar-heading">
-          <NavLink className="navbar-brand" to="/partner/dashboard">
-            <span className="fs-5">StrideBase Partner</span>
-          </NavLink>
-        </div>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">
-            <NavLink to="/" className="nav-link-admin">
-              <i className="fas fa-home me-2"></i>Kembali ke Situs
-            </NavLink>
-          </li>
-          <hr className="m-0" />
-          <li className="list-group-item">
-            <NavLink to="/partner/dashboard" className="nav-link-admin">
-              <i className="fas fa-tachometer-alt me-2"></i>Dashboard
-            </NavLink>
-          </li>
-          {showUpgradeMenu && (
-            <li className="list-group-item">
-              <NavLink
-                to="/partner/upgrade"
-                className="nav-link-admin text-info"
-              >
-                <i className="fas fa-crown me-2"></i>Upgrade ke PRO
-              </NavLink>
-            </li>
-          )}
-          <li className="list-group-item">
-            <NavLink to="/partner/orders" className="nav-link-admin">
-              <i className="fas fa-receipt me-2"></i>Pesanan Masuk
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/reviews" className="nav-link-admin">
-              <i className="fas fa-star me-2"></i>Ulasan Pelanggan
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/promos" className="nav-link-admin">
-              <i className="fas fa-tags me-2"></i>Manajemen Promo
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/services" className="nav-link-admin">
-              <i className="fas fa-concierge-bell me-2"></i>Layanan Saya
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/settings" className="nav-link-admin">
-              <i className="fas fa-cog me-2"></i>Pengaturan Toko
-            </NavLink>
-          </li>
-          <li className="list-group-item logout mt-auto">
-            <a
-              href="#"
-              onClick={handleLogout}
-              className="nav-link-admin text-danger"
-            >
-              <i className="fas fa-sign-out-alt me-2"></i>Logout
-            </a>
-          </li>
-        </ul>
-      </aside>
-      <main id="page-content-wrapper">
-        <Outlet />
-      </main>
-    </div>
-  );
-};
-
 const ProtectedRoute = ({ children, role }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user || user.role !== role) {
@@ -325,6 +238,9 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notification, setNotification] = useState(null);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+
+  const navigate = useNavigate();
 
   const showMessage = (message, title = "Pemberitahuan") => {
     const finalTitle = message === "Login berhasil!" ? "Login Berhasil" : title;
@@ -333,6 +249,14 @@ function App() {
 
   const hideMessage = () => {
     setNotification(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/");
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -350,9 +274,6 @@ function App() {
     };
     fetchThemeConfig();
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    // Define socketUrl which will be used for both user and theme sockets
     const socketUrl = import.meta.env.PROD
       ? import.meta.env.VITE_API_PRODUCTION_URL
       : "/";
@@ -393,7 +314,6 @@ function App() {
       fetchNotifications();
     }
 
-    // Use the same socketUrl for the theme socket
     const themeSocket = io(socketUrl);
     themeSocket.on("themeUpdated", (newThemeConfig) => {
       console.log("Menerima pembaruan tema secara real-time:", newThemeConfig);
@@ -411,10 +331,10 @@ function App() {
       themeSocket.off("themeUpdated");
       themeSocket.disconnect();
     };
-  }, []);
+  }, [user]);
 
-  const renderWithProps = (Component) => (
-    <Component showMessage={showMessage} />
+  const renderWithProps = (Component, extraProps = {}) => (
+    <Component showMessage={showMessage} {...extraProps} />
   );
 
   return (
@@ -515,7 +435,18 @@ function App() {
                 setUnreadCount={setUnreadCount}
               >
                 <Routes>
-                  <Route path="/" element={<HomePage />} />
+                  <Route
+                    path="/"
+                    element={
+                      <HomePage
+                        theme={theme}
+                        user={user}
+                        notifications={notifications}
+                        unreadCount={unreadCount}
+                        handleLogout={handleLogout}
+                      />
+                    }
+                  />
                   <Route
                     path="/about"
                     element={
@@ -595,5 +526,12 @@ function App() {
     </Router>
   );
 }
+
+// Dibungkus dengan Router agar useNavigate bisa digunakan di dalam App
+const AppWrapper = () => (
+  <Router>
+    <App />
+  </Router>
+);
 
 export default App;

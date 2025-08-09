@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
 import API_BASE_URL from "../apiConfig";
 
@@ -11,11 +11,18 @@ const serviceCategories = [
   { name: "Unyellowing", icon: "fa-sun", link: "/store?services=Unyellowing" },
 ];
 
-const HomePage = () => {
+const HomePage = ({
+  theme,
+  user,
+  notifications,
+  unreadCount,
+  handleLogout,
+}) => {
   const [featuredStores, setFeaturedStores] = useState([]);
   const [banners, setBanners] = useState([]);
   const [recommendedStores, setRecommendedStores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHomepageData = async () => {
@@ -59,19 +66,130 @@ const HomePage = () => {
   return (
     <div className="homepage-mobile-container">
       {/* ======================================================= */}
-      {/* === BAGIAN BARU: Header & Search Bar (Mobile Only) === */}
+      {/* === HEADER BARU (MOBILE ONLY) === */}
       {/* ======================================================= */}
       <div className="mobile-home-header d-lg-none">
-        <div className="location-selector">
-          <i className="fas fa-map-marker-alt"></i>
-          <div>
-            <span className="small text-muted">Lokasi Anda</span>
-            <span className="fw-bold d-block">Jakarta Utara</span>
+        <div className="top-bar">
+          <Link to="/" className="mobile-logo">
+            {theme?.branding?.logoUrl ? (
+              <img src={theme.branding.logoUrl} alt="Logo" />
+            ) : (
+              <span>StrideBase</span>
+            )}
+          </Link>
+          <div className="actions">
+            {user ? (
+              <>
+                <div className="dropdown">
+                  <button
+                    className="btn btn-icon"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <i className="fas fa-bell"></i>
+                    {unreadCount > 0 && (
+                      <span className="notification-badge">{unreadCount}</span>
+                    )}
+                  </button>
+                  <ul
+                    className="dropdown-menu dropdown-menu-end dropdown-menu-custom"
+                    style={{ width: "300px" }}
+                  >
+                    <li className="p-2 border-bottom">
+                      <h6 className="mb-0">Notifikasi</h6>
+                    </li>
+                    <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                      {notifications && notifications.length > 0 ? (
+                        notifications.slice(0, 5).map((notif) => (
+                          <li key={notif.id}>
+                            <Link
+                              to={notif.linkUrl || "#"}
+                              className="dropdown-item text-wrap"
+                            >
+                              <small>{notif.message}</small>
+                              <div
+                                className="text-muted"
+                                style={{ fontSize: "0.75rem" }}
+                              >
+                                {new Date(notif.createdAt).toLocaleString(
+                                  "id-ID"
+                                )}
+                              </div>
+                            </Link>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="p-3 text-center text-muted small">
+                          Tidak ada notifikasi baru.
+                        </li>
+                      )}
+                    </div>
+                    <li>
+                      <hr className="dropdown-divider my-1" />
+                    </li>
+                    <li>
+                      <Link
+                        to="/notifications"
+                        className="dropdown-item text-center small"
+                      >
+                        Lihat Semua Notifikasi
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="dropdown">
+                  <button
+                    className="btn btn-icon"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <img
+                      src="/user-avatar-placeholder.png"
+                      alt="User"
+                      className="user-avatar-sm"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://i.pravatar.cc/40";
+                      }}
+                    />
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                    <li>
+                      <Link to="/dashboard" className="dropdown-item">
+                        <i className="fas fa-tachometer-alt fa-fw me-2"></i>
+                        Dashboard
+                      </Link>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <button
+                        onClick={handleLogout}
+                        className="dropdown-item dropdown-item-danger"
+                      >
+                        <i className="fas fa-sign-out-alt fa-fw me-2"></i>Logout
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <Link to="/login" className="btn btn-light btn-sm">
+                Login
+              </Link>
+            )}
           </div>
         </div>
         <div className="search-bar-container">
           <i className="fas fa-search"></i>
-          <input type="text" placeholder="Cari layanan atau toko..." />
+          <input
+            type="text"
+            placeholder="Cari layanan atau toko..."
+            onClick={() => navigate("/store")}
+          />
         </div>
       </div>
 
@@ -209,7 +327,7 @@ const HomePage = () => {
       </section>
 
       {/* ======================================================= */}
-      {/* === Rekomendasi & Toko Populer (Struktur tetap sama) === */}
+      {/* === Rekomendasi & Toko Populer === */}
       {/* ======================================================= */}
       {recommendedStores.length > 0 && (
         <section className="recommended-stores py-5">
@@ -257,7 +375,7 @@ const HomePage = () => {
             </div>
           )}
 
-          <div className="text-center mt-5">
+          <div className="text-center mt-5 d-none d-lg-block">
             <Link to="/store" className="btn btn-outline-dark btn-lg">
               Lihat Semua Toko
             </Link>

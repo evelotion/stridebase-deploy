@@ -1659,6 +1659,173 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   .account-sidebar {
     margin-bottom: 2rem;
   }
+
+  /* ======================================================= */
+/* === GAYA BARU: TAMPILAN MOBILE HOMEPAGE V3 === */
+/* ======================================================= */
+.homepage-mobile-container {
+  background-color: #f8f9fa; /* Warna latar belakang abu-abu muda */
+  padding-bottom: 2rem;
+}
+
+/* --- Mobile Header & Search --- */
+.mobile-home-header {
+  background-color: var(--primary-color); /* Mengambil warna tema */
+  color: white;
+  padding: 1rem 1.5rem 5rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
+
+.mobile-home-header .top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mobile-home-header .mobile-logo img {
+  max-height: 32px; /* Sesuaikan ukuran logo */
+}
+
+.mobile-home-header .actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Jarak antar ikon */
+}
+
+.mobile-home-header .btn-icon {
+  color: white;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none; /* Tambahkan ini agar tidak ada border default */
+}
+
+.mobile-home-header .user-avatar-sm {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.mobile-home-header .btn-icon .notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--primary-color);
+}
+
+/* --- Hero Section (diubah menjadi Card) --- */
+.hero-section {
+  padding-top: 0 !important;
+  margin-top: -3.5rem; /* Tarik ke atas agar menimpa header */
+  min-height: auto;
+}
+
+.mobile-hero-card {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  height: 180px; /* Atur tinggi kartu banner */
+}
+
+.mobile-hero-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobile-hero-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mobile-hero-card-overlay h5 {
+  font-size: 1.1rem;
+}
+
+.mobile-hero-card-overlay p {
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
+/* --- Section Titles --- */
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+.view-all-link {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--primary-color);
+}
+
+/* --- Service Categories --- */
+.service-categories-section {
+  padding-top: 2rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.category-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  padding: 1rem 0.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+.category-card:hover {
+  transform: translateY(-3px);
+}
+
+.category-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 0.5rem;
+  background-color: #eef7ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+/* --- Featured/Popular Stores Section --- */
+.featured-stores {
+  background-color: transparent !important; /* Hapus bg-light di mobile */
+  padding-top: 2rem;
+}
+
 }
 
 /* Fine-tuning for smaller mobile phones */
