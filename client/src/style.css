@@ -1790,41 +1790,6 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   padding-top: 2rem;
 }
 
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-}
-
-.category-card {
-  background-color: #ffffff;
-  border-radius: 1rem;
-  padding: 1rem 0.5rem;
-  text-align: center;
-  text-decoration: none;
-  color: var(--text-dark);
-  font-size: 0.75rem;
-  font-weight: 500;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
-}
-.category-card:hover {
-  transform: translateY(-3px);
-}
-
-.category-icon {
-  width: 40px;
-  height: 40px;
-  margin: 0 auto 0.5rem;
-  background-color: #eef7ff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  color: var(--primary-color);
-}
-
 /* --- Featured/Popular Stores Section --- */
 .featured-stores {
   background-color: transparent !important; /* Hapus bg-light di mobile */
@@ -4002,4 +3967,74 @@ body.has-global-announcement .hero-section {
   .global-announcement-bar {
     top: 56px; /* Sesuaikan dengan tinggi header mobile Anda jika berbeda */
   }
+}
+
+.category-card {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    padding: 1rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+.category-icon {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    background-color: #eef7ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+
+/* --- 2. Tata Letak untuk Desktop (Layar Lebar) --- */
+@media (min-width: 992px) {
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4 kolom di desktop */
+        gap: 1.5rem;
+    }
+    .category-card {
+        display: flex; /* Ikon dan teks bersebelahan */
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.9rem;
+    }
+    .category-icon {
+        margin: 0; /* Hapus margin auto */
+    }
+}
+
+/* --- 3. Tata Letak untuk Mobile (Layar Sempit) --- */
+@media (max-width: 991.98px) {
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Tetap 4 kolom di mobile */
+        gap: 0.75rem;
+    }
+    .category-card {
+        display: flex;
+        flex-direction: column; /* Ikon di atas, teks di bawah */
+        gap: 0.5rem;
+        padding: 1rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    .category-icon {
+        margin: 0 auto 0.5rem; /* Pusatkan ikon lagi */
+    }
 }

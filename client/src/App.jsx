@@ -186,6 +186,8 @@ const UserLayout = ({
   unreadCount,
   setNotifications,
   setUnreadCount,
+  isAnnouncementVisible, // <-- Tambahkan ini
+  setAnnouncementVisible, // <-- Tambahkan ini
 }) => {
   useEffect(() => {
     document.body.classList.add("is-user-layout");
@@ -207,11 +209,11 @@ const UserLayout = ({
       />
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
-          <GlobalAnnouncement 
-  message={theme.globalAnnouncement} 
-  isVisible={isAnnouncementVisible}
-  onClose={() => setAnnouncementVisible(false)}
-/>
+          <GlobalAnnouncement
+            message={theme.globalAnnouncement}
+            isVisible={isAnnouncementVisible}
+            onClose={() => setAnnouncementVisible(false)}
+          />
         )}
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
@@ -266,20 +268,20 @@ function AppContent() {
   };
 
   useEffect(() => {
-    const shouldShowAnnouncement = 
-      theme?.featureFlags?.enableGlobalAnnouncement && 
-      theme?.globalAnnouncement && 
+    const shouldShowAnnouncement =
+      theme?.featureFlags?.enableGlobalAnnouncement &&
+      theme?.globalAnnouncement &&
       isAnnouncementVisible;
 
     if (shouldShowAnnouncement) {
-      document.body.classList.add('has-global-announcement');
+      document.body.classList.add("has-global-announcement");
     } else {
-      document.body.classList.remove('has-global-announcement');
+      document.body.classList.remove("has-global-announcement");
     }
 
     // Cleanup function untuk menghapus class saat komponen di-unmount
     return () => {
-      document.body.classList.remove('has-global-announcement');
+      document.body.classList.remove("has-global-announcement");
     };
   }, [theme, isAnnouncementVisible]);
 
@@ -442,6 +444,8 @@ function AppContent() {
               unreadCount={unreadCount}
               setNotifications={setNotifications}
               setUnreadCount={setUnreadCount}
+              isAnnouncementVisible={isAnnouncementVisible} // <-- Tambahkan ini
+              setAnnouncementVisible={setAnnouncementVisible} // <-- Tambahkan ini
             >
               {/* Outlet akan merender nested Routes di bawah ini */}
               <Outlet />
