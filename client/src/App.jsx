@@ -207,7 +207,11 @@ const UserLayout = ({
       />
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
-          <GlobalAnnouncement message={theme.globalAnnouncement} />
+          <GlobalAnnouncement 
+  message={theme.globalAnnouncement} 
+  isVisible={isAnnouncementVisible}
+  onClose={() => setAnnouncementVisible(false)}
+/>
         )}
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
@@ -241,7 +245,7 @@ function AppContent() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notification, setNotification] = useState(null);
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-
+  const [isAnnouncementVisible, setAnnouncementVisible] = useState(true);
   const navigate = useNavigate();
 
   const showMessage = (message, title = "Pemberitahuan") => {
@@ -260,6 +264,24 @@ function AppContent() {
     navigate("/");
     window.location.reload();
   };
+
+  useEffect(() => {
+    const shouldShowAnnouncement = 
+      theme?.featureFlags?.enableGlobalAnnouncement && 
+      theme?.globalAnnouncement && 
+      isAnnouncementVisible;
+
+    if (shouldShowAnnouncement) {
+      document.body.classList.add('has-global-announcement');
+    } else {
+      document.body.classList.remove('has-global-announcement');
+    }
+
+    // Cleanup function untuk menghapus class saat komponen di-unmount
+    return () => {
+      document.body.classList.remove('has-global-announcement');
+    };
+  }, [theme, isAnnouncementVisible]);
 
   useEffect(() => {
     const fetchThemeConfig = async () => {

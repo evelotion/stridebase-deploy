@@ -1,9 +1,10 @@
 // client/src/components/GlobalAnnouncement.jsx
 
-import React, { useState } from 'react';
+import React from 'react';
 
-const GlobalAnnouncement = ({ message }) => {
-  const [isVisible, setIsVisible] = useState(true);
+// Terima props baru: isVisible dan onClose
+const GlobalAnnouncement = ({ message, isVisible, onClose }) => {
+  // Hapus state internal 'isVisible'
 
   if (!message || !isVisible) {
     return null;
@@ -17,7 +18,7 @@ const GlobalAnnouncement = ({ message }) => {
           type="button"
           className="btn-close btn-close-white"
           aria-label="Close"
-          onClick={() => setIsVisible(false)}
+          onClick={onClose} // Gunakan fungsi onClose dari props
         ></button>
       </div>
     </div>

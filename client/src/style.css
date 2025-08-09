@@ -3987,3 +3987,19 @@ body.has-global-announcement .hero-section {
     padding-top: 2rem;
   }
 }
+
+/* ======================================================= */
+/* === PENYESUAIAN RUANG UNTUK GLOBAL ANNOUNCEMENT (MOBILE) === */
+/* ======================================================= */
+@media (max-width: 991.98px) {
+  /* Saat notifikasi aktif, beri padding atas tambahan pada header mobile */
+  body.has-global-announcement .mobile-home-header {
+    padding-top: 5rem; /* Nilai ini bisa disesuaikan */
+    transition: padding-top 0.3s ease-in-out;
+  }
+
+  /* Atur posisi notifikasi agar tetap di atas, di dalam padding yang baru dibuat */
+  .global-announcement-bar {
+    top: 56px; /* Sesuaikan dengan tinggi header mobile Anda jika berbeda */
+  }
+}
