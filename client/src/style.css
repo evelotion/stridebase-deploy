@@ -3818,7 +3818,7 @@ body.has-global-announcement .hero-section {
 
   /* --- Mobile Header & Search --- */
   .mobile-home-header {
-    background-color: #008080; /* Warna hijau teal seperti di contoh */
+    background-color: var(--primary-color); /* Warna hijau teal seperti di contoh */
     color: white;
     padding: 1.5rem 1.5rem 5rem; /* Padding bawah lebih besar untuk efek melengkung */
     border-bottom-left-radius: 2rem;
@@ -3856,7 +3856,7 @@ body.has-global-announcement .hero-section {
   /* --- Hero Section (diubah menjadi Card) --- */
   .hero-section {
     padding-top: 0 !important;
-    margin-top: -2.5rem; /* Tarik ke atas agar menimpa header */
+    margin-top: 1rem; /* Tarik ke atas agar menimpa header */
     min-height: auto;
   }
 
