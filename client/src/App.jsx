@@ -209,11 +209,13 @@ const UserLayout = ({
       />
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
-          <GlobalAnnouncement
-            message={theme.globalAnnouncement}
-            isVisible={isAnnouncementVisible}
-            onClose={() => setAnnouncementVisible(false)}
-          />
+          <div className="d-none d-lg-block"> {/* Dibungkus agar hanya tampil di desktop */}
+            <GlobalAnnouncement 
+              message={theme.globalAnnouncement} 
+              isVisible={isAnnouncementVisible}
+              onClose={() => setAnnouncementVisible(false)}
+            />
+          </div>
         )}
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
@@ -453,17 +455,19 @@ function AppContent() {
           }
         >
           <Route
-            index // Menggunakan 'index' untuk path="/" agar lebih jelas
-            element={
-              <HomePage
-                theme={theme}
-                user={user}
-                notifications={notifications}
-                unreadCount={unreadCount}
-                handleLogout={handleLogout}
-              />
-            }
-          />
+  index 
+  element={
+    <HomePage
+      theme={theme}
+      user={user}
+      notifications={notifications}
+      unreadCount={unreadCount}
+      handleLogout={handleLogout}
+      isAnnouncementVisible={isAnnouncementVisible} // <-- Tambahkan ini
+      setAnnouncementVisible={setAnnouncementVisible} // <-- Tambahkan ini
+    />
+  }
+/>
           <Route
             path="about"
             element={
