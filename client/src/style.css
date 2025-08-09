@@ -1735,7 +1735,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
 /* --- Hero Section (diubah menjadi Card) --- */
 .hero-section {
   padding-top: 0 !important;
-  margin-top: -1.5rem; /* Tarik ke atas agar menimpa header */
+  margin-top: -0.5rem; /* Tarik ke atas agar menimpa header */
   min-height: auto;
 }
 
