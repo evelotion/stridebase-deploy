@@ -3665,3 +3665,153 @@ body.has-global-announcement .hero-section {
     display: none;
   }
 }
+
+/* File: stridebase-app-render/client/src/style.css */
+/* ... (semua kode css yang sudah ada) ... */
+
+/* ======================================================= */
+/* === GAYA BARU: TAMPILAN MOBILE HOMEPAGE V3 === */
+/* ======================================================= */
+
+@media (max-width: 991.98px) {
+  .homepage-mobile-container {
+    background-color: #f8f9fa; /* Warna latar belakang abu-abu muda */
+    padding-bottom: 2rem;
+  }
+
+  /* --- Mobile Header & Search --- */
+  .mobile-home-header {
+    background-color: #008080; /* Warna hijau teal seperti di contoh */
+    color: white;
+    padding: 1.5rem 1.5rem 5rem; /* Padding bawah lebih besar untuk efek melengkung */
+    border-bottom-left-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+  }
+
+  .location-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .search-bar-container {
+    position: relative;
+  }
+
+  .search-bar-container .fa-search {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+  }
+  
+  .search-bar-container input {
+    width: 100%;
+    height: 50px;
+    border-radius: 999px;
+    border: none;
+    padding-left: 3rem;
+    font-size: 1rem;
+  }
+
+  /* --- Hero Section (diubah menjadi Card) --- */
+  .hero-section {
+    padding-top: 0 !important;
+    margin-top: -3.5rem; /* Tarik ke atas agar menimpa header */
+    min-height: auto;
+  }
+
+  .mobile-hero-card {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    height: 180px; /* Atur tinggi kartu banner */
+  }
+
+  .mobile-hero-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-hero-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .mobile-hero-card-overlay h5 {
+    font-size: 1.1rem;
+  }
+  
+  .mobile-hero-card-overlay p {
+    font-size: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  /* --- Section Titles --- */
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+  .view-all-link {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--primary-color);
+  }
+
+  /* --- Service Categories --- */
+  .service-categories-section {
+    padding-top: 2rem;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+
+  .category-card {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 0.75rem;
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+  }
+  .category-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .category-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 0.5rem;
+    background-color: #eef7ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+  }
+
+  /* --- Featured/Popular Stores Section --- */
+  .featured-stores {
+    background-color: transparent !important; /* Hapus bg-light di mobile */
+    padding-top: 2rem;
+  }
+}
