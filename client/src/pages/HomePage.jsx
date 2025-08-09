@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
 import API_BASE_URL from "../apiConfig";
+import GlobalAnnouncement from "../components/GlobalAnnouncement";
 
 // Kategori Layanan (Data Dummy, bisa Anda kembangkan lebih lanjut)
 const serviceCategories = [
