@@ -174,9 +174,33 @@ body {
     top: 0;
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 20px; /* PERBAIKAN: Kurangi padding keseluruhan */
     border: none;
     box-shadow: none;
+    font-size: 12px; /* PERBAIKAN: Kecilkan sedikit font dasar */
+  }
+
+  /* PERBAIKAN: Atur ulang margin dan padding agar lebih rapat */
+  .invoice-header, .invoice-meta, .items-table {
+    margin-bottom: 20px; /* Kurangi jarak antar bagian */
+  }
+
+  .invoice-header__details h1 {
+    font-size: 2rem; /* Kecilkan judul "INVOICE" */
+  }
+  
+  .items-table th, .items-table td, .total-row {
+    padding: 8px; /* Kecilkan padding di dalam tabel */
+  }
+
+  .grand-total {
+    padding: 10px;
+    font-size: 1rem;
+  }
+  
+  .invoice-footer {
+    margin-top: 20px;
+    padding-top: 10px;
   }
 
   /* Sembunyikan elemen admin secara eksplisit untuk jaminan ekstra */
