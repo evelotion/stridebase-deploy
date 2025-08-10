@@ -157,18 +157,30 @@ body {
 
 /* Print Specific */
 @media print {
-  body {
-    background-color: #fff;
+  /* Langkah 1: Sembunyikan SEMUA elemen di halaman terlebih dahulu */
+  body * {
+    visibility: hidden;
   }
+
+  /* Langkah 2: Tampilkan HANYA .invoice-box dan semua elemen di dalamnya */
+  .invoice-box, .invoice-box * {
+    visibility: visible;
+  }
+
+  /* Langkah 3: Pastikan .invoice-box mengisi seluruh halaman cetak */
   .invoice-box {
-    box-shadow: none;
-    border: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
     margin: 0;
     padding: 0;
+    border: none;
+    box-shadow: none;
   }
-  /* Sembunyikan elemen header admin saat mencetak */
-  #root > div > div:first-child {
-    /* Targetkan header admin (mungkin perlu disesuaikan) */
+
+  /* Sembunyikan elemen admin secara eksplisit untuk jaminan ekstra */
+  #sidebar-wrapper, .admin-mobile-nav {
     display: none !important;
   }
 }
