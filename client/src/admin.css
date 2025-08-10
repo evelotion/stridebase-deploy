@@ -301,3 +301,33 @@ body {
     display: none;
   }
 }
+
+/* =============================================== */
+/* === GAYA BARU: AVATAR INISIAL PENGGUNA === */
+/* =============================================== */
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Membuatnya menjadi lingkaran sempurna */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0; /* Mencegah lingkaran menyusut */
+}
+
+.avatar-initials {
+  text-transform: uppercase;
+}
+
+/* Memberikan warna latar belakang yang berbeda-beda secara otomatis */
+tr:nth-child(8n+1) .user-avatar { background-color: #0d6efd; } /* Biru */
+tr:nth-child(8n+2) .user-avatar { background-color: #6f42c1; } /* Ungu */
+tr:nth-child(8n+3) .user-avatar { background-color: #d63384; } /* Pink */
+tr:nth-child(8n+4) .user-avatar { background-color: #dc3545; } /* Merah */
+tr:nth-child(8n+5) .user-avatar { background-color: #fd7e14; } /* Oranye */
+tr:nth-child(8n+6) .user-avatar { background-color: #ffc107; } /* Kuning */
+tr:nth-child(8n+7) .user-avatar { background-color: #198754; } /* Hijau */
+tr:nth-child(8n+8) .user-avatar { background-color: #0dcaf0; } /* Cyan */

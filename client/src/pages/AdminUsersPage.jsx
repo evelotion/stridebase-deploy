@@ -155,6 +155,7 @@ const AdminUsersPage = ({ showMessage }) => {
                 <tr key={user.id}>
                   <td>
                     <div className="d-flex align-items-center">
+                      {/* PERUBAHAN DI SINI */}
                       <div className="user-avatar avatar-initials me-3">
                         <span>{getInitials(user.name)}</span>
                       </div>
