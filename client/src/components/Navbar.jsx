@@ -247,6 +247,7 @@ const Navbar = ({
           </div>
           <div className="mobile-user-container">
             {user ? (
+              // Dropdown untuk pengguna yang sudah login (tidak berubah)
               <div className="dropdown">
                 <button
                   className="btn btn-user-profile"
@@ -307,8 +308,14 @@ const Navbar = ({
                   </li>
                 </ul>
               </div>
+            ) : location.pathname === "/login" ? (
+              // JIKA DI HALAMAN LOGIN, TAMPILKAN TOMBOL REGISTER
+              <Link to="/register" className="btn btn-light btn-sm">
+                Register
+              </Link>
             ) : (
-              <Link to="/login" className="btn btn-gradient btn-sm">
+              // JIKA DI HALAMAN LAIN, TAMPILKAN TOMBOL LOGIN
+              <Link to="/login" className="btn btn-light btn-sm">
                 Login
               </Link>
             )}
