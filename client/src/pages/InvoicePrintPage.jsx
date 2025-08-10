@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "../invoice.css"; // Tetap gunakan file CSS yang sama
 import API_BASE_URL from "../apiConfig";
 
-const InvoicePrintPage = () => {
+const InvoicePrintPage = ({ user }) => {
   const { invoiceId } = useParams();
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -151,6 +151,17 @@ const InvoicePrintPage = () => {
       )}
 
       <footer className="invoice-footer">
+        <div className="audit-trail">
+          <p>
+            Dicetak oleh: {user?.name || "N/A"} (ID: {user?.id || "N/A"})
+            <br />
+            Pada:{" "}
+            {new Date().toLocaleString("id-ID", {
+              dateStyle: "full",
+              timeStyle: "long",
+            })}
+          </p>
+        </div>
         <p>Terima kasih atas kerja sama Anda.</p>
         <p>StrideBase Marketplace &copy; 2025</p>
       </footer>

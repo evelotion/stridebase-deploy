@@ -435,7 +435,7 @@ function AppContent() {
           <Route path="settings" element={renderWithProps(AdminSettingsPage)} />
           <Route
             path="invoice/print/:invoiceId"
-            element={<InvoicePrintPage />}
+            element={<InvoicePrintPage user={user} />}
           />
         </Route>
 

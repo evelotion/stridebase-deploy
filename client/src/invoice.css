@@ -157,18 +157,30 @@ body {
 
 /* Print Specific */
 @media print {
-    body {
-        background-color: #fff;
-    }
-    .invoice-box {
-        box-shadow: none;
-        border: none;
-        margin: 0;
-        padding: 0;
-    }
-    /* Sembunyikan elemen header admin saat mencetak */
-    #root > div > div:first-child { /* Targetkan header admin (mungkin perlu disesuaikan) */
-        display: none !important;
-    }
+  body {
+    background-color: #fff;
+  }
+  .invoice-box {
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+  /* Sembunyikan elemen header admin saat mencetak */
+  #root > div > div:first-child {
+    /* Targetkan header admin (mungkin perlu disesuaikan) */
+    display: none !important;
+  }
 }
 
+/* =============================================== */
+/* === GAYA BARU: JEJAK AUDIT PENCETAKAN === */
+/* =============================================== */
+
+.invoice-footer .audit-trail {
+  font-size: 0.75rem; /* Ukuran font lebih kecil */
+  color: #a0a0a0; /* Warna abu-abu muda */
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--invoice-border-color); /* Garis putus-putus sebagai pemisah */
+}
