@@ -521,7 +521,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           )}
         </div>
 
-        <ul className="nav nav-tabs px-4">
+       <ul className="nav nav-pills mb-3 px-4">
           <li className="nav-item">
             <button
               className={`nav-link ${activeTab === "theming" ? "active" : ""}`}
