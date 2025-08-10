@@ -616,8 +616,9 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
                     >
                       Tandai Telat & Denda
                     </button>
+                    {/* PERUBAHAN DI SINI: tambahkan kelas "ms-2" */}
                     <button
-                      className="btn btn-success"
+                      className="btn btn-success ms-2"
                       onClick={() =>
                         handleStatusUpdate(viewingInvoice.id, "PAID")
                       }

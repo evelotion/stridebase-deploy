@@ -11,9 +11,12 @@ const InvoicePrintPage = () => {
     const fetchInvoiceDetails = async () => {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch(`/api/admin/invoices/${invoiceId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/admin/invoices/${invoiceId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (!response.ok) throw new Error("Gagal mengambil detail invoice.");
         const data = await response.json();
         setInvoice(data);
