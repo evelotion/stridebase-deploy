@@ -200,7 +200,8 @@ const HomePage = ({
       {/* === ANNOUNCEMENT BAR BARU (STATIC & MOBILE ONLY) === */}
       {/* ======================================================= */}
       {theme?.featureFlags?.enableGlobalAnnouncement &&
-        theme?.globalAnnouncement && (
+        theme?.globalAnnouncement &&
+        isAnnouncementVisible && (
           <div className="d-lg-none homepage-announcement-wrapper">
             <GlobalAnnouncement
               message={theme.globalAnnouncement}
