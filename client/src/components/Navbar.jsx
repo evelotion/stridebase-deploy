@@ -310,12 +310,12 @@ const Navbar = ({
               </div>
             ) : location.pathname === "/login" ? (
               // JIKA DI HALAMAN LOGIN, TAMPILKAN TOMBOL REGISTER
-              <Link to="/register" className="btn btn-light btn-sm">
+              <Link to="/register" className="btn btn-gradient btn-sm">
                 Register
               </Link>
             ) : (
               // JIKA DI HALAMAN LAIN, TAMPILKAN TOMBOL LOGIN
-              <Link to="/login" className="btn btn-light btn-sm">
+              <Link to="/login" className="btn btn-gradient btn-sm">
                 Login
               </Link>
             )}

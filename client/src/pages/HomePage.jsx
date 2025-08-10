@@ -180,7 +180,7 @@ const HomePage = ({
                 </div>
               </>
             ) : (
-              <Link to="/login" className="btn btn-light btn-sm">
+              <Link to="/login" className="btn btn-gradient btn-sm">
                 Login
               </Link>
             )}
