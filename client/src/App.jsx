@@ -186,8 +186,8 @@ const UserLayout = ({
   unreadCount,
   setNotifications,
   setUnreadCount,
-  isAnnouncementVisible, // <-- Tambahkan ini
-  setAnnouncementVisible, // <-- Tambahkan ini
+  isAnnouncementVisible,
+  setAnnouncementVisible,
 }) => {
   useEffect(() => {
     document.body.classList.add("is-user-layout");
@@ -209,9 +209,11 @@ const UserLayout = ({
       />
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
-          <div className="d-none d-lg-block"> {/* Dibungkus agar hanya tampil di desktop */}
-            <GlobalAnnouncement 
-              message={theme.globalAnnouncement} 
+          <div className="d-none d-lg-block">
+            {" "}
+            {/* Dibungkus agar hanya tampil di desktop */}
+            <GlobalAnnouncement
+              message={theme.globalAnnouncement}
               isVisible={isAnnouncementVisible}
               onClose={() => setAnnouncementVisible(false)}
             />
@@ -455,19 +457,18 @@ function AppContent() {
           }
         >
           <Route
-  index 
-  element={
-    <HomePage
-      theme={theme}
-      user={user}
-      notifications={notifications}
-      unreadCount={unreadCount}
-      handleLogout={handleLogout}
-      isAnnouncementVisible={isAnnouncementVisible} // <-- Tambahkan ini
-      setAnnouncementVisible={setAnnouncementVisible} // <-- Tambahkan ini
-    />
-  }
-/>
+            index
+            element={
+              <HomePage
+                theme={theme}
+                user={user}
+                notifications={notifications}
+                unreadCount={unreadCount}
+                handleLogout={handleLogout}
+                // Props visibilitas sekarang dikelola di dalam HomePage
+              />
+            }
+          />
           <Route
             path="about"
             element={

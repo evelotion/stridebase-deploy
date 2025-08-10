@@ -18,9 +18,8 @@ const HomePage = ({
   notifications,
   unreadCount,
   handleLogout,
-  isAnnouncementVisible,    // <-- Tambahkan ini
-  setAnnouncementVisible, // <-- Tambahkan ini
 }) => {
+  const [isAnnouncementVisible, setAnnouncementVisible] = useState(true);
   const [featuredStores, setFeaturedStores] = useState([]);
   const [banners, setBanners] = useState([]);
   const [recommendedStores, setRecommendedStores] = useState([]);
@@ -68,15 +67,18 @@ const HomePage = ({
 
   return (
     <div className="homepage-mobile-container">
-        {theme?.featureFlags?.enableGlobalAnnouncement && theme?.globalAnnouncement && (
-        <div className="d-lg-none"> {/* Hanya tampil di mobile */}
-          <GlobalAnnouncement 
-            message={theme.globalAnnouncement} 
-            isVisible={isAnnouncementVisible}
-            onClose={() => setAnnouncementVisible(false)}
-          />
-        </div>
-      )}
+    {/* ======================================================= */}
+    {/* === ANNOUNCEMENT BAR BARU (STATIC & MOBILE ONLY) === */}
+    {/* ======================================================= */}
+    {theme?.featureFlags?.enableGlobalAnnouncement && theme?.globalAnnouncement && (
+      <div className="d-lg-none homepage-announcement-wrapper">
+        <GlobalAnnouncement
+          message={theme.globalAnnouncement}
+          isVisible={isAnnouncementVisible}
+          onClose={() => setAnnouncementVisible(false)}
+        />
+      </div>
+    )}
       {/* ======================================================= */}
       {/* === HEADER BARU (MOBILE ONLY) === */}
       {/* ======================================================= */}
