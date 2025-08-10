@@ -276,9 +276,9 @@ body {
   border: none;
 }
 .nav-pills .nav-link.active {
-  background-color: var(--bg-white);
-  color: var(--text-dark);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: var(--primary-color); /* Diubah ke warna primer */
+  color: var(--bg-white); /* Diubah agar teks menjadi putih */
+  box-shadow: 0 4px 10px rgba(13, 202, 240, 0.4); /* Bayangan disesuaikan dengan warna primer */
 }
 
 @media (max-width: 991.98px) {
