@@ -578,49 +578,44 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
                 <h5 className="mb-0 mt-3">{user.name}</h5>
                 <p className="text-muted small">{user.email}</p>
               </div>
-              <ul className="nav nav-pills flex-column account-nav">
-                <li className="nav-item">
-                  <button
-                    className={`nav-link text-start w-100 ${
-                      activeTab === "history" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("history")}
-                  >
-                    <i className="fas fa-history fa-fw me-2"></i>Riwayat Booking
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className={`nav-link text-start w-100 ${
-                      activeTab === "loyalty" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("loyalty")}
-                  >
-                    <i className="fas fa-gem fa-fw me-2"></i>Poin Saya
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className={`nav-link text-start w-100 ${
-                      activeTab === "addresses" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("addresses")}
-                  >
-                    <i className="fas fa-map-marked-alt fa-fw me-2"></i>Alamat
-                    Saya
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className={`nav-link text-start w-100 ${
-                      activeTab === "profile" ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab("profile")}
-                  >
-                    <i className="fas fa-user-edit fa-fw me-2"></i>Profil Saya
-                  </button>
-                </li>
-              </ul>
+              <div className="account-nav">
+                <button
+                  className={`account-nav-item ${
+                    activeTab === "history" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("history")}
+                >
+                  <i className="fas fa-history fa-fw me-2"></i>
+                  <span>Riwayat Booking</span>
+                </button>
+                <button
+                  className={`account-nav-item ${
+                    activeTab === "loyalty" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("loyalty")}
+                >
+                  <i className="fas fa-gem fa-fw me-2"></i>
+                  <span>Poin Saya</span>
+                </button>
+                <button
+                  className={`account-nav-item ${
+                    activeTab === "addresses" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("addresses")}
+                >
+                  <i className="fas fa-map-marked-alt fa-fw me-2"></i>
+                  <span>Alamat Saya</span>
+                </button>
+                <button
+                  className={`account-nav-item ${
+                    activeTab === "profile" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("profile")}
+                >
+                  <i className="fas fa-user-edit fa-fw me-2"></i>
+                  <span>Profil Saya</span>
+                </button>
+              </div>
             </div>
           </div>
           <div className="col-lg-9 mt-4 mt-lg-0">
