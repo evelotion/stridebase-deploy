@@ -4122,3 +4122,17 @@ body.has-global-announcement .hero-section {
 body.has-global-announcement {
   padding-top: 0 !important;
 }
+
+/* =============================================== */
+/* === PERBAIKAN TOMBOL LOGIN (MOBILE HOMEPAGE) === */
+/* =============================================== */
+
+/* Aturan ini secara spesifik menargetkan link Login di dalam header mobile */
+.mobile-home-header .actions a.btn-light {
+  color: #000 !important; /* Paksa warna teks menjadi hitam */
+  background-color: #f8f9fa !important; /* Paksa warna latar menjadi terang */
+  padding: 0.25rem 0.75rem !important; /* Pastikan padding diterapkan */
+  border-radius: 0.25rem !important; /* Pastikan sudutnya melengkung */
+  font-size: 0.875rem !important; /* Pastikan ukuran font sesuai */
+  text-decoration: none !important; /* Hapus garis bawah jika ada */
+}
