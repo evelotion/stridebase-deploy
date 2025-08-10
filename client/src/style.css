@@ -4123,16 +4123,29 @@ body.has-global-announcement {
   padding-top: 0 !important;
 }
 
-/* =============================================== */
-/* === PERBAIKAN TOMBOL LOGIN (MOBILE HOMEPAGE) === */
-/* =============================================== */
-
-/* Aturan ini secara spesifik menargetkan link Login di dalam header mobile */
+/* ======================================================= */
+/* === FINAL FIX: TOMBOL LOGIN HOMEPAGE MOBILE === */
+/* ======================================================= */
 .mobile-home-header .actions a.btn-light {
-  color: #000 !important; /* Paksa warna teks menjadi hitam */
-  background-color: #f8f9fa !important; /* Paksa warna latar menjadi terang */
-  padding: 0.25rem 0.75rem !important; /* Pastikan padding diterapkan */
-  border-radius: 0.25rem !important; /* Pastikan sudutnya melengkung */
-  font-size: 0.875rem !important; /* Pastikan ukuran font sesuai */
-  text-decoration: none !important; /* Hapus garis bawah jika ada */
+  display: inline-block !important;
+  font-weight: 500 !important;
+  color: #000 !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  user-select: none !important;
+  background-color: #f8f9fa !important;
+  border: 1px solid #f8f9fa !important;
+  padding: 0.25rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  border-radius: 0.25rem !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.mobile-home-header .actions a.btn-light:hover {
+  background-color: #e2e6ea !important;
+  border-color: #d3d9df !important;
 }
