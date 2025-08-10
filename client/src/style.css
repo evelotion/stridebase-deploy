@@ -3867,7 +3867,7 @@ body.has-global-announcement .hero-section {
     position: relative;
     border-radius: 1rem;
     overflow: hidden;
-    height: 280px; /* Atur tinggi kartu banner */
+    height: 200px; /* Atur tinggi kartu banner */
   }
 
   .mobile-hero-card-img {
