@@ -67,22 +67,10 @@ const HomePage = ({
 
   return (
     <div className="homepage-mobile-container">
-    {/* ======================================================= */}
-    {/* === ANNOUNCEMENT BAR BARU (STATIC & MOBILE ONLY) === */}
-    {/* ======================================================= */}
-    {theme?.featureFlags?.enableGlobalAnnouncement && theme?.globalAnnouncement && (
-      <div className="d-lg-none homepage-announcement-wrapper">
-        <GlobalAnnouncement
-          message={theme.globalAnnouncement}
-          isVisible={isAnnouncementVisible}
-          onClose={() => setAnnouncementVisible(false)}
-        />
-      </div>
-    )}
       {/* ======================================================= */}
       {/* === HEADER BARU (MOBILE ONLY) === */}
       {/* ======================================================= */}
-      
+
       <div className="mobile-home-header d-lg-none">
         <div className="top-bar">
           <Link to="/" className="mobile-logo">
@@ -208,6 +196,19 @@ const HomePage = ({
         </div>
       </div>
 
+      {/* ======================================================= */}
+      {/* === ANNOUNCEMENT BAR BARU (STATIC & MOBILE ONLY) === */}
+      {/* ======================================================= */}
+      {theme?.featureFlags?.enableGlobalAnnouncement &&
+        theme?.globalAnnouncement && (
+          <div className="d-lg-none homepage-announcement-wrapper">
+            <GlobalAnnouncement
+              message={theme.globalAnnouncement}
+              isVisible={isAnnouncementVisible}
+              onClose={() => setAnnouncementVisible(false)}
+            />
+          </div>
+        )}
       {/* ======================================================= */}
       {/* === Hero Section yang Dimodifikasi === */}
       {/* ======================================================= */}
@@ -359,15 +360,15 @@ const HomePage = ({
       )}
 
       <section className="featured-stores py-5 bg-light">
-  <div className="container">
-    {/* PERUBAHAN DI BAWAH INI */}
-    <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
-      <h2 className="section-title">Toko Populer</h2>
-      {/* Link ini akan disembunyikan di layar besar (lg) dan ke atas */}
-      <Link to="/store" className="view-all-link d-lg-none">
-        Lihat semua
-      </Link>
-    </div>
+        <div className="container">
+          {/* PERUBAHAN DI BAWAH INI */}
+          <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
+            <h2 className="section-title">Toko Populer</h2>
+            {/* Link ini akan disembunyikan di layar besar (lg) dan ke atas */}
+            <Link to="/store" className="view-all-link d-lg-none">
+              Lihat semua
+            </Link>
+          </div>
 
           {loading ? (
             <div className="text-center">
