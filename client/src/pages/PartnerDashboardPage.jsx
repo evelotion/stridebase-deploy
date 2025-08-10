@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import API_BASE_URL from '../apiConfig';
 
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
-  <div className="col-lg-3 col-md-6">
+   <div className="col-lg-6 mb-4">
     <Link to={linkTo} className="text-decoration-none">
       <div className="kpi-card p-3 shadow-sm h-100">
         <div className="kpi-card-content">

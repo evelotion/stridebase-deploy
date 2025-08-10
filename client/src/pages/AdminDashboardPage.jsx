@@ -27,8 +27,8 @@ const AdminDashboardPage = () => {
   }, []);
 
   const KpiCard = ({ title, value, icon, colorClass }) => (
-  <div className="col-lg-3 col-md-6">
-    <div className="kpi-card p-3 shadow-sm">
+  <div className="col-lg-6 mb-4">
+    <div className="kpi-card p-3 shadow-sm d-flex justify-content-around align-items-center h-100">
       <div className="kpi-card-content">
         <div className="kpi-card-text">
           <h3 className="fs-2">{value}</h3>
