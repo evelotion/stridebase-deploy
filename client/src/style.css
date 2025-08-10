@@ -1700,7 +1700,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #ced1d3;
   border: none;
   /* --- TAMBAHKAN BARIS DI BAWAH INI --- */
   display: flex;
