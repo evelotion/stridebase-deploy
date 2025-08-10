@@ -34,6 +34,7 @@ model User {
   loyaltyPoint     LoyaltyPoint?
   notifications    Notification[]
   redeemedPromos   Promo[] // Relasi ke promo yang di-redeem
+  auditLogs        AuditLog[]        // <-- TAMBAHKAN BARIS INI
 }
 
 model LoyaltyPoint {
