@@ -2752,6 +2752,8 @@ adminRouter.patch("/invoices/:id/overdue", async (req, res) => {
 
 adminRouter.get("/invoices/:id", async (req, res) => {
   const { id } = req.params;
+  const adminUserId = req.user.id; // Mendapatkan ID admin yang sedang login
+
   try {
     const invoice = await prisma.invoice.findUnique({
       where: { id },
@@ -2766,10 +2768,28 @@ adminRouter.get("/invoices/:id", async (req, res) => {
         },
       },
     });
-    if (!invoice)
+
+    if (!invoice) {
       return res.status(404).json({ message: "Invoice tidak ditemukan." });
+    }
+
+    // --- PENAMBAHAN LOGIKA PENCATATAN DI SINI ---
+    await prisma.auditLog.create({
+      data: {
+        userId: adminUserId,
+        action: "PRINT_INVOICE_VIEW",
+        details: {
+          invoiceId: invoice.id,
+          invoiceNumber: invoice.invoiceNumber,
+          storeName: invoice.store.name,
+        },
+      },
+    });
+    // --- AKHIR PENAMBAHAN ---
+
     res.json(invoice);
   } catch (error) {
+    console.error("Gagal mengambil atau mencatat log invoice:", error);
     res.status(500).json({ message: "Gagal mengambil detail invoice." });
   }
 });

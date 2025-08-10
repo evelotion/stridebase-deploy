@@ -273,6 +273,17 @@ model SecurityLog {
   createdAt DateTime @default(now())
 }
 
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String   // Contoh: "PRINTED_INVOICE"
+  details   Json?    // Untuk menyimpan detail seperti nomor invoice
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 model ApprovalRequest {
   id            String   @id @default(cuid())
   requestedById String

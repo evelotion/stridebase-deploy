@@ -157,13 +157,18 @@ body {
 
 /* Print Specific */
 @media print {
-  body {
-    background-color: #fff;
-  }
-  .invoice-box {
-    box-shadow: none;
-    border: none;
-    margin: 0;
-    padding: 0;
-  }
+    body {
+        background-color: #fff;
+    }
+    .invoice-box {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+    }
+    /* Sembunyikan elemen header admin saat mencetak */
+    #root > div > div:first-child { /* Targetkan header admin (mungkin perlu disesuaikan) */
+        display: none !important;
+    }
 }
+
