@@ -4041,3 +4041,45 @@ body.has-global-announcement .hero-section {
         margin: 0 auto 0.5rem; /* Pusatkan ikon lagi */
     }
 }
+
+/* =============================================== */
+/* === PENINGKATAN HALAMAN KONTAK (MOBILE & DESKTOP) === */
+/* =============================================== */
+
+.page-content-contact {
+  padding-top: 80px;
+  padding-bottom: 60px;
+}
+
+.contact-card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--bg-white);
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info-item i {
+  width: 30px; /* Memberi lebar tetap agar teks sejajar */
+}
+
+/* Penyesuaian untuk Mobile */
+@media (max-width: 767.98px) {
+  .page-content-contact {
+    padding-top: 60px;
+    padding-bottom: 40px;
+  }
+  
+  .contact-card .card-body {
+    padding: 1.5rem; /* Padding yang lebih sesuai untuk mobile */
+  }
+
+  .contact-info-item {
+    margin-bottom: 1.5rem !important;
+  }
+}
