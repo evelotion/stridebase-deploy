@@ -13,13 +13,12 @@ const InvoicePrintPage = ({ user }) => {
     const fetchInitialData = async () => {
       const token = localStorage.getItem("token");
       try {
+        // ==================== PERBAIKAN DI SINI ====================
+        const headers = { Authorization: `Bearer ${token}` }; // Definisikan header
+
         const [invoiceRes, themeRes] = await Promise.all([
-          // ==================== PERBAIKAN DI SINI ====================
-          // Tambahkan header otorisasi ke dalam fetch invoice
-          fetch(`${API_BASE_URL}/api/admin/invoices/${invoiceId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          // ==================== PERBAIKAN SELESAI ====================
+          // Tambahkan { headers } ke dalam fetch invoice
+          fetch(`${API_BASE_URL}/api/admin/invoices/${invoiceId}`, { headers }),
           fetch(`${API_BASE_URL}/api/public/theme-config`),
         ]);
 
