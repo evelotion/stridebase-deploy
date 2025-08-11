@@ -28,36 +28,38 @@ const AdminStoreInvoicePage = ({ showMessage }) => {
   });
 
   const fetchInvoiceData = async () => {
-    setLoading(true);
-    setError("");
-    const token = localStorage.getItem("token");
+  setLoading(true);
+  setError("");
+  const token = localStorage.getItem("token");
 
-    // PERBAIKAN: Definisikan header otentikasi di sini
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
-    try {
-      const [storeRes, invoicesRes] = await Promise.all([
-        // PERBAIKAN: Tambahkan { headers } ke fetch pertama
-        fetch(`${API_BASE_URL}/api/stores/${storeId}`, { headers }),
-        // PERBAIKAN: Tambahkan { headers } ke fetch kedua
-        fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/invoices`, {
-          headers,
-        }),
-      ]);
-      if (!storeRes.ok) throw new Error("Gagal mengambil detail toko.");
-      if (!invoicesRes.ok) throw new Error("Gagal mengambil data invoice.");
-      const storeData = await storeRes.json();
-      const invoicesData = await invoicesRes.json();
-      setStore(storeData);
-      setInvoices(invoicesData);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  // ==================== PERBAIKAN DI SINI ====================
+  // Definisikan header otentikasi di sini
+  const headers = {
+    Authorization: `Bearer ${token}`,
   };
+  // ==========================================================
+
+  try {
+    const [storeRes, invoicesRes] = await Promise.all([
+      // PERBAIKAN: Tambahkan { headers } ke fetch pertama
+      fetch(`${API_BASE_URL}/api/stores/${storeId}`, { headers }),
+      // PERBAIKAN: Tambahkan { headers } ke fetch kedua
+      fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/invoices`, {
+        headers,
+      }),
+    ]);
+    if (!storeRes.ok) throw new Error("Gagal mengambil detail toko.");
+    if (!invoicesRes.ok) throw new Error("Gagal mengambil data invoice.");
+    const storeData = await storeRes.json();
+    const invoicesData = await invoicesRes.json();
+    setStore(storeData);
+    setInvoices(invoicesData);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchInvoiceData();
