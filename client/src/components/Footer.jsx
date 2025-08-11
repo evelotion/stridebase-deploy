@@ -1,4 +1,6 @@
-import React from 'react';
+// File: stridebase-app-render/client/src/components/Footer.jsx
+import React from "react";
+import { Link } from "react-router-dom"; // Gunakan Link
 
 const Footer = () => {
   return (
@@ -9,10 +11,9 @@ const Footer = () => {
           undang-undang.
         </p>
         <div className="links">
-          <a href="#">Kebijakan Privasi</a> |
-          <a href="#">Syarat & Ketentuan</a> |
-          <a href="#">Hukum</a> |
-          <a href="#">Peta Situs</a>
+          <Link to="/privacy-policy">Kebijakan Privasi</Link> |
+          <Link to="/terms-conditions">Syarat & Ketentuan</Link> |
+          <Link to="/legal">Hukum</Link> |<Link to="/sitemap">Peta Situs</Link>
         </div>
       </div>
     </footer>

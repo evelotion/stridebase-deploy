@@ -23,6 +23,12 @@ const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));
 const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 const FAQPage = React.lazy(() => import("./pages/FAQPage"));
+const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsConditionsPage = React.lazy(() =>
+  import("./pages/TermsConditionsPage")
+);
+const LegalPage = React.lazy(() => import("./pages/LegalPage"));
+const SitemapPage = React.lazy(() => import("./pages/SitemapPage"));
 const InvoicePage = React.lazy(() => import("./pages/InvoicePage"));
 const StorePage = React.lazy(() => import("./pages/StorePage"));
 const StoreDetailPage = React.lazy(() => import("./pages/StoreDetailPage"));
@@ -493,6 +499,12 @@ function AppContent() {
               </PageStatusWrapper>
             }
           />
+
+          <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="terms-conditions" element={<TermsConditionsPage />} />
+          <Route path="legal" element={<LegalPage />} />
+          <Route path="sitemap" element={<SitemapPage />} />
+
           <Route
             path="store"
             element={
