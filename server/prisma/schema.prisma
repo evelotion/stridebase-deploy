@@ -64,7 +64,7 @@ model Store {
   description       String?
   headerImage       String?  
   location          String
-  storeStatus       String            @default("pending")
+  storeStatus       String            @default("active")
   rating            Float             @default(0)
   servicesAvailable Int               @default(0)
   images            String[]

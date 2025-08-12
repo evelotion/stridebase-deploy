@@ -4129,7 +4129,8 @@ body.has-global-announcement .hero-section {
 
 /* Hapus padding atas ekstra dari mobile header saat di homepage */
 .homepage-mobile-container .mobile-home-header {
-    padding-top: 1rem; /* Mengurangi padding atas agar tidak terlalu tinggi */
+    /* MENGURANGI PADDING ATAS AGAR LEBIH RAPIH */
+    padding-top: 0.75rem; 
     padding-bottom: 1.5rem; /* Padding bawah dipertahankan untuk lengkungan */
 }
 
