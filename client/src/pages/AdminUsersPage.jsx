@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import API_BASE_URL from "../apiConfig";
 
 const AdminUsersPage = ({ showMessage }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // --- STATE BARU UNTUK PENCARIAN & PAGINASI ---
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const USERS_PER_PAGE = 5; // Tampilkan 5 kartu per halaman
+
   useEffect(() => {
-    setTimeout(() => {
+    // Menambahkan sedikit jeda agar tidak terasa terlalu instan
+    const timer = setTimeout(() => {
       fetchUsers();
     }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const fetchUsers = async () => {
@@ -25,11 +32,41 @@ const AdminUsersPage = ({ showMessage }) => {
       setUsers(data);
     } catch (error) {
       console.error(error);
+      showMessage(error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // Fungsi untuk mendapatkan inisial nama
+  const getInitials = (name) => {
+    if (!name) return "?";
+    const words = name.split(" ");
+    return words.length > 1
+      ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
+      : name.substring(0, 2).toUpperCase();
+  };
+
+  // --- LOGIKA BARU UNTUK MEMFILTER DAN MEMBAGI DATA ---
+  const filteredUsers = useMemo(() => {
+    return users.filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [users, searchTerm]);
+
+  const pageCount = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const currentUsersOnPage = filteredUsers.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Fungsi-fungsi handleRoleChange dan handleStatusChange tetap sama
   const handleRoleChange = async (userId, newRole) => {
     const token = localStorage.getItem("token");
     const userName = users.find((u) => u.id === userId)?.name || "Pengguna";
@@ -43,14 +80,17 @@ const AdminUsersPage = ({ showMessage }) => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/role`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newRole }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/users/${userId}/role`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ newRole }),
+        }
+      );
 
       const updatedUser = await response.json();
       if (!response.ok) {
@@ -59,11 +99,8 @@ const AdminUsersPage = ({ showMessage }) => {
         );
       }
 
-      setUsers((currentUsers) =>
-        currentUsers.map((user) =>
-          user.id === userId ? { ...user, role: updatedUser.role } : user
-        )
-      );
+      // Refresh data setelah berhasil
+      fetchUsers();
       showMessage(`Peran untuk ${userName} berhasil diubah.`);
     } catch (error) {
       console.error(error);
@@ -81,14 +118,17 @@ const AdminUsersPage = ({ showMessage }) => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newStatus }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/users/${userId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ newStatus }),
+        }
+      );
 
       const updatedUser = await response.json();
       if (!response.ok) {
@@ -97,11 +137,8 @@ const AdminUsersPage = ({ showMessage }) => {
         );
       }
 
-      setUsers((currentUsers) =>
-        currentUsers.map((user) =>
-          user.id === userId ? { ...user, status: updatedUser.status } : user
-        )
-      );
+      // Refresh data setelah berhasil
+      fetchUsers();
       showMessage(
         `Pengguna ${userName} berhasil di-${
           newStatus === "blocked" ? "blokir" : "aktifkan"
@@ -113,16 +150,50 @@ const AdminUsersPage = ({ showMessage }) => {
     }
   };
 
-  const getInitials = (name) => {
-    if (!name) return "?";
-    const words = name.split(" ");
-    return words.length > 1
-      ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
-      : name.substring(0, 2).toUpperCase();
+  // Komponen untuk Paginasi
+  const Pagination = ({ currentPage, pageCount, onPageChange }) => {
+    if (pageCount <= 1) return null;
+    const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+
+    return (
+      <nav className="mt-4 d-flex justify-content-center">
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => onPageChange(currentPage - 1)}
+            >
+              &laquo;
+            </button>
+          </li>
+          {pages.map((num) => (
+            <li
+              key={num}
+              className={`page-item ${currentPage === num ? "active" : ""}`}
+            >
+              <button className="page-link" onClick={() => onPageChange(num)}>
+                {num}
+              </button>
+            </li>
+          ))}
+          <li
+            className={`page-item ${
+              currentPage === pageCount ? "disabled" : ""
+            }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => onPageChange(currentPage + 1)}
+            >
+              &raquo;
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
   };
 
   if (loading) {
-    // Skeleton loader can remain the same
     return (
       <div className="container-fluid px-4">
         <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
@@ -137,7 +208,9 @@ const AdminUsersPage = ({ showMessage }) => {
     <div className="container-fluid px-4">
       <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
       <div className="table-card p-3 shadow-sm">
+        {/* Tampilan Desktop */}
         <div className="table-responsive d-none d-lg-block">
+          {/* ... Kode tabel desktop Anda tetap di sini (tidak diubah) ... */}
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
@@ -155,7 +228,6 @@ const AdminUsersPage = ({ showMessage }) => {
                 <tr key={user.id}>
                   <td>
                     <div className="d-flex align-items-center">
-                      {/* PERUBAHAN DI SINI */}
                       <div className="user-avatar avatar-initials me-3">
                         <span>{getInitials(user.name)}</span>
                       </div>
@@ -223,67 +295,95 @@ const AdminUsersPage = ({ showMessage }) => {
           </table>
         </div>
 
-        <div className="mobile-card-list d-lg-none">
-          {users.map((user) => (
-            <div className="mobile-card" key={user.id}>
-              <div className="mobile-card-header">
-                <div>
-                  <span className="fw-bold">{user.name}</span>
-                  <small className="d-block text-muted">{user.email}</small>
+        {/* --- TAMPILAN MOBILE YANG DISEMPURNAKAN --- */}
+        <div className="d-lg-none">
+          <div className="mb-3 px-2">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Cari nama atau email pengguna..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Kembali ke halaman 1 setiap kali mencari
+              }}
+            />
+          </div>
+          <div className="mobile-card-list">
+            {currentUsersOnPage.length > 0 ? (
+              currentUsersOnPage.map((user) => (
+                <div className="mobile-card" key={user.id}>
+                  <div className="mobile-card-header">
+                    <div>
+                      <span className="fw-bold">{user.name}</span>
+                      <small className="d-block text-muted">{user.email}</small>
+                    </div>
+                    <span
+                      className={`badge bg-${
+                        (user.status || "active") === "active"
+                          ? "success"
+                          : "danger"
+                      }`}
+                    >
+                      {user.status || "active"}
+                    </span>
+                  </div>
+                  <div className="mobile-card-body">
+                    <div className="mobile-card-row">
+                      <small>Total Belanja</small>
+                      <span>Rp {user.totalSpent.toLocaleString("id-ID")}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <small>Jml. Transaksi</small>
+                      <span>{user.transactionCount}</span>
+                    </div>
+                    <div className="mobile-card-row">
+                      <small>Peran</small>
+                      <select
+                        className="form-select form-select-sm"
+                        style={{ width: "150px" }}
+                        value={user.role || "customer"}
+                        onChange={(e) =>
+                          handleRoleChange(user.id, e.target.value)
+                        }
+                      >
+                        <option value="customer">Customer</option>
+                        <option value="mitra">Mitra</option>
+                        <option value="admin">Admin</option>
+                        <option value="developer">Developer</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mobile-card-footer">
+                    {(user.status || "active") === "active" ? (
+                      <button
+                        className="btn btn-sm btn-outline-warning"
+                        onClick={() => handleStatusChange(user.id, "blocked")}
+                      >
+                        <i className="fas fa-ban me-1"></i> Blokir
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-sm btn-outline-success"
+                        onClick={() => handleStatusChange(user.id, "active")}
+                      >
+                        <i className="fas fa-check-circle me-1"></i> Aktifkan
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <span
-                  className={`badge bg-${
-                    (user.status || "active") === "active"
-                      ? "success"
-                      : "danger"
-                  }`}
-                >
-                  {user.status || "active"}
-                </span>
+              ))
+            ) : (
+              <div className="text-center p-4 text-muted">
+                Tidak ada pengguna yang cocok dengan pencarian Anda.
               </div>
-              <div className="mobile-card-body">
-                <div className="mobile-card-row">
-                  <small>Total Belanja</small>
-                  <span>Rp {user.totalSpent.toLocaleString("id-ID")}</span>
-                </div>
-                <div className="mobile-card-row">
-                  <small>Jml. Transaksi</small>
-                  <span>{user.transactionCount}</span>
-                </div>
-                <div className="mobile-card-row">
-                  <small>Peran</small>
-                  <select
-                    className="form-select form-select-sm"
-                    style={{ width: "150px" }}
-                    value={user.role || "customer"}
-                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                  >
-                    <option value="customer">Customer</option>
-                    <option value="mitra">Mitra</option>
-                    <option value="admin">Admin</option>
-                    <option value="developer">Developer</option>
-                  </select>
-                </div>
-              </div>
-              <div className="mobile-card-footer">
-                {(user.status || "active") === "active" ? (
-                  <button
-                    className="btn btn-sm btn-outline-warning"
-                    onClick={() => handleStatusChange(user.id, "blocked")}
-                  >
-                    <i className="fas fa-ban me-1"></i> Blokir
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-sm btn-outline-success"
-                    onClick={() => handleStatusChange(user.id, "active")}
-                  >
-                    <i className="fas fa-check-circle me-1"></i> Aktifkan
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            )}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            pageCount={pageCount}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>
