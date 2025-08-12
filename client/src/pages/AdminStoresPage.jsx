@@ -490,6 +490,7 @@ const AdminStoresPage = ({ showMessage }) => {
                 </div>
                 <div className="mobile-card-footer">
                   <div className="btn-group">
+                    {/* Tombol untuk status 'pending' */}
                     {store.storeStatus === "pending" && (
                       <>
                         <button
@@ -508,6 +509,49 @@ const AdminStoresPage = ({ showMessage }) => {
                         </button>
                       </>
                     )}
+                    {/* Tombol untuk status 'active' */}
+                    {store.storeStatus === "active" && (
+                      <button
+                        onClick={() =>
+                          handleStatusChange(
+                            store.id,
+                            "inactive",
+                            `Toko ${store.name} berhasil dinonaktifkan.`
+                          )
+                        }
+                        className="btn btn-sm btn-outline-warning"
+                        title="Nonaktifkan"
+                      >
+                        <i className="fas fa-power-off"></i>
+                      </button>
+                    )}
+                    {/* Tombol untuk status 'inactive' */}
+                    {store.storeStatus === "inactive" && (
+                      <button
+                        onClick={() =>
+                          handleStatusChange(
+                            store.id,
+                            "active",
+                            `Toko ${store.name} berhasil diaktifkan.`
+                          )
+                        }
+                        className="btn btn-sm btn-outline-success"
+                        title="Aktifkan"
+                      >
+                        <i className="fas fa-check-circle"></i>
+                      </button>
+                    )}
+                    {/* Tombol Invoice */}
+                    {store.billingType === "INVOICE" && (
+                      <Link
+                        to={`/admin/stores/${store.id}/invoices`}
+                        className="btn btn-sm btn-outline-primary"
+                        title="Lihat & Kelola Invoice"
+                      >
+                        <i className="fas fa-file-invoice-dollar"></i>
+                      </Link>
+                    )}
+                    {/* Tombol Edit */}
                     <button
                       className="btn btn-sm btn-outline-secondary"
                       title="Edit"
@@ -515,14 +559,39 @@ const AdminStoresPage = ({ showMessage }) => {
                     >
                       <i className="fas fa-edit"></i>
                     </button>
-                    {store.billingType === "INVOICE" && (
-                      <Link
-                        to={`/admin/stores/${store.id}/invoices`}
-                        className="btn btn-sm btn-outline-primary"
-                        title="Invoices"
-                      >
-                        <i className="fas fa-file-invoice-dollar"></i>
-                      </Link>
+                    {/* Tombol Tier */}
+                    {themeConfig.featureFlags.enableTierSystem && (
+                      <div className="btn-group">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-info dropdown-toggle"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          title="Ubah Tier"
+                        >
+                          <i className="fas fa-crown"></i>
+                        </button>
+                        <ul className="dropdown-menu">
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() => handleTierChange(store.id, "PRO")}
+                            >
+                              Jadikan PRO
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleTierChange(store.id, "BASIC")
+                              }
+                            >
+                              Jadikan BASIC
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
                     )}
                   </div>
                 </div>
