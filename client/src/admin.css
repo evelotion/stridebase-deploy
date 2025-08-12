@@ -333,11 +333,60 @@ body {
 }
 
 /* Memberikan warna latar belakang yang berbeda-beda secara otomatis */
-tr:nth-child(8n+1) .user-avatar { background-color: #0d6efd; } /* Biru */
-tr:nth-child(8n+2) .user-avatar { background-color: #6f42c1; } /* Ungu */
-tr:nth-child(8n+3) .user-avatar { background-color: #d63384; } /* Pink */
-tr:nth-child(8n+4) .user-avatar { background-color: #dc3545; } /* Merah */
-tr:nth-child(8n+5) .user-avatar { background-color: #fd7e14; } /* Oranye */
-tr:nth-child(8n+6) .user-avatar { background-color: #ffc107; } /* Kuning */
-tr:nth-child(8n+7) .user-avatar { background-color: #198754; } /* Hijau */
-tr:nth-child(8n+8) .user-avatar { background-color: #0dcaf0; } /* Cyan */
+tr:nth-child(8n + 1) .user-avatar {
+  background-color: #0d6efd;
+} /* Biru */
+tr:nth-child(8n + 2) .user-avatar {
+  background-color: #6f42c1;
+} /* Ungu */
+tr:nth-child(8n + 3) .user-avatar {
+  background-color: #d63384;
+} /* Pink */
+tr:nth-child(8n + 4) .user-avatar {
+  background-color: #dc3545;
+} /* Merah */
+tr:nth-child(8n + 5) .user-avatar {
+  background-color: #fd7e14;
+} /* Oranye */
+tr:nth-child(8n + 6) .user-avatar {
+  background-color: #ffc107;
+} /* Kuning */
+tr:nth-child(8n + 7) .user-avatar {
+  background-color: #198754;
+} /* Hijau */
+tr:nth-child(8n + 8) .user-avatar {
+  background-color: #0dcaf0;
+} /* Cyan */
+
+/* --- PERBAIKAN: Membuat Nav Pills lebih rapi di Mobile --- */
+@media (max-width: 767.98px) {
+  .nav-pills {
+    /* Mengubah dari flex menjadi block agar bisa di-scroll */
+    display: block;
+    white-space: nowrap; /* Mencegah item pindah ke baris baru */
+    overflow-x: auto; /* Aktifkan scroll horizontal */
+    -ms-overflow-style: none; /* Sembunyikan scrollbar (IE/Edge) */
+    scrollbar-width: none; /* Sembunyikan scrollbar (Firefox) */
+    padding-bottom: 10px; /* Jarak agar shadow tidak terpotong */
+    margin-left: -1rem; /* Menyesuaikan posisi agar rata kiri */
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Sembunyikan scrollbar untuk browser Webkit (Chrome, Safari) */
+  .nav-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-pills .nav-item {
+    display: inline-block; /* Membuat item berjajar horizontal */
+    float: none;
+  }
+
+  .nav-pills .nav-link {
+    /* Mengurangi padding agar tombol lebih kecil */
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem; /* Sedikit memperkecil font */
+  }
+}
