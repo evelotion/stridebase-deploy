@@ -43,7 +43,7 @@ const AdminUsersPage = ({ showMessage }) => {
     }
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}/role`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/role`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,7 @@ const AdminUsersPage = ({ showMessage }) => {
     }
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
