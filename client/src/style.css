@@ -3821,7 +3821,7 @@ body.has-global-announcement .hero-section {
 @media (max-width: 991.98px) {
 .hero-section {
   min-height: auto;
-  padding-top: 1rem;
+  padding-top: 0;
   padding-bottom: 2rem;
   text-align: center;
   overflow: hidden;
