@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import API_BASE_URL from "../apiConfig";
 
-const PartnerOrdersPage = ({ showMessage }) => {
+const PartnerOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -85,7 +85,12 @@ const PartnerOrdersPage = ({ showMessage }) => {
         )
       );
     } catch (err) {
-      showMessage(`Error: ${err.message}`);
+      // Asumsi 'showMessage' adalah prop, jika tidak ada, ganti dengan alert
+      if (window.showMessage) {
+        window.showMessage(`Error: ${err.message}`);
+      } else {
+        alert(`Error: ${err.message}`);
+      }
     }
   };
 
