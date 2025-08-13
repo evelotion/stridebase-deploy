@@ -1608,7 +1608,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   /* --- Hero Section on Mobile --- */
 .hero-section {
     min-height: auto;
-    padding-top: 80px;
+    padding-top: 0 !important;
     padding-bottom: 4rem;
     text-align: center;
     overflow: hidden;
