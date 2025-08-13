@@ -3987,7 +3987,7 @@ body.has-global-announcement .hero-section {
 @media (max-width: 991.98px) {
   /* Saat notifikasi aktif, beri padding atas tambahan pada header mobile */
   body.has-global-announcement .hero-section {
-    padding-top: 5rem !important; /* Nilai ini bisa disesuaikan */
+    padding-top: 1rem !important; /* Nilai ini bisa disesuaikan */
   }
 
   /* Atur posisi notifikasi agar tetap di atas, di dalam padding yang baru dibuat */
