@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import API_BASE_URL from '../apiConfig';
 
@@ -18,6 +18,11 @@ const PartnerPromosPage = ({ showMessage }) => {
     value: "",
     status: "active",
   });
+
+  // --- STATE BARU UNTUK PENCARIAN & PAGINASI ---
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PROMOS_PER_PAGE = 5;
 
   const fetchData = async () => {
     setLoading(true);
@@ -51,6 +56,25 @@ const PartnerPromosPage = ({ showMessage }) => {
   useEffect(() => {
     fetchData();
   }, []);
+  
+  // --- LOGIKA BARU UNTUK MEMFILTER DAN MEMBAGI DATA ---
+  const filteredPromos = useMemo(() => {
+    return promos.filter(
+      (promo) =>
+        (promo.code || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (promo.description || "").toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [promos, searchTerm]);
+
+  const pageCount = Math.ceil(filteredPromos.length / PROMOS_PER_PAGE);
+  const currentPromosOnPage = filteredPromos.slice(
+    (currentPage - 1) * PROMOS_PER_PAGE,
+    currentPage * PROMOS_PER_PAGE
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const isPromoLimitReached =
     store && store.tier === "BASIC" && promos.length >= 3;
@@ -89,7 +113,7 @@ const PartnerPromosPage = ({ showMessage }) => {
       : "/api/partner/promos";
 
     try {
-      const response = await fetch(url, {
+      const response = await fetch(`${API_BASE_URL}${url}`, {
         method,
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +135,7 @@ const PartnerPromosPage = ({ showMessage }) => {
     if (!confirm("Yakin ingin menghapus promo ini?")) return;
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/api/partner/promos/${promoId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/partner/promos/${promoId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -123,6 +147,50 @@ const PartnerPromosPage = ({ showMessage }) => {
       showMessage(`Error: ${err.message}`);
     }
   };
+  
+    // Komponen untuk Paginasi
+  const Pagination = ({ currentPage, pageCount, onPageChange }) => {
+    if (pageCount <= 1) return null;
+    const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+
+    return (
+      <nav className="mt-4 d-flex justify-content-center">
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => onPageChange(currentPage - 1)}
+            >
+              &laquo;
+            </button>
+          </li>
+          {pages.map((num) => (
+            <li
+              key={num}
+              className={`page-item ${currentPage === num ? "active" : ""}`}
+            >
+              <button className="page-link" onClick={() => onPageChange(num)}>
+                {num}
+              </button>
+            </li>
+          ))}
+          <li
+            className={`page-item ${
+              currentPage === pageCount ? "disabled" : ""
+            }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => onPageChange(currentPage + 1)}
+            >
+              &raquo;
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
+  };
+
 
   if (loading) return <div className="p-4">Memuat data promo...</div>;
   if (error) return <div className="p-4 text-danger">Error: {error}</div>;
@@ -153,7 +221,8 @@ const PartnerPromosPage = ({ showMessage }) => {
         )}
 
         <div className="table-card p-3 shadow-sm">
-          <div className="table-responsive">
+          {/* Tampilan Desktop */}
+          <div className="table-responsive d-none d-lg-block">
             <table className="table table-hover align-middle">
               <thead className="table-light">
                 <tr>
@@ -208,6 +277,70 @@ const PartnerPromosPage = ({ showMessage }) => {
                 Anda belum memiliki promo.
               </p>
             )}
+          </div>
+          
+          {/* Tampilan Mobile */}
+          <div className="d-lg-none">
+            <div className="mb-3 px-2">
+                <input
+                type="text"
+                className="form-control"
+                placeholder="Cari kode atau deskripsi promo..."
+                value={searchTerm}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                }}
+                />
+            </div>
+            <div className="mobile-card-list">
+                {currentPromosOnPage.length > 0 ? (
+                currentPromosOnPage.map((promo) => (
+                     <div className="mobile-card" key={promo.id}>
+                        <div className="mobile-card-header">
+                            <span className="fw-bold">{promo.code}</span>
+                            <span className={`badge bg-${promo.status === "active" ? "success" : "secondary"}`}>
+                                {promo.status}
+                            </span>
+                        </div>
+                        <div className="mobile-card-body">
+                            <p className="mb-2 text-muted">{promo.description}</p>
+                            <div className="mobile-card-row">
+                                <small>Nilai</small>
+                                <span className="fw-bold">
+                                    {promo.discountType === "percentage"
+                                    ? `${promo.value}%`
+                                    : `Rp ${promo.value.toLocaleString("id-ID")}`}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="mobile-card-footer">
+                            <button
+                            className="btn btn-sm btn-outline-secondary me-2"
+                            onClick={() => handleOpenModal(promo)}
+                            >
+                            <i className="fas fa-edit me-1"></i> Edit
+                            </button>
+                            <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleDelete(promo.id)}
+                            >
+                            <i className="fas fa-trash-alt me-1"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                ))
+                ) : (
+                <div className="text-center p-4 text-muted">
+                    Tidak ada promo yang cocok dengan pencarian Anda.
+                </div>
+                )}
+            </div>
+            <Pagination
+                currentPage={currentPage}
+                pageCount={pageCount}
+                onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>

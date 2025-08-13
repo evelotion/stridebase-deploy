@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const PartnerServicesPage = ({ showMessage }) => {
   const [services, setServices] = useState([]);
@@ -17,6 +17,11 @@ const PartnerServicesPage = ({ showMessage }) => {
     price: "",
     shoeType: "sneakers",
   });
+
+  // --- STATE BARU UNTUK PENCARIAN & PAGINASI ---
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const SERVICES_PER_PAGE = 5;
 
   const fetchData = async () => {
     const token = localStorage.getItem("token");
@@ -54,6 +59,27 @@ const PartnerServicesPage = ({ showMessage }) => {
     fetchData();
   }, []);
 
+  // --- LOGIKA BARU UNTUK MEMFILTER DAN MEMBAGI DATA ---
+  const filteredServices = useMemo(() => {
+    return services.filter(
+      (service) =>
+        (service.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (service.shoeType || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+    );
+  }, [services, searchTerm]);
+
+  const pageCount = Math.ceil(filteredServices.length / SERVICES_PER_PAGE);
+  const currentServicesOnPage = filteredServices.slice(
+    (currentPage - 1) * SERVICES_PER_PAGE,
+    currentPage * SERVICES_PER_PAGE
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const isServiceLimitReached = store
     ? services.length >= store.serviceLimit
     : false;
@@ -89,11 +115,11 @@ const PartnerServicesPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
-  ? `${API_BASE_URL}/api/partner/services/${currentService.id}`
-  : `${API_BASE_URL}/api/partner/services`;
+      ? `${API_BASE_URL}/api/partner/services/${currentService.id}`
+      : `${API_BASE_URL}/api/partner/services`;
 
-try {
-  const response = await fetch(url, {
+    try {
+      const response = await fetch(url, {
         method: method,
         headers: {
           "Content-Type": "application/json",
@@ -122,10 +148,13 @@ try {
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/partner/services/${serviceId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/partner/services/${serviceId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const data = await response.json();
       if (!response.ok)
@@ -136,6 +165,49 @@ try {
     } catch (err) {
       showMessage(`Error: ${err.message}`);
     }
+  };
+
+  // Komponen untuk Paginasi
+  const Pagination = ({ currentPage, pageCount, onPageChange }) => {
+    if (pageCount <= 1) return null;
+    const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+
+    return (
+      <nav className="mt-4 d-flex justify-content-center">
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => onPageChange(currentPage - 1)}
+            >
+              &laquo;
+            </button>
+          </li>
+          {pages.map((num) => (
+            <li
+              key={num}
+              className={`page-item ${currentPage === num ? "active" : ""}`}
+            >
+              <button className="page-link" onClick={() => onPageChange(num)}>
+                {num}
+              </button>
+            </li>
+          ))}
+          <li
+            className={`page-item ${
+              currentPage === pageCount ? "disabled" : ""
+            }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => onPageChange(currentPage + 1)}
+            >
+              &raquo;
+            </button>
+          </li>
+        </ul>
+      </nav>
+    );
   };
 
   if (loading) return <div className="p-4">Memuat data layanan...</div>;
@@ -168,7 +240,8 @@ try {
         )}
 
         <div className="table-card p-3 shadow-sm">
-          <div className="table-responsive">
+          {/* Tampilan Desktop */}
+          <div className="table-responsive d-none d-lg-block">
             <table className="table table-hover align-middle">
               <thead className="table-light">
                 <tr>
@@ -211,6 +284,68 @@ try {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Tampilan Mobile */}
+          <div className="d-lg-none">
+            <div className="mb-3 px-2">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Cari nama layanan..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
+            <div className="mobile-card-list">
+              {currentServicesOnPage.length > 0 ? (
+                currentServicesOnPage.map((service) => (
+                  <div className="mobile-card" key={service.id}>
+                    <div className="mobile-card-header">
+                      <span className="fw-bold">{service.name}</span>
+                      <span className="badge bg-info">{service.shoeType}</span>
+                    </div>
+                    <div className="mobile-card-body">
+                      <p className="mb-2 text-muted">
+                        {service.description || "Tidak ada deskripsi."}
+                      </p>
+                      <div className="mobile-card-row">
+                        <small>Harga</small>
+                        <span className="fw-bold">
+                          Rp {parseInt(service.price).toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mobile-card-footer">
+                      <button
+                        className="btn btn-sm btn-outline-secondary me-2"
+                        onClick={() => handleOpenModal(service)}
+                      >
+                        <i className="fas fa-edit me-1"></i> Edit
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDelete(service.id)}
+                      >
+                        <i className="fas fa-trash-alt me-1"></i> Hapus
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center p-4 text-muted">
+                  Tidak ada layanan yang cocok dengan pencarian Anda.
+                </div>
+              )}
+            </div>
+            <Pagination
+              currentPage={currentPage}
+              pageCount={pageCount}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>
