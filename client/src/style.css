@@ -3819,6 +3819,14 @@ body.has-global-announcement .hero-section {
 /* ======================================================= */
 
 @media (max-width: 991.98px) {
+.hero-section {
+  min-height: auto;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+  text-align: center;
+  overflow: hidden;
+}
+  
   .homepage-mobile-container {
     background-color: #f8f9fa; /* Warna latar belakang abu-abu muda */
     padding-bottom: 2rem;
