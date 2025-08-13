@@ -261,7 +261,7 @@ body {
 }
 
 /* --- Pengaturan Navigasi Tab (Pending, Active, dll.) --- */
-.nav-pills {
+.nav-pills, .nav-tabs {
   display: inline-flex;
   background-color: transparent; /* Hapus latar belakang abu-abu */
   border-radius: 0;
@@ -270,7 +270,7 @@ body {
   border-bottom: 1px solid var(--border-color); /* Tambahkan garis bawah sebagai pemisah */
   gap: 0.5rem; /* Beri sedikit jarak antar tombol */
 }
-.nav-pills .nav-link {
+.nav-pills .nav-link, .nav-tabs .nav-link {
   border-radius: 0.5rem 0.5rem 0 0 !important; /* Sudut melengkung hanya di atas */
   font-weight: 600;
   color: var(--text-muted);
@@ -280,11 +280,11 @@ body {
   margin-bottom: -1px; /* Agar menyatu dengan garis bawah */
   transition: all 0.2s ease-in-out;
 }
-.nav-pills .nav-link:hover {
+.nav-pills .nav-link:hover, .nav-tabs .nav-link:hover {
   background-color: var(--bg-light);
   color: var(--text-dark);
 }
-.nav-pills .nav-link.active {
+.nav-pills .nav-link.active, .nav-tabs .nav-link.active {
   background-color: var(--primary-color);
   color: var(--bg-white);
   box-shadow: 0 -4px 10px rgba(28, 64, 212, 0.2);
