@@ -208,9 +208,8 @@ const AdminUsersPage = ({ showMessage }) => {
     <div className="container-fluid px-4">
       <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
       <div className="table-card p-3 shadow-sm">
-        {/* Tampilan Desktop */}
+        {/* Tampilan Desktop (Tabel) */}
         <div className="table-responsive d-none d-lg-block">
-          {/* ... Kode tabel desktop Anda tetap di sini (tidak diubah) ... */}
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
@@ -295,7 +294,7 @@ const AdminUsersPage = ({ showMessage }) => {
           </table>
         </div>
 
-        {/* --- TAMPILAN MOBILE YANG DISEMPURNAKAN --- */}
+        {/* Tampilan Mobile (Card) */}
         <div className="d-lg-none">
           <div className="mb-3 px-2">
             <input
