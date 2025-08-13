@@ -3825,6 +3825,7 @@ body.has-global-announcement .hero-section {
   padding-bottom: 2rem;
   text-align: center;
   overflow: hidden;
+  background-color: transparent;
 }
   
   .homepage-mobile-container {
