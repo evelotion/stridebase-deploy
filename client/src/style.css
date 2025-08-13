@@ -1605,14 +1605,6 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
     margin-left: 1.5rem !important;
   }
 
-  /* --- Hero Section on Mobile --- */
-.hero-section {
-    min-height: auto;
-    padding-top: 2rem;
-    padding-bottom: 4rem;
-    text-align: center;
-    overflow: hidden;
-  }
 
   .hero-section .row {
     flex-direction: column-reverse; /* Pindahkan gambar ke atas teks */
@@ -3830,6 +3822,16 @@ body.has-global-announcement .hero-section {
   .homepage-mobile-container {
     background-color: #f8f9fa; /* Warna latar belakang abu-abu muda */
     padding-bottom: 2rem;
+  }
+
+  .homepage-announcement-wrapper {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .homepage-mobile-container .hero-section {
+    margin-top: 0;
+    padding-top: 0;
   }
 
   /* --- Mobile Header & Search --- */
