@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const daysOfWeek = [
   "monday",
@@ -188,7 +188,8 @@ const PartnerSettingsPage = ({ showMessage }) => {
       </div>
 
       <div className="table-card p-3 p-md-4 shadow-sm">
-        <ul className="nav nav-tabs mb-4">
+        {/* === PERBAIKAN DI SINI: Mengubah nav-tabs menjadi nav-pills === */}
+        <ul className="nav nav-pills mb-4">
           <li className="nav-item">
             <button
               className={`nav-link ${activeTab === "profile" ? "active" : ""}`}
