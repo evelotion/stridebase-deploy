@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 
+// Interface diperbarui untuk menyertakan headerImage
 interface Store {
   id: string;
   name: string;
@@ -8,6 +9,7 @@ interface Store {
   rating: number;
   servicesAvailable: number;
   images: string[];
+  headerImage?: string; // <-- PERUBAHAN DI SINI
   distance?: number;
   tier: "PRO" | "BASIC";
 }
@@ -24,17 +26,20 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
     rating,
     servicesAvailable,
     images,
+    headerImage, // <-- PERUBAHAN DI SINI
     distance,
     tier,
   } = store;
 
+  // --- LOGIKA GAMBAR DIPERBAIKI DI SINI ---
+  // Prioritaskan headerImage. Jika tidak ada, baru gunakan gambar pertama dari galeri.
   const imageUrl =
-    images && images.length > 0
-      ? `${images[0]}`
-      : "https://via.placeholder.com/300x180.png?text=No+Image";
+    headerImage ||
+    (images && images.length > 0
+      ? images[0]
+      : "https://via.placeholder.com/300x180.png?text=No+Image");
 
   return (
-    // SELURUH KARTU SEKARANG DIBUNGKUS DENGAN LINK
     <Link to={`/store/${id}`} className="text-decoration-none text-dark">
       <div className="store-grid__card h-100">
         {tier === "PRO" && (
@@ -48,7 +53,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
 
         <div className="store-grid__image-wrapper">
           <img
-            src={imageUrl}
+            src={imageUrl} // Variabel imageUrl yang baru sekarang digunakan di sini
             className="store-grid__image"
             alt={name}
             loading="lazy"
@@ -70,10 +75,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
               </p>
             )}
           </div>
-          {/* Tombol ini akan disembunyikan di mobile oleh CSS yang kita tambahkan */}
-          <div className="btn btn-gradient w-100 mt-auto">
-            Lihat Detail
-          </div>
+          <div className="btn btn-gradient w-100 mt-auto">Lihat Detail</div>
         </div>
       </div>
     </Link>
