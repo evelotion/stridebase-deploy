@@ -379,12 +379,11 @@ function AppContent() {
       <Routes>
         <Route
           path="/developer/*"
-          // element={
-          //   <ProtectedRoute role="developer">
-          //     <DeveloperLayout />
-          //   </ProtectedRoute>
-          // }
-           element={<DeveloperLayout />}
+          element={
+            <ProtectedRoute role="developer">
+              <DeveloperLayout />
+            </ProtectedRoute>
+          }
         >
           <Route
             path="dashboard"
