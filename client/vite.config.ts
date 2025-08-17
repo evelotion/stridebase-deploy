@@ -24,12 +24,12 @@ export default defineConfig(({ command }) => {
       host: true,
     },
     // Blok baru untuk mengganti URL di produksi
-    define: {
-      'process.env.API_BASE_URL': JSON.stringify(
-        isProduction
-          ? 'https://stridebase-server.onrender.com'
-          : ''
-      ),
-    },
+    // define: {
+    //   'process.env.API_BASE_URL': JSON.stringify(
+    //     isProduction
+    //       ? 'https://stridebase-server.onrender.com'
+    //       : ''
+    //   ),
+    // },
   };
 });
