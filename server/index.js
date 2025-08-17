@@ -72,9 +72,9 @@ const PORT = 5000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
-     methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
-     allowedHeaders: ["Content-Type", "Authorization"], // <-- TAMBAHKAN BARIS INI
+     origin: ["http://localhost:5173", "https://stridebase-client-clct.onrender.com"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"], // <-- TAMBAHKAN BARIS INI
   },
 });
 
@@ -111,7 +111,7 @@ io.on("connection", (socket) => {
 
 app.use(
   cors({
-    origin: "*",
+    origin: ["http://localhost:5173", "https://stridebase-client-clct.onrender.com"],
     allowedHeaders: ["Content-Type", "Authorization"], // <-- TAMBAHKAN BARIS INI
   })
 );
