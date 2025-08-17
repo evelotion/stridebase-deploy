@@ -2297,8 +2297,20 @@ adminRouter.post("/stores", async (req, res) => {
 
 adminRouter.put("/stores/:id", async (req, res) => {
   const { id: storeId } = req.params;
-  const { commissionRate, ...otherData } = req.body;
   const requester = req.user;
+
+  // PERBAIKAN 1: Ambil setiap field yang relevan secara eksplisit dari req.body.
+  // Ini mencegah field yang tidak diinginkan (seperti 'owner' atau 'totalRevenue') masuk ke proses update.
+  const {
+    name,
+    location,
+    ownerId,
+    commissionRate,
+    billingType,
+    latitude,
+    longitude,
+    storeStatus,
+  } = req.body;
 
   try {
     const currentStore = await prisma.store.findUnique({
@@ -2308,6 +2320,7 @@ adminRouter.put("/stores/:id", async (req, res) => {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
+    // Logika untuk approval request komisi (ini sudah benar dan tidak diubah)
     if (
       commissionRate !== undefined &&
       parseFloat(commissionRate) !== currentStore.commissionRate
@@ -2329,13 +2342,28 @@ adminRouter.put("/stores/:id", async (req, res) => {
       });
     }
 
+    // PERBAIKAN 2: Buat objek 'dataToUpdate' yang hanya berisi field yang valid di skema database.
+    const dataToUpdate = {
+      name,
+      location,
+      ownerId, // Pastikan form di frontend mengirimkan 'ownerId'
+      billingType,
+      storeStatus,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
+      // `commissionRate` sengaja tidak dimasukkan di sini karena punya alur approval sendiri.
+    };
+
+
+    // PERBAIKAN 3: Gunakan objek 'dataToUpdate' yang sudah bersih untuk memperbarui database.
     const updatedStore = await prisma.store.update({
       where: { id: storeId },
-      data: otherData,
+      data: dataToUpdate,
     });
     res.json(updatedStore);
+    
   } catch (error) {
-    console.error(error);
+    console.error("Gagal memperbarui toko:", error);
     res.status(500).json({ message: "Gagal memperbarui toko." });
   }
 });
