@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
-   <div className="col-lg-6 mb-4">
+  <div className="col-lg-6 mb-4">
     <Link to={linkTo} className="text-decoration-none">
       <div className="kpi-card p-3 shadow-sm h-100">
         <div className="kpi-card-content">
@@ -11,7 +11,9 @@ const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
             <h3 className="fs-2">{value}</h3>
             <p className="fs-5 text-muted mb-0">{title}</p>
           </div>
-          <i className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}></i>
+          <i
+            className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}
+          ></i>
         </div>
       </div>
     </Link>
@@ -141,7 +143,7 @@ const PartnerDashboardPage = () => {
       <div className="row g-3 my-2">
         <KpiCard
           title="Total Pendapatan"
-          value={`Rp ${stats?.totalRevenue.toLocaleString("id-ID") || 0}`}
+          value={`Rp ${(stats?.totalRevenue || 0).toLocaleString("id-ID")}`}
           icon="fa-money-bill-wave"
           colorClass="primary-text"
           linkTo="/partner/orders"
