@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const AdminDashboardPage = () => {
   const [stats, setStats] = useState(null);
@@ -27,18 +27,20 @@ const AdminDashboardPage = () => {
   }, []);
 
   const KpiCard = ({ title, value, icon, colorClass }) => (
-  <div className="col-lg-6 mb-4">
-    <div className="kpi-card p-3 shadow-sm d-flex justify-content-around align-items-center h-100">
-      <div className="kpi-card-content">
-        <div className="kpi-card-text">
-          <h3 className="fs-2">{value}</h3>
-          <p className="fs-5 text-muted mb-0">{title}</p>
+    <div className="col-lg-6 mb-4">
+      <div className="kpi-card p-3 shadow-sm d-flex justify-content-around align-items-center h-100">
+        <div className="kpi-card-content">
+          <div className="kpi-card-text">
+            <h3 className="fs-2">{value}</h3>
+            <p className="fs-5 text-muted mb-0">{title}</p>
+          </div>
+          <i
+            className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}
+          ></i>
         </div>
-        <i className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}></i>
       </div>
     </div>
-  </div>
-);
+  );
 
   if (loading) return <div className="p-4">Memuat statistik...</div>;
 
@@ -54,7 +56,7 @@ const AdminDashboardPage = () => {
         />
         <KpiCard
           title="Total Revenue"
-          value={`Rp ${stats?.totalRevenue.toLocaleString("id-ID") || 0}`}
+          value={`Rp ${(stats?.totalRevenue || 0).toLocaleString("id-ID")}`}
           icon="fa-money-bill-wave"
           colorClass="secondary-text"
         />
