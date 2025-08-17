@@ -1,3 +1,9 @@
+// ======================================================================
+// ===== DETEKTIF GLOBAL: Jika pesan ini tidak muncul di console,  =====
+// ===== berarti file JavaScript yang baru tidak berjalan.        =====
+// ======================================================================
+console.log("🚀 STRIDEBASE APP STARTED! Main.jsx is running. Version: 1.0.1");
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
