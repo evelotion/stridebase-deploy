@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import API_BASE_URL from "../apiConfig";
 
-// Komponen helper (tidak ada perubahan di sini)
+// Komponen helper
 const HealthStatusIndicator = ({ service, status }) => {
   const isOperational = status === "Operasional";
   return (
@@ -69,42 +69,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [previewBtnLgSize, setPreviewBtnLgSize] = useState(16);
 
   useEffect(() => {
-    // ===== PESAN DEBUG 1: Memastikan komponen ini mulai mengambil data =====
-    console.log(
-      "DEBUG: DeveloperDashboardPage useEffect triggered. Memulai fetch data..."
-    );
     const token = localStorage.getItem("token");
     const fetchInitialConfig = async () => {
       try {
-        // ===== PESAN DEBUG 2: Memastikan URL API sudah benar =====
-        const apiUrl = `${API_BASE_URL}/api/superuser/config`;
-        console.log(`DEBUG: Mencoba fetch ke: ${apiUrl}`);
-
-        const response = await fetch(apiUrl, {
+        const response = await fetch(`${API_BASE_URL}/api/superuser/config`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        // ===== PESAN DEBUG 3: Melihat status HTTP dari respons server =====
-        console.log(
-          "DEBUG: Fetch response status:",
-          response.status,
-          response.statusText
-        );
-
-        if (!response.ok) {
-          const errorData = await response
-            .json()
-            .catch(() => ({ message: "Gagal mem-parsing JSON error." }));
-          throw new Error(
-            errorData.message ||
-              `Gagal mengambil data konfigurasi. Status: ${response.status}`
-          );
-        }
-
+        if (!response.ok) throw new Error("Gagal mengambil data konfigurasi.");
         const data = await response.json();
-        // ===== PESAN DEBUG 4: Melihat data yang berhasil diterima dari server =====
-        console.log("DEBUG: Data config berhasil diterima:", data);
-
         setConfig(data);
         setLocalConfig(JSON.parse(JSON.stringify(data)));
         setPreviewBaseSize(parseFloat(data.typography?.baseFontSize) || 16);
@@ -122,22 +94,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           parseFloat(data.typography?.buttonLgFontSize) * 16 || 16
         );
       } catch (err) {
-        // ===== PESAN DEBUG 5: Menangkap error jika terjadi kegagalan =====
-        console.error(
-          "❌ DEBUG: Terjadi CRASH di dalam fetchInitialConfig:",
-          err
-        );
-        showMessage(err.message, "Error Kritis");
+        console.error(err);
       } finally {
         setLoading(false);
-        // ===== PESAN DEBUG 6: Memastikan proses loading selesai =====
-        console.log("DEBUG: Proses fetch selesai, loading dihentikan.");
       }
     };
     fetchInitialConfig();
   }, []);
 
-  // ... (sisa useEffect lainnya tidak perlu diubah) ...
   useEffect(() => {
     const fetchFonts = async () => {
       const GOOGLE_FONTS_API_KEY = import.meta.env.VITE_GOOGLE_FONTS_API_KEY;
@@ -243,7 +207,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     if (activeTab === "payment") fetchPaymentConfig();
   }, [activeTab]);
 
-  // ... (semua fungsi handle... lainnya tidak perlu diubah) ...
   const handleSizeChange = (e, type) => {
     const value = e.target.value;
     const root = document.documentElement;
@@ -527,17 +490,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     });
   };
 
-  // ===== PESAN DEBUG 7: Melihat status loading sebelum render =====
-  console.log(
-    "DEBUG: Merender komponen DeveloperDashboardPage. State loading:",
-    loading,
-    "Config loaded:",
-    !!config
-  );
-
   if (loading || !config || !localConfig) {
-    // ===== PESAN DEBUG 8: Konfirmasi bahwa tampilan loading yang dirender =====
-    console.log("DEBUG: Merender tampilan loading...");
     return <div className="p-4">Memuat konfigurasi global...</div>;
   }
 
@@ -552,13 +505,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     (option) => localConfig.featureFlags.pageStatus[option.value]
   );
 
-  // ===== PESAN DEBUG 9: Konfirmasi bahwa komponen utama akan dirender =====
-  console.log("DEBUG: Merender konten utama dashboard.");
-
   return (
     <>
       <div className="container-fluid px-4">
-        {/* ... (sisa kode JSX tidak ada perubahan) ... */}
         <div className="d-flex justify-content-between align-items-center m-4">
           <h2 className="fs-2 mb-0">SuperUser Control Panel</h2>
           {activeTab === "theming" && (
@@ -572,7 +521,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           )}
         </div>
 
-        <ul className="nav nav-pills mb-3 px-4">
+       <ul className="nav nav-pills mb-3 px-4">
           <li className="nav-item">
             <button
               className={`nav-link ${activeTab === "theming" ? "active" : ""}`}
