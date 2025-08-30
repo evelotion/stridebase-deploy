@@ -1,21 +1,21 @@
-# File: client/Dockerfile
+# File: client/Dockerfile (Ganti dengan kode ini)
 
-# Menggunakan image Node.js versi 18 yang ringan sebagai dasar
-FROM node:18-alpine
-
-# Menetapkan direktori kerja di dalam container
+# Tahap 1: Build a plikasi React
+FROM node:18-alpine AS build
 WORKDIR /app
-
-# Salin file package.json dan package-lock.json terlebih dahulu
 COPY package*.json ./
-
-# Instal semua dependensi
 RUN npm install --legacy-peer-deps
-
-# Salin sisa kode aplikasi
 COPY . .
+# Perintah penting untuk membuat folder build produksi
+RUN npm run build
 
-# Perintah untuk menjalankan server pengembangan Vite
-# Opsi --host diperlukan agar bisa diakses dari luar container
+# Tahap 2: Siapkan server produksi yang ringan
+FROM node:18-alpine
+WORKDIR /app
+# Salin file hasil build dari tahap sebelumnya
+COPY --from=build /app/dist .
+# Install 'serve', sebuah server statis yang tangguh
+RUN npm install -g serve
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host"]
+# Jalankan server untuk menyajikan konten dari folder build
+CMD ["serve", "-s", ".", "-l", "5173"]
