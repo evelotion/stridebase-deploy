@@ -1,5 +1,5 @@
 // File: server/index.js
-
+console.log("SERVER CODE VERSION 2.0 - CORS FIX ATTEMPT");
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
