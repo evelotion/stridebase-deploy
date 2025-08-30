@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -10,6 +10,18 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// =================================================================
+// === MODEL BARU UNTUK PENGATURAN GLOBAL YANG PERSISTEN ===
+// =================================================================
+model GlobalSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique // Ini akan kita isi dengan "themeConfig"
+  value     Json     // Seluruh konfigurasi (logo, warna, dll) akan disimpan di sini
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+// =================================================================
 
 // Menambahkan ENUM baru untuk tipe penagihan
 enum BillingType {
@@ -34,7 +46,7 @@ model User {
   loyaltyPoint     LoyaltyPoint?
   notifications    Notification[]
   redeemedPromos   Promo[] // Relasi ke promo yang di-redeem
-  auditLogs        AuditLog[]        // <-- TAMBAHKAN BARIS INI
+  auditLogs        AuditLog[]
 }
 
 model LoyaltyPoint {
@@ -62,7 +74,7 @@ model Store {
   id                String            @id @default(cuid())
   name              String
   description       String?
-  headerImage       String?  
+  headerImage       String?
   location          String
   storeStatus       String            @default("active")
   rating            Float             @default(0)
@@ -73,9 +85,9 @@ model Store {
   schedule          Json?
   commissionRate    Float             @default(10.0)
   tier              StoreTier         @default(BASIC)
-  billingType       BillingType       @default(COMMISSION) // <-- BARIS BARU
+  billingType       BillingType       @default(COMMISSION)
   createdAt         DateTime          @default(now())
-   isFeatured        Boolean           @default(false)
+  isFeatured        Boolean           @default(false)
   photoLimit        Int               @default(3)
   serviceLimit      Int               @default(5)
   bookings          Booking[]
@@ -85,11 +97,10 @@ model Store {
   ownerUser         User?             @relation(fields: [ownerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   ownerId           String?
   subscription      Subscription?
-  invoices          Invoice[] // <-- BARIS BARU
+  invoices          Invoice[]
   promos            Promo[]
 }
 
-// Model baru untuk sistem langganan (tier) yang sudah ada
 model Subscription {
   id               String    @id @default(cuid())
   status           String
@@ -101,68 +112,66 @@ model Subscription {
   updatedAt        DateTime  @updatedAt
 }
 
-// --- MODEL BARU UNTUK INVOICE ---
 model Invoice {
-  id            String        @id @default(cuid())
+  id            String      @id @default(cuid())
   storeId       String
-  store         Store         @relation(fields: [storeId], references: [id])
-  invoiceNumber String        @unique
-  issueDate     DateTime      @default(now())
+  store         Store       @relation(fields: [storeId], references: [id])
+  invoiceNumber String      @unique
+  issueDate     DateTime    @default(now())
   dueDate       DateTime
-  status        String        @default("DRAFT")
+  status        String      @default("DRAFT")
   totalAmount   Int
   notes         String?
   items         InvoiceItem[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  payment       Payment? // <-- TAMBAHKAN BARIS INI
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  payment       Payment?
 }
 
 model InvoiceItem {
   id          String  @id @default(cuid())
   invoiceId   String
-  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade) // <-- PERBAIKAN
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   description String
   quantity    Int     @default(1)
   unitPrice   Int
   total       Int
 }
 
-
 model Booking {
-  id               String           @id @default(cuid())
+  id               String            @id @default(cuid())
   totalPrice       Int
   status           String
-  workStatus       WorkStatus       @default(RECEIVED)
+  workStatus       WorkStatus        @default(RECEIVED)
   serviceName      String
   deliveryOption   String?
   scheduleDate     DateTime?
-  user             User             @relation(fields: [userId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
   userId           String
-  store            Store            @relation(fields: [storeId], references: [id])
+  store            Store             @relation(fields: [storeId], references: [id])
   storeId          String
   reviews          Review[]
-  deliveryFee      Int              @default(0)
+  deliveryFee      Int               @default(0)
   payment          Payment?
   platformEarning  PlatformEarning?
   notifications    Notification[]
   pointTransaction PointTransaction?
-  address          Address?         @relation(fields: [addressId], references: [id])
+  address          Address?          @relation(fields: [addressId], references: [id])
   addressId        String?
 }
 
 model Review {
-  id        String   @id @default(cuid())
-  rating    Int
-  comment   String?
-  date      DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  store     Store    @relation(fields: [storeId], references: [id])
-  storeId   String
-  booking   Booking  @relation(fields: [bookingId], references: [id])
-  bookingId String   @unique
-  userName  String
+  id               String    @id @default(cuid())
+  rating           Int
+  comment          String?
+  date             DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id])
+  userId           String
+  store            Store     @relation(fields: [storeId], references: [id])
+  storeId          String
+  booking          Booking   @relation(fields: [bookingId], references: [id])
+  bookingId        String    @unique
+  userName         String
   partnerReply     String?
   partnerReplyDate DateTime?
   imageUrl         String?
@@ -181,11 +190,11 @@ model Promo {
   minTransaction Int?
   forNewUser     Boolean   @default(false)
   status         String    @default("active")
-  store   Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  storeId String? // ? berarti promo bisa dibuat oleh admin (global) atau oleh toko (spesifik)
-  isRedeemed     Boolean   @default(false) // Menandai jika promo ini hasil redeem
+  store          Store?    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId        String?
+  isRedeemed     Boolean   @default(false)
   user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String?   // Hanya untuk promo hasil redeem, agar tidak bisa dipakai orang lain
+  userId         String?
 }
 
 model Banner {
@@ -208,7 +217,7 @@ model Address {
   createdAt     DateTime @default(now())
   user          User     @relation(fields: [userId], references: [id])
   userId        String
-    Booking       Booking[]
+  Booking       Booking[]
 }
 
 model Service {
@@ -227,7 +236,7 @@ model Payment {
   bookingId        String?       @unique
   subscription     Subscription? @relation(fields: [subscriptionId], references: [id])
   subscriptionId   String?
-   invoice          Invoice?      @relation(fields: [invoiceId], references: [id])
+  invoice          Invoice?      @relation(fields: [invoiceId], references: [id])
   invoiceId        String?       @unique
   amount           Int
   status           PaymentStatus @default(PENDING)
@@ -267,34 +276,34 @@ model ErrorLog {
 }
 
 model SecurityLog {
-  id        String   @id @default(cuid())
-  eventType String
-  ipAddress String?
-  details   String?  @db.Text
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  eventType   String
+  ipAddress   String?
+  details     String?  @db.Text
+  createdAt   DateTime @default(now())
 }
 
 model AuditLog {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  action    String   // Contoh: "PRINTED_INVOICE"
-  details   Json?    // Untuk menyimpan detail seperti nomor invoice
+  action    String
+  details   Json?
   createdAt DateTime @default(now())
 
   @@index([userId])
 }
 
 model ApprovalRequest {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   requestedById String
-  requestedBy   User     @relation("RequestedBy", fields: [requestedById], references: [id])
+  requestedBy   User      @relation("RequestedBy", fields: [requestedById], references: [id])
   actionType    String
   payload       Json
-  status        String   @default("PENDING")
+  status        String    @default("PENDING")
   resolvedById  String?
-  resolvedBy    User?    @relation("ResolvedBy", fields: [resolvedById], references: [id])
-  createdAt     DateTime @default(now())
+  resolvedBy    User?     @relation("ResolvedBy", fields: [resolvedById], references: [id])
+  createdAt     DateTime  @default(now())
   resolvedAt    DateTime?
 
   @@index([requestedById])
@@ -315,15 +324,15 @@ enum WorkStatus {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  message   String
+  id         String   @id @default(cuid())
+  message    String
   readStatus Boolean  @default(false)
-  linkUrl   String?
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  bookingId String?
+  linkUrl    String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId  String?
 
   @@index([userId])
 }
