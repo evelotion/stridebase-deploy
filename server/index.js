@@ -1,5 +1,8 @@
 // File: server/index.js
+// VERSI LENGKAP DENGAN PERBAIKAN CORS FINAL
+
 console.log("SERVER CODE VERSION 2.0 - CORS FIX ATTEMPT");
+
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -16,7 +19,7 @@ import { body, validationResult } from "express-validator";
 import sharp from "sharp";
 import cors from "cors";
 import redisClient from "./redis-client.js";
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,7 +64,7 @@ prisma.$use(async (params, next) => {
 });
 
 const app = express();
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -71,12 +74,33 @@ cloudinary.config({
 const PORT = 5000;
 
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-     origin: ["http://localhost:5173", "https://stridebase-client-ctct.onrender.com"],
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"], // <-- TAMBAHKAN BARIS INI
+
+// =================== KODE BARU DIMULAI DI SINI ===================
+
+// 1. Definisikan asal (origin) yang diizinkan dan opsi CORS
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://stridebase-client-ctct.onrender.com",
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Izinkan request tanpa origin (seperti dari Postman atau aplikasi mobile)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg =
+        "The CORS policy for this site does not allow access from the specified Origin.";
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
   },
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+// 2. Gunakan corsOptions untuk Server Socket.IO
+const io = new Server(server, {
+  cors: corsOptions,
 });
 
 const createNotification = async (
@@ -110,15 +134,11 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://stridebase-client-ctct.onrender.com"],
-    allowedHeaders: ["Content-Type", "Authorization"], // <-- TAMBAHKAN BARIS INI
-  })
-);
+// 3. Gunakan corsOptions yang sama untuk Aplikasi Express
+app.use(cors(corsOptions));
 
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const themeConfigPath = path.join(__dirname, "config", "theme.json");
 
 app.get("/api/public/theme-config", (req, res) => {
@@ -179,8 +199,13 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-
+// 4. Modifikasi middleware authenticateToken
 const authenticateToken = async (req, res, next) => {
+  // KUNCI PERBAIKAN: Izinkan preflight request (OPTIONS) untuk lewat
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (token == null) return res.sendStatus(401);
@@ -200,6 +225,8 @@ const authenticateToken = async (req, res, next) => {
     }
   });
 };
+
+// =================== AKHIR DARI KODE BARU ===================
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -538,8 +565,7 @@ app.get("/api/user/redeemed-promos", authenticateToken, async (req, res) => {
         isRedeemed: true,
       },
       orderBy: {
-        // --- PERBAIKAN DI SINI ---
-        startDate: "desc", // Ganti 'createdAt' menjadi 'startDate'
+        startDate: "desc",
       },
     });
     res.json(promos);
@@ -661,15 +687,6 @@ app.post("/api/bookings", authenticateToken, async (req, res) => {
         })} - Pukul ${schedule.time}`
       : "Langsung diantar ke toko";
 
-    // await emailQueue.add("send-confirmation-email", {
-    //   to: newBooking.user.email,
-    //   subject: `Konfirmasi Booking Anda di ${newBooking.store.name}`,
-    //   body: `Hai ${newBooking.user.name}, booking Anda untuk layanan ${newBooking.serviceName} dengan jadwal ${fullScheduleString} telah kami terima.`,
-    // });
-    // console.log(
-    //   `Tugas email untuk booking #${newBooking.id} telah ditambahkan ke antrian.`
-    // );
-
     res.status(201).json(newBooking);
   } catch (error) {
     console.error("Gagal membuat booking:", error);
@@ -751,19 +768,7 @@ app.get("/api/reviews/store/:storeId", async (req, res) => {
 
 app.get("/api/stores", async (req, res) => {
   const { search, sortBy, lat, lng, minRating, services, openNow } = req.query;
-  const cacheKey = `stores:${JSON.stringify(req.query)}`;
-
   try {
-    // const cachedStores = await redisClient.get(cacheKey);
-    // if (cachedStores) {
-    //   console.log(`✅ Mengambil data toko dari cache: ${cacheKey}`);
-    //   return res.json(JSON.parse(cachedStores));
-    // }
-
-    // console.log(
-    //   `❌ Cache miss. Mengambil data toko dari database: ${cacheKey}`
-    // );
-
     const whereClause = {
       storeStatus: "active",
       name: { contains: search || "", mode: "insensitive" },
@@ -839,13 +844,11 @@ app.get("/api/stores", async (req, res) => {
       stores.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
 
-    // await redisClient.set(cacheKey, JSON.stringify(stores), "EX", 300);
-
-    res.json(stores || []); // Pastikan mengirim array kosong jika tidak ada
-    } catch (error) {
-        console.error("Gagal mengambil data toko:", error);
-        res.status(500).json([]); // Kirim array kosong jika error
-    }
+    res.json(stores || []);
+  } catch (error) {
+    console.error("Gagal mengambil data toko:", error);
+    res.status(500).json([]);
+  }
 });
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -932,12 +935,10 @@ app.get("/api/banners", async (req, res) => {
     const allBanners = await prisma.banner.findMany({
       where: { status: "active" },
     });
-    // JIKA TIDAK ADA BANNER, KIRIM ARRAY KOSONG
-    res.json(allBanners || []); 
+    res.json(allBanners || []);
   } catch (error) {
-    // JIKA ADA ERROR, KIRIM ARRAY KOSONG
     console.error("Gagal mengambil banner:", error);
-    res.status(500).json([]); 
+    res.status(500).json([]);
   }
 });
 
@@ -1320,24 +1321,24 @@ partnerRouter.post(
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
 
-     try {
-      // --- LOGIKA BARU DIMULAI DI SINI ---
+    try {
       const b64 = Buffer.from(req.file.buffer).toString("base64");
       let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
       const result = await cloudinary.uploader.upload(dataURI, {
-        folder: "stridebase_photos", // Folder baru untuk foto toko
-        public_id: `photo-${req.store.id}-${Date.now()}`
+        folder: "stridebase_photos",
+        public_id: `photo-${req.store.id}-${Date.now()}`,
       });
 
       res.status(200).json({
         message: "Foto berhasil diunggah.",
-        filePath: result.secure_url, // Mengirim kembali URL Cloudinary
+        filePath: result.secure_url,
       });
-      // --- LOGIKA BARU SELESAI ---
     } catch (error) {
       console.error("Gagal memproses gambar:", error);
-      res.status(500).json({ message: `Gagal memproses gambar: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Gagal memproses gambar: ${error.message}` });
     }
   }
 );
@@ -2300,8 +2301,6 @@ adminRouter.put("/stores/:id", async (req, res) => {
   const { id: storeId } = req.params;
   const requester = req.user;
 
-  // PERBAIKAN 1: Ambil setiap field yang relevan secara eksplisit dari req.body.
-  // Ini mencegah field yang tidak diinginkan (seperti 'owner' atau 'totalRevenue') masuk ke proses update.
   const {
     name,
     location,
@@ -2321,7 +2320,6 @@ adminRouter.put("/stores/:id", async (req, res) => {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    // Logika untuk approval request komisi (ini sudah benar dan tidak diubah)
     if (
       commissionRate !== undefined &&
       parseFloat(commissionRate) !== currentStore.commissionRate
@@ -2343,26 +2341,21 @@ adminRouter.put("/stores/:id", async (req, res) => {
       });
     }
 
-    // PERBAIKAN 2: Buat objek 'dataToUpdate' yang hanya berisi field yang valid di skema database.
     const dataToUpdate = {
       name,
       location,
-      ownerId, // Pastikan form di frontend mengirimkan 'ownerId'
+      ownerId,
       billingType,
       storeStatus,
       latitude: latitude ? parseFloat(latitude) : null,
       longitude: longitude ? parseFloat(longitude) : null,
-      // `commissionRate` sengaja tidak dimasukkan di sini karena punya alur approval sendiri.
     };
 
-
-    // PERBAIKAN 3: Gunakan objek 'dataToUpdate' yang sudah bersih untuk memperbarui database.
     const updatedStore = await prisma.store.update({
       where: { id: storeId },
       data: dataToUpdate,
     });
     res.json(updatedStore);
-    
   } catch (error) {
     console.error("Gagal memperbarui toko:", error);
     res.status(500).json({ message: "Gagal memperbarui toko." });
@@ -2781,7 +2774,7 @@ adminRouter.patch("/invoices/:id/overdue", async (req, res) => {
 
 adminRouter.get("/invoices/:id", async (req, res) => {
   const { id } = req.params;
-  const adminUserId = req.user.id; // Mendapatkan ID admin yang sedang login
+  const adminUserId = req.user.id;
 
   try {
     const invoice = await prisma.invoice.findUnique({
@@ -2802,7 +2795,6 @@ adminRouter.get("/invoices/:id", async (req, res) => {
       return res.status(404).json({ message: "Invoice tidak ditemukan." });
     }
 
-    // --- PENAMBAHAN LOGIKA PENCATATAN DI SINI ---
     await prisma.auditLog.create({
       data: {
         userId: adminUserId,
@@ -2814,7 +2806,6 @@ adminRouter.get("/invoices/:id", async (req, res) => {
         },
       },
     });
-    // --- AKHIR PENAMBAHAN ---
 
     res.json(invoice);
   } catch (error) {
@@ -2832,22 +2823,23 @@ app.post(
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
     try {
-      // Logika yang sama seperti upload-asset
       const b64 = Buffer.from(req.file.buffer).toString("base64");
       let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
       const result = await cloudinary.uploader.upload(dataURI, {
-        folder: "stridebase_reviews", // Folder terpisah untuk ulasan
-        public_id: `review-${req.user.id}-${Date.now()}`
+        folder: "stridebase_reviews",
+        public_id: `review-${req.user.id}-${Date.now()}`,
       });
 
       res.status(200).json({
         message: "Gambar berhasil diunggah dan dioptimalkan.",
-        imageUrl: result.secure_url, // <-- PENTING: Gunakan secure_url
+        imageUrl: result.secure_url,
       });
     } catch (error) {
       console.error("Gagal memproses gambar:", error);
-      res.status(500).json({ message: `Gagal memproses gambar: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Gagal memproses gambar: ${error.message}` });
     }
   }
 );
@@ -2905,24 +2897,23 @@ superUserRouter.post(
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
     try {
-      // Mengubah buffer menjadi data URI yang bisa di-stream
       const b64 = Buffer.from(req.file.buffer).toString("base64");
       let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
-      // Mengunggah ke Cloudinary
       const result = await cloudinary.uploader.upload(dataURI, {
-        folder: "stridebase_assets", // Membuat folder di Cloudinary
-        public_id: `${req.file.fieldname}-${Date.now()}` // Nama file unik
+        folder: "stridebase_assets",
+        public_id: `${req.file.fieldname}-${Date.now()}`,
       });
 
-      // Mengirim kembali URL aman dari Cloudinary
       res.status(200).json({
         message: "File berhasil diunggah ke Cloudinary.",
-        filePath: result.secure_url, // <-- PENTING: Gunakan secure_url
+        filePath: result.secure_url,
       });
     } catch (error) {
       console.error("Gagal memproses aset:", error);
-      res.status(500).json({ message: `Gagal memproses aset: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Gagal memproses aset: ${error.message}` });
     }
   }
 );
@@ -2931,7 +2922,6 @@ superUserRouter.get("/maintenance/health-check", async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     const dbStatus = "Operasional";
-    // await redisClient.ping();
     const redisStatus = "Tidak Digunakan";
     res.status(200).json({
       database: dbStatus,
