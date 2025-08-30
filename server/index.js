@@ -1,4 +1,7 @@
-// File: server/index.js (Versi Final Lengkap - Tanpa Ringkasan)
+// File: server/index.js
+// VERSI LENGKAP DENGAN PERBAIKAN CORS FINAL DAN ENDPOINT SUPERUSER UPLOAD
+
+console.log("SERVER CODE VERSION 2.1 - SUPERUSER UPLOAD FIXED");
 
 import express from "express";
 import http from "http";
@@ -16,7 +19,7 @@ import { body, validationResult } from "express-validator";
 import sharp from "sharp";
 import cors from "cors";
 import redisClient from "./redis-client.js";
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,7 +64,7 @@ prisma.$use(async (params, next) => {
 });
 
 const app = express();
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -69,8 +72,12 @@ cloudinary.config({
 });
 
 const PORT = 5000;
+
 const server = http.createServer(app);
 
+// =================== KODE BARU DIMULAI DI SINI ===================
+
+// 1. Definisikan asal (origin) yang diizinkan dan opsi CORS
 const allowedOrigins = [
   "http://localhost:5173",
   "https://stridebase-client-ctct.onrender.com",
@@ -78,17 +85,23 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
+    // Izinkan request tanpa origin (seperti dari Postman atau aplikasi mobile)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg =
+        "The CORS policy for this site does not allow access from the specified Origin.";
+      return callback(new Error(msg), false);
     }
+    return callback(null, true);
   },
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-const io = new Server(server, { cors: corsOptions });
+// 2. Gunakan corsOptions untuk Server Socket.IO
+const io = new Server(server, {
+  cors: corsOptions,
+});
 
 const createNotification = async (
   userId,
@@ -121,75 +134,78 @@ io.on("connection", (socket) => {
   });
 });
 
+// 3. Gunakan corsOptions yang sama untuk Aplikasi Express
 app.use(cors(corsOptions));
+
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const themeConfigPath = path.join(__dirname, "config", "theme.json");
 
-const getThemeConfigFromDb = async () => {
-  try {
-    const setting = await prisma.globalSetting.findUnique({
-      where: { key: "themeConfig" },
-    });
-    if (setting) {
-      return setting.value;
-    } else {
-      console.warn("Konfigurasi tema tidak ditemukan di DB, membaca dari file 'theme.json' sebagai fallback.");
-      const themeConfigPath = path.join(__dirname, "config", "theme.json");
-      const themeConfig = JSON.parse(fs.readFileSync(themeConfigPath, 'utf8'));
-      return themeConfig;
+app.get("/api/public/theme-config", (req, res) => {
+  fs.readFile(themeConfigPath, "utf8", (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal membaca file konfigurasi." });
     }
-  } catch (error) {
-    console.error("Gagal mengambil tema dari DB, fallback ke file. Error:", error);
-    const themeConfigPath = path.join(__dirname, "config", "theme.json");
-    return JSON.parse(fs.readFileSync(themeConfigPath, 'utf8'));
-  }
-};
-
-app.get("/api/public/theme-config", async (req, res) => {
-  try {
-    const config = await getThemeConfigFromDb();
-    res.json(config);
-  } catch (err) {
-    res.status(500).json({ message: "Gagal memuat konfigurasi tema." });
-  }
+    res.json(JSON.parse(data));
+  });
 });
 
-const checkMaintenanceMode = async (req, res, next) => {
-    try {
-        const config = await getThemeConfigFromDb();
-        if (config.featureFlags?.maintenanceMode) {
-            if (req.path.startsWith("/api/auth/login") || req.path.startsWith("/api/admin") || req.path.startsWith("/api/superuser") || req.path.startsWith("/api/public/theme-config")) {
-                return next();
-            }
-            if (req.path.startsWith("/uploads") || req.path.includes(".")) {
-                return next();
-            }
-            const authHeader = req.headers["authorization"];
-            const token = authHeader && authHeader.split(" ")[1];
-            if (token) {
-                jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-                    if (!err && (decoded.role === "admin" || decoded.role === "developer")) {
-                        return next();
-                    }
-                });
-            }
-            return res.status(503).json({ message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti." });
-        }
-    } catch (error) {
-        console.error("Gagal membaca konfigurasi untuk maintenance check:", error);
+const checkMaintenanceMode = (req, res, next) => {
+  try {
+    const configData = fs.readFileSync(themeConfigPath, "utf8");
+    const config = JSON.parse(configData);
+    if (config.featureFlags?.maintenanceMode) {
+      if (
+        req.path.startsWith("/api/auth/login") ||
+        req.path.startsWith("/api/admin") ||
+        req.path.startsWith("/api/superuser") ||
+        req.path.startsWith("/api/public/theme-config")
+      ) {
+        return next();
+      }
+      if (req.path.startsWith("/uploads") || req.path.includes(".")) {
+        return next();
+      }
+      const authHeader = req.headers["authorization"];
+      const token = authHeader && authHeader.split(" ")[1];
+      if (token) {
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+          if (
+            !err &&
+            (decoded.role === "admin" || decoded.role === "developer")
+          ) {
+            return next();
+          }
+        });
+      }
+      return res.status(503).json({
+        message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
+      });
     }
-    next();
+  } catch (error) {
+    console.error(
+      "Gagal membaca file konfigurasi untuk maintenance check:",
+      error
+    );
+  }
+  next();
 };
 
 app.use(checkMaintenanceMode);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+// 4. Modifikasi middleware authenticateToken
 const authenticateToken = async (req, res, next) => {
-  if (req.method === 'OPTIONS') {
+  // KUNCI PERBAIKAN: Izinkan preflight request (OPTIONS) untuk lewat
+  if (req.method === "OPTIONS") {
     return next();
   }
+
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (token == null) return res.sendStatus(401);
@@ -210,18 +226,26 @@ const authenticateToken = async (req, res, next) => {
   });
 };
 
+// =================== AKHIR DARI KODE BARU ===================
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   handler: (req, res) => {
-    prisma.securityLog.create({
+    prisma.securityLog
+      .create({
         data: {
           eventType: "IP_BLOCKED",
           ipAddress: req.ip,
           details: `IP diblokir setelah melebihi batas percobaan login.`,
         },
-      }).catch(console.error);
-    return res.status(429).json({ message: "Terlalu banyak percobaan login dari IP ini, silakan coba lagi setelah 15 menit." });
+      })
+      .catch(console.error);
+
+    return res.status(429).json({
+      message:
+        "Terlalu banyak percobaan login dari IP ini, silakan coba lagi setelah 15 menit.",
+    });
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -230,7 +254,9 @@ const loginLimiter = rateLimit({
 const registerValidation = [
   body("email").isEmail().withMessage("Format email tidak valid."),
   body("name").notEmpty().withMessage("Nama tidak boleh kosong."),
-  body("password").isLength({ min: 8 }).withMessage("Password minimal harus 8 karakter."),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage("Password minimal harus 8 karakter."),
 ];
 
 app.post("/api/auth/register", registerValidation, async (req, res) => {
@@ -431,7 +457,6 @@ app.post(
     }
   }
 );
-
 app.get("/api/user/loyalty", authenticateToken, async (req, res) => {
   try {
     const loyaltyData = await prisma.loyaltyPoint.findUnique({
@@ -653,6 +678,15 @@ app.post("/api/bookings", authenticateToken, async (req, res) => {
       include: { store: true, user: true },
     });
 
+    const fullScheduleString = schedule
+      ? `${scheduleDate.toLocaleDateString("id-ID", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })} - Pukul ${schedule.time}`
+      : "Langsung diantar ke toko";
+
     res.status(201).json(newBooking);
   } catch (error) {
     console.error("Gagal membuat booking:", error);
@@ -811,10 +845,10 @@ app.get("/api/stores", async (req, res) => {
     }
 
     res.json(stores || []);
-    } catch (error) {
-        console.error("Gagal mengambil data toko:", error);
-        res.status(500).json([]);
-    }
+  } catch (error) {
+    console.error("Gagal mengambil data toko:", error);
+    res.status(500).json([]);
+  }
 });
 
 function getDistance(lat1, lon1, lat2, lon2) {
@@ -908,6 +942,10 @@ app.get("/api/banners", async (req, res) => {
   }
 });
 
+app.get("/api/services", (req, res) => {
+  res.json(servicesData);
+});
+
 app.get("/api/user/recommendations", authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
@@ -966,7 +1004,26 @@ app.get("/api/user/recommendations", authenticateToken, async (req, res) => {
 
 const partnerRouter = express.Router();
 partnerRouter.use(authenticateToken);
-// Rute Partner
+
+const findMyStore = async (req, res, next) => {
+  try {
+    const store = await prisma.store.findFirst({
+      where: { ownerId: req.user.id },
+    });
+    if (!store) {
+      return res
+        .status(404)
+        .json({ message: "Anda tidak memiliki toko terdaftar." });
+    }
+    req.store = store;
+    next();
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan pada server saat mencari data toko.",
+    });
+  }
+};
+
 partnerRouter.get("/dashboard", findMyStore, async (req, res) => {
   try {
     const { id: storeId, name: storeName } = req.store;
@@ -1035,6 +1092,7 @@ partnerRouter.get("/dashboard", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data dashboard." });
   }
 });
+
 partnerRouter.get("/orders", findMyStore, async (req, res) => {
   const storeId = req.store.id;
   try {
@@ -1051,6 +1109,7 @@ partnerRouter.get("/orders", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data pesanan." });
   }
 });
+
 partnerRouter.patch(
   "/orders/:bookingId/work-status",
   findMyStore,
@@ -1119,9 +1178,11 @@ partnerRouter.patch(
     }
   }
 );
+
 partnerRouter.get("/settings", findMyStore, async (req, res) => {
   res.json(req.store);
 });
+
 partnerRouter.put("/settings", findMyStore, async (req, res) => {
   const { name, description, schedule, images, headerImage } = req.body;
 
@@ -1153,6 +1214,7 @@ partnerRouter.put("/settings", findMyStore, async (req, res) => {
     });
   }
 });
+
 partnerRouter.get("/services", findMyStore, async (req, res) => {
   try {
     const services = await prisma.service.findMany({
@@ -1164,6 +1226,7 @@ partnerRouter.get("/services", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data layanan." });
   }
 });
+
 partnerRouter.post("/services", findMyStore, async (req, res) => {
   const { name, description, price, shoeType } = req.body;
 
@@ -1197,6 +1260,7 @@ partnerRouter.post("/services", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal membuat layanan baru." });
   }
 });
+
 partnerRouter.put("/services/:serviceId", findMyStore, async (req, res) => {
   const { serviceId } = req.params;
   const { name, description, price, shoeType } = req.body;
@@ -1218,6 +1282,7 @@ partnerRouter.put("/services/:serviceId", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengupdate layanan." });
   }
 });
+
 partnerRouter.delete("/services/:serviceId", findMyStore, async (req, res) => {
   const { serviceId } = req.params;
   try {
@@ -1235,6 +1300,7 @@ partnerRouter.delete("/services/:serviceId", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal menghapus layanan." });
   }
 });
+
 partnerRouter.post(
   "/upload-photo",
   findMyStore,
@@ -1255,13 +1321,13 @@ partnerRouter.post(
       return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
 
-     try {
+    try {
       const b64 = Buffer.from(req.file.buffer).toString("base64");
       let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
       const result = await cloudinary.uploader.upload(dataURI, {
         folder: "stridebase_photos",
-        public_id: `photo-${req.store.id}-${Date.now()}`
+        public_id: `photo-${req.store.id}-${Date.now()}`,
       });
 
       res.status(200).json({
@@ -1270,10 +1336,13 @@ partnerRouter.post(
       });
     } catch (error) {
       console.error("Gagal memproses gambar:", error);
-      res.status(500).json({ message: `Gagal memproses gambar: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Gagal memproses gambar: ${error.message}` });
     }
   }
 );
+
 partnerRouter.get("/promos", findMyStore, async (req, res) => {
   try {
     const promos = await prisma.promo.findMany({
@@ -1285,6 +1354,7 @@ partnerRouter.get("/promos", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data promo toko." });
   }
 });
+
 partnerRouter.post("/promos", findMyStore, async (req, res) => {
   const { code, description, discountType, value } = req.body;
   if (!code || !description || !discountType || !value) {
@@ -1318,6 +1388,7 @@ partnerRouter.post("/promos", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal membuat promo baru." });
   }
 });
+
 partnerRouter.put("/promos/:promoId", findMyStore, async (req, res) => {
   const { promoId } = req.params;
   try {
@@ -1343,6 +1414,7 @@ partnerRouter.put("/promos/:promoId", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal memperbarui promo." });
   }
 });
+
 partnerRouter.patch(
   "/promos/:promoId/status",
   findMyStore,
@@ -1368,6 +1440,7 @@ partnerRouter.patch(
     }
   }
 );
+
 partnerRouter.delete("/promos/:promoId", findMyStore, async (req, res) => {
   const { promoId } = req.params;
   try {
@@ -1385,6 +1458,7 @@ partnerRouter.delete("/promos/:promoId", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal menghapus promo." });
   }
 });
+
 partnerRouter.get("/reviews", findMyStore, async (req, res) => {
   const storeId = req.store.id;
 
@@ -1399,6 +1473,7 @@ partnerRouter.get("/reviews", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data ulasan." });
   }
 });
+
 partnerRouter.post(
   "/reviews/:reviewId/reply",
   findMyStore,
@@ -1443,6 +1518,7 @@ partnerRouter.post(
     }
   }
 );
+
 partnerRouter.get("/invoices/outstanding", findMyStore, async (req, res) => {
   try {
     const outstandingInvoices = await prisma.invoice.findMany({
@@ -1457,6 +1533,7 @@ partnerRouter.get("/invoices/outstanding", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data tagihan." });
   }
 });
+
 partnerRouter.get("/invoices/:id", findMyStore, async (req, res) => {
   const { id } = req.params;
   try {
@@ -1471,6 +1548,7 @@ partnerRouter.get("/invoices/:id", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil detail invoice." });
   }
 });
+
 partnerRouter.post("/invoices/:id/pay", findMyStore, async (req, res) => {
   const { id: invoiceId } = req.params;
   try {
@@ -1505,6 +1583,7 @@ partnerRouter.post("/invoices/:id/pay", findMyStore, async (req, res) => {
     res.status(500).json({ message: "Gagal memulai proses pembayaran." });
   }
 });
+
 partnerRouter.post(
   "/upgrade/create-transaction",
   findMyStore,
@@ -1513,7 +1592,8 @@ partnerRouter.post(
     const PRO_PRICE = 99000;
 
     try {
-      const config = await getThemeConfigFromDb();
+      const configData = fs.readFileSync(themeConfigPath, "utf8");
+      const config = JSON.parse(configData);
       if (!config.featureFlags?.enableProTierUpgrade) {
         return res.status(403).json({
           message: "Fitur upgrade keanggotaan saat ini sedang dinonaktifkan.",
@@ -1559,6 +1639,7 @@ partnerRouter.post(
     }
   }
 );
+
 app.use("/api/partner", partnerRouter);
 
 const paymentRouter = express.Router();
@@ -1602,10 +1683,114 @@ paymentRouter.post("/create-transaction", async (req, res) => {
     res.status(500).json({ message: "Gagal memproses pembayaran." });
   }
 });
+
 app.use("/api/payments", paymentRouter);
+
+app.post("/api/webhooks/payment-notification", async (req, res) => {
+  const { order_id, transaction_status } = req.body;
+  console.log(
+    `Webhook diterima untuk ID ${order_id} dengan status ${transaction_status}`
+  );
+
+  try {
+    let paymentStatus;
+    if (
+      transaction_status === "settlement" ||
+      transaction_status === "capture"
+    ) {
+      paymentStatus = "SUCCESS";
+    } else if (transaction_status === "pending") {
+      paymentStatus = "PENDING";
+    } else {
+      paymentStatus = "CANCELLED";
+    }
+
+    if (order_id.startsWith("SUB-")) {
+      const subscriptionId = order_id.split("-")[1];
+
+      if (paymentStatus === "SUCCESS") {
+        await prisma.$transaction(async (tx) => {
+          const subscription = await tx.subscription.update({
+            where: { id: subscriptionId },
+            data: {
+              status: "ACTIVE",
+              currentPeriodEnd: new Date(
+                new Date().setDate(new Date().getDate() + 30)
+              ),
+            },
+            include: { store: true },
+          });
+
+          await tx.store.update({
+            where: { id: subscription.storeId },
+            data: { tier: "PRO" },
+          });
+
+          await tx.payment.updateMany({
+            where: { subscriptionId: subscriptionId },
+            data: { status: "SUCCESS" },
+          });
+
+          await createNotification(
+            subscription.store.ownerId,
+            `Selamat! Toko Anda "${subscription.store.name}" kini berstatus PRO.`,
+            "/partner/dashboard"
+          );
+        });
+      }
+    } else {
+      let bookingStatus;
+      if (paymentStatus === "SUCCESS") bookingStatus = "Processing";
+      else if (paymentStatus === "PENDING") bookingStatus = "Pending Payment";
+      else bookingStatus = "Cancelled";
+
+      await prisma.$transaction(async (tx) => {
+        await tx.payment.updateMany({
+          where: { bookingId: order_id },
+          data: { status: paymentStatus },
+        });
+
+        const booking = await tx.booking.update({
+          where: { id: order_id },
+          data: { status: bookingStatus },
+          include: { store: true },
+        });
+
+        if (paymentStatus === "SUCCESS" && booking && booking.store) {
+          const commissionRate = booking.store.commissionRate;
+          const grossAmount = booking.totalPrice;
+          const earnedAmount = (grossAmount * commissionRate) / 100;
+
+          await tx.platformEarning.create({
+            data: {
+              bookingId: booking.id,
+              storeId: booking.storeId,
+              grossAmount: grossAmount,
+              commissionRate: commissionRate,
+              earnedAmount: earnedAmount,
+            },
+          });
+
+          await createNotification(
+            booking.userId,
+            `Pembayaran untuk pesanan #${booking.id.substring(0, 8)} berhasil!`,
+            `/track/${booking.id}`,
+            booking.id
+          );
+        }
+      });
+    }
+
+    res.status(200).send("OK");
+  } catch (error) {
+    console.error("Webhook error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 const adminRouter = express.Router();
 adminRouter.use(authenticateToken);
+
 const isAdmin = (req, res, next) => {
   if (req.user.role !== "admin") {
     return res
@@ -1614,6 +1799,7 @@ const isAdmin = (req, res, next) => {
   }
   next();
 };
+
 adminRouter.use(isAdmin);
 
 adminRouter.get("/export/transactions", async (req, res) => {
@@ -1674,14 +1860,18 @@ adminRouter.get("/export/transactions", async (req, res) => {
     res.status(500).json({ message: "Gagal mengekspor data." });
   }
 });
-adminRouter.get("/config", async (req, res) => {
-    try {
-        const config = await getThemeConfigFromDb();
-        res.json(config);
-    } catch (err) {
-        res.status(500).json({ message: "Gagal memuat konfigurasi." });
+
+adminRouter.get("/config", (req, res) => {
+  fs.readFile(themeConfigPath, "utf8", (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal membaca file konfigurasi." });
     }
+    res.json(JSON.parse(data));
+  });
 });
+
 adminRouter.post("/config", async (req, res) => {
   const newConfigData = req.body;
   const requester = req.user;
@@ -1707,6 +1897,7 @@ adminRouter.post("/config", async (req, res) => {
       .json({ message: "Gagal membuat permintaan perubahan konfigurasi." });
   }
 });
+
 adminRouter.get("/stats", async (req, res) => {
   try {
     const totalBookings = await prisma.booking.count();
@@ -1731,6 +1922,7 @@ adminRouter.get("/stats", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data statistik." });
   }
 });
+
 adminRouter.get("/transactions", async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
@@ -1761,6 +1953,7 @@ adminRouter.get("/transactions", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data transaksi." });
   }
 });
+
 adminRouter.get("/bookings", async (req, res) => {
   try {
     const bookings = await prisma.booking.findMany({
@@ -1778,6 +1971,7 @@ adminRouter.get("/bookings", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data booking." });
   }
 });
+
 adminRouter.patch("/bookings/:id/status", async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
@@ -1815,6 +2009,7 @@ adminRouter.patch("/bookings/:id/status", async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan pada server." });
   }
 });
+
 adminRouter.get("/reviews", async (req, res) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -1831,6 +2026,7 @@ adminRouter.get("/reviews", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data ulasan." });
   }
 });
+
 adminRouter.delete("/reviews/:id", async (req, res) => {
   const { id: reviewId } = req.params;
   const requester = req.user;
@@ -1870,6 +2066,7 @@ adminRouter.delete("/reviews/:id", async (req, res) => {
       .json({ message: "Gagal membuat permintaan penghapusan ulasan." });
   }
 });
+
 adminRouter.get("/users", async (req, res) => {
   try {
     const users = await prisma.user.findMany({
@@ -1906,6 +2103,7 @@ adminRouter.get("/users", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data pengguna." });
   }
 });
+
 adminRouter.patch("/users/:id/role", async (req, res) => {
   const { id: targetUserId } = req.params;
   const { newRole } = req.body;
@@ -1944,6 +2142,7 @@ adminRouter.patch("/users/:id/role", async (req, res) => {
     res.status(404).json({ message: "Pengguna tidak ditemukan." });
   }
 });
+
 adminRouter.patch("/users/:id/status", async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
@@ -1959,6 +2158,7 @@ adminRouter.patch("/users/:id/status", async (req, res) => {
     res.status(404).json({ message: "Pengguna tidak ditemukan." });
   }
 });
+
 adminRouter.delete("/users/:id", async (req, res) => {
   const { id: userIdToDelete } = req.params;
   const requester = req.user;
@@ -2008,6 +2208,7 @@ adminRouter.delete("/users/:id", async (req, res) => {
       .json({ message: "Gagal membuat permintaan penghapusan pengguna." });
   }
 });
+
 adminRouter.get("/stores", async (req, res) => {
   try {
     const stores = await prisma.store.findMany({
@@ -2054,6 +2255,7 @@ adminRouter.get("/stores", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data toko." });
   }
 });
+
 adminRouter.post("/stores", async (req, res) => {
   const {
     name,
@@ -2094,6 +2296,7 @@ adminRouter.post("/stores", async (req, res) => {
     res.status(500).json({ message: "Gagal membuat toko baru." });
   }
 });
+
 adminRouter.put("/stores/:id", async (req, res) => {
   const { id: storeId } = req.params;
   const requester = req.user;
@@ -2153,12 +2356,12 @@ adminRouter.put("/stores/:id", async (req, res) => {
       data: dataToUpdate,
     });
     res.json(updatedStore);
-    
   } catch (error) {
     console.error("Gagal memperbarui toko:", error);
     res.status(500).json({ message: "Gagal memperbarui toko." });
   }
 });
+
 adminRouter.delete("/stores/:id", async (req, res) => {
   const { id: storeId } = req.params;
   const requester = req.user;
@@ -2188,6 +2391,7 @@ adminRouter.delete("/stores/:id", async (req, res) => {
       .json({ message: "Gagal membuat permintaan penghapusan toko." });
   }
 });
+
 adminRouter.patch("/stores/:id/status", async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
@@ -2203,6 +2407,7 @@ adminRouter.patch("/stores/:id/status", async (req, res) => {
     res.status(404).json({ message: "Toko tidak ditemukan." });
   }
 });
+
 adminRouter.patch("/stores/:id/tier", async (req, res) => {
   const { id } = req.params;
   const { newTier } = req.body;
@@ -2251,6 +2456,7 @@ adminRouter.patch("/stores/:id/tier", async (req, res) => {
       .json({ message: "Toko tidak ditemukan atau terjadi kesalahan." });
   }
 });
+
 adminRouter.get("/promos", async (req, res) => {
   try {
     const allPromos = await prisma.promo.findMany();
@@ -2259,6 +2465,7 @@ adminRouter.get("/promos", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data promo." });
   }
 });
+
 adminRouter.post("/promos/validate", async (req, res) => {
   const { code, storeId } = req.body;
   if (!code) {
@@ -2290,6 +2497,7 @@ adminRouter.post("/promos/validate", async (req, res) => {
     res.status(500).json({ message: "Gagal memvalidasi promo." });
   }
 });
+
 adminRouter.post("/promos", async (req, res) => {
   const { code, description, discountType, value } = req.body;
   if (!code || !description || !discountType || !value)
@@ -2310,6 +2518,7 @@ adminRouter.post("/promos", async (req, res) => {
     res.status(500).json({ message: "Gagal membuat promo baru." });
   }
 });
+
 adminRouter.put("/promos/:id", async (req, res) => {
   const { id } = req.params;
   const { code, description, discountType, value } = req.body;
@@ -2332,6 +2541,7 @@ adminRouter.put("/promos/:id", async (req, res) => {
     res.status(404).json({ message: "Promo tidak ditemukan." });
   }
 });
+
 adminRouter.patch("/promos/:id/status", async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
@@ -2347,6 +2557,7 @@ adminRouter.patch("/promos/:id/status", async (req, res) => {
     res.status(404).json({ message: "Promo tidak ditemukan." });
   }
 });
+
 adminRouter.delete("/promos/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -2356,6 +2567,7 @@ adminRouter.delete("/promos/:id", async (req, res) => {
     res.status(404).json({ message: "Promo tidak ditemukan." });
   }
 });
+
 adminRouter.get("/banners", async (req, res) => {
   try {
     const allBanners = await prisma.banner.findMany();
@@ -2364,6 +2576,7 @@ adminRouter.get("/banners", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data banner." });
   }
 });
+
 adminRouter.delete("/banners/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -2373,6 +2586,7 @@ adminRouter.delete("/banners/:id", async (req, res) => {
     res.status(404).json({ message: "Banner tidak ditemukan." });
   }
 });
+
 adminRouter.post("/banners", async (req, res) => {
   const { imageUrl, linkUrl } = req.body;
   if (!imageUrl || !linkUrl)
@@ -2388,6 +2602,7 @@ adminRouter.post("/banners", async (req, res) => {
     res.status(500).json({ message: "Gagal menambah banner." });
   }
 });
+
 adminRouter.get("/stores/:storeId/invoices", async (req, res) => {
   const { storeId } = req.params;
   try {
@@ -2401,6 +2616,7 @@ adminRouter.get("/stores/:storeId/invoices", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil data invoice." });
   }
 });
+
 adminRouter.post("/stores/:storeId/invoices", async (req, res) => {
   const { storeId } = req.params;
   const { issueDate, dueDate, items, notes } = req.body;
@@ -2444,6 +2660,7 @@ adminRouter.post("/stores/:storeId/invoices", async (req, res) => {
     res.status(500).json({ message: "Gagal membuat invoice baru." });
   }
 });
+
 adminRouter.patch("/invoices/:id/status", async (req, res) => {
   const { id } = req.params;
   const { newStatus } = req.body;
@@ -2475,6 +2692,7 @@ adminRouter.patch("/invoices/:id/status", async (req, res) => {
     res.status(500).json({ message: "Gagal mengubah status invoice." });
   }
 });
+
 adminRouter.patch("/invoices/:id/send", async (req, res) => {
   const { id } = req.params;
   try {
@@ -2506,6 +2724,7 @@ adminRouter.patch("/invoices/:id/send", async (req, res) => {
     res.status(500).json({ message: "Gagal mengirim invoice." });
   }
 });
+
 adminRouter.patch("/invoices/:id/overdue", async (req, res) => {
   const { id } = req.params;
   const PENALTY_AMOUNT = 50000;
@@ -2552,6 +2771,7 @@ adminRouter.patch("/invoices/:id/overdue", async (req, res) => {
     res.status(500).json({ message: "Gagal memproses denda keterlambatan." });
   }
 });
+
 adminRouter.get("/invoices/:id", async (req, res) => {
   const { id } = req.params;
   const adminUserId = req.user.id;
@@ -2593,10 +2813,39 @@ adminRouter.get("/invoices/:id", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil detail invoice." });
   }
 });
+
+app.post(
+  "/api/upload",
+  authenticateToken,
+  upload.single("image"),
+  async (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "Tidak ada file yang diunggah." });
+    }
+    try {
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: "stridebase_reviews",
+        public_id: `review-${req.user.id}-${Date.now()}`,
+      });
+
+      res.status(200).json({
+        message: "Gambar berhasil diunggah dan dioptimalkan.",
+        imageUrl: result.secure_url,
+      });
+    } catch (error) {
+      console.error("Gagal memproses gambar:", error);
+      res
+        .status(500)
+        .json({ message: `Gagal memproses gambar: ${error.message}` });
+    }
+  }
+);
+
 app.use("/api/admin", adminRouter);
 
-const superUserRouter = express.Router();
-superUserRouter.use(authenticateToken);
 const isDeveloper = (req, res, next) => {
   if (req.user.role !== "developer") {
     return res
@@ -2605,33 +2854,41 @@ const isDeveloper = (req, res, next) => {
   }
   next();
 };
+
+const superUserRouter = express.Router();
+superUserRouter.use(authenticateToken);
 superUserRouter.use(isDeveloper);
 
-superUserRouter.get("/config", async (req, res) => {
-  try {
-    const config = await getThemeConfigFromDb();
-    res.json(config);
-  } catch(err) {
-    res.status(500).json({ message: "Gagal memuat konfigurasi." });
-  }
+superUserRouter.get("/config", (req, res) => {
+  fs.readFile(themeConfigPath, "utf8", (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Gagal membaca file konfigurasi." });
+    }
+    res.json(JSON.parse(data));
+  });
 });
-superUserRouter.post("/config", async (req, res) => {
+
+superUserRouter.post("/config", (req, res) => {
   const newConfig = req.body;
-  try {
-    const updatedSetting = await prisma.globalSetting.update({
-      where: { key: "themeConfig" },
-      data: { value: newConfig },
-    });
-    
-    io.emit("themeUpdated", updatedSetting.value);
-    console.log("Event themeUpdated telah dikirim ke semua client.");
-    
-    res.status(200).json({ message: "Konfigurasi berhasil diperbarui secara permanen." });
-  } catch (error) {
-    console.error("Gagal menyimpan konfigurasi ke DB:", error);
-    res.status(500).json({ message: "Gagal menyimpan konfigurasi ke database." });
-  }
+  fs.writeFile(
+    themeConfigPath,
+    JSON.stringify(newConfig, null, 2),
+    "utf8",
+    (err) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Gagal menyimpan file konfigurasi." });
+      }
+      io.emit("themeUpdated", newConfig);
+      console.log("Event themeUpdated telah dikirim ke semua client.");
+      res.status(200).json({ message: "Konfigurasi berhasil diperbarui." });
+    }
+  );
 });
+
 superUserRouter.post(
   "/upload-asset",
   upload.single("asset"),
@@ -2645,7 +2902,7 @@ superUserRouter.post(
 
       const result = await cloudinary.uploader.upload(dataURI, {
         folder: "stridebase_assets",
-        public_id: `${req.file.fieldname}-${Date.now()}`
+        public_id: `${req.file.fieldname}-${Date.now()}`,
       });
 
       res.status(200).json({
@@ -2654,10 +2911,13 @@ superUserRouter.post(
       });
     } catch (error) {
       console.error("Gagal memproses aset:", error);
-      res.status(500).json({ message: `Gagal memproses aset: ${error.message}` });
+      res
+        .status(500)
+        .json({ message: `Gagal memproses aset: ${error.message}` });
     }
   }
 );
+
 superUserRouter.get("/maintenance/health-check", async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
@@ -2679,6 +2939,7 @@ superUserRouter.get("/maintenance/health-check", async (req, res) => {
     });
   }
 });
+
 superUserRouter.post("/maintenance/clear-cache", (req, res) => {
   redisClient
     .flushDb()
@@ -2693,6 +2954,7 @@ superUserRouter.post("/maintenance/clear-cache", (req, res) => {
       res.status(500).json({ message: "Gagal membersihkan cache." });
     });
 });
+
 superUserRouter.post("/maintenance/reseed-database", (req, res) => {
   console.log("Menerima permintaan untuk reset & seed database...");
   exec(
@@ -2714,6 +2976,7 @@ superUserRouter.post("/maintenance/reseed-database", (req, res) => {
     }
   );
 });
+
 superUserRouter.get("/maintenance/security-logs", async (req, res) => {
   try {
     const logs = await prisma.securityLog.findMany({
@@ -2728,6 +2991,7 @@ superUserRouter.get("/maintenance/security-logs", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil log keamanan." });
   }
 });
+
 superUserRouter.get("/approval-requests", async (req, res) => {
   try {
     const requests = await prisma.approvalRequest.findMany({
@@ -2742,6 +3006,7 @@ superUserRouter.get("/approval-requests", async (req, res) => {
     res.status(500).json({ message: "Gagal mengambil daftar permintaan." });
   }
 });
+
 superUserRouter.post("/approval-requests/:id/resolve", async (req, res) => {
   const { id } = req.params;
   const { resolution } = req.body;
@@ -2803,10 +3068,11 @@ superUserRouter.post("/approval-requests/:id/resolve", async (req, res) => {
             await tx.review.delete({ where: { id: reviewIdToDelete } });
             break;
           case "UPDATE_GLOBAL_SETTINGS":
-             await tx.globalSetting.update({
-                where: { key: "themeConfig" },
-                data: { value: request.payload },
-            });
+            fs.writeFileSync(
+              themeConfigPath,
+              JSON.stringify(request.payload, null, 2),
+              "utf8"
+            );
             io.emit("themeUpdated", request.payload);
             break;
           default:
@@ -2833,6 +3099,7 @@ superUserRouter.post("/approval-requests/:id/resolve", async (req, res) => {
       .json({ message: `Gagal memproses permintaan: ${error.message}` });
   }
 });
+
 superUserRouter.get("/config/payment", (req, res) => {
   try {
     const currentMode = process.env.PAYMENT_GATEWAY_MODE || "sandbox";
@@ -2844,6 +3111,7 @@ superUserRouter.get("/config/payment", (req, res) => {
     res.status(500).json({ message: "Gagal membaca konfigurasi." });
   }
 });
+
 superUserRouter.post("/config/payment", async (req, res) => {
   const { mode } = req.body;
   const requester = req.user;
@@ -2884,7 +3152,6 @@ superUserRouter.post("/config/payment", async (req, res) => {
 });
 
 app.use("/api/superuser", superUserRouter);
-app.use("/api/admin", adminRouter);
 
 const errorLogger = async (err, req, res, next) => {
   if (err.status === 500 || !err.status) {
