@@ -26,6 +26,51 @@ const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
 
+let currentThemeConfig = {}; // Variabel global untuk menyimpan tema
+const themeConfigPath = path.join(__dirname, "config", "theme.json");
+
+/**
+ * Memuat konfigurasi tema.
+ * Prioritas: Database -> File theme.json -> Objek default.
+ * Jika dari file, akan disimpan ke database untuk penggunaan selanjutnya.
+ */
+async function loadThemeConfig() {
+  try {
+    let themeSetting = await prisma.globalSetting.findUnique({
+      where: { key: "themeConfig" },
+    });
+
+    if (themeSetting) {
+      console.log("🎨 Theme loaded successfully from DATABASE.");
+      currentThemeConfig = themeSetting.value;
+    } else {
+      console.log("⚠️ Theme config not found in database, falling back to theme.json...");
+      if (fs.existsSync(themeConfigPath)) {
+        const fileConfig = JSON.parse(fs.readFileSync(themeConfigPath, "utf8"));
+        currentThemeConfig = fileConfig;
+
+        // Simpan konfigurasi dari file ke database untuk pertama kali
+        await prisma.globalSetting.create({
+          data: {
+            key: "themeConfig",
+            value: fileConfig,
+          },
+        });
+        console.log("🎨 Theme from file has been saved to the database.");
+      } else {
+        console.error("❌ CRITICAL: theme.json file not found. Using empty config.");
+        currentThemeConfig = {};
+      }
+    }
+  } catch (error) {
+    console.error("❌ Failed to load theme configuration:", error);
+    // Fallback darurat jika database error saat startup
+    currentThemeConfig = fs.existsSync(themeConfigPath)
+      ? JSON.parse(fs.readFileSync(themeConfigPath, "utf8"))
+      : {};
+  }
+}
+
 prisma.$use(async (params, next) => {
   const result = await next(params);
   if (params.model === "Payment" && params.action === "updateMany") {
@@ -74,7 +119,7 @@ cloudinary.config({
 const PORT = 5000;
 
 const server = http.createServer(app);
-
+loadThemeConfig();
 // =================== KODE BARU DIMULAI DI SINI ===================
 
 // 1. Definisikan asal (origin) yang diizinkan dan opsi CORS
@@ -139,58 +184,46 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-const themeConfigPath = path.join(__dirname, "config", "theme.json");
 
 app.get("/api/public/theme-config", (req, res) => {
-  fs.readFile(themeConfigPath, "utf8", (err, data) => {
-    if (err) {
-      return res
-        .status(500)
-        .json({ message: "Gagal membaca file konfigurasi." });
-    }
-    res.json(JSON.parse(data));
-  });
+  // Sekarang langsung mengembalikan dari variabel yang sudah dimuat
+  res.json(currentThemeConfig);
 });
 
 const checkMaintenanceMode = (req, res, next) => {
-  try {
-    const configData = fs.readFileSync(themeConfigPath, "utf8");
-    const config = JSON.parse(configData);
-    if (config.featureFlags?.maintenanceMode) {
-      if (
-        req.path.startsWith("/api/auth/login") ||
-        req.path.startsWith("/api/admin") ||
-        req.path.startsWith("/api/superuser") ||
-        req.path.startsWith("/api/public/theme-config")
-      ) {
-        return next();
-      }
-      if (req.path.startsWith("/uploads") || req.path.includes(".")) {
-        return next();
-      }
-      const authHeader = req.headers["authorization"];
-      const token = authHeader && authHeader.split(" ")[1];
-      if (token) {
-        jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-          if (
-            !err &&
-            (decoded.role === "admin" || decoded.role === "developer")
-          ) {
-            return next();
-          }
-        });
-      }
-      return res.status(503).json({
-        message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
-      });
+  // Langsung gunakan variabel global, tidak ada deklarasi baru di sini
+  if (currentThemeConfig.featureFlags?.maintenanceMode) {
+    if (
+      req.path.startsWith("/api/auth/login") ||
+      req.path.startsWith("/api/admin") ||
+      req.path.startsWith("/api/superuser") ||
+      req.path.startsWith("/api/public/theme-config") ||
+      req.path.startsWith("/uploads") || 
+      req.path.includes(".")
+    ) {
+      return next();
     }
-  } catch (error) {
-    console.error(
-      "Gagal membaca file konfigurasi untuk maintenance check:",
-      error
-    );
+    
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (token) {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (!err && (decoded.role === "admin" || decoded.role === "developer")) {
+          return next();
+        } else {
+           return res.status(503).json({
+             message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
+           });
+        }
+      });
+    } else {
+        return res.status(503).json({
+            message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
+        });
+    }
+  } else {
+      next();
   }
-  next();
 };
 
 app.use(checkMaintenanceMode);
@@ -2870,23 +2903,25 @@ superUserRouter.get("/config", (req, res) => {
   });
 });
 
-superUserRouter.post("/config", (req, res) => {
+superUserRouter.post("/config", async (req, res) => {
   const newConfig = req.body;
-  fs.writeFile(
-    themeConfigPath,
-    JSON.stringify(newConfig, null, 2),
-    "utf8",
-    (err) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ message: "Gagal menyimpan file konfigurasi." });
-      }
-      io.emit("themeUpdated", newConfig);
-      console.log("Event themeUpdated telah dikirim ke semua client.");
-      res.status(200).json({ message: "Konfigurasi berhasil diperbarui." });
-    }
-  );
+  try {
+    // Simpan konfigurasi baru ke database
+    const updatedSetting = await prisma.globalSetting.update({
+      where: { key: "themeConfig" },
+      data: { value: newConfig },
+    });
+
+    // Perbarui variabel global dan siarkan ke semua klien
+    currentThemeConfig = updatedSetting.value;
+    io.emit("themeUpdated", currentThemeConfig);
+    console.log("🚀 Theme updated and broadcasted to all clients.");
+
+    res.status(200).json({ message: "Konfigurasi berhasil diperbarui di database." });
+  } catch (error) {
+    console.error("❌ Failed to save theme config to database:", error);
+    res.status(500).json({ message: "Gagal menyimpan konfigurasi ke database." });
+  }
 });
 
 superUserRouter.post(
