@@ -19,6 +19,7 @@ import jwt from "jsonwebtoken";
 import { body, validationResult } from "express-validator";
 import sharp from "sharp";
 import cors from "cors";
+import { sendVerificationEmail } from "./email-service.js";
 import redisClient from "./redis-client.js";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -316,11 +317,7 @@ app.post("/api/auth/register", registerValidation, async (req, res) => {
     // SIMULASI PENGIRIMAN EMAIL
     // Di aplikasi produksi, Anda akan menggunakan library seperti Nodemailer di sini.
     // Untuk sekarang, kita cetak link-nya ke konsol server.
-    const verificationLink = `http://localhost:5173/verify-email?token=${verificationToken}`;
-    console.log("===================================");
-    console.log("== LINK VERIFIKASI EMAIL (KLIK INI) ==");
-    console.log(verificationLink);
-    console.log("===================================");
+    await sendVerificationEmail(newUser.email, verificationToken);
     
     res.status(201).json({
       message: "Pendaftaran berhasil! Silakan periksa email Anda untuk link verifikasi.",

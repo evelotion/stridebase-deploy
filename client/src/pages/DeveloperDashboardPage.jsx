@@ -67,6 +67,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [previewDisplaySize, setPreviewDisplaySize] = useState(56);
   const [previewLeadSize, setPreviewLeadSize] = useState(20);
   const [previewBtnLgSize, setPreviewBtnLgSize] = useState(16);
+  const [unverifiedUsers, setUnverifiedUsers] = useState([]);
+  const [loadingUnverified, setLoadingUnverified] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -201,11 +203,46 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         setLoadingPaymentConfig(false);
       }
     };
+     const fetchUnverifiedUsers = async () => {
+      setLoadingUnverified(true);
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/superuser/unverified-users`, { headers });
+        if (!response.ok) throw new Error("Gagal mengambil daftar pengguna.");
+        const data = await response.json();
+        setUnverifiedUsers(data);
+      } catch (err) {
+        showMessage(err.message, "Error");
+      } finally {
+        setLoadingUnverified(false);
+      }
+    };
+
     if (activeTab === "theming") fetchHealthStatus();
     if (activeTab === "security") fetchSecurityLogs();
     if (activeTab === "approvals") fetchApprovalRequests();
     if (activeTab === "payment") fetchPaymentConfig();
+    if (activeTab === "manualVerification") fetchUnverifiedUsers();
+
   }, [activeTab]);
+
+  const handleManualVerify = async (userId, userName) => {
+    if (!confirm(`Apakah Anda yakin ingin memverifikasi akun untuk ${userName} secara manual?`)) return;
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/superuser/users/${userId}/verify`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
+      
+      showMessage(data.message);
+      setUnverifiedUsers(prev => prev.filter(user => user.id !== userId));
+    } catch (err) {
+      showMessage(err.message, "Error");
+    }
+  };
 
   const handleSizeChange = (e, type) => {
     const value = e.target.value;
@@ -551,6 +588,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   {approvalRequests.length}
                 </span>
               )}
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "manualVerification" ? "active" : ""}`}
+              onClick={() => setActiveTab("manualVerification")}
+            >
+              Verifikasi Manual
             </button>
           </li>
           <li className="nav-item">
@@ -1141,6 +1186,53 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       <tr>
                         <td colSpan="5" className="text-center p-5 text-muted">
                           Tidak ada permintaan persetujuan yang tertunda.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          
+          {activeTab === "manualVerification" && (
+            <div className="table-card p-3 shadow-sm">
+              <h5 className="mb-3">Pengguna Belum Terverifikasi</h5>
+              <div className="table-responsive">
+                <table className="table table-hover align-middle">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Nama Pengguna</th>
+                      <th>Email</th>
+                      <th>Tanggal Daftar</th>
+                      <th className="text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loadingUnverified ? (
+                      <tr>
+                        <td colSpan="4" className="text-center p-5">Memuat data...</td>
+                      </tr>
+                    ) : unverifiedUsers.length > 0 ? (
+                      unverifiedUsers.map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>{new Date(user.createdAt).toLocaleString("id-ID")}</td>
+                          <td className="text-center">
+                            <button 
+                              className="btn btn-sm btn-success"
+                              onClick={() => handleManualVerify(user.id, user.name)}
+                            >
+                              Verifikasi Manual
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" className="text-center p-5 text-muted">
+                          Tidak ada pengguna yang menunggu verifikasi.
                         </td>
                       </tr>
                     )}
