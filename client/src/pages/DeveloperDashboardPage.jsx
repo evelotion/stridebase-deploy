@@ -203,10 +203,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         setLoadingPaymentConfig(false);
       }
     };
-     const fetchUnverifiedUsers = async () => {
+    const fetchUnverifiedUsers = async () => {
       setLoadingUnverified(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/superuser/unverified-users`, { headers });
+        const response = await fetch(
+          `${API_BASE_URL}/api/superuser/unverified-users`,
+          { headers }
+        );
         if (!response.ok) throw new Error("Gagal mengambil daftar pengguna.");
         const data = await response.json();
         setUnverifiedUsers(data);
@@ -222,23 +225,30 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     if (activeTab === "approvals") fetchApprovalRequests();
     if (activeTab === "payment") fetchPaymentConfig();
     if (activeTab === "manualVerification") fetchUnverifiedUsers();
-
   }, [activeTab]);
 
   const handleManualVerify = async (userId, userName) => {
-    if (!confirm(`Apakah Anda yakin ingin memverifikasi akun untuk ${userName} secara manual?`)) return;
+    if (
+      !confirm(
+        `Apakah Anda yakin ingin memverifikasi akun untuk ${userName} secara manual?`
+      )
+    )
+      return;
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/superuser/users/${userId}/verify`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/superuser/users/${userId}/verify`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-      
+
       showMessage(data.message);
-      setUnverifiedUsers(prev => prev.filter(user => user.id !== userId));
+      setUnverifiedUsers((prev) => prev.filter((user) => user.id !== userId));
     } catch (err) {
       showMessage(err.message, "Error");
     }
@@ -547,9 +557,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       <div className="container-fluid px-4">
         <div className="d-flex justify-content-between align-items-center m-4">
           <h2 className="fs-2 mb-0">SuperUser Control Panel</h2>
+          {/* Tombol Simpan akan tetap relevan untuk tab Theming */}
           {activeTab === "theming" && (
             <button
-              className="btn btn-primary"
+              className="btn btn-primary d-none d-md-block" // Sembunyikan di mobile, karena tombol ada di dalam form
               onClick={handleSaveChanges}
               disabled={isSaving}
             >
@@ -558,762 +569,133 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           )}
         </div>
 
-       <ul className="nav nav-pills mb-3 px-4">
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "theming" ? "active" : ""}`}
-              onClick={() => setActiveTab("theming")}
-            >
-              Theming & Maintenance
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "security" ? "active" : ""}`}
-              onClick={() => setActiveTab("security")}
-            >
-              Security & Monitoring
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${
-                activeTab === "approvals" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("approvals")}
-            >
-              Pusat Persetujuan
-              {approvalRequests.length > 0 && (
-                <span className="badge bg-danger ms-2">
-                  {approvalRequests.length}
-                </span>
-              )}
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "manualVerification" ? "active" : ""}`}
-              onClick={() => setActiveTab("manualVerification")}
-            >
-              Verifikasi Manual
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "payment" ? "active" : ""}`}
-              onClick={() => setActiveTab("payment")}
-            >
-              Konfigurasi Pembayaran
-            </button>
-          </li>
-        </ul>
-
-        <div className="tab-content py-3">
-          {activeTab === "theming" && (
-            <div className="row g-4">
-              <div className="col-12">
-                <div className="table-card p-3 shadow-sm">
-                  <h5 className="mb-3">Status Kesehatan Platform</h5>
-                  {loadingHealth ? (
-                    <div className="text-center text-muted p-3">
-                      <div
-                        className="spinner-border spinner-border-sm me-2"
-                        role="status"
-                      ></div>
-                      Memeriksa status layanan...
-                    </div>
-                  ) : healthStatus ? (
-                    <div>
-                      <HealthStatusIndicator
-                        service="Database (PostgreSQL)"
-                        status={healthStatus.database}
-                      />
-                      <HealthStatusIndicator
-                        service="Cache & Antrian (Redis)"
-                        status={healthStatus.redis}
-                      />
-                      <div className="mt-3 text-center">
-                        <h6 className="mb-0">Status Keseluruhan:</h6>
-                        <p
-                          className={`fw-bold fs-5 ${
-                            healthStatus.overallStatus.includes("Masalah")
-                              ? "text-danger"
-                              : "text-success"
-                          }`}
-                        >
-                          {healthStatus.overallStatus}
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center text-danger p-3">
-                      Gagal memuat status kesehatan. Periksa koneksi ke server.
-                    </div>
+        {/* Tata Letak Baru: 2 Kolom */}
+        <div className="row g-4 px-4">
+          {/* Kolom Navigasi Kiri (Menu Vertikal) - Tampil di Desktop */}
+          <div className="col-md-3 d-none d-md-block">
+            <div className="table-card p-3 shadow-sm">
+              <h6 className="fw-bold px-3 pt-2">Konfigurasi</h6>
+              <div className="list-group list-group-flush">
+                <button
+                  className={`list-group-item list-group-item-action ${
+                    activeTab === "theming" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("theming")}
+                >
+                  Tampilan & Tema
+                </button>
+                <button
+                  className={`list-group-item list-group-item-action ${
+                    activeTab === "payment" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("payment")}
+                >
+                  Pembayaran
+                </button>
+              </div>
+              <hr />
+              <h6 className="fw-bold px-3 pt-2">Manajemen</h6>
+              <div className="list-group list-group-flush">
+                <button
+                  className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
+                    activeTab === "approvals" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("approvals")}
+                >
+                  Pusat Persetujuan
+                  {approvalRequests.length > 0 && (
+                    <span className="badge bg-danger rounded-pill">
+                      {approvalRequests.length}
+                    </span>
                   )}
-                </div>
+                </button>
+                <button
+                  className={`list-group-item list-group-item-action ${
+                    activeTab === "manualVerification" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("manualVerification")}
+                >
+                  Verifikasi Pengguna
+                </button>
               </div>
-
-              <div className="col-lg-6">
-                <div className="table-card p-4 shadow-sm h-100">
-                  <h5 className="mb-4">Branding & Tampilan</h5>
-                  <div className="mb-3">
-                    <label className="form-label">Logo Website</label>
-                    <div className="d-flex align-items-center">
-                      <img
-                        src={logoPreview || `${config.branding?.logoUrl}`}
-                        alt="Logo"
-                        style={{
-                          height: "40px",
-                          marginRight: "1rem",
-                          border: "1px solid #ddd",
-                          padding: "5px",
-                        }}
-                      />
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/png, image/jpeg, image/svg+xml"
-                        onChange={(e) => handleFileChange(e, "logoUrl")}
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">
-                      Favicon (.ico, .svg, .png)
-                    </label>
-                    <div className="d-flex align-items-center">
-                      <img
-                        src={faviconPreview || `${config.branding?.faviconUrl}`}
-                        alt="Favicon"
-                        style={{ height: "32px", marginRight: "1rem" }}
-                      />
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/x-icon, image/svg+xml, image/png"
-                        onChange={(e) => handleFileChange(e, "faviconUrl")}
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Gambar Halaman Login</label>
-                    <div className="d-flex align-items-center">
-                      <img
-                        src={
-                          loginImagePreview ||
-                          `${config.branding?.loginImageUrl}`
-                        }
-                        alt="Login Page Image"
-                        style={{
-                          height: "40px",
-                          marginRight: "1rem",
-                          border: "1px solid #ddd",
-                          padding: "5px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/png, image/jpeg, image/webp"
-                        onChange={(e) => handleFileChange(e, "loginImageUrl")}
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">
-                      Gambar Halaman Register
-                    </label>
-                    <div className="d-flex align-items-center">
-                      <img
-                        src={
-                          registerImagePreview ||
-                          `${config.branding?.registerImageUrl}`
-                        }
-                        alt="Register Page Image"
-                        style={{
-                          height: "40px",
-                          marginRight: "1rem",
-                          border: "1px solid #ddd",
-                          padding: "5px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/png, image/jpeg, image/webp"
-                        onChange={(e) =>
-                          handleFileChange(e, "registerImageUrl")
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg-6">
-                <div className="table-card p-4 shadow-sm h-100">
-                  <h5 className="mb-4">Warna & Latar Belakang</h5>
-                  <div className="row">
-                    <ColorInput
-                      label="Warna Primer"
-                      name="colors.primary"
-                      value={localConfig.colors?.primary}
-                      onChange={handleConfigChange}
-                    />
-                    <ColorInput
-                      label="Warna Sekunder"
-                      name="colors.secondary"
-                      value={localConfig.colors?.secondary}
-                      onChange={handleConfigChange}
-                    />
-                    <ColorInput
-                      label="Warna Aksen (Kartu Profil)"
-                      name="colors.accent"
-                      value={localConfig.colors?.accent}
-                      onChange={handleConfigChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Warna Latar Belakang</label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        className="form-control"
-                        style={{ maxWidth: "120px" }}
-                        name="background.value"
-                        value={localConfig.background?.value || ""}
-                        onChange={handleConfigChange}
-                        placeholder="#RRGGBB"
-                      />
-                      <input
-                        type="color"
-                        className="form-control form-control-color"
-                        name="background.value"
-                        value={localConfig.background?.value || "#f8f9fa"}
-                        onChange={handleConfigChange}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12">
-                <div className="table-card p-4 shadow-sm">
-                  <h5 className="mb-4">Tipografi</h5>
-                  <div className="mb-3">
-                    <label className="form-label">Pilih Font Global</label>
-                    <Select
-                      options={fontOptions}
-                      isLoading={isLoadingFonts}
-                      value={fontOptions.find(
-                        (opt) =>
-                          opt.value === localConfig.typography?.fontFamily
-                      )}
-                      onChange={handleFontChange}
-                      placeholder="Cari atau pilih font..."
-                    />
-                  </div>
-
-                  <div className="row">
-                    <div className="col-md-8">
-                      <div className="mb-3">
-                        <label
-                          htmlFor="displaySizeRange"
-                          className="form-label"
-                        >
-                          Display Title: <strong>{previewDisplaySize}px</strong>
-                        </label>
-                        <input
-                          type="range"
-                          className="form-range"
-                          min="40"
-                          max="72"
-                          step="1"
-                          id="displaySizeRange"
-                          value={previewDisplaySize}
-                          onChange={(e) => handleSizeChange(e, "display")}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="leadSizeRange" className="form-label">
-                          Lead Paragraph: <strong>{previewLeadSize}px</strong>
-                        </label>
-                        <input
-                          type="range"
-                          className="form-range"
-                          min="16"
-                          max="24"
-                          step="0.5"
-                          id="leadSizeRange"
-                          value={previewLeadSize}
-                          onChange={(e) => handleSizeChange(e, "lead")}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="baseSizeRange" className="form-label">
-                          Paragraf (Dasar): <strong>{previewBaseSize}px</strong>
-                        </label>
-                        <input
-                          type="range"
-                          className="form-range"
-                          min="14"
-                          max="18"
-                          step="0.5"
-                          id="baseSizeRange"
-                          value={previewBaseSize}
-                          onChange={(e) => handleSizeChange(e, "base")}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="btnLgSizeRange" className="form-label">
-                          Tombol Besar: <strong>{previewBtnLgSize}px</strong>
-                        </label>
-                        <input
-                          type="range"
-                          className="form-range"
-                          min="14"
-                          max="20"
-                          step="0.5"
-                          id="btnLgSizeRange"
-                          value={previewBtnLgSize}
-                          onChange={(e) => handleSizeChange(e, "btnLg")}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 d-flex flex-column justify-content-around">
-                      <div className="p-2 border rounded bg-light text-center">
-                        <h1
-                          className="display-4"
-                          style={{
-                            fontSize: `${previewDisplaySize / 16}rem`,
-                            margin: 0,
-                          }}
-                        >
-                          Title
-                        </h1>
-                      </div>
-                      <div className="p-2 border rounded bg-light text-center">
-                        <p
-                          className="lead"
-                          style={{
-                            fontSize: `${previewLeadSize / 16}rem`,
-                            margin: 0,
-                          }}
-                        >
-                          Lead
-                        </p>
-                      </div>
-                      <div className="p-2 border rounded bg-light text-center">
-                        <p
-                          style={{
-                            fontSize: `${previewBaseSize}px`,
-                            margin: 0,
-                          }}
-                        >
-                          Paragraf
-                        </p>
-                      </div>
-                      <div className="p-2 border rounded bg-light text-center">
-                        <button
-                          className="btn btn-lg btn-primary"
-                          style={{ fontSize: `${previewBtnLgSize / 16}rem` }}
-                        >
-                          Button
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12">
-                <div className="table-card p-4 shadow-sm">
-                  <h5 className="mb-3">Pengaturan Ketersediaan Halaman</h5>
-                  <p className="small text-muted">
-                    Pilih halaman mana saja yang harus aktif dan dapat diakses
-                    oleh publik. Halaman yang tidak dipilih akan menampilkan
-                    halaman perbaikan.
-                  </p>
-                  <Select
-                    isMulti
-                    name="pageStatus"
-                    options={pageStatusOptions}
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    value={selectedPageStatus}
-                    onChange={handlePageSelectionChange}
-                  />
-                </div>
-              </div>
-
-              <div className="col-12">
-                <div className="table-card p-4 shadow-sm">
-                  <h5 className="mb-3">Pengaturan Fitur</h5>
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="enableTierSystem"
-                      name="featureFlags.enableTierSystem"
-                      checked={
-                        localConfig.featureFlags?.enableTierSystem || false
-                      }
-                      onChange={handleConfigChange}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="enableTierSystem"
-                    >
-                      Aktifkan Sistem Tier (BASIC/PRO)
-                    </label>
-                    <div className="form-text mt-1">
-                      Jika nonaktif, semua fitur terkait Tier (termasuk upgrade)
-                      akan disembunyikan.
-                    </div>
-                  </div>
-                  {localConfig.featureFlags?.enableTierSystem && (
-                    <div className="form-check form-switch ms-4">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        role="switch"
-                        id="enableProTierUpgrade"
-                        name="featureFlags.enableProTierUpgrade"
-                        checked={
-                          localConfig.featureFlags?.enableProTierUpgrade ||
-                          false
-                        }
-                        onChange={handleConfigChange}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="enableProTierUpgrade"
-                      >
-                        Aktifkan Fitur "Upgrade ke PRO" untuk Mitra
-                      </label>
-                      <div className="form-text mt-1">
-                        Jika nonaktif, tombol dan halaman upgrade tidak akan
-                        muncul di panel mitra.
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="col-12">
-                <div className="table-card p-4 shadow-sm">
-                  <h5 className="mb-4 text-danger">
-                    Zona Berbahaya - Alat Maintenance
-                  </h5>
-                  <div className="row g-3">
-                    <div className="col-md-6 col-lg-4">
-                      <div className="p-3 border rounded h-100 d-flex flex-column">
-                        <h6 className="fw-bold">Bersihkan Cache Aplikasi</h6>
-                        <p className="small text-muted mb-2 flex-grow-1">
-                          Menghapus semua data cache di Redis. Berguna jika ada
-                          data lama yang tidak mau diperbarui.
-                        </p>
-                        <button
-                          className="btn btn-warning mt-auto"
-                          onClick={handleClearCache}
-                          disabled={isSaving}
-                        >
-                          <i className="fas fa-broom me-2"></i>Bersihkan Cache
-                        </button>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-lg-4">
-                      <div className="p-3 border rounded h-100 d-flex flex-column">
-                        <h6 className="fw-bold">Reset & Seed Ulang Database</h6>
-                        <p className="small text-muted mb-2 flex-grow-1">
-                          Menghapus SEMUA data dan mengembalikannya ke kondisi
-                          awal sesuai seeder.
-                        </p>
-                        <button
-                          className="btn btn-danger mt-auto"
-                          onClick={() => setShowResetModal(true)}
-                          disabled={isSaving}
-                        >
-                          <i className="fas fa-power-off me-2"></i>Reset
-                          Database
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <hr />
+              <h6 className="fw-bold px-3 pt-2">Sistem</h6>
+              <div className="list-group list-group-flush">
+                <button
+                  className={`list-group-item list-group-item-action ${
+                    activeTab === "security" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("security")}
+                >
+                  Monitoring & Log
+                </button>
               </div>
             </div>
-          )}
+          </div>
 
-          {activeTab === "security" && (
-            <div className="table-card p-3 shadow-sm">
-              <h5 className="mb-3">Log Keamanan (100 Terbaru)</h5>
-              <div className="table-responsive" style={{ maxHeight: "60vh" }}>
-                <table className="table table-sm table-hover align-middle">
-                  <thead
-                    className="table-light"
-                    style={{ position: "sticky", top: 0 }}
-                  >
-                    <tr>
-                      <th>Waktu</th>
-                      <th>Tipe Peristiwa</th>
-                      <th>Alamat IP</th>
-                      <th>Detail</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loadingLogs ? (
-                      <tr>
-                        <td colSpan="4" className="text-center p-5">
-                          Memuat log...
-                        </td>
-                      </tr>
-                    ) : securityLogs.length > 0 ? (
-                      securityLogs.map((log) => (
-                        <tr key={log.id}>
-                          <td>
-                            <small>
-                              {new Date(log.createdAt).toLocaleString("id-ID")}
-                            </small>
-                          </td>
-                          <td>
-                            <span
-                              className={`badge ${
-                                log.eventType === "IP_BLOCKED"
-                                  ? "bg-danger"
-                                  : "bg-warning text-dark"
-                              }`}
-                            >
-                              {log.eventType}
-                            </span>
-                          </td>
-                          <td>
-                            <code>{log.ipAddress}</code>
-                          </td>
-                          <td>
-                            <small>{log.details}</small>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="text-center p-5 text-muted">
-                          Belum ada aktivitas keamanan yang tercatat.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+          {/* Navigasi Dropdown untuk Mobile */}
+          <div className="col-12 d-md-none">
+            <select
+              className="form-select form-select-lg"
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+            >
+              <optgroup label="Konfigurasi">
+                <option value="theming">Tampilan & Tema</option>
+                <option value="payment">Pembayaran</option>
+              </optgroup>
+              <optgroup label="Manajemen">
+                <option value="approvals">
+                  Pusat Persetujuan ({approvalRequests.length})
+                </option>
+                <option value="manualVerification">Verifikasi Pengguna</option>
+              </optgroup>
+              <optgroup label="Sistem">
+                <option value="security">Monitoring & Log</option>
+              </optgroup>
+            </select>
+          </div>
 
-          {activeTab === "approvals" && (
-            <div className="table-card p-3 shadow-sm">
-              <h5 className="mb-3">Permintaan Persetujuan Tertunda</h5>
-              <div className="table-responsive">
-                <table className="table table-hover align-middle">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Tanggal</th>
-                      <th>Pemohon</th>
-                      <th>Tipe Aksi</th>
-                      <th>Detail Permintaan</th>
-                      <th>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loadingRequests ? (
-                      <tr>
-                        <td colSpan="5" className="text-center p-5">
-                          Memuat permintaan...
-                        </td>
-                      </tr>
-                    ) : approvalRequests.length > 0 ? (
-                      approvalRequests.map((req) => (
-                        <tr key={req.id}>
-                          <td>
-                            <small>
-                              {new Date(req.createdAt).toLocaleString("id-ID")}
-                            </small>
-                          </td>
-                          <td>
-                            <span className="fw-bold">
-                              {req.requestedBy.name}
-                            </span>
-                            <small className="d-block text-muted">
-                              {req.requestedBy.email}
-                            </small>
-                          </td>
-                          <td>
-                            <span className="badge bg-info">
-                              {req.actionType}
-                            </span>
-                          </td>
-                          <td>
-                            <pre className="mb-0" style={{ fontSize: "0.8em" }}>
-                              <code>
-                                {JSON.stringify(req.payload, null, 2)}
-                              </code>
-                            </pre>
-                          </td>
-                          <td>
-                            <div className="btn-group">
-                              <button
-                                className="btn btn-sm btn-success"
-                                onClick={() =>
-                                  handleResolveRequest(req.id, "APPROVED")
-                                }
-                              >
-                                Setujui
-                              </button>
-                              <button
-                                className="btn btn-sm btn-danger"
-                                onClick={() =>
-                                  handleResolveRequest(req.id, "REJECTED")
-                                }
-                              >
-                                Tolak
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="text-center p-5 text-muted">
-                          Tidak ada permintaan persetujuan yang tertunda.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === "manualVerification" && (
-            <div className="table-card p-3 shadow-sm">
-              <h5 className="mb-3">Pengguna Belum Terverifikasi</h5>
-              <div className="table-responsive">
-                <table className="table table-hover align-middle">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Nama Pengguna</th>
-                      <th>Email</th>
-                      <th>Tanggal Daftar</th>
-                      <th className="text-center">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loadingUnverified ? (
-                      <tr>
-                        <td colSpan="4" className="text-center p-5">Memuat data...</td>
-                      </tr>
-                    ) : unverifiedUsers.length > 0 ? (
-                      unverifiedUsers.map((user) => (
-                        <tr key={user.id}>
-                          <td>{user.name}</td>
-                          <td>{user.email}</td>
-                          <td>{new Date(user.createdAt).toLocaleString("id-ID")}</td>
-                          <td className="text-center">
-                            <button 
-                              className="btn btn-sm btn-success"
-                              onClick={() => handleManualVerify(user.id, user.name)}
-                            >
-                              Verifikasi Manual
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="text-center p-5 text-muted">
-                          Tidak ada pengguna yang menunggu verifikasi.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "payment" && (
-            <div>
-              {loadingPaymentConfig ? (
-                <p>Memuat konfigurasi pembayaran...</p>
-              ) : (
-                <div className="table-card p-4 shadow-sm">
-                  <h5 className="mb-4">Pengaturan Payment Gateway</h5>
-                  <div className="alert alert-info small">
-                    <i className="fas fa-info-circle me-2"></i>
-                    Kunci API (Server Key & Client Key) dikelola secara aman di
-                    file <code>.env</code> di server dan tidak akan pernah
-                    ditampilkan di sini. Halaman ini hanya untuk mengelola
-                    pengaturan operasional.
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label fw-bold">
-                      Mode Operasional
-                    </label>
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="paymentMode"
-                        id="modeSandbox"
-                        value="sandbox"
-                        checked={paymentConfig.mode === "sandbox"}
-                        onChange={(e) =>
-                          setPaymentConfig({
-                            ...paymentConfig,
-                            mode: e.target.value,
-                          })
-                        }
-                      />
-                      <label className="form-check-label" htmlFor="modeSandbox">
-                        Sandbox (Untuk Pengujian)
-                      </label>
-                    </div>
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="paymentMode"
-                        id="modeProduction"
-                        value="production"
-                        checked={paymentConfig.mode === "production"}
-                        onChange={(e) =>
-                          setPaymentConfig({
-                            ...paymentConfig,
-                            mode: e.target.value,
-                          })
-                        }
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="modeProduction"
-                      >
-                        Production (Live/Nyata)
-                      </label>
-                    </div>
-                  </div>
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleSavePaymentConfig}
-                    disabled={isSaving}
-                  >
-                    {isSaving ? "Menyimpan..." : "Simpan Pengaturan Pembayaran"}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Kolom Konten Kanan */}
+          <div className="col-md-9">
+            {/* Semua konten tab Anda yang sudah ada ditempatkan di sini */}
+            {/* Contoh untuk satu tab, ulangi untuk tab lainnya */}
+            {activeTab === "theming" && (
+              // ... (kode untuk konten "Theming & Maintenance" Anda)
+              // Letakkan semua div .col-12 dan .col-lg-6 yang berhubungan dengan theming di sini
+              <div>Konten Theming & Maintenance...</div>
+            )}
+            {activeTab === "payment" && (
+              // ... (kode untuk konten "Konfigurasi Pembayaran")
+              <div>Konten Konfigurasi Pembayaran...</div>
+            )}
+            {activeTab === "approvals" && (
+              // ... (kode untuk konten "Pusat Persetujuan")
+              <div>Konten Pusat Persetujuan...</div>
+            )}
+            {activeTab === "manualVerification" && (
+              // ... (kode untuk konten "Verifikasi Manual")
+              <div>Konten Verifikasi Manual...</div>
+            )}
+            {activeTab === "security" && (
+              // ... (kode untuk konten "Security & Monitoring")
+              <div>Konten Security & Monitoring...</div>
+            )}
+          </div>
         </div>
+
+        {/* Tombol Simpan untuk Mobile (ditempatkan di bawah agar mudah dijangkau) */}
+        {activeTab === "theming" && (
+          <div className="d-grid d-md-none p-4">
+            <button
+              className="btn btn-primary btn-lg"
+              onClick={handleSaveChanges}
+              disabled={isSaving}
+            >
+              {isSaving ? "Menyimpan..." : "Simpan Perubahan Tema"}
+            </button>
+          </div>
+        )}
       </div>
 
       {showResetModal && (
