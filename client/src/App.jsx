@@ -63,6 +63,9 @@ const AdminSettingsPage = React.lazy(() => import("./pages/AdminSettingsPage"));
 const AdminStoreInvoicePage = React.lazy(() =>
   import("./pages/AdminStoreInvoicePage")
 );
+const AdminStoreSettingsPage = React.lazy(() => 
+  import("./pages/AdminStoreSettingsPage")
+);
 const InvoicePrintPage = React.lazy(() => import("./pages/InvoicePrintPage"));
 const PartnerLayout = React.lazy(() => import("./components/PartnerLayout"));
 const PartnerDashboardPage = React.lazy(() =>
