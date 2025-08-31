@@ -3242,6 +3242,48 @@ superUserRouter.post("/config/payment", async (req, res) => {
   }
 });
 
+superUserRouter.get("/unverified-users", async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        emailVerified: null,
+        role: "customer", // Hanya tampilkan customer biasa
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    res.json(users);
+  } catch (error) {
+    console.error("Gagal mengambil data pengguna belum terverifikasi:", error);
+    res.status(500).json({ message: "Gagal mengambil data." });
+  }
+});
+
+// Endpoint untuk memverifikasi user secara manual
+superUserRouter.patch("/users/:userId/verify", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ message: "Pengguna tidak ditemukan." });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        emailVerified: new Date(),
+        emailVerificationToken: null, // Hapus token jika ada
+      },
+    });
+
+    res.json({ message: `Pengguna ${updatedUser.name} berhasil diverifikasi.` });
+  } catch (error) {
+    console.error("Gagal memverifikasi pengguna secara manual:", error);
+    res.status(500).json({ message: "Gagal memproses verifikasi." });
+  }
+});
+
 app.use("/api/superuser", superUserRouter);
 
 const errorLogger = async (err, req, res, next) => {
