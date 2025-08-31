@@ -50,7 +50,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
   const [localConfig, setLocalConfig] = useState(null);
-  const [activeTab, setActiveTab] = useState("theming");
+  const [activeTab, setActiveTab] = useState("tampilan"); // DIUBAH: Default tab baru
   const [securityLogs, setSecurityLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [healthStatus, setHealthStatus] = useState(null);
@@ -203,10 +203,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         setLoadingPaymentConfig(false);
       }
     };
-     const fetchUnverifiedUsers = async () => {
+    const fetchUnverifiedUsers = async () => {
       setLoadingUnverified(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/superuser/unverified-users`, { headers });
+        const response = await fetch(
+          `${API_BASE_URL}/api/superuser/unverified-users`,
+          { headers }
+        );
         if (!response.ok) throw new Error("Gagal mengambil daftar pengguna.");
         const data = await response.json();
         setUnverifiedUsers(data);
@@ -217,28 +220,39 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       }
     };
 
-    if (activeTab === "theming") fetchHealthStatus();
-    if (activeTab === "security") fetchSecurityLogs();
-    if (activeTab === "approvals") fetchApprovalRequests();
+    if (activeTab === "tampilan") {
+      fetchHealthStatus();
+      fetchSecurityLogs();
+    }
+    if (activeTab === "manajemen") {
+      fetchApprovalRequests();
+      fetchUnverifiedUsers();
+    }
     if (activeTab === "payment") fetchPaymentConfig();
-    if (activeTab === "manualVerification") fetchUnverifiedUsers();
-
   }, [activeTab]);
 
   const handleManualVerify = async (userId, userName) => {
-    if (!confirm(`Apakah Anda yakin ingin memverifikasi akun untuk ${userName} secara manual?`)) return;
+    if (
+      !confirm(
+        `Apakah Anda yakin ingin memverifikasi akun untuk ${userName} secara manual?`
+      )
+    )
+      return;
 
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/superuser/users/${userId}/verify`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/superuser/users/${userId}/verify`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-      
+
       showMessage(data.message);
-      setUnverifiedUsers(prev => prev.filter(user => user.id !== userId));
+      setUnverifiedUsers((prev) => prev.filter((user) => user.id !== userId));
     } catch (err) {
       showMessage(err.message, "Error");
     }
@@ -547,7 +561,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       <div className="container-fluid px-4">
         <div className="d-flex justify-content-between align-items-center m-4">
           <h2 className="fs-2 mb-0">SuperUser Control Panel</h2>
-          {activeTab === "theming" && (
+          {activeTab === "tampilan" && (
             <button
               className="btn btn-primary"
               onClick={handleSaveChanges}
@@ -558,58 +572,56 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           )}
         </div>
 
-       <ul className="nav nav-pills mb-3 px-4">
+        {/* NAVIGASI TAB BARU */}
+        <ul className="nav nav-pills mb-3 px-4">
           <li className="nav-item">
             <button
-              className={`nav-link ${activeTab === "theming" ? "active" : ""}`}
-              onClick={() => setActiveTab("theming")}
+              className={`nav-link ${activeTab === "tampilan" ? "active" : ""}`}
+              onClick={() => setActiveTab("tampilan")}
             >
-              Theming & Maintenance
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "security" ? "active" : ""}`}
-              onClick={() => setActiveTab("security")}
-            >
-              Security & Monitoring
+              Tampilan & Sistem
             </button>
           </li>
           <li className="nav-item">
             <button
               className={`nav-link ${
-                activeTab === "approvals" ? "active" : ""
+                activeTab === "manajemen" ? "active" : ""
               }`}
-              onClick={() => setActiveTab("approvals")}
+              onClick={() => setActiveTab("manajemen")}
             >
-              Pusat Persetujuan
-              {approvalRequests.length > 0 && (
-                <span className="badge bg-danger ms-2">
-                  {approvalRequests.length}
-                </span>
-              )}
+              Manajemen
             </button>
           </li>
-          <li className="nav-item">
+          <li className="nav-item dropdown">
             <button
-              className={`nav-link ${activeTab === "manualVerification" ? "active" : ""}`}
-              onClick={() => setActiveTab("manualVerification")}
+              className={`nav-link dropdown-toggle ${
+                activeTab === "payment" ? "active" : ""
+              }`}
+              data-bs-toggle="dropdown"
+              href="#"
+              role="button"
+              aria-expanded="false"
             >
-              Verifikasi Manual
+              Pengaturan Lanjutan
             </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "payment" ? "active" : ""}`}
-              onClick={() => setActiveTab("payment")}
-            >
-              Konfigurasi Pembayaran
-            </button>
+            <ul className="dropdown-menu">
+              <li>
+                <button
+                  className={`dropdown-item ${
+                    activeTab === "payment" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("payment")}
+                >
+                  Konfigurasi Pembayaran
+                </button>
+              </li>
+            </ul>
           </li>
         </ul>
 
         <div className="tab-content py-3">
-          {activeTab === "theming" && (
+          {/* KONTEN GABUNGAN UNTUK TAB TAMPILAN & SISTEM */}
+          {activeTab === "tampilan" && (
             <div className="row g-4">
               <div className="col-12">
                 <div className="table-card p-3 shadow-sm">
@@ -1048,200 +1060,156 @@ const DeveloperDashboardPage = ({ showMessage }) => {
             </div>
           )}
 
-          {activeTab === "security" && (
-            <div className="table-card p-3 shadow-sm">
-              <h5 className="mb-3">Log Keamanan (100 Terbaru)</h5>
-              <div className="table-responsive" style={{ maxHeight: "60vh" }}>
-                <table className="table table-sm table-hover align-middle">
-                  <thead
-                    className="table-light"
-                    style={{ position: "sticky", top: 0 }}
-                  >
-                    <tr>
-                      <th>Waktu</th>
-                      <th>Tipe Peristiwa</th>
-                      <th>Alamat IP</th>
-                      <th>Detail</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loadingLogs ? (
+          {/* KONTEN GABUNGAN UNTUK TAB MANAJEMEN */}
+          {activeTab === "manajemen" && (
+            <div>
+              <div className="table-card p-3 shadow-sm mb-4">
+                <h5 className="mb-3">Permintaan Persetujuan Tertunda</h5>
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle">
+                    <thead className="table-light">
                       <tr>
-                        <td colSpan="4" className="text-center p-5">
-                          Memuat log...
-                        </td>
+                        <th>Tanggal</th>
+                        <th>Pemohon</th>
+                        <th>Tipe Aksi</th>
+                        <th>Detail Permintaan</th>
+                        <th>Aksi</th>
                       </tr>
-                    ) : securityLogs.length > 0 ? (
-                      securityLogs.map((log) => (
-                        <tr key={log.id}>
-                          <td>
-                            <small>
-                              {new Date(log.createdAt).toLocaleString("id-ID")}
-                            </small>
-                          </td>
-                          <td>
-                            <span
-                              className={`badge ${
-                                log.eventType === "IP_BLOCKED"
-                                  ? "bg-danger"
-                                  : "bg-warning text-dark"
-                              }`}
-                            >
-                              {log.eventType}
-                            </span>
-                          </td>
-                          <td>
-                            <code>{log.ipAddress}</code>
-                          </td>
-                          <td>
-                            <small>{log.details}</small>
+                    </thead>
+                    <tbody>
+                      {loadingRequests ? (
+                        <tr>
+                          <td colSpan="5" className="text-center p-5">
+                            Memuat permintaan...
                           </td>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="text-center p-5 text-muted">
-                          Belum ada aktivitas keamanan yang tercatat.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                      ) : approvalRequests.length > 0 ? (
+                        approvalRequests.map((req) => (
+                          <tr key={req.id}>
+                            <td>
+                              <small>
+                                {new Date(req.createdAt).toLocaleString(
+                                  "id-ID"
+                                )}
+                              </small>
+                            </td>
+                            <td>
+                              <span className="fw-bold">
+                                {req.requestedBy.name}
+                              </span>
+                              <small className="d-block text-muted">
+                                {req.requestedBy.email}
+                              </small>
+                            </td>
+                            <td>
+                              <span className="badge bg-info">
+                                {req.actionType}
+                              </span>
+                            </td>
+                            <td>
+                              <pre
+                                className="mb-0"
+                                style={{ fontSize: "0.8em" }}
+                              >
+                                <code>
+                                  {JSON.stringify(req.payload, null, 2)}
+                                </code>
+                              </pre>
+                            </td>
+                            <td>
+                              <div className="btn-group">
+                                <button
+                                  className="btn btn-sm btn-success"
+                                  onClick={() =>
+                                    handleResolveRequest(req.id, "APPROVED")
+                                  }
+                                >
+                                  Setujui
+                                </button>
+                                <button
+                                  className="btn btn-sm btn-danger"
+                                  onClick={() =>
+                                    handleResolveRequest(req.id, "REJECTED")
+                                  }
+                                >
+                                  Tolak
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan="5"
+                            className="text-center p-5 text-muted"
+                          >
+                            Tidak ada permintaan persetujuan yang tertunda.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-          )}
 
-          {activeTab === "approvals" && (
-            <div className="table-card p-3 shadow-sm">
-              <h5 className="mb-3">Permintaan Persetujuan Tertunda</h5>
-              <div className="table-responsive">
-                <table className="table table-hover align-middle">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Tanggal</th>
-                      <th>Pemohon</th>
-                      <th>Tipe Aksi</th>
-                      <th>Detail Permintaan</th>
-                      <th>Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loadingRequests ? (
+              <div className="table-card p-3 shadow-sm">
+                <h5 className="mb-3">Pengguna Belum Terverifikasi</h5>
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle">
+                    <thead className="table-light">
                       <tr>
-                        <td colSpan="5" className="text-center p-5">
-                          Memuat permintaan...
-                        </td>
+                        <th>Nama Pengguna</th>
+                        <th>Email</th>
+                        <th>Tanggal Daftar</th>
+                        <th className="text-center">Aksi</th>
                       </tr>
-                    ) : approvalRequests.length > 0 ? (
-                      approvalRequests.map((req) => (
-                        <tr key={req.id}>
-                          <td>
-                            <small>
-                              {new Date(req.createdAt).toLocaleString("id-ID")}
-                            </small>
+                    </thead>
+                    <tbody>
+                      {loadingUnverified ? (
+                        <tr>
+                          <td colSpan="4" className="text-center p-5">
+                            Memuat data...
                           </td>
-                          <td>
-                            <span className="fw-bold">
-                              {req.requestedBy.name}
-                            </span>
-                            <small className="d-block text-muted">
-                              {req.requestedBy.email}
-                            </small>
-                          </td>
-                          <td>
-                            <span className="badge bg-info">
-                              {req.actionType}
-                            </span>
-                          </td>
-                          <td>
-                            <pre className="mb-0" style={{ fontSize: "0.8em" }}>
-                              <code>
-                                {JSON.stringify(req.payload, null, 2)}
-                              </code>
-                            </pre>
-                          </td>
-                          <td>
-                            <div className="btn-group">
+                        </tr>
+                      ) : unverifiedUsers.length > 0 ? (
+                        unverifiedUsers.map((user) => (
+                          <tr key={user.id}>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>
+                              {new Date(user.createdAt).toLocaleString("id-ID")}
+                            </td>
+                            <td className="text-center">
                               <button
                                 className="btn btn-sm btn-success"
                                 onClick={() =>
-                                  handleResolveRequest(req.id, "APPROVED")
+                                  handleManualVerify(user.id, user.name)
                                 }
                               >
-                                Setujui
+                                Verifikasi Manual
                               </button>
-                              <button
-                                className="btn btn-sm btn-danger"
-                                onClick={() =>
-                                  handleResolveRequest(req.id, "REJECTED")
-                                }
-                              >
-                                Tolak
-                              </button>
-                            </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan="4"
+                            className="text-center p-5 text-muted"
+                          >
+                            Tidak ada pengguna yang menunggu verifikasi.
                           </td>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="text-center p-5 text-muted">
-                          Tidak ada permintaan persetujuan yang tertunda.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-          
-          {activeTab === "manualVerification" && (
-            <div className="table-card p-3 shadow-sm">
-              <h5 className="mb-3">Pengguna Belum Terverifikasi</h5>
-              <div className="table-responsive">
-                <table className="table table-hover align-middle">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Nama Pengguna</th>
-                      <th>Email</th>
-                      <th>Tanggal Daftar</th>
-                      <th className="text-center">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loadingUnverified ? (
-                      <tr>
-                        <td colSpan="4" className="text-center p-5">Memuat data...</td>
-                      </tr>
-                    ) : unverifiedUsers.length > 0 ? (
-                      unverifiedUsers.map((user) => (
-                        <tr key={user.id}>
-                          <td>{user.name}</td>
-                          <td>{user.email}</td>
-                          <td>{new Date(user.createdAt).toLocaleString("id-ID")}</td>
-                          <td className="text-center">
-                            <button 
-                              className="btn btn-sm btn-success"
-                              onClick={() => handleManualVerify(user.id, user.name)}
-                            >
-                              Verifikasi Manual
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4" className="text-center p-5 text-muted">
-                          Tidak ada pengguna yang menunggu verifikasi.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
 
+          {/* KONTEN UNTUK TAB PEMBAYARAN */}
           {activeTab === "payment" && (
             <div>
               {loadingPaymentConfig ? (
