@@ -40,12 +40,15 @@ async function main() {
 
   const users = await prisma.user.createManyAndReturn({
     data: [
-      { id: "user-dev-01", email: "developer@stridebase.com", name: "Developer Stride", password: passwordHash, role: "developer" },
-      { id: "user-admin-01", email: "admin@stridebase.com", name: "Super Admin", password: passwordHash, role: "admin" },
-      { id: "user-mitra-01", email: "budi.clean@example.com", name: "Budi Santoso", password: passwordHash, role: "mitra" },
-      { id: "user-mitra-02", email: "ani.laundry@example.com", name: "Ani Wijaya", password: passwordHash, role: "mitra" },
-      { id: "user-mitra-03", email: "tono.shoes@example.com", name: "Tono Stark", password: passwordHash, role: "mitra" },
-      { id: "user-mitra-04", email: "dina.kicks@example.com", name: "Dina Kicks", password: passwordHash, role: "mitra" },
+      // Tambahkan `emailVerified: new Date()` pada akun-akun ini
+      { id: "user-dev-01", email: "developer@stridebase.com", name: "Developer Stride", password: passwordHash, role: "developer", emailVerified: new Date() },
+      { id: "user-admin-01", email: "admin@stridebase.com", name: "Super Admin", password: passwordHash, role: "admin", emailVerified: new Date() },
+      { id: "user-mitra-01", email: "budi.clean@example.com", name: "Budi Santoso", password: passwordHash, role: "mitra", emailVerified: new Date() },
+      { id: "user-mitra-02", email: "ani.laundry@example.com", name: "Ani Wijaya", password: passwordHash, role: "mitra", emailVerified: new Date() },
+      { id: "user-mitra-03", email: "tono.shoes@example.com", name: "Tono Stark", password: passwordHash, role: "mitra", emailVerified: new Date() },
+      { id: "user-mitra-04", email: "dina.kicks@example.com", name: "Dina Kicks", password: passwordHash, role: "mitra", emailVerified: new Date() },
+      
+      // Biarkan akun customer tanpa `emailVerified` agar mereka melalui alur verifikasi
       { id: "user-customer-01", email: "siti.rahayu@example.com", name: "Siti Rahayu", password: passwordHash, role: "customer" },
       { id: "user-customer-02", email: "agus.wijoyo@example.com", name: "Agus Wijoyo", password: passwordHash, role: "customer" },
     ],
