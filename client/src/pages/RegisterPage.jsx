@@ -49,10 +49,11 @@ const RegisterPage = ({ theme }) => {
         throw new Error(data.message || "Pendaftaran gagal.");
       }
 
-      setSuccess("Pendaftaran berhasil! Anda akan diarahkan ke halaman login.");
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      setSuccess("Pendaftaran berhasil! Silakan periksa kotak masuk email Anda untuk link verifikasi.");
+      // Hapus timeout dan navigasi otomatis
+      // setTimeout(() => {
+      //   navigate("/login");
+      // }, 2000);
     } catch (err) {
       setError(err.message);
     }

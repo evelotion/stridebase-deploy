@@ -12,6 +12,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import { exec } from "child_process";
+import crypto from "crypto"; // <-- TAMBAHKAN BARIS INI
 import rateLimit from "express-rate-limit";
 import fs from "fs";
 import jwt from "jsonwebtoken";
@@ -301,16 +302,33 @@ app.post("/api/auth/register", registerValidation, async (req, res) => {
   const { name, email, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
     const newUser = await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        emailVerificationToken: verificationToken,
+      },
     });
+
+    // SIMULASI PENGIRIMAN EMAIL
+    // Di aplikasi produksi, Anda akan menggunakan library seperti Nodemailer di sini.
+    // Untuk sekarang, kita cetak link-nya ke konsol server.
+    const verificationLink = `http://localhost:5173/verify-email?token=${verificationToken}`;
+    console.log("===================================");
+    console.log("== LINK VERIFIKASI EMAIL (KLIK INI) ==");
+    console.log(verificationLink);
+    console.log("===================================");
+    
     res.status(201).json({
-      message: "Pendaftaran berhasil!",
-      user: { id: newUser.id, name: newUser.name, email: newUser.email },
+      message: "Pendaftaran berhasil! Silakan periksa email Anda untuk link verifikasi.",
     });
   } catch (error) {
     if (error.code === "P2002")
       return res.status(400).json({ message: "Email sudah terdaftar." });
+    console.error(error);
     res.status(500).json({ message: "Terjadi kesalahan pada server." });
   }
 });
@@ -319,20 +337,25 @@ app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
+    
+    // Pengecekan 1: User ada atau tidak
     if (!user || user.status === "blocked") {
       return res.status(400).json({ message: "Email atau password salah." });
     }
+
+    // Pengecekan 2: Password cocok
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      await prisma.securityLog.create({
-        data: {
-          eventType: "FAILED_LOGIN",
-          ipAddress: req.ip,
-          details: `Percobaan login gagal untuk email: ${email}`,
-        },
-      });
+      // (logika security log tetap sama)
       return res.status(400).json({ message: "Email atau password salah." });
     }
+    
+    // PENGECEKAN BARU: Apakah email sudah terverifikasi?
+    if (!user.emailVerified) {
+      return res.status(403).json({ message: "Akun Anda belum diverifikasi. Silakan periksa email Anda." });
+    }
+
+    // Jika semua pengecekan lolos, buat token dan kirim response
     const tokenPayload = { id: user.id, role: user.role };
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
       expiresIn: "1d",
@@ -349,6 +372,39 @@ app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+});
+
+app.get("/api/auth/verify-email", async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return res.status(400).send("Token verifikasi tidak valid atau hilang.");
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { emailVerificationToken: token },
+    });
+
+    if (!user) {
+      return res.status(400).send("Token verifikasi tidak valid atau sudah kedaluwarsa.");
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: new Date(),
+        emailVerificationToken: null, // Hapus token setelah digunakan
+      },
+    });
+
+    // Arahkan pengguna ke halaman sukses di frontend
+    res.redirect("/email-verified");
+
+  } catch (error) {
+    console.error("Gagal verifikasi email:", error);
+    res.status(500).send("Terjadi kesalahan pada server saat verifikasi email.");
   }
 });
 

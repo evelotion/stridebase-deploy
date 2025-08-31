@@ -91,6 +91,7 @@ const DeveloperLayout = React.lazy(() =>
 const DeveloperDashboardPage = React.lazy(() =>
   import("./pages/DeveloperDashboardPage")
 );
+const EmailVerifiedPage = React.lazy(() => import("./pages/EmailVerifiedPage"));
 
 let socket;
 
@@ -529,6 +530,7 @@ function AppContent() {
           <Route path="track/:bookingId" element={<TrackOrderPage />} />
           <Route path="payment-finish" element={<PaymentFinishPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
+           <Route path="email-verified" element={<EmailVerifiedPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

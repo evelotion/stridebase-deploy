@@ -37,6 +37,8 @@ model User {
   role             String            @default("customer")
   status           String            @default("active")
   createdAt        DateTime          @default(now())
+  emailVerified           DateTime?         // Menyimpan tanggal & waktu verifikasi
+  emailVerificationToken  String?           @unique // Menyimpan token unik untuk verifikasi
   bookings         Booking[]
   reviews          Review[]
   stores           Store[]
