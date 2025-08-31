@@ -436,6 +436,10 @@ function AppContent() {
             path="stores/:storeId/invoices"
             element={renderWithProps(AdminStoreInvoicePage)}
           />
+          <Route
+            path="stores/:storeId/settings"
+            element={renderWithProps(AdminStoreSettingsPage)}
+          />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="promos" element={renderWithProps(AdminPromosPage)} />
           <Route path="banners" element={renderWithProps(AdminBannersPage)} />
@@ -530,7 +534,7 @@ function AppContent() {
           <Route path="track/:bookingId" element={<TrackOrderPage />} />
           <Route path="payment-finish" element={<PaymentFinishPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
-           <Route path="email-verified" element={<EmailVerifiedPage />} />
+          <Route path="email-verified" element={<EmailVerifiedPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

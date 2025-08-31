@@ -2930,6 +2930,82 @@ app.post(
   }
 );
 
+// =================================================================
+// === ENDPOINT BARU UNTUK ADMIN MENGELOLA PENGATURAN TOKO DETAIL ===
+// =================================================================
+
+// 1. Mengambil data detail satu toko untuk halaman pengaturan
+adminRouter.get("/stores/:storeId/settings", async (req, res) => {
+  const { storeId } = req.params;
+  try {
+    const store = await prisma.store.findUnique({
+      where: { id: storeId },
+    });
+    if (!store) {
+      return res.status(404).json({ message: "Toko tidak ditemukan." });
+    }
+    res.json(store);
+  } catch (error) {
+    res.status(500).json({ message: "Gagal mengambil data pengaturan toko." });
+  }
+});
+
+// 2. Memperbarui data detail satu toko
+adminRouter.put("/stores/:storeId/settings", async (req, res) => {
+  const { storeId } = req.params;
+  const { name, description, schedule, images, headerImage } = req.body;
+
+  if (!name || !schedule || !images) {
+    return res.status(400).json({ message: "Data yang dikirim tidak lengkap." });
+  }
+
+  try {
+    const updatedStore = await prisma.store.update({
+      where: { id: storeId },
+      data: {
+        name,
+        description: description || "",
+        schedule,
+        images,
+        headerImage,
+      },
+    });
+    res.status(200).json({
+      message: "Pengaturan toko berhasil diperbarui oleh admin.",
+      store: updatedStore,
+    });
+  } catch (error) {
+    console.error("Gagal memperbarui pengaturan toko oleh admin:", error);
+    res.status(500).json({
+      message: "Gagal memperbarui pengaturan karena kesalahan server.",
+    });
+  }
+});
+
+// 3. Mengunggah foto untuk toko tertentu
+adminRouter.post("/stores/upload-photo", upload.single("photo"), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: "Tidak ada file yang diunggah." });
+    }
+    try {
+        const b64 = Buffer.from(req.file.buffer).toString("base64");
+        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+        const result = await cloudinary.uploader.upload(dataURI, {
+            folder: "stridebase_photos",
+            public_id: `photo-admin-upload-${Date.now()}`,
+        });
+
+        res.status(200).json({
+            message: "Foto berhasil diunggah oleh admin.",
+            filePath: result.secure_url,
+        });
+    } catch (error) {
+        console.error("Admin gagal memproses gambar:", error);
+        res.status(500).json({ message: `Gagal memproses gambar: ${error.message}` });
+    }
+});
+
 app.use("/api/admin", adminRouter);
 
 const isDeveloper = (req, res, next) => {

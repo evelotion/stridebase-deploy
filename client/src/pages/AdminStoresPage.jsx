@@ -551,6 +551,13 @@ const AdminStoresPage = ({ showMessage }) => {
                         <i className="fas fa-file-invoice-dollar"></i>
                       </Link>
                     )}
+                    <Link
+                      to={`/admin/stores/${store.id}/settings`}
+                      className="btn btn-sm btn-outline-dark"
+                      title="Kelola Pengaturan Toko"
+                    >
+                      <i className="fas fa-cog"></i>
+                    </Link>
                     {/* Tombol Edit */}
                     <button
                       className="btn btn-sm btn-outline-secondary"
