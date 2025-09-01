@@ -32,40 +32,37 @@ const ForgotPasswordPage = ({ showMessage, theme }) => {
 
     return (
         <div className="auth-container">
-            <div className="row g-0 vh-100 align-items-center justify-content-center">
-                <div className="col-lg-5">
-                    <div className="auth-form-container text-center">
-                        <h3 className="fw-bold mb-2">Lupa Password?</h3>
-                        <p className="text-muted mb-4">Masukkan email Anda dan kami akan mengirimkan link untuk mereset password Anda.</p>
-
-                        <form onSubmit={handleSubmit}>
-                            {message && <div className="alert alert-success">{message}</div>}
-                            {error && <div className="alert alert-danger">{error}</div>}
-
-                            <div className="form-floating mb-3">
-                                <input
-                                    type="email"
-                                    id="email"
-                                    className="form-control"
-                                    placeholder="Alamat Email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                                <label htmlFor="email">Alamat Email</label>
-                            </div>
-
-                            <div className="d-grid mb-3">
-                                <button type="submit" className="btn btn-dark" disabled={isSubmitting}>
-                                    {isSubmitting ? 'Mengirim...' : 'Kirim Link Reset'}
-                                </button>
-                            </div>
-                            <p className="text-muted">
-                                <Link to="/login" style={{ textDecoration: 'none' }}>Kembali ke Login</Link>
-                            </p>
-                        </form>
+            {/* Mengganti row g-0 vh-100 dengan flexbox CSS kustom */}
+            <div className="auth-form-container text-center">
+                <h3 className="fw-bold mb-2">Lupa Password?</h3>
+                <p className="text-muted mb-4">Masukkan email Anda dan kami akan mengirimkan link untuk mereset password Anda.</p>
+                
+                <form onSubmit={handleSubmit}>
+                    {message && <div className="alert alert-success">{message}</div>}
+                    {error && <div className="alert alert-danger">{error}</div>}
+                    
+                    <div className="form-floating mb-3">
+                        <input
+                            type="email"
+                            id="email"
+                            className="form-control"
+                            placeholder="Alamat Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                        <label htmlFor="email">Alamat Email</label>
                     </div>
-                </div>
+
+                    <div className="d-grid mb-3">
+                        <button type="submit" className="btn btn-dark" disabled={isSubmitting}>
+                            {isSubmitting ? 'Mengirim...' : 'Kirim Link Reset'}
+                        </button>
+                    </div>
+                    <p className="text-muted">
+                        <Link to="/login" style={{ textDecoration: 'none' }}>Kembali ke Login</Link>
+                    </p>
+                </form>
             </div>
         </div>
     );
