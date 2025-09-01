@@ -95,6 +95,9 @@ const DeveloperDashboardPage = React.lazy(() =>
   import("./pages/DeveloperDashboardPage")
 );
 const EmailVerifiedPage = React.lazy(() => import("./pages/EmailVerifiedPage"));
+const ForgotPasswordPage = React.lazy(() => import("./pages/ForgotPasswordPage"));
+const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
+
 
 let socket;
 
@@ -532,6 +535,8 @@ function AppContent() {
             path="login"
             element={<LoginPage showMessage={showMessage} theme={theme} />}
           />
+          <Route path="forgot-password" element={renderWithProps(ForgotPasswordPage, { theme })} />
+<Route path="reset-password" element={renderWithProps(ResetPasswordPage)} />
           <Route path="register" element={<RegisterPage theme={theme} />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="track/:bookingId" element={<TrackOrderPage />} />
