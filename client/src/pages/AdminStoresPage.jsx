@@ -393,6 +393,15 @@ const AdminStoresPage = ({ showMessage }) => {
                           </Link>
                         )}
 
+                        {/* === TOMBOL PENGATURAN UNTUK DESKTOP === */}
+                        <Link
+                          to={`/admin/stores/${store.id}/settings`}
+                          className="btn btn-sm btn-outline-dark"
+                          title="Kelola Pengaturan Toko"
+                        >
+                          <i className="fas fa-cog"></i>
+                        </Link>
+
                         <button
                           className="btn btn-sm btn-outline-secondary"
                           title="Edit"
