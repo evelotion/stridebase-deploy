@@ -373,6 +373,72 @@ app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
   }
 });
 
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Kirim respons sukses meskipun email tidak ada untuk alasan keamanan
+      return res.status(200).json({ message: 'Jika email Anda terdaftar, Anda akan menerima link reset password.' });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const passwordResetExpires = new Date(Date.now() + 3600000); // 1 jam dari sekarang
+
+    await prisma.user.update({
+      where: { email },
+      data: { passwordResetToken, passwordResetExpires },
+    });
+
+    await sendPasswordResetEmail(user.email, resetToken);
+
+    res.status(200).json({ message: 'Link reset password telah dikirim ke email Anda.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server.' });
+  }
+});
+
+// Endpoint untuk memproses reset password
+app.post('/api/auth/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) {
+    return res.status(400).json({ message: 'Token dan password baru dibutuhkan.' });
+  }
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { gt: new Date() },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Token tidak valid atau sudah kedaluwarsa.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+      },
+    });
+
+    res.status(200).json({ message: 'Password berhasil direset. Silakan login.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Gagal mereset password.' });
+  }
+});
+
 app.get("/api/auth/verify-email", async (req, res) => {
   const { token } = req.query;
 

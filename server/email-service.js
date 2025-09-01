@@ -45,3 +45,40 @@ export const sendVerificationEmail = async (userEmail, token) => {
     }
   }
 };
+
+export const sendPasswordResetEmail = async (userEmail, token) => {
+  const frontendUrl = process.env.NODE_ENV === 'production'
+    ? 'https://stridebase-client-ctct.onrender.com'
+    : 'http://localhost:5173';
+
+  const resetLink = `${frontendUrl}/reset-password?token=${token}`;
+
+  const msg = {
+    to: userEmail,
+    from: process.env.EMAIL_FROM,
+    subject: "Reset Password Akun StrideBase Anda",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+          <h2 style="color: #1c40d4;">Permintaan Reset Password</h2>
+          <p>Anda menerima email ini karena Anda (atau orang lain) telah meminta untuk mereset password akun Anda. Silakan klik tombol di bawah ini untuk melanjutkan:</p>
+          <a href="${resetLink}" style="background-color: #1c40d4; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Reset Password Saya</a>
+          <p style="margin-top: 20px;">Jika Anda tidak meminta ini, mohon abaikan email ini dan password Anda tidak akan berubah.</p>
+          <p>Link ini akan kedaluwarsa dalam 1 jam.</p>
+          <br>
+          <p>Terima kasih,<br>Tim StrideBase</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await apiInstance.sendTransacEmail(msg);
+    console.log(`✅ Email reset password via Brevo berhasil dikirim ke: ${userEmail}`);
+  } catch (error) {
+    console.error("❌ Gagal mengirim email reset password via Brevo:", error);
+    if (error.response) {
+      console.error(JSON.stringify(error.response.body, null, 2));
+    }
+  }
+};

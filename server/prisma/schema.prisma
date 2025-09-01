@@ -30,15 +30,17 @@ enum BillingType {
 }
 
 model User {
-  id               String            @id @default(cuid())
-  email            String            @unique
-  name             String
-  password         String
-  role             String            @default("customer")
-  status           String            @default("active")
-  createdAt        DateTime          @default(now())
-  emailVerified           DateTime?         // Menyimpan tanggal & waktu verifikasi
-  emailVerificationToken  String?           @unique // Menyimpan token unik untuk verifikasi
+  id                      String    @id @default(cuid())
+  email                   String    @unique
+  name                    String
+  password                String
+  role                    String    @default("customer")
+  status                  String    @default("active")
+  createdAt               DateTime  @default(now())
+  emailVerified           DateTime?
+  emailVerificationToken  String?   @unique
+  passwordResetToken      String?   @unique
+  passwordResetExpires    DateTime?
   bookings         Booking[]
   reviews          Review[]
   stores           Store[]
