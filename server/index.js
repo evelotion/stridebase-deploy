@@ -23,6 +23,7 @@ import { sendVerificationEmail } from "./email-service.js";
 import redisClient from "./redis-client.js";
 import { v2 as cloudinary } from "cloudinary";
 
+  
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
