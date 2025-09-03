@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const BookingConfirmationPage = ({ showMessage }) => {
   const [bookingDetails, setBookingDetails] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null); // State baru untuk alamat
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoError, setPromoError] = useState("");
@@ -40,24 +41,53 @@ const BookingConfirmationPage = ({ showMessage }) => {
         bookingData.schedule.date = new Date(bookingData.schedule.date);
       }
       setBookingDetails(bookingData);
+
+      // --- LOGIKA BARU UNTUK MENGAMBIL ALAMAT ---
+      if (bookingData.deliveryOption === "pickup" && bookingData.addressId) {
+        const fetchAddress = async () => {
+          try {
+            const res = await fetch(`${API_BASE_URL}/api/user/addresses`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+              const addresses = await res.json();
+              const foundAddress = addresses.find(
+                (addr) => addr.id === bookingData.addressId
+              );
+              if (foundAddress) {
+                setSelectedAddress(foundAddress);
+              }
+            } else {
+              console.error("Gagal mengambil daftar alamat.");
+            }
+          } catch (error) {
+            console.error("Error fetching address:", error);
+          }
+        };
+        fetchAddress();
+      }
+      // --- AKHIR LOGIKA BARU ---
     } else {
       showMessage("Tidak ada detail booking ditemukan. Silakan ulangi proses.");
       navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, showMessage]);
 
   const handleApplyPromo = async () => {
     setPromoError("");
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/promos/validate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ code: promoCode }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/promos/validate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ code: promoCode }),
+        }
+      );
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message);
@@ -93,14 +123,17 @@ const BookingConfirmationPage = ({ showMessage }) => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      const paymentResponse = await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ bookingId: newBookingData.id }),
-      });
+      const paymentResponse = await fetch(
+        `${API_BASE_URL}/api/payments/create-transaction`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ bookingId: newBookingData.id }),
+        }
+      );
 
       const paymentData = await paymentResponse.json();
       if (!paymentResponse.ok) {
@@ -189,6 +222,23 @@ const BookingConfirmationPage = ({ showMessage }) => {
                 <p className="text-muted mb-0">
                   <strong>Jadwal:</strong> {scheduleString}
                 </p>
+                {/* --- BLOK BARU UNTUK PREVIEW ALAMAT --- */}
+                {deliveryOption === "pickup" && selectedAddress && (
+                  <div className="mt-3 p-3 bg-light rounded border">
+                    <h6 className="small text-muted mb-1">
+                      Alamat Penjemputan:
+                    </h6>
+                    <p className="mb-0 fw-semibold">
+                      {selectedAddress.recipientName} ({selectedAddress.label})
+                    </p>
+                    <p className="mb-0 small">
+                      {selectedAddress.fullAddress}, {selectedAddress.city},{" "}
+                      {selectedAddress.postalCode}
+                    </p>
+                    <p className="mb-0 small">{selectedAddress.phoneNumber}</p>
+                  </div>
+                )}
+                {/* --- AKHIR BLOK BARU --- */}
               </div>
 
               <div className="booking-section">
