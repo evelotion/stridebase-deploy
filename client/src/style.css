@@ -4181,6 +4181,11 @@ body.has-global-announcement {
 /* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
 /* =============================================== */
 
+.page-content-booking {
+  padding-top: 120px !important; /* Menambah jarak dari atas */
+  padding-bottom: 60px !important;
+}
+
 /* Menggunakan kelas spesifik agar tidak bertabrakan */
 .page-content-booking .confirmation-details-card,
 .page-content-booking .confirmation-action-card {
