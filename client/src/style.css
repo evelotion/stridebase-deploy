@@ -4178,15 +4178,16 @@ body.has-global-announcement {
 }
 
 /* =============================================== */
-/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
+/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 (LENGKAP) === */
 /* =============================================== */
 
+/* Memberi jarak dari atas (navbar) ke konten halaman */
 .page-content-booking {
-  padding-top: 120px !important; /* Menambah jarak dari atas */
+  padding-top: 120px !important;
   padding-bottom: 60px !important;
 }
 
-/* Menggunakan kelas spesifik agar tidak bertabrakan */
+/* Menggunakan kelas spesifik agar tidak bertabrakan dengan halaman lain */
 .page-content-booking .confirmation-details-card,
 .page-content-booking .confirmation-action-card {
   border: 1px solid var(--border-color);
@@ -4256,28 +4257,23 @@ body.has-global-announcement {
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
-/* =============================================== */
-/* === PENYESUAIAN VOUCHER & PROMO (BOOKING CONFIRMATION) === */
-/* =============================================== */
-
-/* Menyelaraskan tinggi input dan tombol */
+/* Penyesuaian Voucher & Promo di Halaman Konfirmasi */
 .page-content-booking .input-group {
-    height: 48px; /* Atur tinggi yang sama untuk container */
+    height: 48px;
 }
 
 .page-content-booking .input-group .form-control,
 .page-content-booking .input-group .btn {
-    height: 100%; /* Buat input dan tombol mengisi tinggi container */
+    height: 100%;
 }
 
-/* Tombol "Lihat Voucher Saya" */
 .page-content-booking .btn-link {
     padding: 0;
     font-size: 0.9rem;
     font-weight: 500;
 }
 
-/* --- Gaya Modal Voucher --- */
+/* Gaya Modal Voucher */
 .voucher-card {
     display: flex;
     align-items: center;
