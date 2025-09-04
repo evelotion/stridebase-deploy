@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+import API_BASE_URL from '../apiConfig';
 
 const BookingConfirmationPage = ({ showMessage }) => {
   const [bookingDetails, setBookingDetails] = useState(null);
-  const [selectedAddress, setSelectedAddress] = useState(null); // State baru untuk alamat
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoError, setPromoError] = useState("");
@@ -42,7 +42,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
       }
       setBookingDetails(bookingData);
 
-      // --- LOGIKA BARU UNTUK MENGAMBIL ALAMAT ---
       if (bookingData.deliveryOption === "pickup" && bookingData.addressId) {
         const fetchAddress = async () => {
           try {
@@ -51,14 +50,12 @@ const BookingConfirmationPage = ({ showMessage }) => {
             });
             if (res.ok) {
               const addresses = await res.json();
-              const foundAddress = addresses.find(
-                (addr) => addr.id === bookingData.addressId
-              );
+              const foundAddress = addresses.find(addr => addr.id === bookingData.addressId);
               if (foundAddress) {
                 setSelectedAddress(foundAddress);
               }
             } else {
-              console.error("Gagal mengambil daftar alamat.");
+               console.error("Gagal mengambil daftar alamat.");
             }
           } catch (error) {
             console.error("Error fetching address:", error);
@@ -66,7 +63,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
         };
         fetchAddress();
       }
-      // --- AKHIR LOGIKA BARU ---
+
     } else {
       showMessage("Tidak ada detail booking ditemukan. Silakan ulangi proses.");
       navigate("/");
@@ -77,17 +74,14 @@ const BookingConfirmationPage = ({ showMessage }) => {
     setPromoError("");
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/promos/validate`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ code: promoCode }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/api/admin/promos/validate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ code: promoCode }),
+      });
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message);
@@ -123,17 +117,14 @@ const BookingConfirmationPage = ({ showMessage }) => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      const paymentResponse = await fetch(
-        `${API_BASE_URL}/api/payments/create-transaction`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ bookingId: newBookingData.id }),
-        }
-      );
+      const paymentResponse = await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ bookingId: newBookingData.id }),
+      });
 
       const paymentData = await paymentResponse.json();
       if (!paymentResponse.ok) {
@@ -185,172 +176,171 @@ const BookingConfirmationPage = ({ showMessage }) => {
     : "Langsung diantar ke toko";
 
   return (
-    <main className="page-content-booking container">
-      <div className="text-center mb-4">
-        <h2 className="fw-bold">Periksa Pesanan Anda</h2>
-        <p className="text-muted">
-          Pastikan semua detail sudah benar sebelum melanjutkan ke pembayaran.
+    <main className="container py-5">
+      <div className="text-center mb-5">
+        <h1 className="fw-bold text-dark">Konfirmasi Pesanan Anda</h1>
+        <p className="lead text-muted">
+          Mohon periksa kembali detail pesanan Anda sebelum melanjutkan.
         </p>
       </div>
+
       <div className="row g-4 justify-content-center">
+        {/* Kolom Kiri: Detail Pesanan */}
         <div className="col-lg-7">
-          <div className="card confirmation-details-card">
-            <div className="card-body p-4">
-              <div className="booking-section">
-                <h5 className="section-title">
-                  <i className="fas fa-store me-2"></i>Layanan & Lokasi
-                </h5>
-                <p className="mb-1">
-                  <strong>{storeName}</strong>
-                </p>
-                <p className="text-muted mb-0">
-                  Layanan yang Anda pilih adalah{" "}
-                  <strong>{service?.name}</strong> untuk sepatu jenis{" "}
-                  <strong>{shoeType}</strong>.
-                </p>
-              </div>
-              <div className="booking-section">
-                <h5 className="section-title">
-                  <i className="fas fa-truck me-2"></i>Pengantaran & Jadwal
-                </h5>
-                <p className="mb-1">
-                  <strong>Opsi:</strong>{" "}
-                  {deliveryOption === "pickup"
-                    ? "Antar Jemput oleh Kurir"
-                    : "Diantar Sendiri ke Toko"}
-                </p>
-                <p className="text-muted mb-0">
-                  <strong>Jadwal:</strong> {scheduleString}
-                </p>
-                {/* --- BLOK BARU UNTUK PREVIEW ALAMAT --- */}
-                {deliveryOption === "pickup" && selectedAddress && (
-                  <div className="mt-3 p-3 bg-light rounded border">
-                    <h6 className="small text-muted mb-1">
-                      Alamat Penjemputan:
-                    </h6>
-                    <p className="mb-0 fw-semibold">
-                      {selectedAddress.recipientName} ({selectedAddress.label})
-                    </p>
-                    <p className="mb-0 small">
-                      {selectedAddress.fullAddress}, {selectedAddress.city},{" "}
-                      {selectedAddress.postalCode}
-                    </p>
-                    <p className="mb-0 small">{selectedAddress.phoneNumber}</p>
-                  </div>
-                )}
-                {/* --- AKHIR BLOK BARU --- */}
+          <div className="card shadow-sm mb-4 booking-summary-card">
+            <div className="card-body p-4 p-md-5">
+              <h4 className="fw-bold mb-4">Rincian Pesanan</h4>
+
+              {/* Bagian Layanan & Lokasi */}
+              <div className="d-flex align-items-start mb-4">
+                <i className="fas fa-store-alt fa-2x text-primary me-4 mt-1"></i>
+                <div>
+                  <h6 className="mb-1 fw-semibold text-dark">Layanan & Lokasi</h6>
+                  <p className="mb-0">
+                    <strong className="text-secondary">{storeName}</strong>
+                  </p>
+                  <small className="text-muted">
+                    Layanan yang dipilih: <strong>{service?.name}</strong> untuk{" "}
+                    <strong>{shoeType}</strong>.
+                  </small>
+                </div>
               </div>
 
-              <div className="booking-section">
-                <h5 className="section-title">
-                  <i className="fas fa-tags me-2"></i>Kode Promo
-                </h5>
-                <div className="input-group">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Masukkan kode promo"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                  />
-                  <button
-                    className="btn btn-outline-secondary"
-                    type="button"
-                    onClick={handleApplyPromo}
-                  >
-                    Terapkan
-                  </button>
+              {/* Bagian Pengantaran & Jadwal */}
+              <div className="d-flex align-items-start mb-4">
+                <i className="fas fa-truck-moving fa-2x text-primary me-4 mt-1"></i>
+                <div>
+                  <h6 className="mb-1 fw-semibold text-dark">Pengantaran & Jadwal</h6>
+                  <p className="mb-0">
+                    Opsi:{" "}
+                    <strong className="text-secondary">
+                      {deliveryOption === "pickup"
+                        ? "Antar Jemput oleh Kurir"
+                        : "Diantar Sendiri ke Toko"}
+                    </strong>
+                  </p>
+                  <small className="text-muted">
+                    Jadwal: <strong>{scheduleString}</strong>
+                  </small>
+                  {deliveryOption === "pickup" && selectedAddress && (
+                    <div className="mt-3 p-3 bg-light rounded shadow-sm-light border-light">
+                      <h6 className="small text-muted mb-1">Alamat Penjemputan:</h6>
+                      <p className="mb-0 fw-semibold">{selectedAddress.recipientName} ({selectedAddress.label})</p>
+                      <p className="mb-0 small">{selectedAddress.fullAddress}, {selectedAddress.city}, {selectedAddress.postalCode}</p>
+                      <p className="mb-0 small">{selectedAddress.phoneNumber}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bagian Kode Promo */}
+              <div className="d-flex align-items-start mb-4">
+                <i className="fas fa-tags fa-2x text-primary me-4 mt-1"></i>
+                <div className="flex-grow-1">
+                  <h6 className="mb-2 fw-semibold text-dark">Kode Promo</h6>
+                  <div className="input-group promo-input-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Masukkan kode promo"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      aria-label="Kode Promo"
+                    />
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      onClick={handleApplyPromo}
+                      disabled={isSubmitting}
+                    >
+                      Terapkan
+                    </button>
+                  </div>
+                  {appliedPromo && (
+                    <div className="text-success small mt-2 d-flex align-items-center">
+                      <i className="fas fa-check-circle me-1"></i>
+                      Promo <strong>{appliedPromo.code}</strong> berhasil diterapkan!
+                    </div>
+                  )}
+                  {promoError && (
+                    <div className="text-danger small mt-2 d-flex align-items-center">
+                      <i className="fas fa-exclamation-circle me-1"></i>
+                      {promoError}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Bagian Rincian Biaya */}
+              <hr className="my-4" />
+              <h5 className="fw-bold mb-3">Total Pembayaran</h5>
+              <div className="cost-summary-list">
+                <div className="d-flex justify-content-between py-2">
+                  <span>{service?.name}</span>
+                  <span>Rp {subtotal.toLocaleString("id-ID")}</span>
+                </div>
+                {deliveryFee > 0 && (
+                  <div className="d-flex justify-content-between py-2">
+                    <span>Biaya Antar Jemput</span>
+                    <span>Rp {deliveryFee.toLocaleString("id-ID")}</span>
+                  </div>
+                )}
+                <div className="d-flex justify-content-between py-2">
+                  <span>Biaya Penanganan</span>
+                  <span>Rp {handlingFee.toLocaleString("id-ID")}</span>
                 </div>
                 {appliedPromo && (
-                  <div className="text-success small mt-2">
-                    ✓ Promo <strong>{appliedPromo.code}</strong> berhasil
-                    diterapkan!
+                  <div className="d-flex justify-content-between py-2 text-success fw-semibold">
+                    <span>Diskon ({appliedPromo.code})</span>
+                    <span>- Rp {discountAmount.toLocaleString("id-ID")}</span>
                   </div>
                 )}
-                {promoError && (
-                  <div className="text-danger small mt-2">{promoError}</div>
-                )}
-              </div>
-
-              <div className="booking-section">
-                <h5 className="section-title">
-                  <i className="fas fa-receipt me-2"></i>Rincian Biaya
-                </h5>
-                <ul className="list-group list-group-flush cost-details">
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{service?.name}</span>
-                    <span>Rp {subtotal.toLocaleString("id-ID")}</span>
-                  </li>
-                  {deliveryFee > 0 && (
-                    <li className="list-group-item d-flex justify-content-between align-items-center">
-                      <span>Biaya Antar Jemput</span>
-                      <span>Rp {deliveryFee.toLocaleString("id-ID")}</span>
-                    </li>
-                  )}
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    <span>Biaya Penanganan</span>
-                    <span>Rp {handlingFee.toLocaleString("id-ID")}</span>
-                  </li>
-                  {appliedPromo && (
-                    <li className="list-group-item d-flex justify-content-between align-items-center text-success">
-                      <span>Diskon ({appliedPromo.code})</span>
-                      <span>- Rp {discountAmount.toLocaleString("id-ID")}</span>
-                    </li>
-                  )}
-                </ul>
-                <ul className="list-group list-group-flush cost-details">
-                  <li className="list-group-item d-flex justify-content-between align-items-center total-row">
-                    <span className="fw-bold">Total</span>
-                    <span className="fw-bold fs-5">
-                      Rp {totalCost.toLocaleString("id-ID")}
-                    </span>
-                  </li>
-                </ul>
+                <div className="d-flex justify-content-between py-3 mt-2 border-top total-amount">
+                  <span className="fw-bold fs-5 text-dark">Total</span>
+                  <span className="fw-bold fs-4 text-primary">
+                    Rp {totalCost.toLocaleString("id-ID")}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Kolom Kanan: Aksi Pembayaran */}
         <div className="col-lg-5">
-          <div className="card confirmation-action-card">
-            <div className="card-body text-center p-4">
-              <h5 className="card-title fw-semibold">
-                Lanjutkan ke Pembayaran?
-              </h5>
-              <p className="card-text text-muted small">
-                Anda akan diarahkan ke halaman pembayaran yang aman setelah
-                menekan tombol di bawah.
-              </p>
-              <div className="d-grid gap-2 mt-4">
-                <button
-                  onClick={handleConfirmAndPay}
-                  className="btn btn-dark btn-lg btn-confirm"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                      <span className="ms-2">Memproses...</span>
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-shield-alt me-2"></i>Ya, Lanjutkan ke
-                      Pembayaran
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={() => navigate(-1)}
-                  className="btn btn-outline-secondary btn-sm"
-                  disabled={isSubmitting}
-                >
-                  Batal dan Kembali
-                </button>
-              </div>
-            </div>
+          <div className="card shadow-sm p-4 text-center payment-action-card">
+            <i className="fas fa-credit-card fa-3x text-primary mb-4"></i>
+            <h5 className="fw-bold mb-3">Satu Langkah Lagi\!</h5>
+            <p className="text-muted mb-4">
+              Konfirmasi pesanan Anda dan lanjutkan ke halaman pembayaran yang aman.
+            </p>
+            <button
+              onClick={handleConfirmAndPay}
+              className="btn btn-primary btn-lg w-100 mb-3"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Memproses Pembayaran...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-wallet me-2"></i>Lanjutkan ke Pembayaran
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="btn btn-outline-secondary w-100"
+              disabled={isSubmitting}
+            >
+              <i className="fas fa-arrow-left me-2"></i>Kembali & Ubah Pesanan
+            </button>
           </div>
         </div>
       </div>
