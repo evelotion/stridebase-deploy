@@ -4176,82 +4176,73 @@ body.has-global-announcement {
   background-color: #e2e6ea !important;
   border-color: #d3d9df !important;
 }
-
 /* =============================================== */
-/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
+/* === PENYESUAIAN VOUCHER & PROMO (BOOKING CONFIRMATION) === */
 /* =============================================== */
 
-.page-content-booking {
-  padding-top: 120px !important; /* Menambah jarak dari atas */
-  padding-bottom: 60px !important;
+/* Menyelaraskan tinggi input dan tombol */
+.page-content-booking .input-group {
+    height: 48px; /* Atur tinggi yang sama untuk container */
 }
 
-/* Menggunakan kelas spesifik agar tidak bertabrakan */
-.page-content-booking .confirmation-details-card,
-.page-content-booking .confirmation-action-card {
-  border: 1px solid var(--border-color);
-  border-radius: 1rem; /* Sudut lebih melengkung */
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
-  height: 100%;
-  background-color: var(--bg-white);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.page-content-booking .input-group .form-control,
+.page-content-booking .input-group .btn {
+    height: 100%; /* Buat input dan tombol mengisi tinggi container */
 }
 
-.page-content-booking .confirmation-details-card:hover,
-.page-content-booking .confirmation-action-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+/* Tombol "Lihat Voucher Saya" */
+.page-content-booking .btn-link {
+    padding: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
-.page-content-booking .booking-section {
-  padding-bottom: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.page-content-booking .booking-section:not(:last-child) {
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.page-content-booking .booking-section .section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: var(--text-dark);
-  display: flex;
-  align-items: center;
-}
-
-.page-content-booking .cost-details .list-group-item {
-  background-color: transparent;
-  border: none;
-  padding: 0.5rem 0;
-  font-size: 0.95rem;
-}
-
-.page-content-booking .cost-details .list-group-item.total-row {
-  border-top: 2px dashed var(--border-color);
-  margin-top: 0.75rem;
-  padding-top: 1.25rem;
-}
-
-.page-content-booking .total-row .fw-bold.fs-5 {
-    color: var(--primary-color);
-}
-
-.page-content-booking .confirmation-action-card .card-body {
+/* --- Gaya Modal Voucher --- */
+.voucher-card {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.voucher-card:hover {
+    border-color: var(--primary-color);
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+}
+
+.voucher-value {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    margin-right: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 0.5rem;
 }
 
-.page-content-booking .btn-confirm {
-  font-weight: 600;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  transition: all 0.3s ease;
+.voucher-details {
+    flex-grow: 1;
 }
 
-.page-content-booking .btn-confirm:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+.voucher-code {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.25rem;
+}
+
+.voucher-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0;
 }
