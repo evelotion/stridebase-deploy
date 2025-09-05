@@ -4417,3 +4417,174 @@ body.has-global-announcement {
   color: var(--text-muted);
   margin-bottom: 0;
 }
+
+/* =============================================== */
+/* === GAYA BARU: TIKET KONFIRMASI BOOKING KREATIF === */
+/* =============================================== */
+
+.page-content-booking {
+  padding-top: 80px !important;
+  padding-bottom: 60px !important;
+}
+
+.booking-ticket {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--bg-white);
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  animation: floatUp 0.6s ease-out forwards;
+}
+
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ticket-main {
+  flex-grow: 1;
+  padding: 2rem;
+  border-right: 2px dashed var(--border-color);
+}
+
+.ticket-header {
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.ticket-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ticket-store-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 0.25rem;
+}
+
+.ticket-body {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.ticket-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.ticket-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.ticket-address .ticket-value {
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.ticket-stub {
+  width: 250px;
+  flex-shrink: 0;
+  background-color: var(--bg-light);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stub-qr {
+  text-align: center;
+  color: var(--text-dark);
+}
+
+.stub-qr i {
+  font-size: 6rem;
+}
+
+.stub-qr .qr-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.stub-price {
+  text-align: center;
+  width: 100%;
+}
+
+.stub-price .price-label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.stub-price .price-amount {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.ticket-stub .btn-confirm {
+  width: 100%;
+  padding: 0.75rem;
+  font-weight: 600;
+}
+
+/* Penyesuaian untuk Mobile */
+@media (max-width: 767.98px) {
+  .booking-ticket {
+    flex-direction: column;
+  }
+  .ticket-main {
+    border-right: none;
+    border-bottom: 2px dashed var(--border-color);
+    padding: 1.5rem;
+  }
+  .ticket-stub {
+    width: 100%;
+    padding: 1.5rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .stub-qr {
+    display: none; /* Sembunyikan QR di mobile agar tidak terlalu ramai */
+  }
+  .stub-price {
+    text-align: left;
+    flex-grow: 1;
+  }
+  .stub-price .price-amount {
+    font-size: 1.5rem;
+  }
+  .ticket-stub .btn-confirm {
+    width: auto;
+    flex-shrink: 0;
+  }
+}
