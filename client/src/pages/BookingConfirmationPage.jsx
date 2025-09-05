@@ -266,7 +266,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
                     </div>
                   )}
                 </div>
-                {/* Bagian Promo dipindahkan ke card kanan atau di bawah total */}
                 <div className="booking-section">
                   <h5 className="section-title">
                     <i className="fas fa-receipt me-2"></i>Rincian Biaya
@@ -322,7 +321,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
                   </h5>
                   <p className="card-text text-muted small">
                     Kami menjamin proses pembayaran yang aman dan mudah.
-                    Lanjutkan untuk mendapatkan layanan terbaik kami\!
+                    Lanjutkan untuk mendapatkan layanan terbaik kami!
                   </p>
                 </div>
 
@@ -338,7 +337,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
                       Lihat Voucher Saya
                     </button>
                   </div>
-                  <div className="input-group promo-input-group">
+                  {/* === PERUBAHAN STRUKTUR HTML DI SINI === */}
+                  <div className="promo-input-wrapper">
                     <input
                       type="text"
                       className="form-control"
@@ -356,12 +356,16 @@ const BookingConfirmationPage = ({ showMessage }) => {
                       Terapkan
                     </button>
                   </div>
+                  {/* === AKHIR PERUBAHAN STRUKTUR HTML === */}
                   {appliedPromo && (
                     <div className="text-success small mt-2">
                       <i className="fas fa-check-circle me-1"></i> Promo{" "}
-                      <strong>{appliedPromo.code}</strong> berhasil diterapkan\!
+                      <strong>{appliedPromo.code}</strong> berhasil diterapkan!
                       Anda menghemat{" "}
-                      <strong>Rp {discountAmount.toLocaleString("id-ID")}</strong>.
+                      <strong>
+                        Rp {discountAmount.toLocaleString("id-ID")}
+                      </strong>
+                      .
                     </div>
                   )}
                   {promoError && (

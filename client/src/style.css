@@ -4255,9 +4255,8 @@ body.has-global-announcement {
     transform: scale(1.03);
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
-
 /* =============================================== */
-/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
+/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V3 (FINAL) === */
 /* =============================================== */
 
 .page-content-booking {
@@ -4265,11 +4264,10 @@ body.has-global-announcement {
   padding-bottom: 60px !important;
 }
 
-/* Menggunakan kelas spesifik agar tidak bertabrakan */
 .page-content-booking .confirmation-details-card,
 .page-content-booking .confirmation-action-card {
   border: 1px solid var(--border-color);
-  border-radius: 1rem; /* Sudut lebih melengkung */
+  border-radius: 1rem;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
   height: 100%;
   background-color: var(--bg-white);
@@ -4300,16 +4298,14 @@ body.has-global-announcement {
   align-items: center;
 }
 
-/* New style for smaller section title, e.g., in promo section */
 .page-content-booking .section-title-small {
   font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
   color: var(--text-dark);
   display: flex;
   align-items: center;
 }
-
 
 .page-content-booking .cost-details .list-group-item {
   background-color: transparent;
@@ -4331,41 +4327,52 @@ body.has-global-announcement {
 .page-content-booking .confirmation-action-card .card-body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
 }
 
-/* Style for promo input group */
-.page-content-booking .promo-input-group .form-control {
-    /* Kita biarkan Bootstrap yang mengatur tinggi, tapi kita samakan paddingnya */
-    padding-top: 0.6rem;
-    padding-bottom: 0.6rem;
-    font-size: 0.9rem;
+/* === CSS BARU UNTUK VOUCHER WRAPPER (FIX ALIGNMENT) === */
+.promo-input-wrapper {
+  display: flex; /* Mengaktifkan Flexbox */
+  align-items: center; /* KUNCI: Membuat item di dalamnya lurus secara vertikal */
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding-left: 0.75rem; /* Padding untuk ruang di kiri input */
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.page-content-booking .promo-input-group .btn {
-    /* Pastikan padding vertikal tombol sama persis dengan input */
-    padding-top: 0.6rem;
-    padding-bottom: 0.6rem;
-    font-size: 0.9rem;
+.promo-input-wrapper:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
+
+.promo-input-wrapper .form-control {
+  border: none; /* Hapus border bawaan input */
+  flex-grow: 1; /* Biarkan input mengisi ruang yang tersisa */
+  padding: 0.6rem 0; /* Atur padding vertikal, hapus padding horizontal */
+  box-shadow: none !important; /* Hapus shadow saat focus */
+  background-color: transparent;
+}
+
+.promo-input-wrapper .btn {
+  border-radius: 0 0.3rem 0.3rem 0;
+  font-size: 0.9rem;
+}
+/* === AKHIR DARI CSS BARU === */
+
 
 .page-content-booking .btn-confirm {
   font-weight: 600;
   padding: 0.75rem;
   border-radius: 0.75rem;
   transition: all 0.3s ease;
-  background-color: var(--primary-color); /* Menggunakan primary-color */
+  background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
 
 .page-content-booking .btn-confirm:hover {
     transform: scale(1.03);
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    background-color: var(--primary-dark-color); /* Warna lebih gelap saat hover */
-    border-color: var(--primary-dark-color);
 }
 
-/* Voucher Modal styles */
 .voucher-card {
   display: flex;
   align-items: center;
@@ -4391,7 +4398,7 @@ body.has-global-announcement {
   color: var(--primary-color);
   margin-right: 1rem;
   flex-shrink: 0;
-  width: 70px; /* Lebar tetap untuk nilai diskon */
+  width: 70px;
   text-align: center;
 }
 
