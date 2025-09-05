@@ -332,19 +332,16 @@ const AdminStoresPage = ({ showMessage }) => {
                       </span>
                     </td>
                     <td>
-                      {/* === PERUBAHAN UTAMA DI SINI === */}
                       <div className="btn-group">
                         {store.storeStatus === "pending" ? (
-                          // Jika status PENDING, hanya tampilkan tombol Edit
                           <button
                             className="btn btn-sm btn-outline-secondary"
                             title="Edit Detail Toko"
                             onClick={() => handleShowEditModal(store)}
                           >
-                            <i className="fas fa-edit"></i> Edit Detail
+                            <i className="fas fa-edit"></i>
                           </button>
                         ) : (
-                          // Jika status ACTIVE atau INACTIVE, tampilkan semua tombol aksi relevan
                           <>
                             {store.storeStatus === "active" && (
                               <button
@@ -437,7 +434,6 @@ const AdminStoresPage = ({ showMessage }) => {
                           </>
                         )}
                       </div>
-                      {/* === AKHIR DARI PERUBAHAN === */}
                     </td>
                   </tr>
                 ))}
@@ -451,13 +447,153 @@ const AdminStoresPage = ({ showMessage }) => {
           </div>
 
           <div className="mobile-card-list d-lg-none">
-            {/* ... (kode untuk tampilan mobile tidak berubah) ... */}
+            {filteredStores.map((store) => (
+              <div className="mobile-card" key={store.id}>
+                <div className="mobile-card-header">
+                  <span className="fw-bold">{store.name}</span>
+                  <span
+                    className={`badge bg-${
+                      store.storeStatus === "active"
+                        ? "success"
+                        : store.storeStatus === "inactive"
+                        ? "secondary"
+                        : "warning text-dark"
+                    }`}
+                  >
+                    {store.storeStatus}
+                  </span>
+                </div>
+                <div className="mobile-card-body">
+                  <div className="mobile-card-row">
+                    <small>Pemilik</small>
+                    <span>{store.owner || "N/A"}</span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Lokasi</small>
+                    <span className="text-end">{store.location}</span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Tipe Penagihan</small>
+                    <span
+                      className={`badge ${
+                        store.billingType === "INVOICE"
+                          ? "bg-primary"
+                          : "bg-secondary"
+                      }`}
+                    >
+                      {store.billingType}
+                    </span>
+                  </div>
+                </div>
+                <div className="mobile-card-footer">
+                  <div className="btn-group">
+                    {store.storeStatus === "pending" ? (
+                      <button
+                        className="btn btn-sm btn-outline-secondary"
+                        title="Edit Detail Toko"
+                        onClick={() => handleShowEditModal(store)}
+                      >
+                        <i className="fas fa-edit me-1"></i> Edit Detail
+                      </button>
+                    ) : (
+                      <>
+                        {store.storeStatus === "active" && (
+                          <button
+                            onClick={() =>
+                              handleStatusChange(
+                                store.id,
+                                "inactive",
+                                `Toko ${store.name} berhasil dinonaktifkan.`
+                              )
+                            }
+                            className="btn btn-sm btn-outline-warning"
+                            title="Nonaktifkan"
+                          >
+                            <i className="fas fa-power-off"></i>
+                          </button>
+                        )}
+                        {store.storeStatus === "inactive" && (
+                          <button
+                            onClick={() =>
+                              handleStatusChange(
+                                store.id,
+                                "active",
+                                `Toko ${store.name} berhasil diaktifkan.`
+                              )
+                            }
+                            className="btn btn-sm btn-outline-success"
+                            title="Aktifkan"
+                          >
+                            <i className="fas fa-check-circle"></i>
+                          </button>
+                        )}
+                        {store.billingType === "INVOICE" && (
+                          <Link
+                            to={`/admin/stores/${store.id}/invoices`}
+                            className="btn btn-sm btn-outline-primary"
+                            title="Lihat & Kelola Invoice"
+                          >
+                            <i className="fas fa-file-invoice-dollar"></i>
+                          </Link>
+                        )}
+                        <Link
+                          to={`/admin/stores/${store.id}/settings`}
+                          className="btn btn-sm btn-outline-dark"
+                          title="Kelola Pengaturan Toko"
+                        >
+                          <i className="fas fa-cog"></i>
+                        </Link>
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          title="Edit"
+                          onClick={() => handleShowEditModal(store)}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        {themeConfig.featureFlags.enableTierSystem && (
+                          <div className="btn-group">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-info dropdown-toggle"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                              title="Ubah Tier"
+                            >
+                              <i className="fas fa-crown"></i>
+                            </button>
+                            <ul className="dropdown-menu">
+                              <li>
+                                <button
+                                  className="dropdown-item"
+                                  onClick={() => handleTierChange(store.id, "PRO")}
+                                >
+                                  Jadikan PRO
+                                </button>
+                              </li>
+                              <li>
+                                <button
+                                  className="dropdown-item"
+                                  onClick={() =>
+                                    handleTierChange(store.id, "BASIC")
+                                  }
+                                >
+                                  Jadikan BASIC
+                                </button>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       {showEditModal && editingStore && (
-        // ... (kode untuk modal Edit tidak berubah) ...
         <div
           className="modal fade show"
           style={{ display: "block" }}
@@ -557,7 +693,6 @@ const AdminStoresPage = ({ showMessage }) => {
       )}
 
       {showAddModal && (
-        // ... (kode untuk modal Tambah tidak berubah) ...
         <div
           className="modal fade show"
           style={{ display: "block" }}
