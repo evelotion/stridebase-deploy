@@ -9,8 +9,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
   const [promoCode, setPromoCode] = useState("");
   const [promoError, setPromoError] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
-  const [redeemedPromos, setRedeemedPromos] = useState([]); // State baru untuk voucher
-  const [showPromoModal, setShowPromoModal] = useState(false); // State untuk modal
+  const [redeemedPromos, setRedeemedPromos] = useState([]);
+  const [showPromoModal, setShowPromoModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +23,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
       return;
     }
 
-    // --- FUNGSI BARU UNTUK MENGAMBIL VOUCHER ---
     const fetchRedeemedPromos = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/api/user/redeemed-promos`, {
@@ -39,7 +38,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
     };
 
     fetchRedeemedPromos();
-    // --- AKHIR FUNGSI BARU ---
 
     if (savedBooking) {
       const bookingData = JSON.parse(savedBooking);
@@ -94,9 +92,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
   const handleApplyPromoFromModal = (code) => {
     setPromoCode(code);
     setShowPromoModal(false);
-    // Langsung terapkan promo setelah dipilih
     setTimeout(() => {
-      // Diberi sedikit jeda agar state promoCode terupdate sebelum validasi
       handleApplyPromo(code);
     }, 100);
   };
@@ -270,7 +266,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
                     </div>
                   )}
                 </div>
-                {/* --- PERUBAHAN UTAMA BAGIAN PROMO --- */}
                 <div className="booking-section">
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <h5 className="section-title mb-0">
@@ -311,7 +306,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
                     <div className="text-danger small mt-2">{promoError}</div>
                   )}
                 </div>
-                {/* --- AKHIR PERUBAHAN --- */}
                 <div className="booking-section">
                   <h5 className="section-title">
                     <i className="fas fa-receipt me-2"></i>Rincian Biaya
@@ -398,7 +392,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
         </div>
       </main>
 
-      {/* --- MODAL BARU UNTUK VOUCHER --- */}
       {showPromoModal && (
         <>
           <div
@@ -449,7 +442,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
           <div className="modal-backdrop fade show"></div>
         </>
       )}
-      {/* --- AKHIR MODAL --- */}
     </>
   );
 };
