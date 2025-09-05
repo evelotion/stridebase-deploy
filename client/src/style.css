@@ -4427,3 +4427,76 @@ body.has-global-announcement {
     flex-shrink: 0;
   }
 }
+
+/* =============================================== */
+/* === UPDATE: Penambahan Voucher di Tiket Konfirmasi === */
+/* =============================================== */
+
+.ticket-stub {
+  justify-content: space-between; /* Pastikan item terdistribusi dengan baik */
+}
+
+.stub-promo-section {
+  width: 100%;
+  text-align: center;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px dashed var(--border-color);
+}
+
+.promo-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-dark);
+}
+
+/* Menggunakan kembali style dari iterasi sebelumnya agar konsisten */
+.promo-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding-left: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--bg-white);
+}
+
+.promo-input-wrapper:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.promo-input-wrapper .form-control {
+  border: none;
+  flex-grow: 1;
+  padding: 0.6rem 0;
+  box-shadow: none !important;
+  background-color: transparent;
+  font-size: 0.9rem;
+}
+
+.promo-input-wrapper .btn {
+  border-radius: 0 0.3rem 0.3rem 0;
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+}
+
+/* Penyesuaian Mobile */
+@media (max-width: 767.98px) {
+  .ticket-stub {
+    flex-direction: column; /* Ubah kembali ke kolom di mobile */
+    gap: 1rem;
+  }
+  .stub-promo-section {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  .stub-price {
+    text-align: center; /* Pusatkan lagi di mobile */
+  }
+  .ticket-stub .btn-confirm {
+    width: 100%; /* Tombol bayar kembali full-width */
+  }
+}

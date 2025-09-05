@@ -180,60 +180,119 @@ const BookingConfirmationPage = ({ showMessage }) => {
   const totalCost = subtotal + handlingFee + deliveryFee - discountAmount;
 
   return (
-    <main className="page-content-booking container">
-      <div className="text-center mb-5">
-        <h2 className="fw-bold">Satu Langkah Lagi!</h2>
-        <p className="text-muted">
-          Pesanan Anda hampir selesai. Konfirmasi detail di "tiket" Anda di bawah ini.
-        </p>
-      </div>
+    <>
+      <main className="page-content-booking container">
+        <div className="text-center mb-5">
+          <h2 className="fw-bold">Satu Langkah Lagi!</h2>
+          <p className="text-muted">
+            Pesanan Anda hampir selesai. Konfirmasi detail di "tiket" Anda di bawah ini.
+          </p>
+        </div>
 
-      <div className="booking-ticket">
-        <div className="ticket-main">
-          <div className="ticket-header">
-            <h5 className="ticket-eyebrow">StrideBase Service Ticket</h5>
-            <h3 className="ticket-store-name">{storeName}</h3>
-          </div>
-          <div className="ticket-body">
-            <div className="ticket-section">
-              <span className="ticket-label">Layanan</span>
-              <span className="ticket-value">{service?.name || 'N/A'} ({shoeType})</span>
+        <div className="booking-ticket">
+          <div className="ticket-main">
+            <div className="ticket-header">
+              <h5 className="ticket-eyebrow">StrideBase Service Ticket</h5>
+              <h3 className="ticket-store-name">{storeName}</h3>
             </div>
-            <div className="ticket-section">
-              <span className="ticket-label">Pengantaran</span>
-              <span className="ticket-value">{deliveryOption === "pickup" ? "Diambil Kurir" : "Antar Sendiri"}</span>
-            </div>
-            <div className="ticket-section">
-              <span className="ticket-label">Jadwal</span>
-              <span className="ticket-value">
-                {schedule ? `${schedule.date.toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })} @ ${schedule.time}` : 'Langsung ke Toko'}
-              </span>
-            </div>
-             {selectedAddress && (
-              <div className="ticket-section ticket-address">
-                <span className="ticket-label">Alamat Jemput</span>
-                <span className="ticket-value small">
-                  {selectedAddress.recipientName}, {selectedAddress.fullAddress}, {selectedAddress.city}
+            <div className="ticket-body">
+              <div className="ticket-section">
+                <span className="ticket-label">Layanan</span>
+                <span className="ticket-value">{service?.name || 'N/A'} ({shoeType})</span>
+              </div>
+              <div className="ticket-section">
+                <span className="ticket-label">Pengantaran</span>
+                <span className="ticket-value">{deliveryOption === "pickup" ? "Diambil Kurir" : "Antar Sendiri"}</span>
+              </div>
+              <div className="ticket-section">
+                <span className="ticket-label">Jadwal</span>
+                <span className="ticket-value">
+                  {schedule ? `${schedule.date.toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })} @ ${schedule.time}` : 'Langsung ke Toko'}
                 </span>
               </div>
-            )}
+               {selectedAddress && (
+                <div className="ticket-section ticket-address">
+                  <span className="ticket-label">Alamat Jemput</span>
+                  <span className="ticket-value small">
+                    {selectedAddress.recipientName}, {selectedAddress.fullAddress}, {selectedAddress.city}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="ticket-stub">
+            <div className="stub-promo-section">
+                <h6 className="promo-title">Gunakan Voucher</h6>
+                <div className="promo-input-wrapper">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Kode Voucher"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                    />
+                    <button className="btn btn-dark" type="button" onClick={() => handleApplyPromo()}>
+                      Pakai
+                    </button>
+                </div>
+                 {appliedPromo && (
+                    <div className="text-success small mt-2">
+                      <i className="fas fa-check-circle me-1"></i> Diskon Rp {discountAmount.toLocaleString("id-ID")} diterapkan!
+                    </div>
+                  )}
+                  {promoError && (
+                    <div className="text-danger small mt-2">
+                      <i className="fas fa-exclamation-triangle me-1"></i> {promoError}
+                    </div>
+                  )}
+                <button className="btn btn-link btn-sm text-decoration-none p-0 mt-2" onClick={() => setShowPromoModal(true)}>
+                    Lihat Voucher Saya
+                </button>
+            </div>
+            <div className="stub-price">
+              <span className="price-label">Total Bayar</span>
+              <span className="price-amount">Rp {totalCost.toLocaleString("id-ID")}</span>
+            </div>
+            <button onClick={handleConfirmAndPay} className="btn btn-primary btn-block btn-confirm" disabled={isSubmitting}>
+              {isSubmitting ? "Memproses..." : "Bayar Sekarang"}
+            </button>
           </div>
         </div>
-        <div className="ticket-stub">
-          <div className="stub-qr">
-             <i className="fas fa-qrcode"></i>
-             <span className="qr-text">Tunjukkan di Toko</span>
+      </main>
+
+      {showPromoModal && (
+        <>
+          <div className="modal fade show" style={{ display: "block" }} tabIndex="-1">
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Voucher Saya</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowPromoModal(false)}></button>
+                </div>
+                <div className="modal-body">
+                  {redeemedPromos.length > 0 ? (
+                    redeemedPromos.map((promo) => (
+                      <div key={promo.id} className="voucher-card" onClick={() => handleApplyPromoFromModal(promo.code)}>
+                        <div className="voucher-value">
+                          {promo.discountType === "percentage" ? `${promo.value}%` : `Rp${promo.value / 1000}k`}
+                        </div>
+                        <div className="voucher-details">
+                          <h6 className="voucher-code">{promo.code}</h6>
+                          <p className="voucher-description">{promo.description}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-muted">Anda tidak memiliki voucher yang tersedia.</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-           <div className="stub-price">
-             <span className="price-label">Total Bayar</span>
-             <span className="price-amount">Rp {totalCost.toLocaleString("id-ID")}</span>
-           </div>
-           <button onClick={handleConfirmAndPay} className="btn btn-primary btn-block btn-confirm" disabled={isSubmitting}>
-             {isSubmitting ? "Memproses..." : "Bayar Sekarang"}
-           </button>
-        </div>
-      </div>
-    </main>
+          <div className="modal-backdrop fade show"></div>
+        </>
+      )}
+    </>
   );
 };
 
