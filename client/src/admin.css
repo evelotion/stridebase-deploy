@@ -429,3 +429,37 @@ tr:nth-child(8n + 8) .user-avatar {
   border-top: 1px solid var(--border-color);
   text-align: right;
 }
+
+/* ======================================================= */
+/* === PERBAIKAN: Status Panjang di Kartu Pesanan Mobile === */
+/* ======================================================= */
+
+/* Hanya berlaku pada layar mobile (di bawah 992px) */
+@media (max-width: 991.98px) {
+  .mobile-card-header {
+    /* Mengatur ulang beberapa properti flex untuk penanganan yang lebih baik */
+    align-items: flex-start; /* Ganti dari 'center' agar tidak meregang secara vertikal */
+    gap: 0.5rem; /* Menambahkan sedikit jarak antara nama dan status */
+  }
+
+  .mobile-card-header > div:first-child {
+    /* Ini menargetkan div yang berisi nama dan ID */
+    flex: 1; /* Izinkan elemen ini untuk menyusut dan membesar */
+    min-width: 0; /* KUNCI UTAMA: Memungkinkan flex item untuk menyusut di bawah ukuran kontennya */
+  }
+
+  .mobile-card-header .fw-bold {
+    /* Ini menargetkan nama pelanggan */
+    white-space: nowrap; /* Mencegah nama pecah baris */
+    overflow: hidden; /* Sembunyikan teks yang meluber */
+    text-overflow: ellipsis; /* Tampilkan '...' jika teks nama terlalu panjang */
+    display: block; /* Diperlukan agar ellipsis berfungsi dengan baik */
+  }
+
+  .mobile-card-header .badge {
+    flex-shrink: 0; /* Mencegah badge agar tidak tertekan (menyusut) */
+    white-space: normal; /* Izinkan teks di dalam badge untuk pindah ke baris baru jika sangat panjang */
+    text-align: right; /* Jika teks pindah baris, buat rata kanan */
+    max-width: 50%; /* Batasi lebar maksimum badge agar tidak terlalu dominan */
+  }
+}
