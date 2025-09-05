@@ -266,46 +266,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
                     </div>
                   )}
                 </div>
-                <div className="booking-section">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="section-title mb-0">
-                      <i className="fas fa-tags me-2"></i>Kode Promo
-                    </h5>
-                    <button
-                      className="btn btn-link btn-sm text-decoration-none"
-                      onClick={() => setShowPromoModal(true)}
-                    >
-                      Lihat Voucher Saya
-                    </button>
-                  </div>
-                  <div className="input-group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Masukkan kode promo"
-                      value={promoCode}
-                      onChange={(e) =>
-                        setPromoCode(e.target.value.toUpperCase())
-                      }
-                    />
-                    <button
-                      className="btn btn-outline-secondary"
-                      type="button"
-                      onClick={() => handleApplyPromo()}
-                    >
-                      Terapkan
-                    </button>
-                  </div>
-                  {appliedPromo && (
-                    <div className="text-success small mt-2">
-                      ✓ Promo <strong>{appliedPromo.code}</strong> berhasil
-                      diterapkan!
-                    </div>
-                  )}
-                  {promoError && (
-                    <div className="text-danger small mt-2">{promoError}</div>
-                  )}
-                </div>
+                {/* Bagian Promo dipindahkan ke card kanan atau di bawah total */}
                 <div className="booking-section">
                   <h5 className="section-title">
                     <i className="fas fa-receipt me-2"></i>Rincian Biaya
@@ -347,19 +308,74 @@ const BookingConfirmationPage = ({ showMessage }) => {
             </div>
           </div>
           <div className="col-lg-5">
-            <div className="card confirmation-action-card">
-              <div className="card-body text-center p-4">
-                <h5 className="card-title fw-semibold">
-                  Lanjutkan ke Pembayaran?
-                </h5>
-                <p className="card-text text-muted small">
-                  Anda akan diarahkan ke halaman pembayaran yang aman setelah
-                  menekan tombol di bawah.
-                </p>
-                <div className="d-grid gap-2 mt-4">
+            <div className="card confirmation-action-card h-100">
+              <div className="card-body p-4 d-flex flex-column">
+                <div className="text-center mb-4">
+                  <img
+                    src="https://res.cloudinary.com/dvrb4t9m1/image/upload/v1709405230/stridebase/secure_payment_xmjc9t.png"
+                    alt="Secure Payment"
+                    className="img-fluid mb-3"
+                    style={{ maxWidth: "150px" }}
+                  />
+                  <h5 className="card-title fw-bold">
+                    Siap untuk Menyelesaikan Pesanan Anda?
+                  </h5>
+                  <p className="card-text text-muted small">
+                    Kami menjamin proses pembayaran yang aman dan mudah.
+                    Lanjutkan untuk mendapatkan layanan terbaik kami\!
+                  </p>
+                </div>
+
+                <div className="promo-section mb-4">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h5 className="section-title-small mb-0">
+                      <i className="fas fa-tags me-2"></i>Punya Kode Promo?
+                    </h5>
+                    <button
+                      className="btn btn-link btn-sm text-decoration-none"
+                      onClick={() => setShowPromoModal(true)}
+                    >
+                      Lihat Voucher Saya
+                    </button>
+                  </div>
+                  <div className="input-group promo-input-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Masukkan kode promo"
+                      value={promoCode}
+                      onChange={(e) =>
+                        setPromoCode(e.target.value.toUpperCase())
+                      }
+                    />
+                    <button
+                      className="btn btn-dark"
+                      type="button"
+                      onClick={() => handleApplyPromo()}
+                    >
+                      Terapkan
+                    </button>
+                  </div>
+                  {appliedPromo && (
+                    <div className="text-success small mt-2">
+                      <i className="fas fa-check-circle me-1"></i> Promo{" "}
+                      <strong>{appliedPromo.code}</strong> berhasil diterapkan\!
+                      Anda menghemat{" "}
+                      <strong>Rp {discountAmount.toLocaleString("id-ID")}</strong>.
+                    </div>
+                  )}
+                  {promoError && (
+                    <div className="text-danger small mt-2">
+                      <i className="fas fa-exclamation-triangle me-1"></i>{" "}
+                      {promoError}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-auto d-grid gap-2">
                   <button
                     onClick={handleConfirmAndPay}
-                    className="btn btn-dark btn-lg btn-confirm"
+                    className="btn btn-primary btn-lg btn-confirm"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -373,8 +389,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-shield-alt me-2"></i>Ya, Lanjutkan
-                        ke Pembayaran
+                        <i className="fas fa-credit-card me-2"></i>Lanjutkan ke
+                        Pembayaran
                       </>
                     )}
                   </button>
@@ -383,7 +399,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
                     className="btn btn-outline-secondary btn-sm"
                     disabled={isSubmitting}
                   >
-                    Batal dan Kembali
+                    <i className="fas fa-arrow-left me-2"></i>Batal dan Kembali
                   </button>
                 </div>
               </div>

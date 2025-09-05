@@ -4176,6 +4176,7 @@ body.has-global-announcement {
   background-color: #e2e6ea !important;
   border-color: #d3d9df !important;
 }
+
 /* =============================================== */
 /* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
 /* =============================================== */
@@ -4253,4 +4254,160 @@ body.has-global-announcement {
 .page-content-booking .btn-confirm:hover {
     transform: scale(1.03);
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+/* =============================================== */
+/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
+/* =============================================== */
+
+.page-content-booking {
+  padding-top: 120px !important; /* Menambah jarak dari atas */
+  padding-bottom: 60px !important;
+}
+
+/* Menggunakan kelas spesifik agar tidak bertabrakan */
+.page-content-booking .confirmation-details-card,
+.page-content-booking .confirmation-action-card {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem; /* Sudut lebih melengkung */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+  height: 100%;
+  background-color: var(--bg-white);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.page-content-booking .confirmation-details-card:hover,
+.page-content-booking .confirmation-action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.page-content-booking .booking-section {
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-content-booking .booking-section:not(:last-child) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.page-content-booking .booking-section .section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+}
+
+/* New style for smaller section title, e.g., in promo section */
+.page-content-booking .section-title-small {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+}
+
+
+.page-content-booking .cost-details .list-group-item {
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.page-content-booking .cost-details .list-group-item.total-row {
+  border-top: 2px dashed var(--border-color);
+  margin-top: 0.75rem;
+  padding-top: 1.25rem;
+}
+
+.page-content-booking .total-row .fw-bold.fs-5 {
+    color: var(--primary-color);
+}
+
+.page-content-booking .confirmation-action-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Style for promo input group */
+.page-content-booking .promo-input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    font-size: 0.95rem;
+    height: calc(2.25rem + 2px); /* Menyamakan tinggi dengan tombol */
+}
+
+.page-content-booking .promo-input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    font-size: 0.95rem;
+    padding: 0.375rem 0.75rem; /* Sesuaikan padding jika perlu */
+}
+
+.page-content-booking .btn-confirm {
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  background-color: var(--primary-color); /* Menggunakan primary-color */
+  border-color: var(--primary-color);
+}
+
+.page-content-booking .btn-confirm:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    background-color: var(--primary-dark-color); /* Warna lebih gelap saat hover */
+    border-color: var(--primary-dark-color);
+}
+
+/* Voucher Modal styles */
+.voucher-card {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: #fcfcfc;
+}
+
+.voucher-card:hover {
+  background-color: #f0f8ff;
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.voucher-card .voucher-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-right: 1rem;
+  flex-shrink: 0;
+  width: 70px; /* Lebar tetap untuk nilai diskon */
+  text-align: center;
+}
+
+.voucher-card .voucher-details {
+  flex-grow: 1;
+}
+
+.voucher-card .voucher-code {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.voucher-card .voucher-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
 }
