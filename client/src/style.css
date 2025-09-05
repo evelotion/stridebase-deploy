@@ -4175,17 +4175,18 @@ body.has-global-announcement {
 .mobile-home-header .actions a.btn-light:hover {
   background-color: #e2e6ea !important;
   border-color: #d3d9df !important;
-}/* =============================================== */
-/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 (LENGKAP) === */
+}
+
+/* =============================================== */
+/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
 /* =============================================== */
 
-/* Memberi jarak dari atas (navbar) ke konten halaman */
 .page-content-booking {
-  padding-top: 120px !important;
+  padding-top: 120px !important; /* Menambah jarak dari atas */
   padding-bottom: 60px !important;
 }
 
-/* Menggunakan kelas spesifik agar tidak bertabrakan dengan halaman lain */
+/* Menggunakan kelas spesifik agar tidak bertabrakan */
 .page-content-booking .confirmation-details-card,
 .page-content-booking .confirmation-action-card {
   border: 1px solid var(--border-color);
@@ -4253,70 +4254,4 @@ body.has-global-announcement {
 .page-content-booking .btn-confirm:hover {
     transform: scale(1.03);
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-}
-
-/* Penyesuaian Voucher & Promo di Halaman Konfirmasi */
-.page-content-booking .input-group {
-    height: 48px;
-}
-
-.page-content-booking .input-group .form-control,
-.page-content-booking .input-group .btn {
-    height: 100%;
-}
-
-.page-content-booking .btn-link {
-    padding: 0;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-/* Gaya Modal Voucher */
-.voucher-card {
-    display: flex;
-    align-items: center;
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-.voucher-card:hover {
-    border-color: var(--primary-color);
-    background-color: #f8f9fa;
-    transform: scale(1.02);
-}
-
-.voucher-value {
-    flex-shrink: 0;
-    width: 80px;
-    height: 80px;
-    margin-right: 1rem;
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    border-radius: 0.5rem;
-}
-
-.voucher-details {
-    flex-grow: 1;
-}
-
-.voucher-code {
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 0.25rem;
-}
-
-.voucher-description {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: 0;
 }
