@@ -357,11 +357,9 @@ app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
 
     // PENGECEKAN BARU: Apakah email sudah terverifikasi?
     if (!user.emailVerified) {
-      return res
-        .status(403)
-        .json({
-          message: "Akun Anda belum diverifikasi. Silakan periksa email Anda.",
-        });
+      return res.status(403).json({
+        message: "Akun Anda belum diverifikasi. Silakan periksa email Anda.",
+      });
     }
 
     // Jika semua pengecekan lolos, buat token dan kirim response
@@ -390,12 +388,10 @@ app.post("/api/auth/forgot-password", async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       // Kirim respons sukses meskipun email tidak ada untuk alasan keamanan
-      return res
-        .status(200)
-        .json({
-          message:
-            "Jika email Anda terdaftar, Anda akan menerima link reset password.",
-        });
+      return res.status(200).json({
+        message:
+          "Jika email Anda terdaftar, Anda akan menerima link reset password.",
+      });
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -2203,12 +2199,10 @@ adminRouter.patch("/bookings/:id/status", async (req, res) => {
 
     // Mencegah perubahan status dari Pending Payment selain melalui alur approval
     if (booking.status === "Pending Payment") {
-      return res
-        .status(400)
-        .json({
-          message:
-            'Status "Pending Payment" hanya bisa diubah melalui konfirmasi manual oleh Admin.',
-        });
+      return res.status(400).json({
+        message:
+          'Status "Pending Payment" hanya bisa diubah melalui konfirmasi manual oleh Admin.',
+      });
     }
 
     const updatedBooking = await prisma.booking.update({
@@ -2495,6 +2489,7 @@ adminRouter.post("/stores", async (req, res) => {
     commissionRate,
     billingType,
   } = req.body;
+  const requester = req.user;
 
   if (!name || !location || !ownerId || !billingType) {
     return res.status(400).json({
@@ -2503,6 +2498,7 @@ adminRouter.post("/stores", async (req, res) => {
   }
 
   try {
+    // 1. Buat toko dengan status 'pending'
     const newStore = await prisma.store.create({
       data: {
         name,
@@ -2512,11 +2508,30 @@ adminRouter.post("/stores", async (req, res) => {
         latitude: parseFloat(latitude) || null,
         longitude: parseFloat(longitude) || null,
         commissionRate: parseFloat(commissionRate) || 10.0,
-        storeStatus: "active",
-        images: ["/images/store-placeholder.jpg"],
+        storeStatus: "pending", // Status diatur menjadi pending
+        images: ["/uploads/store-placeholder.jpg"], // Gambar placeholder
       },
     });
-    res.status(201).json(newStore);
+
+    // 2. Buat permintaan persetujuan untuk Developer
+    const payload = {
+      storeId: newStore.id,
+      storeName: newStore.name,
+      requestedBy: requester.name,
+    };
+    await prisma.approvalRequest.create({
+      data: {
+        requestedById: requester.id,
+        actionType: "CREATE_STORE",
+        payload: payload,
+        status: "PENDING",
+      },
+    });
+
+    // 3. Kirim respons ke Admin
+    res.status(202).json({
+      message: `Toko "${newStore.name}" berhasil dibuat dan sedang menunggu persetujuan dari Developer.`,
+    });
   } catch (error) {
     if (error.code === "P2025") {
       return res.status(400).json({ message: "ID Pemilik tidak ditemukan." });
@@ -3448,6 +3463,27 @@ superUserRouter.post("/approval-requests/:id/resolve", async (req, res) => {
             );
 
             break;
+
+          case "CREATE_STORE": {
+            // <-- Tambahkan kurung kurawal pembuka
+            const { storeId } = request.payload;
+
+            // 1. Update status toko menjadi 'active'
+            const activatedStore = await tx.store.update({
+              where: { id: storeId },
+              data: { storeStatus: "active" },
+            });
+
+            // 2. Kirim notifikasi ke pemilik toko (mitra)
+            if (activatedStore.ownerId) {
+              await createNotification(
+                activatedStore.ownerId,
+                `Selamat! Toko Anda "${activatedStore.name}" telah disetujui dan sekarang aktif.`,
+                `/partner/dashboard`
+              );
+            }
+            break;
+          }
 
           case "UPDATE_GLOBAL_SETTINGS":
             fs.writeFileSync(
