@@ -23,7 +23,6 @@ import { sendVerificationEmail } from "./email-service.js";
 import redisClient from "./redis-client.js";
 import { v2 as cloudinary } from "cloudinary";
 
-  
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -47,7 +46,9 @@ async function loadThemeConfig() {
       console.log("🎨 Theme loaded successfully from DATABASE.");
       currentThemeConfig = themeSetting.value;
     } else {
-      console.log("⚠️ Theme config not found in database, falling back to theme.json...");
+      console.log(
+        "⚠️ Theme config not found in database, falling back to theme.json..."
+      );
       if (fs.existsSync(themeConfigPath)) {
         const fileConfig = JSON.parse(fs.readFileSync(themeConfigPath, "utf8"));
         currentThemeConfig = fileConfig;
@@ -61,7 +62,9 @@ async function loadThemeConfig() {
         });
         console.log("🎨 Theme from file has been saved to the database.");
       } else {
-        console.error("❌ CRITICAL: theme.json file not found. Using empty config.");
+        console.error(
+          "❌ CRITICAL: theme.json file not found. Using empty config."
+        );
         currentThemeConfig = {};
       }
     }
@@ -201,31 +204,34 @@ const checkMaintenanceMode = (req, res, next) => {
       req.path.startsWith("/api/admin") ||
       req.path.startsWith("/api/superuser") ||
       req.path.startsWith("/api/public/theme-config") ||
-      req.path.startsWith("/uploads") || 
+      req.path.startsWith("/uploads") ||
       req.path.includes(".")
     ) {
       return next();
     }
-    
+
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
     if (token) {
       jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (!err && (decoded.role === "admin" || decoded.role === "developer")) {
+        if (
+          !err &&
+          (decoded.role === "admin" || decoded.role === "developer")
+        ) {
           return next();
         } else {
-           return res.status(503).json({
-             message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
-           });
+          return res.status(503).json({
+            message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
+          });
         }
       });
     } else {
-        return res.status(503).json({
-            message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
-        });
+      return res.status(503).json({
+        message: "Situs sedang dalam perbaikan. Silakan coba lagi nanti.",
+      });
     }
   } else {
-      next();
+    next();
   }
 };
 
@@ -319,9 +325,10 @@ app.post("/api/auth/register", registerValidation, async (req, res) => {
     // Di aplikasi produksi, Anda akan menggunakan library seperti Nodemailer di sini.
     // Untuk sekarang, kita cetak link-nya ke konsol server.
     await sendVerificationEmail(newUser.email, verificationToken);
-    
+
     res.status(201).json({
-      message: "Pendaftaran berhasil! Silakan periksa email Anda untuk link verifikasi.",
+      message:
+        "Pendaftaran berhasil! Silakan periksa email Anda untuk link verifikasi.",
     });
   } catch (error) {
     if (error.code === "P2002")
@@ -335,7 +342,7 @@ app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    
+
     // Pengecekan 1: User ada atau tidak
     if (!user || user.status === "blocked") {
       return res.status(400).json({ message: "Email atau password salah." });
@@ -347,10 +354,14 @@ app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
       // (logika security log tetap sama)
       return res.status(400).json({ message: "Email atau password salah." });
     }
-    
+
     // PENGECEKAN BARU: Apakah email sudah terverifikasi?
     if (!user.emailVerified) {
-      return res.status(403).json({ message: "Akun Anda belum diverifikasi. Silakan periksa email Anda." });
+      return res
+        .status(403)
+        .json({
+          message: "Akun Anda belum diverifikasi. Silakan periksa email Anda.",
+        });
     }
 
     // Jika semua pengecekan lolos, buat token dan kirim response
@@ -373,17 +384,25 @@ app.post("/api/auth/login", loginLimiter, async (req, res, next) => {
   }
 });
 
-app.post('/api/auth/forgot-password', async (req, res) => {
+app.post("/api/auth/forgot-password", async (req, res) => {
   const { email } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       // Kirim respons sukses meskipun email tidak ada untuk alasan keamanan
-      return res.status(200).json({ message: 'Jika email Anda terdaftar, Anda akan menerima link reset password.' });
+      return res
+        .status(200)
+        .json({
+          message:
+            "Jika email Anda terdaftar, Anda akan menerima link reset password.",
+        });
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
     const passwordResetExpires = new Date(Date.now() + 3600000); // 1 jam dari sekarang
 
     await prisma.user.update({
@@ -393,21 +412,25 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
     await sendPasswordResetEmail(user.email, resetToken);
 
-    res.status(200).json({ message: 'Link reset password telah dikirim ke email Anda.' });
+    res
+      .status(200)
+      .json({ message: "Link reset password telah dikirim ke email Anda." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Terjadi kesalahan pada server.' });
+    res.status(500).json({ message: "Terjadi kesalahan pada server." });
   }
 });
 
 // Endpoint untuk memproses reset password
-app.post('/api/auth/reset-password', async (req, res) => {
+app.post("/api/auth/reset-password", async (req, res) => {
   const { token, password } = req.body;
   if (!token || !password) {
-    return res.status(400).json({ message: 'Token dan password baru dibutuhkan.' });
+    return res
+      .status(400)
+      .json({ message: "Token dan password baru dibutuhkan." });
   }
 
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   try {
     const user = await prisma.user.findFirst({
@@ -418,7 +441,9 @@ app.post('/api/auth/reset-password', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Token tidak valid atau sudah kedaluwarsa.' });
+      return res
+        .status(400)
+        .json({ message: "Token tidak valid atau sudah kedaluwarsa." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -432,10 +457,12 @@ app.post('/api/auth/reset-password', async (req, res) => {
       },
     });
 
-    res.status(200).json({ message: 'Password berhasil direset. Silakan login.' });
+    res
+      .status(200)
+      .json({ message: "Password berhasil direset. Silakan login." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Gagal mereset password.' });
+    res.status(500).json({ message: "Gagal mereset password." });
   }
 });
 
@@ -452,7 +479,9 @@ app.get("/api/auth/verify-email", async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).send("Token verifikasi tidak valid atau sudah kedaluwarsa.");
+      return res
+        .status(400)
+        .send("Token verifikasi tidak valid atau sudah kedaluwarsa.");
     }
 
     await prisma.user.update({
@@ -465,10 +494,11 @@ app.get("/api/auth/verify-email", async (req, res) => {
 
     // Arahkan pengguna ke halaman sukses di frontend
     res.redirect("/email-verified");
-
   } catch (error) {
     console.error("Gagal verifikasi email:", error);
-    res.status(500).send("Terjadi kesalahan pada server saat verifikasi email.");
+    res
+      .status(500)
+      .send("Terjadi kesalahan pada server saat verifikasi email.");
   }
 });
 
@@ -2126,29 +2156,75 @@ adminRouter.get("/bookings", async (req, res) => {
 });
 
 adminRouter.patch("/bookings/:id/status", async (req, res) => {
-  const { id } = req.params;
+  const { id: bookingId } = req.params;
   const { newStatus } = req.body;
-
-  const validStatuses = ["Processing", "Completed", "Cancelled"];
-  if (!validStatuses.includes(newStatus)) {
-    return res.status(400).json({ message: "Status tidak valid." });
-  }
+  const requester = req.user;
 
   try {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+    });
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking tidak ditemukan." });
+    }
+
+    // LOGIKA BARU: Tangani konfirmasi pembayaran manual sebagai permintaan persetujuan
+    if (booking.status === "Pending Payment" && newStatus === "Processing") {
+      const payload = {
+        bookingId: booking.id,
+        newStatus: "Processing",
+        totalPrice: booking.totalPrice,
+        requesterName: requester.name,
+      };
+
+      await prisma.approvalRequest.create({
+        data: {
+          requestedById: requester.id,
+          actionType: "MANUAL_PAYMENT_CONFIRMATION",
+          payload: payload,
+          status: "PENDING",
+        },
+      });
+
+      return res.status(202).json({
+        message: `Permintaan untuk mengkonfirmasi pembayaran booking #${booking.id.substring(
+          0,
+          8
+        )} telah dikirim ke Developer.`,
+      });
+    }
+
+    // Logika yang sudah ada untuk perubahan status lainnya
+    const validStatuses = ["Processing", "Completed", "Cancelled"];
+    if (!validStatuses.includes(newStatus)) {
+      return res.status(400).json({ message: "Perubahan status tidak valid." });
+    }
+
+    // Mencegah perubahan status dari Pending Payment selain melalui alur approval
+    if (booking.status === "Pending Payment") {
+      return res
+        .status(400)
+        .json({
+          message:
+            'Status "Pending Payment" hanya bisa diubah melalui konfirmasi manual oleh Admin.',
+        });
+    }
+
     const updatedBooking = await prisma.booking.update({
-      where: { id: id },
+      where: { id: bookingId },
       data: { status: newStatus },
     });
 
-    const message = `Status pesanan Anda #${id.substring(
+    const message = `Status pesanan Anda #${bookingId.substring(
       0,
       8
     )} telah diubah oleh admin menjadi "${newStatus}".`;
     await createNotification(
       updatedBooking.userId,
       message,
-      `/track/${id}`,
-      id
+      `/track/${bookingId}`,
+      bookingId
     );
 
     io.emit("bookingUpdated", updatedBooking);
@@ -3023,7 +3099,9 @@ adminRouter.put("/stores/:storeId/settings", async (req, res) => {
   const { name, description, schedule, images, headerImage } = req.body;
 
   if (!name || !schedule || !images) {
-    return res.status(400).json({ message: "Data yang dikirim tidak lengkap." });
+    return res
+      .status(400)
+      .json({ message: "Data yang dikirim tidak lengkap." });
   }
 
   try {
@@ -3050,28 +3128,34 @@ adminRouter.put("/stores/:storeId/settings", async (req, res) => {
 });
 
 // 3. Mengunggah foto untuk toko tertentu
-adminRouter.post("/stores/upload-photo", upload.single("photo"), async (req, res) => {
+adminRouter.post(
+  "/stores/upload-photo",
+  upload.single("photo"),
+  async (req, res) => {
     if (!req.file) {
-        return res.status(400).json({ message: "Tidak ada file yang diunggah." });
+      return res.status(400).json({ message: "Tidak ada file yang diunggah." });
     }
     try {
-        const b64 = Buffer.from(req.file.buffer).toString("base64");
-        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+      const b64 = Buffer.from(req.file.buffer).toString("base64");
+      let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
-        const result = await cloudinary.uploader.upload(dataURI, {
-            folder: "stridebase_photos",
-            public_id: `photo-admin-upload-${Date.now()}`,
-        });
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: "stridebase_photos",
+        public_id: `photo-admin-upload-${Date.now()}`,
+      });
 
-        res.status(200).json({
-            message: "Foto berhasil diunggah oleh admin.",
-            filePath: result.secure_url,
-        });
+      res.status(200).json({
+        message: "Foto berhasil diunggah oleh admin.",
+        filePath: result.secure_url,
+      });
     } catch (error) {
-        console.error("Admin gagal memproses gambar:", error);
-        res.status(500).json({ message: `Gagal memproses gambar: ${error.message}` });
+      console.error("Admin gagal memproses gambar:", error);
+      res
+        .status(500)
+        .json({ message: `Gagal memproses gambar: ${error.message}` });
     }
-});
+  }
+);
 
 app.use("/api/admin", adminRouter);
 
@@ -3113,10 +3197,14 @@ superUserRouter.post("/config", async (req, res) => {
     io.emit("themeUpdated", currentThemeConfig);
     console.log("🚀 Theme updated and broadcasted to all clients.");
 
-    res.status(200).json({ message: "Konfigurasi berhasil diperbarui di database." });
+    res
+      .status(200)
+      .json({ message: "Konfigurasi berhasil diperbarui di database." });
   } catch (error) {
     console.error("❌ Failed to save theme config to database:", error);
-    res.status(500).json({ message: "Gagal menyimpan konfigurasi ke database." });
+    res
+      .status(500)
+      .json({ message: "Gagal menyimpan konfigurasi ke database." });
   }
 });
 
@@ -3298,6 +3386,69 @@ superUserRouter.post("/approval-requests/:id/resolve", async (req, res) => {
             const { reviewId: reviewIdToDelete } = request.payload;
             await tx.review.delete({ where: { id: reviewIdToDelete } });
             break;
+          case "MANUAL_PAYMENT_CONFIRMATION":
+            const { bookingId: manualBookingId } = request.payload;
+
+            // 1. Update status Booking menjadi Processing
+            const booking = await tx.booking.update({
+              where: { id: manualBookingId },
+              data: { status: "Processing" },
+              include: { store: true },
+            });
+
+            // 2. Buat record Payment jika belum ada, atau update jika sudah ada
+            await tx.payment.upsert({
+              where: { bookingId: manualBookingId },
+              update: { status: "SUCCESS" },
+              create: {
+                bookingId: manualBookingId,
+                amount: booking.totalPrice,
+                status: "SUCCESS",
+                provider: "Manual Confirmation by Admin",
+              },
+            });
+
+            // 3. Buat Platform Earning jika toko berbasis komisi
+            if (
+              booking &&
+              booking.store &&
+              booking.store.billingType === "COMMISSION"
+            ) {
+              const commissionRate = booking.store.commissionRate;
+              const grossAmount = booking.totalPrice;
+              const earnedAmount = (grossAmount * commissionRate) / 100;
+
+              // Pastikan belum ada earning untuk booking ini
+              const existingEarning = await tx.platformEarning.findUnique({
+                where: { bookingId: manualBookingId },
+              });
+
+              if (!existingEarning) {
+                await tx.platformEarning.create({
+                  data: {
+                    bookingId: booking.id,
+                    storeId: booking.storeId,
+                    grossAmount: grossAmount,
+                    commissionRate: commissionRate,
+                    earnedAmount: earnedAmount,
+                  },
+                });
+              }
+            }
+
+            // 4. Kirim notifikasi ke customer
+            await createNotification(
+              booking.userId,
+              `Pembayaran untuk pesanan #${booking.id.substring(
+                0,
+                8
+              )} telah dikonfirmasi. Pesanan Anda sedang diproses.`,
+              `/track/${booking.id}`,
+              booking.id
+            );
+
+            break;
+
           case "UPDATE_GLOBAL_SETTINGS":
             fs.writeFileSync(
               themeConfigPath,
@@ -3417,7 +3568,9 @@ superUserRouter.patch("/users/:userId/verify", async (req, res) => {
       },
     });
 
-    res.json({ message: `Pengguna ${updatedUser.name} berhasil diverifikasi.` });
+    res.json({
+      message: `Pengguna ${updatedUser.name} berhasil diverifikasi.`,
+    });
   } catch (error) {
     console.error("Gagal memverifikasi pengguna secara manual:", error);
     res.status(500).json({ message: "Gagal memproses verifikasi." });

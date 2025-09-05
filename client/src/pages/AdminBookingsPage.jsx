@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import API_BASE_URL from "../apiConfig";
 
 const AdminBookingsPage = ({ showMessage }) => {
@@ -33,13 +33,11 @@ const AdminBookingsPage = ({ showMessage }) => {
   const handleStatusChange = async (bookingId, newStatus) => {
     const token = localStorage.getItem("token");
 
+    // Simpan state awal untuk rollback jika terjadi error
     const originalBookings = [...bookings];
-    const updatedBookings = bookings.map((b) =>
-      b.id === bookingId ? { ...b, status: newStatus } : b
-    );
-    setBookings(updatedBookings);
 
     try {
+      // Tidak melakukan optimistic update untuk alur approval
       const response = await fetch(
         `${API_BASE_URL}/api/admin/bookings/${bookingId}/status`,
         {
@@ -52,13 +50,21 @@ const AdminBookingsPage = ({ showMessage }) => {
         }
       );
 
+      const data = await response.json();
       if (!response.ok) {
-        setBookings(originalBookings);
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Gagal mengubah status.");
+        throw new Error(data.message || "Gagal mengubah status.");
       }
-      console.log(`Status untuk booking ${bookingId} berhasil diubah.`);
+      
+      // Tampilkan pesan dari server
+      showMessage(data.message);
+      
+      // Jika statusnya bukan 202 (Accepted), berarti update berhasil dan kita refresh data
+      if (response.status !== 202) {
+          fetchBookings(); 
+      }
+      
     } catch (error) {
+      // Kembalikan ke state semula jika error
       setBookings(originalBookings);
       showMessage(error.message);
     }
@@ -140,62 +146,71 @@ const AdminBookingsPage = ({ showMessage }) => {
                     </span>
                   </td>
                   <td className="text-center">
-                    <div className="dropdown">
+                    {booking.status === "Pending Payment" ? (
                       <button
-                        className="btn btn-sm btn-light"
-                        type="button"
-                        id={`dropdownMenuButton-${booking.id}`}
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                        disabled={
-                          booking.status === "Reviewed" ||
-                          booking.status === "Pending Payment"
-                        }
+                        className="btn btn-sm btn-outline-success"
+                        onClick={() => handleStatusChange(booking.id, "Processing")}
+                        title="Ajukan konfirmasi pembayaran manual ke Developer"
                       >
-                        <i className="fas fa-ellipsis-h"></i>
+                        <i className="fas fa-check-double me-1"></i> Konfirmasi Bayar
                       </button>
-                      <ul
-                        className="dropdown-menu dropdown-menu-end"
-                        aria-labelledby={`dropdownMenuButton-${booking.id}`}
-                      >
-                        <li>
-                          <button
-                            className="dropdown-item"
-                            onClick={() =>
-                              handleStatusChange(booking.id, "Processing")
-                            }
-                            disabled={booking.status === "Processing"}
-                          >
-                            <i className="fas fa-sync-alt fa-fw me-2 text-warning"></i>
-                            Processing
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="dropdown-item"
-                            onClick={() =>
-                              handleStatusChange(booking.id, "Completed")
-                            }
-                            disabled={booking.status === "Completed"}
-                          >
-                            <i className="fas fa-check-circle fa-fw me-2 text-success"></i>
-                            Completed
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="dropdown-item"
-                            onClick={() =>
-                              handleStatusChange(booking.id, "Cancelled")
-                            }
-                            disabled={booking.status === "Cancelled"}
-                          >
-                            <i className="fas fa-times-circle fa-fw me-2 text-danger"></i>
-                            Cancelled
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
+                    ) : (
+                      <div className="dropdown">
+                        <button
+                          className="btn btn-sm btn-light"
+                          type="button"
+                          id={`dropdownMenuButton-${booking.id}`}
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          disabled={
+                            booking.status === "Reviewed"
+                          }
+                        >
+                          <i className="fas fa-ellipsis-h"></i>
+                        </button>
+                        <ul
+                          className="dropdown-menu dropdown-menu-end"
+                          aria-labelledby={`dropdownMenuButton-${booking.id}`}
+                        >
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(booking.id, "Processing")
+                              }
+                              disabled={booking.status === "Processing"}
+                            >
+                              <i className="fas fa-sync-alt fa-fw me-2 text-warning"></i>
+                              Processing
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(booking.id, "Completed")
+                              }
+                              disabled={booking.status === "Completed"}
+                            >
+                              <i className="fas fa-check-circle fa-fw me-2 text-success"></i>
+                              Completed
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(booking.id, "Cancelled")
+                              }
+                              disabled={booking.status === "Cancelled"}
+                            >
+                              <i className="fas fa-times-circle fa-fw me-2 text-danger"></i>
+                              Cancelled
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
