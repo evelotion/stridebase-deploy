@@ -41,13 +41,17 @@ const BookingConfirmationPage = ({ showMessage }) => {
 
     if (savedBooking) {
       const bookingData = JSON.parse(savedBooking);
-       if (!bookingData.storeId || !bookingData.service) {
-        showMessage("Detail layanan tidak lengkap. Silakan ulangi proses pemesanan.");
+      if (!bookingData.storeId || !bookingData.service) {
+        showMessage(
+          "Detail layanan tidak lengkap. Silakan ulangi proses pemesanan."
+        );
         navigate(`/store/${bookingData.storeId || ""}`);
         return;
       }
       if (bookingData.deliveryOption === "pickup" && !bookingData.addressId) {
-        showMessage("Alamat penjemputan belum dipilih. Silakan lengkapi detail pesanan Anda.");
+        showMessage(
+          "Alamat penjemputan belum dipilih. Silakan lengkapi detail pesanan Anda."
+        );
         navigate(`/store/${bookingData.storeId}`);
         return;
       }
@@ -59,10 +63,14 @@ const BookingConfirmationPage = ({ showMessage }) => {
       if (bookingData.deliveryOption === "pickup" && bookingData.addressId) {
         const fetchAddress = async () => {
           try {
-            const res = await fetch(`${API_BASE_URL}/api/user/addresses`, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await fetch(`${API_BASE_URL}/api/user/addresses`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
             if (res.ok) {
               const addresses = await res.json();
-              const foundAddress = addresses.find(addr => addr.id === bookingData.addressId);
+              const foundAddress = addresses.find(
+                (addr) => addr.id === bookingData.addressId
+              );
               if (foundAddress) {
                 setSelectedAddress(foundAddress);
               }
@@ -93,14 +101,17 @@ const BookingConfirmationPage = ({ showMessage }) => {
     setPromoError("");
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/promos/validate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ code: codeToApply }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/promos/validate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ code: codeToApply }),
+        }
+      );
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.message);
@@ -112,12 +123,11 @@ const BookingConfirmationPage = ({ showMessage }) => {
     }
   };
 
-
   const handleConfirmAndPay = async () => {
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
 
-     const finalBookingDetails = {
+    const finalBookingDetails = {
       ...bookingDetails,
       promoCode: appliedPromo ? appliedPromo.code : undefined,
     };
@@ -125,7 +135,10 @@ const BookingConfirmationPage = ({ showMessage }) => {
     try {
       const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(finalBookingDetails),
       });
 
@@ -134,26 +147,32 @@ const BookingConfirmationPage = ({ showMessage }) => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      const paymentResponse = await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ bookingId: newBookingData.id }),
-      });
+      const paymentResponse = await fetch(
+        `${API_BASE_URL}/api/payments/create-transaction`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ bookingId: newBookingData.id }),
+        }
+      );
 
       const paymentData = await paymentResponse.json();
       if (!paymentResponse.ok) {
-        throw new Error(paymentData.message || "Gagal memulai sesi pembayaran.");
+        throw new Error(
+          paymentData.message || "Gagal memulai sesi pembayaran."
+        );
       }
 
       localStorage.removeItem("pendingBooking");
       window.location.href = paymentData.redirectUrl;
-
     } catch (error) {
       showMessage(error.message);
       setIsSubmitting(false);
     }
   };
-
 
   if (!bookingDetails) {
     return (
@@ -163,7 +182,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
     );
   }
 
-  const { storeName, service, shoeType, deliveryOption, schedule } = bookingDetails;
+  const { storeName, service, shoeType, deliveryOption, schedule } =
+    bookingDetails;
   const handlingFee = 2000;
   const deliveryFee = deliveryOption === "pickup" ? 10000 : 0;
   const subtotal = service?.price || 0;
@@ -185,7 +205,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
         <div className="text-center mb-5">
           <h2 className="fw-bold">Satu Langkah Lagi!</h2>
           <p className="text-muted">
-            Pesanan Anda hampir selesai. Konfirmasi detail di "tiket" Anda di bawah ini.
+            Pesanan Anda hampir selesai. Konfirmasi detail di "tiket" Anda di
+            bawah ini.
           </p>
         </div>
 
@@ -198,23 +219,35 @@ const BookingConfirmationPage = ({ showMessage }) => {
             <div className="ticket-body">
               <div className="ticket-section">
                 <span className="ticket-label">Layanan</span>
-                <span className="ticket-value">{service?.name || 'N/A'} ({shoeType})</span>
+                <span className="ticket-value">
+                  {service?.name || "N/A"} ({shoeType})
+                </span>
               </div>
               <div className="ticket-section">
                 <span className="ticket-label">Pengantaran</span>
-                <span className="ticket-value">{deliveryOption === "pickup" ? "Diambil Kurir" : "Antar Sendiri"}</span>
+                <span className="ticket-value">
+                  {deliveryOption === "pickup"
+                    ? "Diambil Kurir"
+                    : "Antar Sendiri"}
+                </span>
               </div>
               <div className="ticket-section">
                 <span className="ticket-label">Jadwal</span>
                 <span className="ticket-value">
-                  {schedule ? `${schedule.date.toLocaleDateString("id-ID", { day: 'numeric', month: 'long' })} @ ${schedule.time}` : 'Langsung ke Toko'}
+                  {schedule
+                    ? `${schedule.date.toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "long",
+                      })} @ ${schedule.time}`
+                    : "Langsung ke Toko"}
                 </span>
               </div>
-               {selectedAddress && (
+              {selectedAddress && (
                 <div className="ticket-section ticket-address">
                   <span className="ticket-label">Alamat Jemput</span>
                   <span className="ticket-value small">
-                    {selectedAddress.recipientName}, {selectedAddress.fullAddress}, {selectedAddress.city}
+                    {selectedAddress.recipientName},{" "}
+                    {selectedAddress.fullAddress}, {selectedAddress.city}
                   </span>
                 </div>
               )}
@@ -222,38 +255,53 @@ const BookingConfirmationPage = ({ showMessage }) => {
           </div>
           <div className="ticket-stub">
             <div className="stub-promo-section">
-                <h6 className="promo-title">Gunakan Voucher</h6>
-                <div className="promo-input-wrapper">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Kode Voucher"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                    />
-                    <button className="btn btn-dark" type="button" onClick={() => handleApplyPromo()}>
-                      Pakai
-                    </button>
-                </div>
-                 {appliedPromo && (
-                    <div className="text-success small mt-2">
-                      <i className="fas fa-check-circle me-1"></i> Diskon Rp {discountAmount.toLocaleString("id-ID")} diterapkan!
-                    </div>
-                  )}
-                  {promoError && (
-                    <div className="text-danger small mt-2">
-                      <i className="fas fa-exclamation-triangle me-1"></i> {promoError}
-                    </div>
-                  )}
-                <button className="btn btn-link btn-sm text-decoration-none p-0 mt-2" onClick={() => setShowPromoModal(true)}>
-                    Lihat Voucher Saya
+              <h6 className="promo-title">Gunakan Voucher</h6>
+              <div className="promo-input-wrapper">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Kode Voucher"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                />
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={() => handleApplyPromo()}
+                >
+                  Pakai
                 </button>
+              </div>
+              {appliedPromo && (
+                <div className="text-success small mt-2">
+                  <i className="fas fa-check-circle me-1"></i> Diskon Rp{" "}
+                  {discountAmount.toLocaleString("id-ID")} diterapkan!
+                </div>
+              )}
+              {promoError && (
+                <div className="text-danger small mt-2">
+                  <i className="fas fa-exclamation-triangle me-1"></i>{" "}
+                  {promoError}
+                </div>
+              )}
+              <button
+                className="btn btn-link btn-sm text-decoration-none p-0 mt-2"
+                onClick={() => setShowPromoModal(true)}
+              >
+                Lihat Voucher Saya
+              </button>
             </div>
             <div className="stub-price">
               <span className="price-label">Total Bayar</span>
-              <span className="price-amount">Rp {totalCost.toLocaleString("id-ID")}</span>
+              <span className="price-amount">
+                Rp {totalCost.toLocaleString("id-ID")}
+              </span>
             </div>
-            <button onClick={handleConfirmAndPay} className="btn btn-primary btn-block btn-confirm" disabled={isSubmitting}>
+            <button
+              onClick={handleConfirmAndPay}
+              className="btn btn-primary btn-block btn-confirm"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Memproses..." : "Bayar Sekarang"}
             </button>
           </div>
@@ -262,28 +310,46 @@ const BookingConfirmationPage = ({ showMessage }) => {
 
       {showPromoModal && (
         <>
-          <div className="modal fade show" style={{ display: "block" }} tabIndex="-1">
+          <div
+            className="modal fade show"
+            style={{ display: "block" }}
+            tabIndex="-1"
+          >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title">Voucher Saya</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowPromoModal(false)}></button>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowPromoModal(false)}
+                  ></button>
                 </div>
                 <div className="modal-body">
                   {redeemedPromos.length > 0 ? (
                     redeemedPromos.map((promo) => (
-                      <div key={promo.id} className="voucher-card" onClick={() => handleApplyPromoFromModal(promo.code)}>
+                      <div
+                        key={promo.id}
+                        className="voucher-card"
+                        onClick={() => handleApplyPromoFromModal(promo.code)}
+                      >
                         <div className="voucher-value">
-                          {promo.discountType === "percentage" ? `${promo.value}%` : `Rp${promo.value / 1000}k`}
+                          {promo.discountType === "percentage"
+                            ? `${promo.value}%`
+                            : `Rp${promo.value / 1000}k`}
                         </div>
                         <div className="voucher-details">
                           <h6 className="voucher-code">{promo.code}</h6>
-                          <p className="voucher-description">{promo.description}</p>
+                          <p className="voucher-description">
+                            {promo.description}
+                          </p>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="text-center text-muted">Anda tidak memiliki voucher yang tersedia.</p>
+                    <p className="text-center text-muted">
+                      Anda tidak memiliki voucher yang tersedia.
+                    </p>
                   )}
                 </div>
               </div>
