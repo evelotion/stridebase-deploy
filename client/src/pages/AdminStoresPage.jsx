@@ -21,6 +21,7 @@ const AdminStoresPage = ({ showMessage }) => {
     longitude: "",
     commissionRate: "10",
     billingType: "COMMISSION",
+    subscriptionPrice: "", // State baru untuk harga langganan
   });
 
   useEffect(() => {
@@ -205,6 +206,7 @@ const AdminStoresPage = ({ showMessage }) => {
       longitude: "",
       commissionRate: "10",
       billingType: "COMMISSION",
+      subscriptionPrice: "", // Reset state baru
     });
   };
   const handleAddFormChange = (e) => {
@@ -787,26 +789,45 @@ const AdminStoresPage = ({ showMessage }) => {
                     </div>
                   </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="add-commissionRate" className="form-label">
-                      Tingkat Komisi Awal (%)
-                    </label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="add-commissionRate"
-                      name="commissionRate"
-                      value={newStoreData.commissionRate}
-                      onChange={handleAddFormChange}
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      required
-                    />
-                    <div className="form-text">
-                      Hanya berlaku jika Tipe Penagihan adalah "Komisi".
+                  {newStoreData.billingType === "COMMISSION" ? (
+                    <div className="mb-3">
+                      <label
+                        htmlFor="add-commissionRate"
+                        className="form-label"
+                      >
+                        Tingkat Komisi Awal (%)
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="add-commissionRate"
+                        name="commissionRate"
+                        value={newStoreData.commissionRate}
+                        onChange={handleAddFormChange}
+                        step="0.1"
+                        min="0"
+                        max="100"
+                      />
                     </div>
-                  </div>
+                  ) : (
+                    <div className="mb-3">
+                      <label
+                        htmlFor="add-subscriptionPrice"
+                        className="form-label"
+                      >
+                        Harga Langganan (Rp)
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="add-subscriptionPrice"
+                        name="subscriptionPrice"
+                        value={newStoreData.subscriptionPrice}
+                        onChange={handleAddFormChange}
+                        placeholder="Contoh: 99000"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="modal-footer">
                   <button
