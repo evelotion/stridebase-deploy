@@ -4,6 +4,7 @@ import "../admin.css";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -25,7 +26,6 @@ const AdminLayout = () => {
           </NavLink>
         </div>
         <ul className="list-group list-group-flush">
-          {/* ... (Isi menu navigasi tetap sama) ... */}
           <li className="list-group-item">
             <NavLink to="/" className="nav-link-admin">
               <i className="fas fa-home me-2"></i>Kembali ke Situs
@@ -38,45 +38,61 @@ const AdminLayout = () => {
             </NavLink>
           </li>
           <li className="list-group-item">
-            <NavLink to="/admin/bookings" className="nav-link-admin">
-              <i className="fas fa-receipt me-2"></i>Bookings
+            <NavLink to="/admin/stores" className="nav-link-admin">
+              <i className="fas fa-store me-2"></i>Manajemen Toko
             </NavLink>
           </li>
+          {/* 👇 BARIS BARU DITAMBAHKAN DI SINI 👇 */}
           <li className="list-group-item">
-            <NavLink to="/admin/stores" className="nav-link-admin">
-              <i className="fas fa-store me-2"></i>Stores
+            <NavLink to="/admin/payouts" className="nav-link-admin">
+              <i className="fas fa-hand-holding-usd me-2"></i>Penarikan Dana
             </NavLink>
           </li>
           <li className="list-group-item">
             <NavLink to="/admin/users" className="nav-link-admin">
-              <i className="fas fa-users me-2"></i>Users
+              <i className="fas fa-users me-2"></i>Manajemen Pengguna
             </NavLink>
           </li>
           <li className="list-group-item">
             <NavLink to="/admin/reviews" className="nav-link-admin">
-              <i className="fas fa-star me-2"></i>Reviews
+              <i className="fas fa-star me-2"></i>Manajemen Ulasan
             </NavLink>
           </li>
           <li className="list-group-item">
-            <NavLink to="/admin/banners" className="nav-link-admin">
-              <i className="fas fa-images me-2"></i>Banners
+            <NavLink to="/admin/bookings" className="nav-link-admin">
+              <i className="fas fa-receipt me-2"></i>Semua Pesanan
             </NavLink>
           </li>
           <li className="list-group-item">
             <NavLink to="/admin/promos" className="nav-link-admin">
-              <i className="fas fa-tags me-2"></i>Promos
+              <i className="fas fa-tags me-2"></i>Manajemen Promo
+            </NavLink>
+          </li>
+          <li className="list-group-item">
+            <NavLink to="/admin/banners" className="nav-link-admin">
+              <i className="fas fa-images me-2"></i>Manajemen Banner
             </NavLink>
           </li>
           <li className="list-group-item">
             <NavLink to="/admin/reports" className="nav-link-admin">
-              <i className="fas fa-chart-line me-2"></i>Reports
+              <i className="fas fa-chart-line me-2"></i>Laporan
             </NavLink>
           </li>
           <li className="list-group-item">
             <NavLink to="/admin/settings" className="nav-link-admin">
-              <i className="fas fa-cog me-2"></i>Settings
+              <i className="fas fa-cogs me-2"></i>Pengaturan
             </NavLink>
           </li>
+          {user && user.role === "developer" && (
+            <li className="list-group-item">
+              <NavLink
+                to="/developer/dashboard"
+                className="nav-link-admin text-info"
+              >
+                <i className="fas fa-code me-2"></i>Developer Panel
+              </NavLink>
+            </li>
+          )}
           <li className="list-group-item logout mt-auto">
             <a
               href="#"
@@ -103,50 +119,55 @@ const AdminLayout = () => {
                 <i className="fas fa-bars"></i>
               </button>
               <ul className="dropdown-menu">
-                {/* Isi dropdown sama dengan menu sidebar */}
                 <li>
                   <NavLink className="dropdown-item" to="/admin/dashboard">
                     Dashboard
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink className="dropdown-item" to="/admin/bookings">
-                    Bookings
+                  <NavLink className="dropdown-item" to="/admin/stores">
+                    Manajemen Toko
                   </NavLink>
                 </li>
+                {/* 👇 BARIS BARU DITAMBAHKAN DI SINI 👇 */}
                 <li>
-                  <NavLink className="dropdown-item" to="/admin/stores">
-                    Stores
+                  <NavLink className="dropdown-item" to="/admin/payouts">
+                    Penarikan Dana
                   </NavLink>
                 </li>
                 <li>
                   <NavLink className="dropdown-item" to="/admin/users">
-                    Users
+                    Manajemen Pengguna
                   </NavLink>
                 </li>
                 <li>
                   <NavLink className="dropdown-item" to="/admin/reviews">
-                    Reviews
+                    Manajemen Ulasan
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink className="dropdown-item" to="/admin/banners">
-                    Banners
+                 <li>
+                  <NavLink className="dropdown-item" to="/admin/bookings">
+                    Semua Pesanan
                   </NavLink>
                 </li>
                 <li>
                   <NavLink className="dropdown-item" to="/admin/promos">
-                    Promos
+                    Manajemen Promo
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/admin/banners">
+                    Manajemen Banner
                   </NavLink>
                 </li>
                 <li>
                   <NavLink className="dropdown-item" to="/admin/reports">
-                    Reports
+                    Laporan
                   </NavLink>
                 </li>
                 <li>
                   <NavLink className="dropdown-item" to="/admin/settings">
-                    Settings
+                    Pengaturan
                   </NavLink>
                 </li>
                 <li>

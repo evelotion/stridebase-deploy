@@ -43,7 +43,10 @@ const PartnerLayout = ({ theme }) => {
           </li>
           {showUpgradeMenu && (
             <li className="list-group-item">
-              <NavLink to="/partner/upgrade" className="nav-link-admin text-info">
+              <NavLink
+                to="/partner/upgrade"
+                className="nav-link-admin text-info"
+              >
                 <i className="fas fa-crown me-2"></i>Upgrade ke PRO
               </NavLink>
             </li>
@@ -53,12 +56,18 @@ const PartnerLayout = ({ theme }) => {
               <i className="fas fa-receipt me-2"></i>Pesanan Masuk
             </NavLink>
           </li>
-           <li className="list-group-item">
+          {/* 👇 BARIS BARU DITAMBAHKAN DI SINI 👇 */}
+          <li className="list-group-item">
+            <NavLink to="/partner/wallet" className="nav-link-admin">
+              <i className="fas fa-wallet me-2"></i>Dompet & Penarikan
+            </NavLink>
+          </li>
+          <li className="list-group-item">
             <NavLink to="/partner/reviews" className="nav-link-admin">
               <i className="fas fa-star me-2"></i>Ulasan Pelanggan
             </NavLink>
           </li>
-           <li className="list-group-item">
+          <li className="list-group-item">
             <NavLink to="/partner/promos" className="nav-link-admin">
               <i className="fas fa-tags me-2"></i>Manajemen Promo
             </NavLink>
@@ -74,7 +83,11 @@ const PartnerLayout = ({ theme }) => {
             </NavLink>
           </li>
           <li className="list-group-item logout mt-auto">
-            <a href="#" onClick={handleLogout} className="nav-link-admin text-danger">
+            <a
+              href="#"
+              onClick={handleLogout}
+              className="nav-link-admin text-danger"
+            >
               <i className="fas fa-sign-out-alt me-2"></i>Logout
             </a>
           </li>
@@ -86,19 +99,66 @@ const PartnerLayout = ({ theme }) => {
         <nav className="navbar navbar-light bg-light border-bottom d-lg-none admin-mobile-nav">
           <div className="container-fluid">
             <div className="dropdown">
-              <button className="btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button
+                className="btn"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
                 <i className="fas fa-bars"></i>
               </button>
               <ul className="dropdown-menu">
-                 <li><NavLink className="dropdown-item" to="/partner/dashboard">Dashboard</NavLink></li>
-                 {showUpgradeMenu && <li><NavLink className="dropdown-item" to="/partner/upgrade">Upgrade ke PRO</NavLink></li>}
-                 <li><NavLink className="dropdown-item" to="/partner/orders">Pesanan Masuk</NavLink></li>
-                 <li><NavLink className="dropdown-item" to="/partner/reviews">Ulasan</NavLink></li>
-                 <li><NavLink className="dropdown-item" to="/partner/promos">Promo</NavLink></li>
-                 <li><NavLink className="dropdown-item" to="/partner/services">Layanan</NavLink></li>
-                 <li><NavLink className="dropdown-item" to="/partner/settings">Pengaturan</NavLink></li>
-                 <li><hr className="dropdown-divider" /></li>
-                 <li><NavLink className="dropdown-item" to="/">Kembali ke Situs</NavLink></li>
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/dashboard">
+                    Dashboard
+                  </NavLink>
+                </li>
+                {showUpgradeMenu && (
+                  <li>
+                    <NavLink className="dropdown-item" to="/partner/upgrade">
+                      Upgrade ke PRO
+                    </NavLink>
+                  </li>
+                )}
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/orders">
+                    Pesanan Masuk
+                  </NavLink>
+                </li>
+                {/* 👇 BARIS BARU DITAMBAHKAN DI SINI 👇 */}
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/wallet">
+                    Dompet & Penarikan
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/reviews">
+                    Ulasan
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/promos">
+                    Promo
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/services">
+                    Layanan
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/settings">
+                    Pengaturan
+                  </NavLink>
+                </li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/">
+                    Kembali ke Situs
+                  </NavLink>
+                </li>
               </ul>
             </div>
             <span className="navbar-brand mb-0 h1">Partner Panel</span>

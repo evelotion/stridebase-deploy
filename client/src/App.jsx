@@ -17,6 +17,8 @@ import Footer from "./components/Footer";
 import GlobalAnnouncement from "./components/GlobalAnnouncement";
 import Notification from "./components/Notification";
 import API_BASE_URL from "./apiConfig";
+import PartnerWalletPage from "./pages/PartnerWalletPage";
+import AdminPayoutsPage from "./pages/AdminPayoutsPage";
 
 // Lazy load all page components
 const HomePage = React.lazy(() => import("./pages/HomePage"));
@@ -88,6 +90,7 @@ const PartnerInvoicePage = React.lazy(() =>
   import("./pages/PartnerInvoicePage")
 );
 const PartnerPromosPage = React.lazy(() => import("./pages/PartnerPromosPage"));
+
 const DeveloperLayout = React.lazy(() =>
   import("./components/DeveloperLayout")
 );
@@ -422,6 +425,7 @@ function AppContent() {
             path="invoices/:id"
             element={renderWithProps(PartnerInvoicePage)}
           />
+          <Route path="/partner/wallet" element={<PartnerWalletPage />} /> 
           <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
         </Route>
 
@@ -438,6 +442,7 @@ function AppContent() {
           <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
           <Route path="stores" element={renderWithProps(AdminStoresPage)} />
+            <Route path="payouts" element={<AdminPayoutsPage />} />
           <Route
             path="stores/:storeId/invoices"
             element={renderWithProps(AdminStoreInvoicePage)}
