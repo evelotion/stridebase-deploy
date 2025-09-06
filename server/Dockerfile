@@ -13,7 +13,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Instal SEMUA dependensi (termasuk devDependencies seperti prisma)
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # PERBAIKAN 1: Jalankan prisma generate setelah instalasi
 # Ini akan membuat Prisma Client yang kompatibel dengan environment Alpine Linux di dalam container
