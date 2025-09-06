@@ -1,643 +1,137 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { API_BASE_URL } from '../apiConfig';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
-const AdminStoreInvoicePage = ({ showMessage }) => {
-  const { storeId } = useParams();
+export const loader = ({ params }) => {
+  const { storeId } = params;
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    // In a real app, you'd redirect. Here we'll rely on the component to handle loading state.
+    return { storeId, token: null };
+  }
+  return { storeId, token };
+};
+
+const AdminStoreInvoicePage = () => {
+  const { storeId, token } = useLoaderData();
   const [store, setStore] = useState(null);
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [viewingInvoice, setViewingInvoice] = useState(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [newInvoiceData, setNewInvoiceData] = useState({
-    issueDate: new Date().toISOString().split("T")[0],
-    dueDate: "",
-    notes: "",
-    items: [
-      {
-        description: "Biaya Langganan Bulanan",
-        quantity: 1,
-        unitPrice: 0,
-        total: 0,
-      },
-    ],
-  });
-
-  const fetchInvoiceData = async () => {
-  setLoading(true);
-  setError("");
-  const token = localStorage.getItem("token");
-
-  // ==================== PERBAIKAN DI SINI ====================
-  // Definisikan header otentikasi di sini
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-  // ==========================================================
-
-  try {
-    const [storeRes, invoicesRes] = await Promise.all([
-      // PERBAIKAN: Tambahkan { headers } ke fetch pertama
-      fetch(`${API_BASE_URL}/api/stores/${storeId}`, { headers }),
-      // PERBAIKAN: Tambahkan { headers } ke fetch kedua
-      fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/invoices`, {
-        headers,
-      }),
-    ]);
-    if (!storeRes.ok) throw new Error("Gagal mengambil detail toko.");
-    if (!invoicesRes.ok) throw new Error("Gagal mengambil data invoice.");
-    const storeData = await storeRes.json();
-    const invoicesData = await invoicesRes.json();
-    setStore(storeData);
-    setInvoices(invoicesData);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchInvoiceData();
-  }, [storeId]);
+    const fetchData = async () => {
+      if (!token) {
+        setError("Autentikasi dibutuhkan. Silakan login kembali.");
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        const headers = { Authorization: `Bearer ${token}` };
 
-  const handleShowCreateModal = () => setShowCreateModal(true);
+        const [storeRes, invoicesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/stores/${storeId}`, { headers }),
+          fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/invoices`, { headers }),
+        ]);
 
-  const handleCloseCreateModal = () => {
-    setShowCreateModal(false);
-    setNewInvoiceData({
-      issueDate: new Date().toISOString().split("T")[0],
-      dueDate: "",
-      notes: "",
-      items: [
-        {
-          description: "Biaya Langganan Bulanan",
-          quantity: 1,
-          unitPrice: 0,
-          total: 0,
-        },
+        if (!storeRes.ok) throw new Error(`Gagal memuat data toko: ${storeRes.statusText}`);
+        if (!invoicesRes.ok) throw new Error(`Gagal memuat data invoice: ${invoicesRes.statusText}`);
+
+        const storeData = await storeRes.json();
+        const invoicesData = await invoicesRes.json();
+
+        setStore(storeData);
+        setInvoices(invoicesData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [storeId, token]);
+
+  const downloadInvoice = (invoice) => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(20);
+    doc.text(`Invoice #${invoice.invoiceNumber}`, 14, 22);
+    doc.setFontSize(12);
+    doc.text(`Untuk: ${store.name}`, 14, 32);
+    doc.text(`Periode: ${new Date(invoice.startDate).toLocaleDateString()} - ${new Date(invoice.endDate).toLocaleDateString()}`, 14, 38);
+
+    doc.autoTable({
+      startY: 50,
+      head: [['Deskripsi', 'Jumlah']],
+      body: [
+        ['Biaya Langganan Tier', `Rp ${invoice.amount.toLocaleString()}`],
+        ['Status', invoice.status],
       ],
+      foot: [['Total', `Rp ${invoice.amount.toLocaleString()}`]]
     });
+    
+    doc.save(`invoice-${invoice.invoiceNumber}.pdf`);
   };
 
-  const handleCloseDetailModal = () => {
-    setShowDetailModal(false);
-    setViewingInvoice(null);
-  };
-
-  const handleInvoiceChange = (e) => {
-    const { name, value } = e.target;
-    setNewInvoiceData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleItemChange = (index, e) => {
-    const { name, value } = e.target;
-    const items = [...newInvoiceData.items];
-    items[index][name] = value;
-    const qty = parseInt(items[index].quantity, 10) || 0;
-    const price = parseInt(items[index].unitPrice, 10) || 0;
-    items[index].total = qty * price;
-    setNewInvoiceData((prev) => ({ ...prev, items }));
-  };
-
-  const handleAddItem = () => {
-    setNewInvoiceData((prev) => ({
-      ...prev,
-      items: [
-        ...prev.items,
-        { description: "", quantity: 1, unitPrice: 0, total: 0 },
-      ],
-    }));
-  };
-
-  const handleRemoveItem = (index) => {
-    const items = [...newInvoiceData.items];
-    items.splice(index, 1);
-    setNewInvoiceData((prev) => ({ ...prev, items }));
-  };
-
-  const totalInvoiceAmount = useMemo(() => {
-    return newInvoiceData.items.reduce(
-      (sum, item) => sum + (item.total || 0),
-      0
-    );
-  }, [newInvoiceData.items]);
-
-  const handleSaveInvoice = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/stores/${storeId}/invoices`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(newInvoiceData),
-        }
-      );
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.message || "Gagal menyimpan invoice.");
-
-      showMessage("Invoice baru berhasil dibuat!");
-      handleCloseCreateModal();
-      fetchInvoiceData();
-    } catch (error) {
-      showMessage(error.message);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleStatusUpdate = async (invoiceId, newStatus) => {
-    const actionText = newStatus === "PAID" ? "menandai LUNAS" : "membatalkan";
-    if (!confirm(`Apakah Anda yakin ingin ${actionText} invoice ini?`)) return;
-
-    setIsSaving(true);
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/invoices/${invoiceId}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ newStatus }),
-        }
-      );
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
-
-      showMessage(`Invoice berhasil ditandai sebagai ${newStatus}.`);
-      handleCloseDetailModal();
-      fetchInvoiceData();
-    } catch (error) {
-      showMessage(error.message);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleMarkOverdue = async (invoiceId) => {
-    if (
-      !confirm(
-        "Terapkan denda keterlambatan pada invoice ini? Aksi ini tidak dapat dibatalkan."
-      )
-    )
-      return;
-    setIsSaving(true);
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/invoices/${invoiceId}/overdue`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
-
-      showMessage("Denda keterlambatan berhasil diterapkan.");
-      handleCloseDetailModal();
-      fetchInvoiceData();
-    } catch (error) {
-      showMessage(error.message);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleShowDetailModal = async (invoiceId) => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/invoices/${invoiceId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (!response.ok) throw new Error("Detail invoice tidak ditemukan.");
-      const data = await response.json();
-      setViewingInvoice(data);
-      setShowDetailModal(true);
-    } catch (err) {
-      showMessage(err.message);
-    }
-  };
-
-  const getStatusBadge = (status, dueDate) => {
-    const isOverdue =
-      new Date(dueDate) < new Date() &&
-      status !== "PAID" &&
-      status !== "CANCELLED";
-    if (status === "PAID") return "bg-success";
-    if (isOverdue || status === "OVERDUE") return "bg-danger";
-    if (status === "SENT") return "bg-warning text-dark";
-    return "bg-secondary";
-  };
-
-  const getStatusText = (status, dueDate) => {
-    const isOverdue =
-      new Date(dueDate) < new Date() &&
-      status !== "PAID" &&
-      status !== "CANCELLED";
-    if (isOverdue && status !== "OVERDUE") return "Jatuh Tempo";
-    return status;
-  };
-
-  const handleSendInvoice = async (invoiceId) => {
-    if (
-      !confirm(
-        "Kirim invoice ini ke pemilik toko? Status akan berubah menjadi SENT."
-      )
-    )
-      return;
-    setIsSaving(true);
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/invoices/${invoiceId}/send`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message);
-
-      showMessage("Invoice berhasil dikirim!");
-      handleCloseDetailModal();
-      fetchInvoiceData(); // Refresh data
-    } catch (error) {
-      showMessage(error.message);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  if (loading) return <div className="p-4">Memuat data invoice...</div>;
-  if (error) return <div className="p-4 text-danger">Error: {error}</div>;
+  if (loading) return <div className="admin-container"><p>Memuat data...</p></div>;
+  if (error) return <div className="admin-container"><p className="error-message">{error}</p></div>;
+  if (!store) return <div className="admin-container"><p>Toko tidak ditemukan.</p></div>;
 
   return (
-    <>
-      <div className="container-fluid px-4">
-        <div className="d-flex justify-content-between align-items-center m-4">
-          <div>
-            <Link to="/admin/stores" className="btn btn-sm btn-light me-2">
-              <i className="fas fa-arrow-left"></i>
-            </Link>
-            <h2 className="fs-2 mb-0 d-inline-block align-middle">
-              Manajemen Invoice: {store?.name || "..."}
-            </h2>
-          </div>
-          <button className="btn btn-primary" onClick={handleShowCreateModal}>
-            <i className="fas fa-plus me-2"></i>Buat Tagihan Baru
-          </button>
-        </div>
-
-        <div className="table-card p-3 shadow-sm">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle">
-              <thead className="table-light">
-                <tr>
-                  <th>Nomor Invoice</th>
-                  <th>Tgl Terbit</th>
-                  <th>Tgl Jatuh Tempo</th>
-                  <th>Total Tagihan</th>
-                  <th>Status</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.length > 0 ? (
-                  invoices.map((invoice) => (
-                    <tr key={invoice.id}>
-                      <td>
-                        <span className="fw-bold">{invoice.invoiceNumber}</span>
-                      </td>
-                      <td>
-                        {new Date(invoice.issueDate).toLocaleDateString(
-                          "id-ID"
-                        )}
-                      </td>
-                      <td>
-                        {new Date(invoice.dueDate).toLocaleDateString("id-ID")}
-                      </td>
-                      <td>Rp {invoice.totalAmount.toLocaleString("id-ID")}</td>
-                      <td>
-                        <span
-                          className={`badge ${getStatusBadge(
-                            invoice.status,
-                            invoice.dueDate
-                          )}`}
-                        >
-                          {getStatusText(invoice.status, invoice.dueDate)}
-                        </span>
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-sm btn-outline-secondary"
-                          onClick={() => handleShowDetailModal(invoice.id)}
-                        >
-                          <i className="fas fa-search me-1"></i> Detail & Aksi
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="text-center p-5 text-muted">
-                      Belum ada invoice yang dibuat untuk toko ini.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {showCreateModal && (
-        <>
-          <div
-            className="modal fade show"
-            style={{ display: "block" }}
-            tabIndex="-1"
-          >
-            <div className="modal-dialog modal-dialog-centered modal-lg">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">
-                    Buat Tagihan Baru untuk {store?.name}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleCloseCreateModal}
-                  ></button>
-                </div>
-                <form onSubmit={handleSaveInvoice}>
-                  <div className="modal-body">
-                    <div className="row mb-3">
-                      <div className="col-md-6">
-                        <label htmlFor="issueDate" className="form-label">
-                          Tanggal Diterbitkan
-                        </label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          id="issueDate"
-                          name="issueDate"
-                          value={newInvoiceData.issueDate}
-                          onChange={handleInvoiceChange}
-                          required
-                        />
-                      </div>
-                      <div className="col-md-6">
-                        <label htmlFor="dueDate" className="form-label">
-                          Tanggal Jatuh Tempo
-                        </label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          id="dueDate"
-                          name="dueDate"
-                          value={newInvoiceData.dueDate}
-                          onChange={handleInvoiceChange}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <hr />
-                    <h6 className="mb-3">Item Tagihan</h6>
-                    {newInvoiceData.items.map((item, index) => (
-                      <div key={index} className="row align-items-center mb-2">
-                        <div className="col-md-5">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Deskripsi"
-                            name="description"
-                            value={item.description}
-                            onChange={(e) => handleItemChange(index, e)}
-                            required
-                          />
-                        </div>
-                        <div className="col-md-2">
-                          <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Jml"
-                            name="quantity"
-                            value={item.quantity}
-                            onChange={(e) => handleItemChange(index, e)}
-                            required
-                          />
-                        </div>
-                        <div className="col-md-3">
-                          <input
-                            type="number"
-                            className="form-control"
-                            placeholder="Harga Satuan"
-                            name="unitPrice"
-                            value={item.unitPrice}
-                            onChange={(e) => handleItemChange(index, e)}
-                            required
-                          />
-                        </div>
-                        <div className="col-md-2">
-                          {newInvoiceData.items.length > 1 && (
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-danger"
-                              onClick={() => handleRemoveItem(index)}
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary mt-2"
-                      onClick={handleAddItem}
-                    >
-                      <i className="fas fa-plus"></i> Tambah Item
-                    </button>
-
-                    <hr />
-                    <div className="mb-3">
-                      <label htmlFor="notes" className="form-label">
-                        Catatan (Opsional)
-                      </label>
-                      <textarea
-                        className="form-control"
-                        id="notes"
-                        name="notes"
-                        rows="2"
-                        value={newInvoiceData.notes}
-                        onChange={handleInvoiceChange}
-                      ></textarea>
-                    </div>
-                    <div className="text-end">
-                      <h5>
-                        Total:{" "}
-                        <span className="fw-bold">
-                          Rp {totalInvoiceAmount.toLocaleString("id-ID")}
-                        </span>
-                      </h5>
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={handleCloseCreateModal}
-                    >
-                      Batal
-                    </button>
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      disabled={isSaving}
-                    >
-                      {isSaving ? "Menyimpan..." : "Simpan & Kirim Invoice"}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          <div className="modal-backdrop fade show"></div>
-        </>
-      )}
-
-      {showDetailModal && viewingInvoice && (
-        <>
-          <div
-            className="modal fade show"
-            style={{ display: "block" }}
-            tabIndex="-1"
-          >
-            <div className="modal-dialog modal-dialog-centered modal-lg">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">
-                    Detail Invoice: {viewingInvoice.invoiceNumber}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleCloseDetailModal}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <div className="row mb-3">
-                    <div className="col-6">
-                      <strong>Kepada:</strong> {viewingInvoice.store.name}
-                    </div>
-                    <div className="col-6 text-end">
-                      <strong>Status:</strong>{" "}
-                      {getStatusText(
-                        viewingInvoice.status,
-                        viewingInvoice.dueDate
-                      )}
-                    </div>
-                  </div>
-                  <table className="table table-sm">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Deskripsi</th>
-                        <th>Jumlah</th>
-                        <th>Harga</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {viewingInvoice.items.map((item) => (
-                        <tr key={item.id}>
-                          <td>{item.description}</td>
-                          <td>{item.quantity}</td>
-                          <td>Rp {item.unitPrice.toLocaleString("id-ID")}</td>
-                          <td className="text-end">
-                            Rp {item.total.toLocaleString("id-ID")}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <h5 className="text-end mt-3">
-                    Total Tagihan: Rp{" "}
-                    {viewingInvoice.totalAmount.toLocaleString("id-ID")}
-                  </h5>
-                </div>
-                <div className="modal-footer justify-content-between">
-                  <div>
-                    <Link
-                      to={`/admin/invoice/print/${viewingInvoice.id}`}
-                      target="_blank"
-                      className="btn btn-info"
-                    >
-                      <i className="fas fa-print me-2"></i>Cetak
-                    </Link>
-                    <button
-                      type="button"
-                      className="btn btn-secondary ms-2"
-                      onClick={handleCloseDetailModal}
-                    >
-                      Tutup
-                    </button>
-                  </div>
-                  <div className="btn-group">
-                    {viewingInvoice.status === "DRAFT" && (
-                      <button
-                        className="btn btn-primary"
-                        onClick={() => handleSendInvoice(viewingInvoice.id)}
-                        disabled={isSaving}
-                      >
-                        <i className="fas fa-paper-plane me-2"></i>Kirim Invoice
-                      </button>
-                    )}
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleMarkOverdue(viewingInvoice.id)}
-                      disabled={isSaving || viewingInvoice.status !== "SENT"}
-                    >
-                      Tandai Telat & Denda
-                    </button>
-                    {/* PERUBAHAN DI SINI: tambahkan kelas "ms-2" */}
-                    <button
-                      className="btn btn-success ms-2"
-                      onClick={() =>
-                        handleStatusUpdate(viewingInvoice.id, "PAID")
-                      }
-                      disabled={isSaving || viewingInvoice.status === "PAID"}
-                    >
-                      Tandai Lunas
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="modal-backdrop fade show"></div>
-        </>
-      )}
-    </>
+    <div className="admin-container">
+      <h2>Invoice untuk {store.name}</h2>
+      <p>Berikut adalah riwayat tagihan untuk toko ini.</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Nomor Invoice</th>
+            <th>Periode</th>
+            <th>Jumlah</th>
+            <th>Status</th>
+            <th>Tanggal Dibuat</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {invoices.length > 0 ? (
+            invoices.map((invoice) => (
+              <tr key={invoice.id}>
+                <td>{invoice.invoiceNumber}</td>
+                <td>{`${new Date(invoice.startDate).toLocaleDateString()} - ${new Date(invoice.endDate).toLocaleDateString()}`}</td>
+                <td>Rp {invoice.amount.toLocaleString()}</td>
+                <td>{invoice.status}</td>
+                <td>{new Date(invoice.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <button onClick={() => downloadInvoice(invoice)}>Unduh PDF</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">Belum ada invoice untuk toko ini.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 };
+
+// Note: useLoaderData hook isn't standard in React, assuming it's from a library like React Router.
+// For this to work with React Router v6.4+, you should export the loader and use useLoaderData().
+// I'll simulate this with a simple custom hook for standalone component clarity.
+const useLoaderData = () => {
+    const { storeId } = useParams();
+    const token = localStorage.getItem('token');
+    return { storeId, token };
+}
+
 
 export default AdminStoreInvoicePage;

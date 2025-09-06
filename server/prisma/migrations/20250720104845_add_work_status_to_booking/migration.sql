@@ -1,5 +1,0 @@
--- CreateEnum
-CREATE TYPE "WorkStatus" AS ENUM ('RECEIVED', 'WASHING', 'DRYING', 'QUALITY_CHECK', 'READY_FOR_PICKUP');
-
--- AlterTable
-ALTER TABLE "Booking" ADD COLUMN     "workStatus" "WorkStatus" NOT NULL DEFAULT 'RECEIVED';

@@ -124,12 +124,10 @@ async function main() {
       { bookingId: "booking-03-processing", amount: 60000, status: "paid", midtransOrderId: `stride-dummy-3` },
     ]
   });
-
   // Simulasi potong komisi untuk toko "Ani Shoe Laundry"
   const aniStore = createdStores.find(s => s.id === "store-02-basic");
   const aniWallet = await prisma.storeWallet.findUnique({ where: { storeId: aniStore.id } });
   const bookingToProcess = bookings.find(b => b.id === "booking-03-processing");
-
   const commission = bookingToProcess.totalPrice * (aniStore.commissionRate / 100);
   const netIncome = bookingToProcess.totalPrice - commission;
 
@@ -181,7 +179,6 @@ async function main() {
       requestedById: "user-admin-01"
     }
   });
-
   // Simulasi permintaan penarikan dana dari Ani
   await prisma.payoutRequest.create({
       data: {

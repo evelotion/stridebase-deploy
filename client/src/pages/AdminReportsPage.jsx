@@ -1,300 +1,168 @@
-import React, { useState, useEffect } from "react";
-import API_BASE_URL from "../apiConfig";
+import React from "react";
+import { useLoaderData, useSearchParams } from "react-router-dom";
+import { API_BASE_URL } from "../apiConfig";
 
-const KpiCard = ({ title, value, icon, colorClass }) => (
-  <div className="col-lg-3 col-md-6">
-    <div className="kpi-card p-3 shadow-sm d-flex justify-content-around align-items-center h-100">
-      <div>
-        <h3 className="fs-2">{value}</h3>
-        <p className="fs-5 text-muted mb-0">{title}</p>
-      </div>
-      <i
-        className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}
-      ></i>
-    </div>
-  </div>
-);
+export const loader = async ({ request }) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return redirect("/login");
+  }
 
-const RevenueChart = ({ data }) => {
-  const dailyRevenue = data.reduce((acc, payment) => {
-    if (payment.status === "SUCCESS") {
-      const date = new Date(payment.createdAt).toLocaleDateString("id-ID");
-      acc[date] = (acc[date] || 0) + payment.amount;
+  const url = new URL(request.url);
+  const params = new URLSearchParams(url.search);
+
+  // Default date range to last 30 days if not provided
+  if (!params.has("startDate")) {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - 30);
+    params.set("startDate", startDate.toISOString().split("T")[0]);
+    params.set("endDate", endDate.toISOString().split("T")[0]);
+  }
+
+  try {
+    const [transactionsRes, earningsRes] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/admin/transactions?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+      fetch(`${API_BASE_URL}/api/admin/platform-earnings?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    ]);
+
+    if (!transactionsRes.ok || !earningsRes.ok) {
+      throw new Error("Failed to fetch reports data");
     }
-    return acc;
-  }, {});
 
-  const chartData = Object.entries(dailyRevenue).map(([date, revenue]) => ({
-    date,
-    revenue,
-  }));
-  const maxValue = Math.max(...chartData.map((d) => d.revenue), 1);
+    const transactionsData = await transactionsRes.json();
+    const earningsData = await earningsRes.json();
 
-  return (
-    <div className="table-card p-4 shadow-sm">
-      <h5 className="mb-3">Grafik Pendapatan Berdasarkan Filter</h5>
-      <div
-        className="d-flex justify-content-around align-items-end"
-        style={{
-          height: "250px",
-          borderLeft: "1px solid #ccc",
-          borderBottom: "1px solid #ccc",
-          padding: "10px",
-        }}
-      >
-        {chartData.length > 0 ? (
-          chartData.map((day, index) => (
-            <div
-              key={index}
-              className="text-center d-flex flex-column justify-content-end align-items-center"
-              style={{ height: "100%" }}
-            >
-              <div
-                className="bg-success rounded-top"
-                style={{
-                  height: `${(day.revenue / maxValue) * 100}%`,
-                  width: "40px",
-                  transition: "height 0.5s ease-out",
-                }}
-                title={`Rp ${day.revenue.toLocaleString("id-ID")}`}
-              ></div>
-              <small className="text-muted mt-1" style={{ fontSize: "0.7rem" }}>
-                {day.date.split("/")[0]}/${day.date.split("/")[1]}
-              </small>
-            </div>
-          ))
-        ) : (
-          <p className="text-muted align-self-center">
-            Tidak ada data pendapatan pada rentang tanggal ini.
-          </p>
-        )}
-      </div>
-    </div>
-  );
+    return { transactionsData, earningsData, queryParams: Object.fromEntries(params) };
+  } catch (error) {
+    console.error("Error fetching admin reports:", error);
+    // Return empty state or error message
+    return { 
+      transactionsData: { transactions: [], total: 0, totalPages: 1 }, 
+      earningsData: { earnings: [], total: 0, totalPages: 1, totalAmount: 0 },
+      queryParams: Object.fromEntries(params),
+      error: "Gagal memuat data laporan." 
+    };
+  }
 };
 
+
 const AdminReportsPage = () => {
-  const [stats, setStats] = useState(null);
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { transactionsData, earningsData, queryParams, error } = useLoaderData();
+  const [searchParams, setSearchParams] = useSearchParams(queryParams);
 
-  const today = new Date();
-  const sevenDaysAgo = new Date(today);
-  sevenDaysAgo.setDate(today.getDate() - 7);
-
-  const [startDate, setStartDate] = useState(
-    sevenDaysAgo.toISOString().split("T")[0]
-  );
-  const [endDate, setEndDate] = useState(today.toISOString().split("T")[0]);
-
-  useEffect(() => {
-    fetchReportsData();
-  }, []);
-
-  const fetchReportsData = async () => {
-    setLoading(true);
-    const token = localStorage.getItem("token");
-    const params = new URLSearchParams({ startDate, endDate });
-
-    try {
-      const [statsRes, transactionsRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/admin/stats`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${API_BASE_URL}/api/admin/transactions?${params.toString()}`, {
-          // PERBAIKAN DI SINI
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
-
-      if (!statsRes.ok || !transactionsRes.ok) {
-        throw new Error("Gagal mengambil data laporan.");
-      }
-
-      const statsData = await statsRes.json();
-      const transactionsData = await transactionsRes.json();
-
-      setStats(statsData);
-      setTransactions(transactionsData);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams(prev => {
+        prev.set(name, value);
+        return prev;
+    })
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "SUCCESS":
-        return "bg-success";
-      case "PENDING":
-        return "bg-warning text-dark";
-      case "FAILED":
-        return "bg-danger";
-      case "CANCELLED":
-        return "bg-secondary";
-      default:
-        return "bg-dark";
-    }
-  };
+  const handlePageChange = (type, newPage) => {
+    setSearchParams(prev => {
+        prev.set(`${type}Page`, newPage);
+        return prev;
+    });
+  }
 
-  const handleFilter = () => {
-    fetchReportsData();
-  };
-
+  if (error) {
+    return <div className="admin-container"><p className="error-message">{error}</p></div>;
+  }
+  
   return (
-    <div className="container-fluid px-4">
-      <h2 className="fs-2 m-4">Laporan & Analitik</h2>
-
-      {!loading && stats && (
-        <div className="row g-3 my-2">
-          <KpiCard
-            title="Gross Volume Transaksi"
-            value={`Rp ${stats.totalRevenue.toLocaleString("id-ID")}`}
-            icon="fa-money-bill-wave"
-            colorClass="primary-text"
+    <div className="admin-container">
+      <h2>Laporan Platform</h2>
+      <div className="filters">
+        <label>
+          Dari Tanggal:
+          <input
+            type="date"
+            name="startDate"
+            value={searchParams.get('startDate') || ''}
+            onChange={handleFilterChange}
           />
-          <KpiCard
-            title="Pendapatan Platform"
-            value={`Rp ${stats.platformRevenue.toLocaleString("id-ID")}`}
-            icon="fa-hand-holding-usd"
-            colorClass="secondary-text"
+        </label>
+        <label>
+          Sampai Tanggal:
+          <input
+            type="date"
+            name="endDate"
+            value={searchParams.get('endDate') || ''}
+            onChange={handleFilterChange}
           />
-          <KpiCard
-            title="Total Pengguna"
-            value={stats.totalUsers}
-            icon="fa-users"
-            colorClass="primary-text"
-          />
-          <KpiCard
-            title="Total Toko"
-            value={stats.totalStores}
-            icon="fa-store-alt"
-            colorClass="secondary-text"
-          />
-        </div>
-      )}
-
-      <div className="row g-3 my-4">
-        <div className="col-12">
-          <div className="table-card p-3 shadow-sm">
-            <div className="row g-3 align-items-end">
-              <div className="col-md-3">
-                <label htmlFor="startDate" className="form-label">
-                  Tanggal Mulai
-                </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  className="form-control"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-              <div className="col-md-3">
-                <label htmlFor="endDate" className="form-label">
-                  Tanggal Akhir
-                </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  className="form-control"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
-              <div className="col-md-3">
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={handleFilter}
-                  disabled={loading}
-                >
-                  {loading ? "Memuat..." : "Terapkan Filter"}
-                </button>
-              </div>
-              <div className="col-md-3">
-                <a
-                  href={`/api/admin/export/transactions?startDate=${startDate}&endDate=${endDate}`}
-                  className="btn btn-outline-success w-100"
-                  download
-                >
-                  <i className="fas fa-file-csv me-2"></i>Ekspor ke CSV
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-12">
-          {loading ? (
-            <p>Memuat grafik...</p>
-          ) : (
-            <RevenueChart data={transactions} />
-          )}
-        </div>
+        </label>
       </div>
 
-      <div className="row g-3 my-4">
-        <div className="col-12">
-          <div className="table-card p-3 shadow-sm">
-            <h5 className="mb-3">
-              Riwayat Transaksi Pembayaran (Berdasarkan Filter)
-            </h5>
-            <div className="table-responsive">
-              <table className="table table-hover align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>ID Pesanan</th>
-                    <th>Pengguna</th>
-                    <th>Toko</th>
-                    <th>Tanggal</th>
-                    <th>Jumlah</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan="6" className="text-center">
-                        Memuat transaksi...
-                      </td>
-                    </tr>
-                  ) : (
-                    transactions.map((payment) => (
-                      <tr key={payment.id}>
-                        <td>
-                          <small>{payment.bookingId}</small>
-                        </td>
-                        <td>{payment.booking.user.name}</td>
-                        <td>{payment.booking.store.name}</td>
-                        <td>
-                          {new Date(payment.createdAt).toLocaleDateString(
-                            "id-ID"
-                          )}
-                        </td>
-                        <td>Rp {payment.amount.toLocaleString("id-ID")}</td>
-                        <td>
-                          <span
-                            className={`badge ${getStatusBadge(
-                              payment.status
-                            )}`}
-                          >
-                            {payment.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                  {!loading && transactions.length === 0 && (
-                    <tr>
-                      <td colSpan="6" className="text-center text-muted">
-                        Tidak ada data transaksi ditemukan.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div className="report-section">
+        <h3>Pendapatan Platform</h3>
+        <p>Total Pendapatan: <strong>Rp {earningsData.totalAmount.toLocaleString()}</strong></p>
+        <table>
+          <thead>
+            <tr>
+              <th>ID Booking</th>
+              <th>Nama Toko</th>
+              <th>Jumlah</th>
+              <th>Tanggal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {earningsData.earnings.map((earning) => (
+              <tr key={earning.id}>
+                <td>{earning.bookingId.substring(0, 8)}</td>
+                <td>{earning.store.name}</td>
+                <td>Rp {earning.earnedAmount.toLocaleString()}</td>
+                <td>{new Date(earning.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {/* Pagination for earnings can be added here if needed */}
+      </div>
+
+      <div className="report-section">
+        <h3>Seluruh Transaksi</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID Booking</th>
+              <th>Pengguna</th>
+              <th>Toko</th>
+              <th>Jumlah</th>
+              <th>Status</th>
+              <th>Tanggal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactionsData.transactions.map((payment) => (
+              <tr key={payment.id}>
+                <td>{payment.bookingId.substring(0, 8)}</td>
+                <td>{payment.booking.user.name}</td>
+                <td>{payment.booking.store.name}</td>
+                <td>Rp {payment.amount.toLocaleString()}</td>
+                <td>{payment.status}</td>
+                <td>{new Date(payment.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {/* Pagination for transactions */}
+        <div className="pagination">
+            <button 
+                onClick={() => handlePageChange('tx', Math.max(1, parseInt(searchParams.get('txPage') || '1') - 1))}
+                disabled={parseInt(searchParams.get('txPage') || '1') === 1}>
+                Previous
+            </button>
+            <span>Halaman {searchParams.get('txPage') || '1'} dari {transactionsData.totalPages}</span>
+            <button 
+                onClick={() => handlePageChange('tx', Math.min(transactionsData.totalPages, parseInt(searchParams.get('txPage') || '1') + 1))}
+                disabled={parseInt(searchParams.get('txPage') || '1') >= transactionsData.totalPages}>
+                Next
+            </button>
         </div>
       </div>
     </div>
