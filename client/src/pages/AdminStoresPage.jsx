@@ -58,7 +58,7 @@ const AdminStoresPage = ({ showMessage }) => {
       }
     };
     fetchInitialData();
-  }, []);
+  }, [showMessage]);
 
   const fetchStores = async () => {
     const token = localStorage.getItem("token");
@@ -466,7 +466,101 @@ const AdminStoresPage = ({ showMessage }) => {
           </div>
 
           <div className="mobile-card-list d-lg-none">
-            {/* ... (kode mobile view tidak berubah) ... */}
+            {filteredStores.map((store) => (
+              <div className="mobile-card" key={store.id}>
+                <div className="mobile-card-header">
+                  <span className="fw-bold">{store.name}</span>
+                  <span
+                    className={`badge bg-${
+                      store.storeStatus === "active"
+                        ? "success"
+                        : store.storeStatus === "inactive"
+                        ? "secondary"
+                        : "warning text-dark"
+                    }`}
+                  >
+                    {store.storeStatus}
+                  </span>
+                </div>
+                <div className="mobile-card-body">
+                  <div className="mobile-card-row">
+                    <small>Pemilik</small>
+                    <span>{store.owner || "N/A"}</span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Lokasi</small>
+                    <span className="text-end">{store.location}</span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Tipe Penagihan</small>
+                    <span
+                      className={`badge ${
+                        store.billingType === "INVOICE"
+                          ? "bg-primary"
+                          : "bg-secondary"
+                      }`}
+                    >
+                      {store.billingType}
+                    </span>
+                  </div>
+                </div>
+                <div className="mobile-card-footer">
+                  <div className="btn-group">
+                    {store.storeStatus === "pending" ? (
+                      <>
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => handleShowEditModal(store)}
+                        >
+                          <i className="fas fa-edit me-1"></i> Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() =>
+                            handleDeleteStore(store.id, store.name)
+                          }
+                        >
+                          <i className="fas fa-trash-alt me-1"></i> Hapus
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {store.storeStatus === "active" && (
+                          <button
+                            onClick={() =>
+                              handleStatusChange(
+                                store.id,
+                                "inactive",
+                                `Toko ${store.name} berhasil dinonaktifkan.`
+                              )
+                            }
+                            className="btn btn-sm btn-outline-warning"
+                            title="Nonaktifkan"
+                          >
+                            <i className="fas fa-power-off"></i>
+                          </button>
+                        )}
+                        {store.storeStatus === "inactive" && (
+                          <button
+                            onClick={() =>
+                              handleStatusChange(
+                                store.id,
+                                "active",
+                                `Toko ${store.name} berhasil diaktifkan.`
+                              )
+                            }
+                            className="btn btn-sm btn-outline-success"
+                            title="Aktifkan"
+                          >
+                            <i className="fas fa-check-circle"></i>
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -531,8 +625,6 @@ const AdminStoresPage = ({ showMessage }) => {
                       required
                     />
                   </div>
-
-                  {/* === PERUBAHAN UTAMA ADA DI SINI === */}
                   {editingStore.billingType === "COMMISSION" && (
                     <div className="mb-3">
                       <label htmlFor="commissionRate" className="form-label">
@@ -555,7 +647,6 @@ const AdminStoresPage = ({ showMessage }) => {
                       </div>
                     </div>
                   )}
-                  {/* === AKHIR DARI PERUBAHAN === */}
                 </div>
                 <div className="modal-footer">
                   <button
@@ -593,7 +684,129 @@ const AdminStoresPage = ({ showMessage }) => {
               </div>
               <form onSubmit={handleSaveNewStore}>
                 <div className="modal-body">
-                  {/* ... (isi modal tambah tidak berubah) ... */}
+                  <div className="mb-3">
+                    <label htmlFor="add-name" className="form-label">
+                      Nama Toko
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="add-name"
+                      name="name"
+                      value={newStoreData.name}
+                      onChange={handleAddFormChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="add-ownerId" className="form-label">
+                      Pemilik Toko
+                    </label>
+                    <select
+                      id="add-ownerId"
+                      name="ownerId"
+                      className="form-select"
+                      value={newStoreData.ownerId}
+                      onChange={handleAddFormChange}
+                      required
+                    >
+                      <option value="" disabled>
+                        Pilih Pengguna...
+                      </option>
+                      {users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name} ({user.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="add-billingType" className="form-label">
+                      Tipe Penagihan
+                    </label>
+                    <select
+                      id="add-billingType"
+                      name="billingType"
+                      className="form-select"
+                      value={newStoreData.billingType}
+                      onChange={handleAddFormChange}
+                      required
+                    >
+                      <option value="COMMISSION">Bagi Hasil (Komisi)</option>
+                      <option value="INVOICE">
+                        Langganan (Invoice Bulanan)
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="add-location" className="form-label">
+                      Alamat/Lokasi
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="add-location"
+                      name="location"
+                      value={newStoreData.location}
+                      onChange={handleAddFormChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="add-latitude" className="form-label">
+                        Latitude (Opsional)
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        className="form-control"
+                        id="add-latitude"
+                        name="latitude"
+                        value={newStoreData.latitude}
+                        onChange={handleAddFormChange}
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="add-longitude" className="form-label">
+                        Longitude (Opsional)
+                      </label>
+                      <input
+                        type="number"
+                        step="any"
+                        className="form-control"
+                        id="add-longitude"
+                        name="longitude"
+                        value={newStoreData.longitude}
+                        onChange={handleAddFormChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="add-commissionRate" className="form-label">
+                      Tingkat Komisi Awal (%)
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="add-commissionRate"
+                      name="commissionRate"
+                      value={newStoreData.commissionRate}
+                      onChange={handleAddFormChange}
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      required
+                    />
+                    <div className="form-text">
+                      Hanya berlaku jika Tipe Penagihan adalah "Komisi".
+                    </div>
+                  </div>
                 </div>
                 <div className="modal-footer">
                   <button
