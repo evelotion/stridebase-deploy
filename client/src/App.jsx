@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
-  BrowserRouter as Router, // Ganti nama BrowserRouter menjadi Router
+  BrowserRouter as Router,
   Routes,
   Route,
   Outlet,
@@ -17,8 +17,6 @@ import Footer from "./components/Footer";
 import GlobalAnnouncement from "./components/GlobalAnnouncement";
 import Notification from "./components/Notification";
 import API_BASE_URL from "./apiConfig";
-import PartnerWalletPage from "./pages/PartnerWalletPage";
-import AdminPayoutsPage from "./pages/AdminPayoutsPage";
 
 // Lazy load all page components
 const HomePage = React.lazy(() => import("./pages/HomePage"));
@@ -65,9 +63,10 @@ const AdminSettingsPage = React.lazy(() => import("./pages/AdminSettingsPage"));
 const AdminStoreInvoicePage = React.lazy(() =>
   import("./pages/AdminStoreInvoicePage")
 );
-const AdminStoreSettingsPage = React.lazy(() => 
+const AdminStoreSettingsPage = React.lazy(() =>
   import("./pages/AdminStoreSettingsPage")
 );
+const AdminPayoutsPage = React.lazy(() => import("./pages/AdminPayoutsPage"));
 const InvoicePrintPage = React.lazy(() => import("./pages/InvoicePrintPage"));
 const PartnerLayout = React.lazy(() => import("./components/PartnerLayout"));
 const PartnerDashboardPage = React.lazy(() =>
@@ -90,7 +89,7 @@ const PartnerInvoicePage = React.lazy(() =>
   import("./pages/PartnerInvoicePage")
 );
 const PartnerPromosPage = React.lazy(() => import("./pages/PartnerPromosPage"));
-
+const PartnerWalletPage = React.lazy(() => import("./pages/PartnerWalletPage"));
 const DeveloperLayout = React.lazy(() =>
   import("./components/DeveloperLayout")
 );
@@ -98,9 +97,10 @@ const DeveloperDashboardPage = React.lazy(() =>
   import("./pages/DeveloperDashboardPage")
 );
 const EmailVerifiedPage = React.lazy(() => import("./pages/EmailVerifiedPage"));
-const ForgotPasswordPage = React.lazy(() => import("./pages/ForgotPasswordPage"));
+const ForgotPasswordPage = React.lazy(() =>
+  import("./pages/ForgotPasswordPage")
+);
 const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
-
 
 let socket;
 
@@ -226,8 +226,6 @@ const UserLayout = ({
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
           <div className="d-none d-lg-block">
-            {" "}
-            {/* Dibungkus agar hanya tampil di desktop */}
             <GlobalAnnouncement
               message={theme.globalAnnouncement}
               isVisible={isAnnouncementVisible}
@@ -260,7 +258,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-// Komponen App dipisah agar bisa menggunakan hook useNavigate
 function AppContent() {
   const [theme, setTheme] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -299,7 +296,6 @@ function AppContent() {
       document.body.classList.remove("has-global-announcement");
     }
 
-    // Cleanup function untuk menghapus class saat komponen di-unmount
     return () => {
       document.body.classList.remove("has-global-announcement");
     };
@@ -425,8 +421,8 @@ function AppContent() {
             path="invoices/:id"
             element={renderWithProps(PartnerInvoicePage)}
           />
-          <Route path="/partner/wallet" element={<PartnerWalletPage />} /> 
           <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
+          <Route path="wallet" element={<PartnerWalletPage />} />
         </Route>
 
         <Route
@@ -442,7 +438,7 @@ function AppContent() {
           <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
           <Route path="stores" element={renderWithProps(AdminStoresPage)} />
-            <Route path="payouts" element={<AdminPayoutsPage />} />
+          <Route path="payouts" element={<AdminPayoutsPage />} />
           <Route
             path="stores/:storeId/invoices"
             element={renderWithProps(AdminStoreInvoicePage)}
@@ -470,10 +466,9 @@ function AppContent() {
               unreadCount={unreadCount}
               setNotifications={setNotifications}
               setUnreadCount={setUnreadCount}
-              isAnnouncementVisible={isAnnouncementVisible} // <-- Tambahkan ini
-              setAnnouncementVisible={setAnnouncementVisible} // <-- Tambahkan ini
+              isAnnouncementVisible={isAnnouncementVisible}
+              setAnnouncementVisible={setAnnouncementVisible}
             >
-              {/* Outlet akan merender nested Routes di bawah ini */}
               <Outlet />
             </UserLayout>
           }
@@ -487,7 +482,6 @@ function AppContent() {
                 notifications={notifications}
                 unreadCount={unreadCount}
                 handleLogout={handleLogout}
-                // Props visibilitas sekarang dikelola di dalam HomePage
               />
             }
           />
@@ -540,8 +534,14 @@ function AppContent() {
             path="login"
             element={<LoginPage showMessage={showMessage} theme={theme} />}
           />
-          <Route path="forgot-password" element={renderWithProps(ForgotPasswordPage, { theme })} />
-<Route path="reset-password" element={renderWithProps(ResetPasswordPage)} />
+          <Route
+            path="forgot-password"
+            element={renderWithProps(ForgotPasswordPage, { theme })}
+          />
+          <Route
+            path="reset-password"
+            element={renderWithProps(ResetPasswordPage)}
+          />
           <Route path="register" element={<RegisterPage theme={theme} />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="track/:bookingId" element={<TrackOrderPage />} />
@@ -555,7 +555,6 @@ function AppContent() {
   );
 }
 
-// Komponen App utama sekarang hanya membungkus Router
 const App = () => {
   return (
     <Router>
