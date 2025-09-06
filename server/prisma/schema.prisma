@@ -1,342 +1,392 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
+// StrideBase Schema
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
 }
 
-// =================================================================
-// === MODEL BARU UNTUK PENGATURAN GLOBAL YANG PERSISTEN ===
-// =================================================================
-model GlobalSetting {
-  id        String   @id @default(cuid())
-  key       String   @unique // Ini akan kita isi dengan "themeConfig"
-  value     Json     // Seluruh konfigurasi (logo, warna, dll) akan disimpan di sini
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-// =================================================================
-
-// Menambahkan ENUM baru untuk tipe penagihan
-enum BillingType {
-  COMMISSION
-  INVOICE
+generator client {
+  provider = "prisma-client-js"
 }
 
-model User {
-  id                      String    @id @default(cuid())
-  email                   String    @unique
-  name                    String
-  password                String
-  role                    String    @default("customer")
-  status                  String    @default("active")
-  createdAt               DateTime  @default(now())
-  emailVerified           DateTime?
-  emailVerificationToken  String?   @unique
-  passwordResetToken      String?   @unique
-  passwordResetExpires    DateTime?
-  bookings         Booking[]
-  reviews          Review[]
-  stores           Store[]
-  Address          Address[]
-  requestsMade     ApprovalRequest[] @relation("RequestedBy")
-  requestsResolved ApprovalRequest[] @relation("ResolvedBy")
-  loyaltyPoint     LoyaltyPoint?
-  notifications    Notification[]
-  redeemedPromos   Promo[] // Relasi ke promo yang di-redeem
-  auditLogs        AuditLog[]
+// Enums
+enum UserRole {
+  customer
+  mitra
+  admin
+  developer
 }
 
-model LoyaltyPoint {
-  id           String             @id @default(cuid())
-  points       Int                @default(0)
-  user         User               @relation(fields: [userId], references: [id])
-  userId       String             @unique
-  transactions PointTransaction[]
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+  in_progress
 }
 
-model PointTransaction {
-  id             String       @id @default(cuid())
-  points         Int
-  description    String
-  createdAt      DateTime     @default(now())
-  loyaltyPoint   LoyaltyPoint @relation(fields: [loyaltyPointId], references: [id])
-  loyaltyPointId String
-  booking        Booking?     @relation(fields: [bookingId], references: [id])
-  bookingId      String?      @unique
-}
-
-model Store {
-  id                String            @id @default(cuid())
-  name              String
-  description       String?
-  headerImage       String?
-  location          String
-  storeStatus       String            @default("active")
-  rating            Float             @default(0)
-  servicesAvailable Int               @default(0)
-  images            String[]
-  latitude          Float?
-  longitude         Float?
-  schedule          Json?
-  commissionRate    Float             @default(10.0)
-  tier              StoreTier         @default(BASIC)
-  billingType       BillingType       @default(COMMISSION)
-  createdAt         DateTime          @default(now())
-  isFeatured        Boolean           @default(false)
-  photoLimit        Int               @default(3)
-  serviceLimit      Int               @default(5)
-  bookings          Booking[]
-  reviews           Review[]
-  services          Service[]
-  platformEarnings  PlatformEarning[]
-  ownerUser         User?             @relation(fields: [ownerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  ownerId           String?
-  subscription      Subscription?
-  invoices          Invoice[]
-  promos            Promo[]
-}
-
-model Subscription {
-  id               String    @id @default(cuid())
-  status           String
-  currentPeriodEnd DateTime?
-  store            Store     @relation(fields: [storeId], references: [id])
-  storeId          String    @unique
-  payments         Payment[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-}
-
-model Invoice {
-  id            String      @id @default(cuid())
-  storeId       String
-  store         Store       @relation(fields: [storeId], references: [id])
-  invoiceNumber String      @unique
-  issueDate     DateTime    @default(now())
-  dueDate       DateTime
-  status        String      @default("DRAFT")
-  totalAmount   Int
-  notes         String?
-  items         InvoiceItem[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  payment       Payment?
-}
-
-model InvoiceItem {
-  id          String  @id @default(cuid())
-  invoiceId   String
-  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  description String
-  quantity    Int     @default(1)
-  unitPrice   Int
-  total       Int
-}
-
-model Booking {
-  id               String            @id @default(cuid())
-  totalPrice       Int
-  status           String
-  workStatus       WorkStatus        @default(RECEIVED)
-  serviceName      String
-  deliveryOption   String?
-  scheduleDate     DateTime?
-  user             User              @relation(fields: [userId], references: [id])
-  userId           String
-  store            Store             @relation(fields: [storeId], references: [id])
-  storeId          String
-  reviews          Review[]
-  deliveryFee      Int               @default(0)
-  payment          Payment?
-  platformEarning  PlatformEarning?
-  notifications    Notification[]
-  pointTransaction PointTransaction?
-  address          Address?          @relation(fields: [addressId], references: [id])
-  addressId        String?
-}
-
-model Review {
-  id               String    @id @default(cuid())
-  rating           Int
-  comment          String?
-  date             DateTime  @default(now())
-  user             User      @relation(fields: [userId], references: [id])
-  userId           String
-  store            Store     @relation(fields: [storeId], references: [id])
-  storeId          String
-  booking          Booking   @relation(fields: [bookingId], references: [id])
-  bookingId        String    @unique
-  userName         String
-  partnerReply     String?
-  partnerReplyDate DateTime?
-  imageUrl         String?
-}
-
-model Promo {
-  id             String    @id @default(cuid())
-  code           String    @unique
-  description    String
-  discountType   String
-  value          Int
-  startDate      DateTime?
-  endDate        DateTime?
-  usageLimit     Int?
-  usageCount     Int       @default(0)
-  minTransaction Int?
-  forNewUser     Boolean   @default(false)
-  status         String    @default("active")
-  store          Store?    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  storeId        String?
-  isRedeemed     Boolean   @default(false)
-  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String?
-}
-
-model Banner {
-  id        String   @id @default(cuid())
-  imageUrl  String
-  linkUrl   String
-  status    String   @default("active")
-  createdAt DateTime @default(now())
-}
-
-model Address {
-  id            String   @id @default(cuid())
-  label         String
-  recipientName String
-  phoneNumber   String
-  fullAddress   String
-  city          String
-  postalCode    String
-  isPrimary     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id])
-  userId        String
-  Booking       Booking[]
-}
-
-model Service {
-  id          String  @id @default(cuid())
-  name        String
-  description String?
-  price       Int
-  shoeType    String
-  store       Store   @relation(fields: [storeId], references: [id])
-  storeId     String
-}
-
-model Payment {
-  id               String        @id @default(cuid())
-  booking          Booking?      @relation(fields: [bookingId], references: [id])
-  bookingId        String?       @unique
-  subscription     Subscription? @relation(fields: [subscriptionId], references: [id])
-  subscriptionId   String?
-  invoice          Invoice?      @relation(fields: [invoiceId], references: [id])
-  invoiceId        String?       @unique
-  amount           Int
-  status           PaymentStatus @default(PENDING)
-  provider         String
-  transactionToken String?
-  redirectUrl      String?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+enum WorkStatus {
+  not_started
+  in_progress
+  completed
+  pending_verification
 }
 
 enum PaymentStatus {
+  pending
+  paid
+  failed
+}
+
+enum StoreStatus {
+  pending
+  active
+  inactive
+  rejected
+}
+
+enum ApprovalStatus {
   PENDING
-  SUCCESS
-  FAILED
-  CANCELLED
+  APPROVED
+  REJECTED
 }
 
-model PlatformEarning {
-  id             String   @id @default(cuid())
-  bookingId      String   @unique
-  storeId        String
-  grossAmount    Int
-  commissionRate Float
-  earnedAmount   Float
-  createdAt      DateTime @default(now())
-  booking        Booking  @relation(fields: [bookingId], references: [id])
-  store          Store    @relation(fields: [storeId], references: [id])
-}
-
-model ErrorLog {
-  id          String   @id @default(cuid())
-  statusCode  Int
-  message     String
-  stackTrace  String?  @db.Text
-  requestInfo String?  @db.Text
-  createdAt   DateTime @default(now())
-}
-
-model SecurityLog {
-  id          String   @id @default(cuid())
-  eventType   String
-  ipAddress   String?
-  details     String?  @db.Text
-  createdAt   DateTime @default(now())
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  action    String
-  details   Json?
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-}
-
-model ApprovalRequest {
-  id            String    @id @default(cuid())
-  requestedById String
-  requestedBy   User      @relation("RequestedBy", fields: [requestedById], references: [id])
-  actionType    String
-  payload       Json
-  status        String    @default("PENDING")
-  resolvedById  String?
-  resolvedBy    User?     @relation("ResolvedBy", fields: [resolvedById], references: [id])
-  createdAt     DateTime  @default(now())
-  resolvedAt    DateTime?
-
-  @@index([requestedById])
-  @@index([resolvedById])
-}
-
-enum StoreTier {
+enum Tier {
   BASIC
   PRO
 }
 
-enum WorkStatus {
-  RECEIVED
-  WASHING
-  DRYING
-  QUALITY_CHECK
-  READY_FOR_PICKUP
+enum PromoType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+enum PromoScope {
+  GLOBAL
+  STORE_SPECIFIC
+}
+
+enum LogAction {
+  LOGIN_SUCCESS
+  LOGIN_FAILURE
+  PASSWORD_RESET_REQUEST
+  PASSWORD_RESET_SUCCESS
+  USER_REGISTERED
+  STORE_CREATED
+  BOOKING_CREATED
+  PAYMENT_SUCCESS
+  ADMIN_ACTION
+  DEVELOPER_ACTION
+}
+
+// Wallet System Enums
+enum WalletTransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+// Models
+model User {
+  id                 String            @id @default(cuid())
+  email              String            @unique
+  name               String
+  password           String
+  role               UserRole          @default(customer)
+  isEmailVerified    Boolean           @default(false)
+  emailVerificationToken String?       @unique
+  resetPasswordToken String?       @unique
+  resetPasswordExpires DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  stores             Store[]
+  bookings           Booking[]
+  addresses          Address[]
+  approvalRequests   ApprovalRequest[] @relation("RequestedApprovals")
+  approvedRequests   ApprovalRequest[] @relation("ApprovedApprovals")
+  securityLogs       SecurityLog[]
+  notifications      Notification[]
+  loyaltyPoints      LoyaltyPoint?
+  reviews            Review[]
+  requestedPayouts   PayoutRequest[]   @relation("RequestedPayouts")
+  processedPayouts   PayoutRequest[]   @relation("ProcessedPayouts")
+}
+
+model Store {
+  id                 String            @id @default(cuid())
+  name               String
+  location           String
+  latitude           Float?
+  longitude          Float?
+  description        String?           @db.Text
+  headerImageUrl     String?
+  owner              User              @relation(fields: [ownerId], references: [id])
+  ownerId            String
+  storeStatus        StoreStatus       @default(pending)
+  billingType        String            @default("COMMISSION") // COMMISSION or INVOICE
+  commissionRate     Float             @default(10) // In percentage
+  tier               Tier              @default(BASIC)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  services           Service[]
+  bookings           Booking[]
+  schedules          StoreSchedule[]
+  approvalRequests   ApprovalRequest[]
+  reviews            Review[]
+  promos             StorePromo[]
+  wallet             StoreWallet?
+  payoutRequests     PayoutRequest[]
+}
+
+model Address {
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  street      String
+  city        String
+  province    String
+  postalCode  String
+  country     String
+  isPrimary   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[]
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  duration    Int // Duration in minutes
+  store       Store    @relation(fields: [storeId], references: [id])
+  storeId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  bookings    Booking[]
+}
+
+model StoreSchedule {
+  id          String   @id @default(cuid())
+  store       Store    @relation(fields: [storeId], references: [id])
+  storeId     String
+  dayOfWeek   Int // 0 for Sunday, 1 for Monday, etc.
+  openTime    String // "HH:MM" format
+  closeTime   String // "HH:MM" format
+  isClosed    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([storeId, dayOfWeek])
+}
+
+model Booking {
+  id                String             @id @default(cuid())
+  user              User               @relation(fields: [userId], references: [id])
+  userId            String
+  store             Store              @relation(fields: [storeId], references: [id])
+  storeId           String
+  service           Service            @relation(fields: [serviceId], references: [id])
+  serviceId         String
+  bookingTime       DateTime
+  deliveryTime      DateTime?
+  status            BookingStatus      @default(pending)
+  workStatus        WorkStatus         @default(not_started)
+  totalPrice        Float
+  notes             String?
+  address           Address?           @relation(fields: [addressId], references: [id])
+  addressId         String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  payment           Payment?
+  platformEarning   PlatformEarning?
+  notifications     Notification[]
+  review            Review?
+  walletTransaction WalletTransaction?
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  booking         Booking       @relation(fields: [bookingId], references: [id])
+  bookingId       String        @unique
+  amount          Float
+  status          PaymentStatus @default(pending)
+  midtransToken   String?
+  midtransOrderId String        @unique
+  paymentMethod   String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  invoice         Invoice?
+}
+
+model PlatformEarning {
+  id           String   @id @default(cuid())
+  booking      Booking  @relation(fields: [bookingId], references: [id])
+  bookingId    String   @unique
+  storeId      String
+  earnedAmount Float
+  createdAt    DateTime @default(now())
+}
+
+model ApprovalRequest {
+  id          String         @id @default(cuid())
+  store       Store          @relation(fields: [storeId], references: [id])
+  storeId     String
+  requestType String // e.g., 'STORE_DELETION', 'BILLING_TYPE_CHANGE'
+  details     Json
+  status      ApprovalStatus @default(PENDING)
+  requestedBy User           @relation("RequestedApprovals", fields: [requestedById], references: [id])
+  requestedById String
+  reviewedBy  User?          @relation("ApprovedApprovals", fields: [reviewedById], references: [id])
+  reviewedById String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model SecurityLog {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  action    LogAction
+  ipAddress String?
+  details   String?
+  timestamp DateTime @default(now())
 }
 
 model Notification {
-  id         String   @id @default(cuid())
-  message    String
-  readStatus Boolean  @default(false)
-  linkUrl    String?
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  bookingId  String?
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+  bookingId String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
 
-  @@index([userId])
+model LoyaltyPoint {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  points    Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id              String   @id @default(cuid())
+  user            User     @relation(fields: [userId], references: [id])
+  userId          String
+  store           Store    @relation(fields: [storeId], references: [id])
+  storeId         String
+  booking         Booking  @relation(fields: [bookingId], references: [id])
+  bookingId       String   @unique
+  rating          Int
+  comment         String?
+  imageUrl        String?
+  partnerReply    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Promo {
+  id          String       @id @default(cuid())
+  code        String       @unique
+  description String
+  type        PromoType
+  value       Float
+  maxDiscount Float?
+  minPurchase Float
+  validFrom   DateTime
+  validUntil  DateTime
+  usageLimit  Int
+  timesUsed   Int          @default(0)
+  scope       PromoScope
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  stores      StorePromo[]
+}
+
+model StorePromo {
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  promo     Promo    @relation(fields: [promoId], references: [id])
+  promoId   String
+  redeemed  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([storeId, promoId])
+}
+
+model Invoice {
+  id        String    @id @default(cuid())
+  storeId   String
+  amount    Float
+  dueDate   DateTime
+  paidAt    DateTime?
+  status    String // PENDING, PAID, OVERDUE
+  items     Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  payment   Payment?  @relation(fields: [paymentId], references: [id])
+  paymentId String?   @unique
+}
+
+model GlobalSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Wallet System Models
+model StoreWallet {
+  id             String              @id @default(cuid())
+  balance        Float               @default(0)
+  store          Store               @relation(fields: [storeId], references: [id])
+  storeId        String              @unique
+  transactions   WalletTransaction[]
+  payoutRequests PayoutRequest[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model WalletTransaction {
+  id              String                @id @default(cuid())
+  wallet          StoreWallet           @relation(fields: [walletId], references: [id])
+  walletId        String
+  amount          Float
+  type            WalletTransactionType
+  description     String
+  booking         Booking?              @relation(fields: [bookingId], references: [id])
+  bookingId       String?               @unique
+  payoutRequest   PayoutRequest?        @relation(fields: [payoutRequestId], references: [id])
+  payoutRequestId String?               @unique
+  createdAt       DateTime              @default(now())
+}
+
+model PayoutRequest {
+  id            String             @id @default(cuid())
+  store         Store              @relation(fields: [storeId], references: [id])
+  storeId       String
+  wallet        StoreWallet        @relation(fields: [walletId], references: [id])
+  walletId      String
+  amount        Float
+  status        PayoutStatus       @default(PENDING)
+  requestedBy   User               @relation("RequestedPayouts", fields: [requestedById], references: [id])
+  requestedById String
+  processedBy   User?              @relation("ProcessedPayouts", fields: [processedById], references: [id])
+  processedById String?
+  transaction   WalletTransaction?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
 }

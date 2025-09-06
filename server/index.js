@@ -1866,104 +1866,174 @@ paymentRouter.post("/create-transaction", async (req, res) => {
 app.use("/api/payments", paymentRouter);
 
 app.post("/api/webhooks/payment-notification", async (req, res) => {
-  const { order_id, transaction_status } = req.body;
-  console.log(
-    `Webhook diterima untuk ID ${order_id} dengan status ${transaction_status}`
-  );
-
+  const notificationJson = req.body;
   try {
-    let paymentStatus;
-    if (
-      transaction_status === "settlement" ||
-      transaction_status === "capture"
-    ) {
-      paymentStatus = "SUCCESS";
-    } else if (transaction_status === "pending") {
-      paymentStatus = "PENDING";
-    } else {
-      paymentStatus = "CANCELLED";
-    }
+    // Logika ini mengasumsikan Anda akan menggunakan midtrans-client di masa depan
+    // Untuk sekarang, kita akan proses body notifikasi secara langsung
+    const order_id = notificationJson.order_id;
+    const transaction_status = notificationJson.transaction_status;
+    const fraud_status = notificationJson.fraud_status;
 
-    if (order_id.startsWith("SUB-")) {
-      const subscriptionId = order_id.split("-")[1];
+    console.log(
+      `🔔 Notifikasi diterima untuk Order ID ${order_id}: ${transaction_status}`
+    );
 
-      if (paymentStatus === "SUCCESS") {
+    if (transaction_status == "capture" || transaction_status == "settlement") {
+      if (fraud_status == "accept") {
+        // Gunakan transaksi Prisma untuk memastikan integritas data
         await prisma.$transaction(async (tx) => {
-          const subscription = await tx.subscription.update({
-            where: { id: subscriptionId },
-            data: {
-              status: "ACTIVE",
-              currentPeriodEnd: new Date(
-                new Date().setDate(new Date().getDate() + 30)
-              ),
-            },
-            include: { store: true },
+          const payment = await tx.payment.findFirst({
+            // Menggunakan findFirst karena order_id belum tentu unik di tabel payment
+            where: { booking: { id: order_id } },
+            include: { booking: { include: { store: true } } },
           });
 
-          await tx.store.update({
-            where: { id: subscription.storeId },
-            data: { tier: "PRO" },
-          });
+          // Hanya proses jika pembayaran belum lunas untuk menghindari duplikasi
+          if (
+            !payment ||
+            payment.status === "paid" ||
+            payment.status === "SUCCESS"
+          ) {
+            console.log(
+              `⚠️ Pembayaran untuk Order ID ${order_id} sudah diproses atau tidak ditemukan.`
+            );
+            return;
+          }
 
-          await tx.payment.updateMany({
-            where: { subscriptionId: subscriptionId },
+          // Update status pembayaran menjadi 'SUCCESS'
+          await tx.payment.update({
+            where: { id: payment.id },
             data: { status: "SUCCESS" },
           });
 
-          await createNotification(
-            subscription.store.ownerId,
-            `Selamat! Toko Anda "${subscription.store.name}" kini berstatus PRO.`,
-            "/partner/dashboard"
-          );
-        });
-      }
-    } else {
-      let bookingStatus;
-      if (paymentStatus === "SUCCESS") bookingStatus = "Processing";
-      else if (paymentStatus === "PENDING") bookingStatus = "Pending Payment";
-      else bookingStatus = "Cancelled";
-
-      await prisma.$transaction(async (tx) => {
-        await tx.payment.updateMany({
-          where: { bookingId: order_id },
-          data: { status: paymentStatus },
-        });
-
-        const booking = await tx.booking.update({
-          where: { id: order_id },
-          data: { status: bookingStatus },
-          include: { store: true },
-        });
-
-        if (paymentStatus === "SUCCESS" && booking && booking.store) {
-          const commissionRate = booking.store.commissionRate;
-          const grossAmount = booking.totalPrice;
-          const earnedAmount = (grossAmount * commissionRate) / 100;
-
-          await tx.platformEarning.create({
-            data: {
-              bookingId: booking.id,
-              storeId: booking.storeId,
-              grossAmount: grossAmount,
-              commissionRate: commissionRate,
-              earnedAmount: earnedAmount,
-            },
+          // Update status booking menjadi 'Processing'
+          await tx.booking.update({
+            where: { id: payment.bookingId },
+            data: { status: "Processing" },
           });
 
-          await createNotification(
-            booking.userId,
-            `Pembayaran untuk pesanan #${booking.id.substring(0, 8)} berhasil!`,
-            `/track/${booking.id}`,
-            booking.id
-          );
-        }
-      });
+          const { booking } = payment;
+          const { store } = booking;
+
+          // Logika baru untuk dompet digital
+          if (store.billingType === "COMMISSION") {
+            const commissionAmount =
+              booking.totalPrice * (store.commissionRate / 100);
+            const netIncome = booking.totalPrice - commissionAmount;
+
+            // 1. Catat pendapatan platform
+            await tx.platformEarning.create({
+              data: {
+                bookingId: booking.id,
+                storeId: store.id,
+                earnedAmount: commissionAmount,
+              },
+            });
+
+            // 2. Tambahkan saldo ke dompet toko
+            const wallet = await tx.storeWallet.update({
+              where: { storeId: store.id },
+              data: { balance: { increment: netIncome } },
+            });
+
+            // 3. Buat catatan transaksi di dompet
+            await tx.walletTransaction.create({
+              data: {
+                walletId: wallet.id,
+                amount: netIncome,
+                type: "CREDIT",
+                description: `Pendapatan dari pesanan #${booking.id.substring(
+                  0,
+                  8
+                )}`,
+                bookingId: booking.id,
+              },
+            });
+            console.log(
+              `💰 Saldo Rp ${netIncome.toLocaleString()} ditambahkan ke dompet ${
+                store.name
+              }.`
+            );
+          }
+        });
+      }
     }
 
     res.status(200).send("OK");
   } catch (error) {
-    console.error("Webhook error:", error);
-    res.status(500).send("Internal Server Error");
+    console.error("❌ Gagal memproses notifikasi pembayaran:", error.message);
+    res.status(500).send("Error");
+  }
+});
+
+// =================================================================
+// === ENDPOINT BARU UNTUK DOMPET DIGITAL & PENARIKAN DANA (MITRA) ===
+// =================================================================
+
+// Mengambil data dompet dan riwayat transaksi mitra
+partnerRouter.get("/wallet", findMyStore, async (req, res) => {
+  try {
+    const wallet = await prisma.storeWallet.findUnique({
+      where: { storeId: req.store.id },
+      include: {
+        transactions: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
+    });
+
+    if (!wallet) {
+      return res
+        .status(404)
+        .json({ message: "Dompet untuk toko ini tidak ditemukan." });
+    }
+    res.json(wallet);
+  } catch (error) {
+    console.error("Gagal mengambil data dompet:", error);
+    res.status(500).json({ message: "Gagal mengambil data dompet." });
+  }
+});
+
+// Mengajukan permintaan penarikan dana
+partnerRouter.post("/payout-requests", findMyStore, async (req, res) => {
+  const { amount } = req.body;
+  const storeId = req.store.id;
+  const userId = req.user.id;
+
+  if (!amount || isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ message: "Jumlah penarikan tidak valid." });
+  }
+
+  try {
+    const wallet = await prisma.storeWallet.findUnique({
+      where: { storeId: storeId },
+    });
+
+    if (!wallet || wallet.balance < amount) {
+      return res
+        .status(400)
+        .json({ message: "Saldo tidak mencukupi untuk melakukan penarikan." });
+    }
+
+    const newPayoutRequest = await prisma.payoutRequest.create({
+      data: {
+        storeId: storeId,
+        walletId: wallet.id,
+        amount: parseFloat(amount),
+        status: "PENDING",
+        requestedById: userId,
+      },
+    });
+
+    res
+      .status(201)
+      .json({
+        message: "Permintaan penarikan dana berhasil diajukan.",
+        request: newPayoutRequest,
+      });
+  } catch (error) {
+    console.error("Gagal mengajukan permintaan penarikan:", error);
+    res.status(500).json({ message: "Terjadi kesalahan pada server." });
   }
 });
 
@@ -3182,6 +3252,115 @@ const isDeveloper = (req, res, next) => {
   }
   next();
 };
+// =================================================================
+// === ENDPOINT BARU UNTUK MANAJEMEN PENARIKAN DANA (ADMIN)      ===
+// =================================================================
+
+// Mengambil semua permintaan penarikan dana
+adminRouter.get("/payout-requests", async (req, res) => {
+  try {
+    const requests = await prisma.payoutRequest.findMany({
+      where: { status: "PENDING" },
+      include: {
+        store: { select: { name: true } },
+        requestedBy: { select: { name: true } },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+    res.json(requests);
+  } catch (error) {
+    console.error("Gagal mengambil permintaan penarikan:", error);
+    res.status(500).json({ message: "Gagal mengambil data." });
+  }
+});
+
+// Menyetujui atau menolak permintaan penarikan dana
+adminRouter.patch("/payout-requests/:id/resolve", async (req, res) => {
+  const { id } = req.params;
+  const { newStatus } = req.body; // "APPROVED" or "REJECTED"
+  const adminUserId = req.user.id;
+
+  if (!["APPROVED", "REJECTED"].includes(newStatus)) {
+    return res.status(400).json({ message: "Status tidak valid." });
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const request = await tx.payoutRequest.findUnique({
+        where: { id: id },
+        include: { store: true },
+      });
+
+      if (!request || request.status !== "PENDING") {
+        throw new Error("Permintaan tidak ditemukan atau sudah diproses.");
+      }
+
+      if (newStatus === "APPROVED") {
+        // 1. Kurangi saldo dompet
+        await tx.storeWallet.update({
+          where: { storeId: request.storeId },
+          data: { balance: { decrement: request.amount } },
+        });
+
+        // 2. Buat catatan transaksi penarikan
+        const transaction = await tx.walletTransaction.create({
+          data: {
+            walletId: request.walletId,
+            amount: -request.amount, // Simpan sebagai nilai negatif
+            type: "DEBIT",
+            description: `Penarikan dana #${request.id.substring(0, 8)}`,
+            payoutRequestId: request.id,
+          },
+        });
+
+        // 3. Update status permintaan
+        await tx.payoutRequest.update({
+          where: { id: id },
+          data: {
+            status: "APPROVED",
+            processedById: adminUserId,
+          },
+        });
+
+        // 4. Kirim notifikasi ke mitra
+        await createNotification(
+          request.store.ownerId,
+          `Permintaan penarikan dana sebesar Rp ${request.amount.toLocaleString(
+            "id-ID"
+          )} telah disetujui.`,
+          `/partner/wallet`
+        );
+      } else {
+        // REJECTED
+        await tx.payoutRequest.update({
+          where: { id: id },
+          data: {
+            status: "REJECTED",
+            processedById: adminUserId,
+          },
+        });
+
+        // Kirim notifikasi ke mitra
+        await createNotification(
+          request.store.ownerId,
+          `Permintaan penarikan dana sebesar Rp ${request.amount.toLocaleString(
+            "id-ID"
+          )} ditolak.`,
+          `/partner/wallet`
+        );
+      }
+    });
+
+    res.json({
+      message: `Permintaan berhasil diubah statusnya menjadi ${newStatus}.`,
+    });
+  } catch (error) {
+    console.error("Gagal memproses permintaan penarikan:", error);
+    res
+      .status(500)
+      .json({ message: error.message || "Terjadi kesalahan pada server." });
+  }
+});
 
 const superUserRouter = express.Router();
 superUserRouter.use(authenticateToken);
