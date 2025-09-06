@@ -171,9 +171,46 @@ const AdminStoresPage = ({ showMessage }) => {
     const { name, value } = e.target;
     setEditingStore((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleUpdateStore = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
+    const originalStore = stores.find((s) => s.id === editingStore.id);
+
+    // Cek apakah billingType berubah
+    if (originalStore.billingType !== editingStore.billingType) {
+      if (
+        !confirm(
+          "Mengubah tipe penagihan memerlukan persetujuan Developer. Lanjutkan?"
+        )
+      )
+        return;
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/admin/stores/${editingStore.id}/billing`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ newBillingType: editingStore.billingType }),
+          }
+        );
+        const data = await response.json();
+        if (!response.ok)
+          throw new Error(data.message || "Gagal mengirim permintaan.");
+
+        showMessage(data.message);
+        handleCloseEditModal();
+      } catch (error) {
+        showMessage(error.message);
+      }
+      return; // Hentikan eksekusi setelah mengirim permintaan
+    }
+
+    // Jika billingType tidak berubah, lanjutkan update data biasa
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/admin/stores/${editingStore.id}`,
@@ -206,7 +243,7 @@ const AdminStoresPage = ({ showMessage }) => {
       longitude: "",
       commissionRate: "10",
       billingType: "COMMISSION",
-      subscriptionPrice: "", // Reset state baru
+      subscriptionPrice: "",
     });
   };
   const handleAddFormChange = (e) => {
@@ -600,18 +637,22 @@ const AdminStoresPage = ({ showMessage }) => {
                     />
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="owner" className="form-label">
-                      Nama Pemilik
+                    <label htmlFor="edit-billingType" className="form-label">
+                      Tipe Penagihan
                     </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="owner"
-                      name="owner"
-                      value={editingStore.owner}
+                    <select
+                      id="edit-billingType"
+                      name="billingType"
+                      className="form-select"
+                      value={editingStore.billingType}
                       onChange={handleEditFormChange}
                       required
-                    />
+                    >
+                      <option value="COMMISSION">Bagi Hasil (Komisi)</option>
+                      <option value="INVOICE">
+                        Langganan (Invoice Bulanan)
+                      </option>
+                    </select>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="location" className="form-label">
@@ -788,7 +829,6 @@ const AdminStoresPage = ({ showMessage }) => {
                       />
                     </div>
                   </div>
-
                   {newStoreData.billingType === "COMMISSION" ? (
                     <div className="mb-3">
                       <label
