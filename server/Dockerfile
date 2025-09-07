@@ -29,4 +29,4 @@ EXPOSE 5000
 # Gunakan shell form untuk menjalankan dua perintah secara berurutan.
 # Ini memastikan migrasi database (migrate deploy) dijalankan setiap kali container dimulai,
 # sebelum server aplikasi (npm start) dijalankan.
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && npm start"]
