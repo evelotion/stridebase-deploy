@@ -21,6 +21,7 @@ import sharp from "sharp";
 import cors from "cors";
 import { sendVerificationEmail } from "./email-service.js";
 import redisClient from "./redis-client.js";
+console.log(`[DEBUG] JWT_SECRET loaded: ${process.env.JWT_SECRET ? 'Yes, length: ' + process.env.JWT_SECRET.length : 'No, it is undefined!'}`);
 import { v2 as cloudinary } from "cloudinary";
 
 const __filename = fileURLToPath(import.meta.url);
