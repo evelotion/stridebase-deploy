@@ -1,6 +1,6 @@
 import React from "react";
 import { useLoaderData, useSearchParams } from "react-router-dom";
-import { API_BASE_URL } from "../apiConfig";
+import API_BASE_URL from "../apiConfig";
 
 export const loader = async ({ request }) => {
   const token = localStorage.getItem("token");
