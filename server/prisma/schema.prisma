@@ -132,6 +132,7 @@ model Store {
   billingType        String            @default("COMMISSION") // COMMISSION or INVOICE
   commissionRate     Float             @default(10) // In percentage
   tier               Tier              @default(BASIC)
+  rating             Float             @default(0) // <-- TAMBAHKAN BARIS INI
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   services           Service[]
