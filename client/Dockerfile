@@ -1,6 +1,6 @@
 # File: client/Dockerfile (Ganti dengan kode ini)
 
-# Tahap 1: Build a plikasi React
+# Tahap 1: Build aplikasi React
 FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./

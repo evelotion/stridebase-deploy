@@ -1,3 +1,5 @@
+// File: server/queues/emailWorker.js
+
 import { Worker } from 'bullmq';
 
 // Fungsi simulasi pengiriman email (dalam aplikasi nyata, ini akan menggunakan Nodemailer, dll.)
