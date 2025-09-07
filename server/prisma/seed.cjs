@@ -1,3 +1,5 @@
+// File: server/prisma/seed.cjs (Ganti seluruh isinya dengan ini)
+
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
@@ -101,17 +103,20 @@ async function main() {
   console.log(`✅ 4 layanan berhasil dibuat.`);
 
   // =================================================================
-  // 5. SEED BOOKING
+  // 5. SEED BOOKING (INI BAGIAN YANG DIPERBAIKI)
   // =================================================================
   console.log("🧾 Membuat data booking...");
-  const bookings = await prisma.booking.createManyAndReturn({
-    data: [
-      { id: "booking-01-reviewed", userId: "user-customer-01", storeId: "store-01-pro", serviceId: "service-01", bookingTime: daysAgo(10), totalPrice: 50000, status: "completed", workStatus: "completed" },
-      { id: "booking-02-completed", userId: "user-customer-02", storeId: "store-01-pro", serviceId: "service-02", bookingTime: daysAgo(3), totalPrice: 85000, status: "completed", workStatus: "completed" },
-      { id: "booking-03-processing", userId: "user-customer-01", storeId: "store-02-basic", serviceId: "service-04", bookingTime: daysAgo(1), totalPrice: 60000, status: "confirmed", workStatus: "in_progress", addressId: "addr-siti-01" },
-    ]
-  });
-  console.log(`✅ ${bookings.length} booking berhasil dibuat.`);
+  const bookingData = [
+    { id: "booking-01-reviewed", userId: "user-customer-01", storeId: "store-01-pro", serviceId: "service-01", bookingTime: daysAgo(10), totalPrice: 50000, status: "completed", workStatus: "completed" },
+    { id: "booking-02-completed", userId: "user-customer-02", storeId: "store-01-pro", serviceId: "service-02", bookingTime: daysAgo(3), totalPrice: 85000, status: "completed", workStatus: "completed" },
+    { id: "booking-03-processing", userId: "user-customer-01", storeId: "store-02-basic", serviceId: "service-04", bookingTime: daysAgo(1), totalPrice: 60000, status: "confirmed", workStatus: "in_progress", addressId: "addr-siti-01" },
+  ];
+
+  for (const data of bookingData) {
+      await prisma.booking.create({ data });
+  }
+
+  console.log(`✅ ${bookingData.length} booking berhasil dibuat.`);
 
   // =================================================================
   // 6. SEED PEMBAYARAN & PROSES DOMPET DIGITAL
@@ -124,10 +129,11 @@ async function main() {
       { bookingId: "booking-03-processing", amount: 60000, status: "paid", midtransOrderId: `stride-dummy-3` },
     ]
   });
+
   // Simulasi potong komisi untuk toko "Ani Shoe Laundry"
   const aniStore = createdStores.find(s => s.id === "store-02-basic");
   const aniWallet = await prisma.storeWallet.findUnique({ where: { storeId: aniStore.id } });
-  const bookingToProcess = bookings.find(b => b.id === "booking-03-processing");
+  const bookingToProcess = bookingData.find(b => b.id === "booking-03-processing");
   const commission = bookingToProcess.totalPrice * (aniStore.commissionRate / 100);
   const netIncome = bookingToProcess.totalPrice - commission;
 
@@ -179,6 +185,7 @@ async function main() {
       requestedById: "user-admin-01"
     }
   });
+
   // Simulasi permintaan penarikan dana dari Ani
   await prisma.payoutRequest.create({
       data: {
