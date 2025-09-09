@@ -29,6 +29,28 @@ const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
 
+async function runSeedOnlyOnce() {
+  const userCount = await prisma.user.count();
+  if (userCount === 0) {
+    console.log("⚠️ Database kosong, menjalankan proses seeding darurat...");
+    try {
+      // Perintah di bawah ini diambil dari file seed.cjs Anda
+      const seedScript = `node ${path.join(__dirname, 'prisma/seed.cjs')}`;
+      const { stdout, stderr } = await exec(seedScript);
+      console.log('✅ [SEED SCRIPT STDOUT]:', stdout);
+      if (stderr) {
+        console.error('❌ [SEED SCRIPT STDERR]:', stderr);
+      }
+      console.log("✅ Proses seeding darurat selesai.");
+    } catch (error) {
+      console.error("❌ GAGAL menjalankan skrip seeding darurat:", error);
+      process.exit(1); // Hentikan server jika seeding gagal total
+    }
+  } else {
+    console.log("✅ Database sudah berisi data, proses seeding dilewati.");
+  }
+}
+
 let currentThemeConfig = {}; // Variabel global untuk menyimpan tema
 const themeConfigPath = path.join(__dirname, "config", "theme.json");
 
@@ -3820,6 +3842,14 @@ const errorLogger = async (err, req, res, next) => {
 };
 
 app.use(errorLogger);
+
+runSeedOnlyOnce().then(() => {
+  server.listen(PORT, () => {
+    console.log(
+      `🚀 Server berjalan di http://localhost:${PORT} dan siap untuk koneksi real-time.`
+    );
+  });
+});
 
 server.listen(PORT, () => {
   console.log(
