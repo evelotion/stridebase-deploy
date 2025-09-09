@@ -90,11 +90,4 @@ async function main() {
   console.log("✅ [SEED] Proses seeding v2 berhasil!");
 }
 
-main()
-  .catch((e) => {
-    console.error("❌ [SEED] Terjadi error saat proses seeding:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+module.exports = { main };
