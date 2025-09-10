@@ -1,17 +1,7 @@
-// File: client/src/services/apiService.js
+// File: client/src/services/apiService.js (Dengan Perbaikan Export)
 
 import API_BASE_URL from "../apiConfig";
 
-/**
- * Fungsi inti untuk semua request API ke backend.
- * Fungsi ini secara otomatis menambahkan header, token otentikasi,
- * dan menangani error secara konsisten.
- * @param {string} endpoint - Endpoint API yang dituju (contoh: '/api/stores')
- * @param {string} method - Metode HTTP (GET, POST, PUT, DELETE, dll.)
- * @param {object|null} body - Body request untuk metode POST/PUT/PATCH.
- * @param {boolean} isFormData - Set true jika body adalah FormData (untuk upload file).
- * @returns {Promise<any>} - Data JSON dari respons.
- */
 const apiRequest = async (
   endpoint,
   method = "GET",
@@ -31,7 +21,6 @@ const apiRequest = async (
 
   if (body) {
     if (isFormData) {
-      // Jangan set Content-Type, browser akan menanganinya untuk FormData
       config.body = body;
     } else {
       headers.append("Content-Type", "application/json");
@@ -55,10 +44,6 @@ const apiRequest = async (
     throw error;
   }
 };
-
-// ===============================================
-// === KUMPULAN FUNGSI UNTUK SETIAP ENDPOINT API ===
-// ===============================================
 
 // --- Public & Store Endpoints ---
 export const getStores = (params) =>
