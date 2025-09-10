@@ -1,161 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import API_BASE_URL from '../apiConfig';
-import MessageBox from '../components/MessageBox';
+import React, { useState, useEffect, useCallback } from "react";
+import { getPayoutRequests, resolvePayoutRequest } from "../services/apiService";
 
-const AdminPayoutsPage = () => {
-    const [payoutRequests, setPayoutRequests] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState('');
-    const [isError, setIsError] = useState(false);
-    const [submitting, setSubmitting] = useState(null); // Menyimpan ID request yang sedang diproses
+const AdminPayoutsPage = ({ showMessage }) => {
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [processingId, setProcessingId] = useState(null);
 
-    const fetchPayoutRequests = async () => {
-        setLoading(true);
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/admin/payout-requests`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Gagal mengambil data permintaan penarikan.');
-            }
-            const data = await response.json();
-            setPayoutRequests(data);
-        } catch (error) {
-            setIsError(true);
-            setMessage(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchPayoutRequests();
-    }, []);
-
-    const handleResolveRequest = async (requestId, newStatus) => {
-        if (!confirm(`Apakah Anda yakin ingin ${newStatus === 'APPROVED' ? 'MENYETUJUI' : 'MENOLAK'} permintaan ini? Aksi ini tidak dapat dibatalkan.`)) {
-            return;
-        }
-
-        setSubmitting(requestId);
-        setMessage('');
-        setIsError(false);
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/admin/payout-requests/${requestId}/resolve`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ newStatus }),
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.message || 'Gagal memproses permintaan.');
-            }
-            
-            setIsError(false);
-            setMessage(data.message);
-            // Refresh data setelah berhasil
-            fetchPayoutRequests();
-
-        } catch (error) {
-            setIsError(true);
-            setMessage(error.message);
-        } finally {
-            setSubmitting(null);
-        }
-    };
-
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          minimumFractionDigits: 0,
-        }).format(amount);
-      };
-      
-       const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString("id-ID", {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-      };
-
-    if (loading) {
-        return <div className="p-4">Memuat data...</div>;
+  const fetchPayoutRequests = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getPayoutRequests();
+      setRequests(data);
+    } catch (err) {
+      setError(err.message);
+      if (showMessage) showMessage(err.message, "Error");
+    } finally {
+      setLoading(false);
     }
+  }, [showMessage]);
 
-    return (
-        <div className="container-fluid px-4">
-            <h2 className="fs-2 my-4">Manajemen Penarikan Dana</h2>
-            {message && <MessageBox message={message} isError={isError} onDismiss={() => setMessage('')} />}
+  useEffect(() => {
+    fetchPayoutRequests();
+  }, [fetchPayoutRequests]);
 
-            <div className="table-card p-3 shadow-sm">
-                 <p className="form-text mb-3">Halaman ini menampilkan semua permintaan penarikan dana dari mitra yang menunggu persetujuan Anda.</p>
-                <div className="table-responsive">
-                    <table className="table table-hover align-middle">
-                        <thead className="table-light">
-                            <tr>
-                                <th>Tanggal Permintaan</th>
-                                <th>Nama Toko</th>
-                                <th>Pemilik</th>
-                                <th className="text-end">Jumlah</th>
-                                <th className="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {payoutRequests.length > 0 ? (
-                                payoutRequests.map(req => (
-                                    <tr key={req.id}>
-                                        <td>{formatDate(req.createdAt)}</td>
-                                        <td>{req.store.name}</td>
-                                        <td>{req.requestedBy.name}</td>
-                                        <td className="text-end fw-bold">{formatCurrency(req.amount)}</td>
-                                        <td className="text-center">
-                                            <div className="btn-group">
-                                                <button
-                                                    className="btn btn-sm btn-outline-success"
-                                                    onClick={() => handleResolveRequest(req.id, 'APPROVED')}
-                                                    disabled={submitting === req.id}
-                                                >
-                                                    <i className="fas fa-check me-1"></i>
-                                                    {submitting === req.id ? 'Memproses...' : 'Setujui'}
-                                                </button>
-                                                <button
-                                                    className="btn btn-sm btn-outline-danger"
-                                                    onClick={() => handleResolveRequest(req.id, 'REJECTED')}
-                                                    disabled={submitting === req.id}
-                                                >
-                                                    <i className="fas fa-times me-1"></i>
-                                                    {submitting === req.id ? 'Memproses...' : 'Tolak'}
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="5" className="text-center py-4">
-                                        Tidak ada permintaan penarikan dana yang menunggu.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  const handleResolveRequest = async (requestId, status) => {
+    if (!window.confirm(`Apakah Anda yakin ingin ${status === 'APPROVED' ? 'MENYETUJUI' : 'MENOLAK'} permintaan ini?`)) {
+      return;
+    }
+    setProcessingId(requestId);
+    try {
+      const result = await resolvePayoutRequest(requestId, status);
+      // Optimistic update: hapus request dari daftar setelah diproses
+      setRequests(prevRequests => prevRequests.filter(req => req.id !== requestId));
+      if (showMessage) showMessage(result.message || "Permintaan berhasil diproses.");
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  if (loading) return <div className="p-4">Memuat permintaan penarikan dana...</div>;
+  if (error && requests.length === 0) return <div className="p-4 text-danger">Error: {error}</div>;
+
+  return (
+    <div className="container-fluid p-4">
+      <h2 className="fs-2 mb-4">Permintaan Penarikan Dana (Payouts)</h2>
+      
+      <div className="table-card p-3 shadow-sm">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle">
+            <thead className="table-light">
+              <tr>
+                <th>Tanggal</th>
+                <th>Toko</th>
+                <th>Pemilik</th>
+                <th className="text-end">Jumlah (Rp)</th>
+                <th className="text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.length > 0 ? (
+                requests.map(req => (
+                  <tr key={req.id}>
+                    <td>{new Date(req.createdAt).toLocaleString('id-ID')}</td>
+                    <td><span className="fw-bold">{req.store.name}</span></td>
+                    <td>{req.requestedBy.name}</td>
+                    <td className="text-end fw-bold">
+                      {req.amount.toLocaleString("id-ID")}
+                    </td>
+                    <td className="text-center">
+                      <button 
+                        className="btn btn-sm btn-success me-2"
+                        onClick={() => handleResolveRequest(req.id, 'APPROVED')}
+                        disabled={processingId === req.id}
+                      >
+                        {processingId === req.id ? <span className="spinner-border spinner-border-sm"></span> : 'Setujui'}
+                      </button>
+                      <button 
+                        className="btn btn-sm btn-danger"
+                        onClick={() => handleResolveRequest(req.id, 'REJECTED')}
+                        disabled={processingId === req.id}
+                      >
+                        {processingId === req.id ? <span className="spinner-border spinner-border-sm"></span> : 'Tolak'}
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center py-4">
+                    <p className="text-muted mb-0">Tidak ada permintaan penarikan dana yang menunggu.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default AdminPayoutsPage;

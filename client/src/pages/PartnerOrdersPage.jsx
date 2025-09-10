@@ -1,82 +1,34 @@
-import React, { useState, useEffect, useMemo } from "react";
-import API_BASE_URL from "../apiConfig";
+import React, { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
+import { getPartnerOrders, updateWorkStatus } from "../services/apiService";
 
-const PartnerOrdersPage = () => {
+const PartnerOrdersPage = ({ showMessage }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filter, setFilter] = useState("All");
 
-  // --- STATE BARU UNTUK PENCARIAN & PAGINASI ---
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const ORDERS_PER_PAGE = 5; // Tampilkan 5 kartu per halaman
-
-  const fetchOrders = async () => {
-    const token = localStorage.getItem("token");
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/partner/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Gagal mengambil data pesanan.");
-      }
+      const data = await getPartnerOrders();
       setOrders(data);
     } catch (err) {
       setError(err.message);
+      if (showMessage) showMessage(err.message, "Error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [showMessage]);
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [fetchOrders]);
 
-  // --- LOGIKA BARU UNTUK MEMFILTER DAN MEMBAGI DATA ---
-  const filteredOrders = useMemo(() => {
-    return orders.filter(
-      (order) =>
-        (order.user?.name || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        (order.serviceName || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        order.id.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [orders, searchTerm]);
-
-  const pageCount = Math.ceil(filteredOrders.length / ORDERS_PER_PAGE);
-  const currentOrdersOnPage = filteredOrders.slice(
-    (currentPage - 1) * ORDERS_PER_PAGE,
-    currentPage * ORDERS_PER_PAGE
-  );
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleWorkStatusChange = async (bookingId, newWorkStatus) => {
-    const token = localStorage.getItem("token");
+  const handleStatusChange = async (bookingId, newWorkStatus) => {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/partner/orders/${bookingId}/work-status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ newWorkStatus }),
-        }
-      );
-
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.message || "Gagal mengubah status pengerjaan.");
-
+      await updateWorkStatus(bookingId, newWorkStatus);
+      // Optimistic update: langsung ubah state tanpa fetch ulang
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order.id === bookingId
@@ -84,13 +36,9 @@ const PartnerOrdersPage = () => {
             : order
         )
       );
+      if (showMessage) showMessage("Status pengerjaan berhasil diperbarui.");
     } catch (err) {
-      // Asumsi 'showMessage' adalah prop, jika tidak ada, ganti dengan alert
-      if (window.showMessage) {
-        window.showMessage(`Error: ${err.message}`);
-      } else {
-        alert(`Error: ${err.message}`);
-      }
+      if (showMessage) showMessage(err.message, "Error");
     }
   };
 
@@ -101,207 +49,200 @@ const PartnerOrdersPage = () => {
         return "bg-success";
       case "Processing":
         return "bg-primary";
-      case "Pending Payment":
-        return "bg-warning text-dark";
       case "Cancelled":
         return "bg-danger";
+      case "Pending Payment":
+        return "bg-warning text-dark";
       default:
         return "bg-secondary";
     }
   };
 
-  // Komponen untuk Paginasi
-  const Pagination = ({ currentPage, pageCount, onPageChange }) => {
-    if (pageCount <= 1) return null;
-    const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
-
-    return (
-      <nav className="mt-4 d-flex justify-content-center">
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button
-              className="page-link"
-              onClick={() => onPageChange(currentPage - 1)}
-            >
-              &laquo;
-            </button>
-          </li>
-          {pages.map((num) => (
-            <li
-              key={num}
-              className={`page-item ${currentPage === num ? "active" : ""}`}
-            >
-              <button className="page-link" onClick={() => onPageChange(num)}>
-                {num}
-              </button>
-            </li>
-          ))}
-          <li
-            className={`page-item ${
-              currentPage === pageCount ? "disabled" : ""
-            }`}
-          >
-            <button
-              className="page-link"
-              onClick={() => onPageChange(currentPage + 1)}
-            >
-              &raquo;
-            </button>
-          </li>
-        </ul>
-      </nav>
-    );
+  const getWorkStatusBadge = (status) => {
+    switch (status) {
+      case "RECEIVED":
+        return "bg-info text-dark";
+      case "WASHING":
+        return "bg-primary";
+      case "DRYING":
+        return "bg-warning text-dark";
+      case "READY_FOR_PICKUP":
+        return "bg-success";
+      default:
+        return "bg-light text-dark";
+    }
   };
 
-  if (loading) return <div className="p-4">Memuat data pesanan...</div>;
-  if (error) return <div className="p-4 text-danger">Error: {error}</div>;
+  const filteredOrders = orders.filter((order) => {
+    if (filter === "All") return true;
+    if (filter === "New") return order.status === "Processing";
+    if (filter === "Completed")
+      return order.status === "Completed" || order.status === "Reviewed";
+    if (filter === "Cancelled") return order.status === "Cancelled";
+    return true;
+  });
+
+  if (loading) return <div className="p-4">Memuat pesanan...</div>;
+  if (error && orders.length === 0)
+    return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
-    <div className="container-fluid px-4">
-      <div className="d-flex justify-content-between align-items-center m-4">
+    <div className="container-fluid p-4">
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
         <h2 className="fs-2 mb-0">Manajemen Pesanan</h2>
+        <div className="btn-group mt-2 mt-md-0">
+          <button
+            className={`btn ${
+              filter === "All" ? "btn-dark" : "btn-outline-dark"
+            }`}
+            onClick={() => setFilter("All")}
+          >
+            Semua
+          </button>
+          <button
+            className={`btn ${
+              filter === "New" ? "btn-dark" : "btn-outline-dark"
+            }`}
+            onClick={() => setFilter("New")}
+          >
+            Baru
+          </button>
+          <button
+            className={`btn ${
+              filter === "Completed" ? "btn-dark" : "btn-outline-dark"
+            }`}
+            onClick={() => setFilter("Completed")}
+          >
+            Selesai
+          </button>
+          <button
+            className={`btn ${
+              filter === "Cancelled" ? "btn-dark" : "btn-outline-dark"
+            }`}
+            onClick={() => setFilter("Cancelled")}
+          >
+            Batal
+          </button>
+        </div>
       </div>
 
       <div className="table-card p-3 shadow-sm">
-        {/* Tampilan Desktop */}
-        <div className="table-responsive d-none d-lg-block">
+        <div className="table-responsive">
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
+                <th>ID Pesanan</th>
                 <th>Pelanggan</th>
-                <th>Detail Pesanan</th>
-                <th>Jadwal</th>
+                <th>Layanan</th>
+                <th>Tanggal</th>
                 <th>Status Pembayaran</th>
                 <th>Status Pengerjaan</th>
+                <th className="text-end">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order.id}>
-                  <td>
-                    <span className="fw-bold">{order.user.name}</span>
-                    <small className="d-block text-muted">
-                      {order.user.email}
-                    </small>
-                  </td>
-                  <td>
-                    <span className="fw-bold">{order.serviceName}</span>
-                    <small className="d-block text-muted">ID: {order.id}</small>
-                  </td>
-                  <td>
-                    {new Date(order.scheduleDate).toLocaleDateString("id-ID", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </td>
-                  <td>
-                    <span className={`badge ${getStatusBadge(order.status)}`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td>
-                    <select
-                      className="form-select form-select-sm"
-                      value={order.workStatus || "RECEIVED"}
-                      onChange={(e) =>
-                        handleWorkStatusChange(order.id, e.target.value)
-                      }
-                      disabled={
-                        order.status !== "Processing" &&
-                        order.status !== "Completed" &&
-                        order.status !== "Reviewed"
-                      }
-                    >
-                      <option value="RECEIVED">Diterima</option>
-                      <option value="WASHING">Pencucian</option>
-                      <option value="DRYING">Pengeringan</option>
-                      <option value="QUALITY_CHECK">Pengecekan Kualitas</option>
-                      <option value="READY_FOR_PICKUP">Siap Diambil</option>
-                    </select>
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td>
+                      <Link
+                        to={`/partner/orders/${order.id}`}
+                        className="fw-bold text-decoration-none"
+                      >
+                        #{order.id.substring(0, 8)}
+                      </Link>
+                    </td>
+                    <td>
+                      {order.user?.name || "N/A"}
+                      <small className="d-block text-muted">
+                        {order.user?.email || ""}
+                      </small>
+                    </td>
+                    <td>{order.serviceName}</td>
+                    <td>
+                      {new Date(order.scheduleDate).toLocaleDateString("id-ID")}
+                    </td>
+                    <td>
+                      <span className={`badge ${getStatusBadge(order.status)}`}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${getWorkStatusBadge(
+                          order.workStatus
+                        )}`}
+                      >
+                        {order.workStatus || "Belum Diterima"}
+                      </span>
+                    </td>
+                    <td className="text-end">
+                      <div className="dropdown">
+                        <button
+                          className="btn btn-sm btn-outline-dark dropdown-toggle"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
+                          Ubah Status
+                        </button>
+                        <ul className="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(order.id, "RECEIVED")
+                              }
+                            >
+                              Diterima
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(order.id, "WASHING")
+                              }
+                            >
+                              Dicuci
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(order.id, "DRYING")
+                              }
+                            >
+                              Dikeringkan
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(order.id, "READY_FOR_PICKUP")
+                              }
+                            >
+                              Siap Diambil
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center py-4">
+                    <p className="text-muted mb-0">
+                      Tidak ada pesanan dengan filter ini.
+                    </p>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
-        </div>
-
-        {/* Tampilan Mobile */}
-        <div className="d-lg-none">
-          <div className="mb-3 px-2">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Cari nama, layanan, atau ID..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-          <div className="mobile-card-list">
-            {currentOrdersOnPage.length > 0 ? (
-              currentOrdersOnPage.map((order) => (
-                <div className="mobile-card" key={order.id}>
-                  <div className="mobile-card-header">
-                    <div>
-                      <span className="fw-bold">{order.user.name}</span>
-                      <small className="d-block text-muted">{order.id}</small>
-                    </div>
-                    <span className={`badge ${getStatusBadge(order.status)}`}>
-                      {order.status}
-                    </span>
-                  </div>
-                  <div className="mobile-card-body">
-                    <div className="mobile-card-row">
-                      <small>Layanan</small>
-                      <span>{order.serviceName}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <small>Jadwal</small>
-                      <span>
-                        {new Date(order.scheduleDate).toLocaleDateString(
-                          "id-ID"
-                        )}
-                      </span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <small>Status Pengerjaan</small>
-                      <select
-                        className="form-select form-select-sm"
-                        style={{ width: "150px" }}
-                        value={order.workStatus || "RECEIVED"}
-                        onChange={(e) =>
-                          handleWorkStatusChange(order.id, e.target.value)
-                        }
-                        disabled={
-                          order.status !== "Processing" &&
-                          order.status !== "Completed" &&
-                          order.status !== "Reviewed"
-                        }
-                      >
-                        <option value="RECEIVED">Diterima</option>
-                        <option value="WASHING">Pencucian</option>
-                        <option value="DRYING">Pengeringan</option>
-                        <option value="QUALITY_CHECK">Cek Kualitas</option>
-                        <option value="READY_FOR_PICKUP">Siap Diambil</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center p-4 text-muted">
-                Tidak ada pesanan yang cocok dengan pencarian Anda.
-              </div>
-            )}
-          </div>
-          <Pagination
-            currentPage={currentPage}
-            pageCount={pageCount}
-            onPageChange={handlePageChange}
-          />
         </div>
       </div>
     </div>

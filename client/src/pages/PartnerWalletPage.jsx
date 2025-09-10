@@ -1,229 +1,219 @@
-import React, { useState, useEffect } from "react";
-import API_BASE_URL from "../apiConfig";
-import MessageBox from "../components/MessageBox";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  getPartnerWalletData,
+  requestPartnerPayout,
+} from "../services/apiService";
 
-const PartnerWalletPage = () => {
-  const [walletData, setWalletData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-
-  // State baru untuk modal penarikan dana
-  const [showPayoutModal, setShowPayoutModal] = useState(false);
-  const [payoutAmount, setPayoutAmount] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  const fetchWalletData = async () => {
-    setLoading(true);
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/partner/wallet`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Gagal mengambil data dompet.");
-      }
-      const data = await response.json();
-      setWalletData(data);
-    } catch (error) {
-      setIsError(true);
-      setMessage(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchWalletData();
-  }, []);
-
-  const handleShowPayoutModal = () => setShowPayoutModal(true);
-  const handleClosePayoutModal = () => {
-    setShowPayoutModal(false);
-    setPayoutAmount("");
-    setMessage("");
-    setIsError(false);
-  };
-  
-  const handleSubmitPayout = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setMessage("");
-    setIsError(false);
-
-    if (parseFloat(payoutAmount) > walletData.balance) {
-      setIsError(true);
-      setMessage("Jumlah penarikan tidak boleh melebihi saldo yang tersedia.");
-      setSubmitting(false);
-      return;
-    }
-     if (parseFloat(payoutAmount) <= 0) {
-      setIsError(true);
-      setMessage("Jumlah penarikan harus lebih dari nol.");
-      setSubmitting(false);
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/partner/payout-requests`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount: parseFloat(payoutAmount) }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Gagal mengajukan permintaan.");
-      }
-      
-      setIsError(false);
-      setMessage("Permintaan penarikan dana berhasil diajukan dan akan diproses oleh Admin.");
-      handleClosePayoutModal();
-      // Kita tidak perlu fetch ulang data karena saldo baru akan berkurang setelah disetujui
-      
-    } catch (error) {
-      setIsError(true);
-      setMessage(error.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-  
-   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  if (loading) {
-    return <div className="p-4">Memuat data dompet...</div>;
-  }
+const PayoutModal = ({
+  show,
+  handleClose,
+  handleSubmit,
+  amount,
+  setAmount,
+  balance,
+}) => {
+  if (!show) return null;
 
   return (
     <>
-      <div className="container-fluid px-4">
-        <h2 className="fs-2 my-4">Dompet & Penarikan Dana</h2>
-        
-        {message && <MessageBox message={message} isError={isError} onDismiss={() => setMessage("")}/>}
-
-        <div className="row">
-          <div className="col-md-5 mb-4">
-            <div className="card text-bg-primary">
-              <div className="card-body">
-                <h5 className="card-title text-white-50">Saldo Tersedia</h5>
-                <p className="card-text fs-2 fw-bold">
-                  {walletData ? formatCurrency(walletData.balance) : formatCurrency(0)}
+      <div
+        className="modal fade show"
+        style={{ display: "block" }}
+        tabIndex="-1"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Ajukan Penarikan Dana</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={handleClose}
+              ></button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="modal-body">
+                <p className="text-muted">
+                  Saldo tersedia: Rp {balance.toLocaleString("id-ID")}
                 </p>
-                <button 
-                  className="btn btn-light" 
-                  onClick={handleShowPayoutModal}
-                  disabled={!walletData || walletData.balance <= 0}
+                <div className="mb-3">
+                  <label htmlFor="amount" className="form-label">
+                    Jumlah Penarikan (Rp)
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="amount"
+                    name="amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="Contoh: 50000"
+                    required
+                    max={balance}
+                    min="10000" // Atur minimum penarikan jika ada
+                  />
+                  <div className="form-text">
+                    Minimum penarikan adalah Rp 10.000.
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleClose}
                 >
-                  <i className="fas fa-paper-plane me-2"></i>Tarik Dana
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={amount > balance || amount < 10000}
+                >
+                  Ajukan
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="table-card p-3 shadow-sm">
-          <h4 className="fs-5 mb-3">Riwayat Transaksi</h4>
-          <div className="table-responsive">
-            <table className="table table-hover align-middle">
-              <thead className="table-light">
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Deskripsi</th>
-                  <th className="text-end">Jumlah</th>
-                </tr>
-              </thead>
-              <tbody>
-                {walletData && walletData.transactions.length > 0 ? (
-                  walletData.transactions.map((tx) => (
-                    <tr key={tx.id}>
-                      <td>{formatDate(tx.createdAt)}</td>
-                      <td>{tx.description}</td>
-                      <td className={`text-end fw-bold ${tx.type === 'CREDIT' ? 'text-success' : 'text-danger'}`}>
-                        {tx.type === 'CREDIT' ? '+' : ''}{formatCurrency(tx.amount)}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="3" className="text-center py-4">
-                      Belum ada riwayat transaksi.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            </form>
           </div>
         </div>
       </div>
-      
-      {/* Modal untuk Penarikan Dana */}
-      {showPayoutModal && (
-         <div className="modal fade show" style={{ display: "block" }} tabIndex="-1">
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Formulir Penarikan Dana</h5>
-                <button type="button" className="btn-close" onClick={handleClosePayoutModal}></button>
-              </div>
-              <form onSubmit={handleSubmitPayout}>
-                <div className="modal-body">
-                    {message && <MessageBox message={message} isError={isError} onDismiss={() => setMessage("")} />}
-                  <p>Saldo tersedia: <span className="fw-bold">{formatCurrency(walletData.balance)}</span></p>
-                  <div className="mb-3">
-                    <label htmlFor="payoutAmount" className="form-label">Jumlah Penarikan (Rp)</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      id="payoutAmount"
-                      value={payoutAmount}
-                      onChange={(e) => setPayoutAmount(e.target.value)}
-                      placeholder="Contoh: 50000"
-                      required
-                      min="1"
-                      max={walletData.balance}
-                    />
-                  </div>
-                   <div className="form-text">
-                    Dana akan ditransfer ke rekening bank yang terdaftar. Permintaan akan diproses oleh Admin dalam 1-3 hari kerja.
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={handleClosePayoutModal} disabled={submitting}>Batal</button>
-                  <button type="submit" className="btn btn-primary" disabled={submitting}>
-                    {submitting ? 'Mengajukan...' : 'Ajukan Permintaan'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-      {showPayoutModal && <div className="modal-backdrop fade show"></div>}
+      <div className="modal-backdrop fade show"></div>
     </>
+  );
+};
+
+const PartnerWalletPage = ({ showMessage }) => {
+  const [walletData, setWalletData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [payoutAmount, setPayoutAmount] = useState("");
+
+  const fetchWalletData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getPartnerWalletData();
+      setWalletData(data);
+    } catch (err) {
+      setError(err.message);
+      if (showMessage) showMessage(err.message, "Error");
+    } finally {
+      setLoading(false);
+    }
+  }, [showMessage]);
+
+  useEffect(() => {
+    fetchWalletData();
+  }, [fetchWalletData]);
+
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setPayoutAmount("");
+  };
+
+  const handleSubmitPayout = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await requestPartnerPayout(parseFloat(payoutAmount));
+      if (showMessage)
+        showMessage(
+          result.message || "Permintaan penarikan dana berhasil diajukan."
+        );
+      handleCloseModal();
+      await fetchWalletData(); // Refresh data dompet
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
+    }
+  };
+
+  const getTransactionTypeBadge = (type) => {
+    return type === "CREDIT" ? "bg-success" : "bg-danger";
+  };
+
+  const getTransactionTypeText = (type) => {
+    return type === "CREDIT" ? "Pemasukan" : "Penarikan";
+  };
+
+  if (loading) return <div className="p-4">Memuat data dompet...</div>;
+  if (error) return <div className="p-4 text-danger">Error: {error}</div>;
+  if (!walletData)
+    return <div className="p-4">Data dompet tidak ditemukan.</div>;
+
+  return (
+    <div className="container-fluid p-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="fs-2 mb-0">Dompet & Penarikan Dana</h2>
+        <button className="btn btn-dark" onClick={handleOpenModal}>
+          <i className="fas fa-hand-holding-usd me-2"></i>Ajukan Penarikan
+        </button>
+      </div>
+
+      <div className="card card-account p-4 mb-4">
+        <p className="text-muted mb-1">Saldo Saat Ini</p>
+        <h2 className="display-4 fw-bold text-primary">
+          Rp {walletData.balance.toLocaleString("id-ID")}
+        </h2>
+      </div>
+
+      <div className="table-card p-3 shadow-sm">
+        <h5 className="mb-3">Riwayat Transaksi</h5>
+        <div className="table-responsive">
+          <table className="table table-hover align-middle">
+            <thead className="table-light">
+              <tr>
+                <th>Tanggal</th>
+                <th>Deskripsi</th>
+                <th>Tipe</th>
+                <th className="text-end">Jumlah (Rp)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {walletData.transactions && walletData.transactions.length > 0 ? (
+                walletData.transactions.map((tx) => (
+                  <tr key={tx.id}>
+                    <td>{new Date(tx.createdAt).toLocaleString("id-ID")}</td>
+                    <td>{tx.description}</td>
+                    <td>
+                      <span
+                        className={`badge ${getTransactionTypeBadge(tx.type)}`}
+                      >
+                        {getTransactionTypeText(tx.type)}
+                      </span>
+                    </td>
+                    <td
+                      className={`text-end fw-bold ${
+                        tx.type === "CREDIT" ? "text-success" : "text-danger"
+                      }`}
+                    >
+                      {tx.type === "CREDIT" ? "+" : "-"}{" "}
+                      {tx.amount.toLocaleString("id-ID")}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center py-4">
+                    <p className="text-muted mb-0">
+                      Belum ada riwayat transaksi.
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <PayoutModal
+        show={showModal}
+        handleClose={handleCloseModal}
+        handleSubmit={handleSubmitPayout}
+        amount={payoutAmount}
+        setAmount={setPayoutAmount}
+        balance={walletData.balance}
+      />
+    </div>
   );
 };
 

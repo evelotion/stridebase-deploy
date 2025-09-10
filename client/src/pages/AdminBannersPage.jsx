@@ -1,244 +1,229 @@
-import React, { useState, useEffect } from "react";
-import API_BASE_URL from "../apiConfig";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  getAllBanners,
+  createBanner,
+  updateBanner,
+  deleteBanner,
+} from "../services/apiService";
+import { uploadImage } from "../services/apiService"; // Menggunakan fungsi upload yang sudah ada
+
+const BannerModal = ({ show, handleClose, handleSubmit, bannerData, setBannerData, isUploading, handleImageUpload }) => {
+  if (!show) return null;
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setBannerData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
+
+  return (
+    <>
+      <div className="modal fade show" style={{ display: "block" }} tabIndex="-1">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">{bannerData.id ? "Edit Banner" : "Tambah Banner Baru"}</h5>
+              <button type="button" className="btn-close" onClick={handleClose}></button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label htmlFor="title" className="form-label">Judul</label>
+                  <input type="text" className="form-control" id="title" name="title" value={bannerData.title} onChange={handleChange} required />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="description" className="form-label">Deskripsi Singkat</label>
+                  <input type="text" className="form-control" id="description" name="description" value={bannerData.description} onChange={handleChange} />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="linkUrl" className="form-label">URL Tautan (opsional)</label>
+                  <input type="text" className="form-control" id="linkUrl" name="linkUrl" value={bannerData.linkUrl} onChange={handleChange} placeholder="Contoh: /store" />
+                </div>
+                <div className="mb-3">
+                    <label className="form-label">Gambar Banner</label>
+                    {bannerData.imageUrl && (
+                        <div className="mb-2">
+                            <img src={bannerData.imageUrl} alt="Preview" className="img-thumbnail" width="200"/>
+                        </div>
+                    )}
+                    <input type="file" className="form-control" id="image" accept="image/*" onChange={handleImageUpload} />
+                    {isUploading && <div className="form-text">Mengunggah...</div>}
+                </div>
+                <div className="form-check form-switch">
+                  <input className="form-check-input" type="checkbox" role="switch" id="status" name="status" checked={bannerData.status === 'active'} onChange={(e) => setBannerData(prev => ({...prev, status: e.target.checked ? 'active' : 'inactive'}))} />
+                  <label className="form-check-label" htmlFor="status">Aktifkan Banner</label>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={handleClose}>Batal</button>
+                <button type="submit" className="btn btn-primary" disabled={isUploading}>
+                    {isUploading ? "Tunggu..." : "Simpan"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div className="modal-backdrop fade show"></div>
+    </>
+  );
+};
+
 
 const AdminBannersPage = ({ showMessage }) => {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // State untuk modal tambah banner
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newBannerData, setNewBannerData] = useState({
-    imageFile: null, // <-- State untuk menampung file
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [currentBanner, setCurrentBanner] = useState({
+    id: null,
+    title: "",
+    description: "",
+    imageUrl: "",
     linkUrl: "",
+    status: "active",
   });
 
-  useEffect(() => {
-    fetchBanners();
-  }, []);
-
-  const fetchBanners = async () => {
+  const fetchBanners = useCallback(async () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/banners`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) throw new Error("Gagal mengambil data banner.");
-      const data = await response.json();
+      const data = await getAllBanners();
       setBanners(data);
-    } catch (error) {
-      showMessage(error.message);
+    } catch (err) {
+      setError(err.message);
+      if (showMessage) showMessage(err.message, "Error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [showMessage]);
 
-  // Fungsi-fungsi untuk modal tambah
-  const handleShowAddModal = () => setShowAddModal(true);
-  const handleCloseAddModal = () => {
-    setShowAddModal(false);
-    setNewBannerData({ imageFile: null, linkUrl: "" });
-  };
+  useEffect(() => {
+    fetchBanners();
+  }, [fetchBanners]);
 
-  const handleAddFormChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "imageFile") {
-      setNewBannerData((prev) => ({ ...prev, imageFile: files[0] }));
+  const handleOpenModal = (banner = null) => {
+    if (banner) {
+      setCurrentBanner(banner);
     } else {
-      setNewBannerData((prev) => ({ ...prev, [name]: value }));
+      setCurrentBanner({
+        id: null, title: "", description: "", imageUrl: "", linkUrl: "", status: "active",
+      });
     }
+    setShowModal(true);
   };
+  
+  const handleCloseModal = () => setShowModal(false);
 
-  const handleSaveNewBanner = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-
-    if (!newBannerData.imageFile || !newBannerData.linkUrl) {
-      showMessage("File gambar dan Link Tujuan wajib diisi.");
-      return;
-    }
-
-    // 1. Upload gambar terlebih dahulu
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
     const formData = new FormData();
-    formData.append("image", newBannerData.imageFile);
-
+    formData.append("image", file);
     try {
-      const uploadRes = await fetch(`${API_BASE_URL}/api/upload`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-
-      const uploadData = await uploadRes.json();
-      if (!uploadRes.ok)
-        throw new Error(uploadData.message || "Gagal mengunggah gambar.");
-
-      // 2. Jika upload berhasil, simpan data banner ke database
-      const bannerPayload = {
-        imageUrl: uploadData.imageUrl,
-        linkUrl: newBannerData.linkUrl,
-      };
-
-      const saveRes = await fetch(`${API_BASE_URL}/api/admin/banners`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(bannerPayload),
-      });
-
-      const createdBanner = await saveRes.json();
-      if (!saveRes.ok)
-        throw new Error(createdBanner.message || "Gagal menambah banner.");
-
-      handleCloseAddModal();
-      fetchBanners(); // Refresh tabel
-      showMessage("Banner baru berhasil ditambahkan.");
-    } catch (error) {
-      showMessage(error.message);
+      const result = await uploadImage(formData);
+      setCurrentBanner(prev => ({ ...prev, imageUrl: result.imageUrl }));
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  // Fungsi untuk hapus banner
-  const handleDeleteBanner = async (bannerId) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus banner ini?")) return;
-
-    const token = localStorage.getItem("token");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/banners/${bannerId}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.message || "Gagal menghapus banner.");
-
-      fetchBanners(); // Refresh tabel
-      showMessage(data.message);
-    } catch (error) {
-      showMessage(error.message);
+      if (currentBanner.id) {
+        await updateBanner(currentBanner.id, currentBanner);
+        if (showMessage) showMessage("Banner berhasil diperbarui!");
+      } else {
+        await createBanner(currentBanner);
+        if (showMessage) showMessage("Banner baru berhasil ditambahkan!");
+      }
+      handleCloseModal();
+      await fetchBanners();
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
     }
+  };
+
+  const handleDelete = async (bannerId) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus banner ini?")) {
+      try {
+        await deleteBanner(bannerId);
+        // Optimistic update
+        setBanners(prev => prev.filter(b => b.id !== bannerId));
+        if (showMessage) showMessage("Banner berhasil dihapus.");
+      } catch (err) {
+        if (showMessage) showMessage(err.message, "Error");
+      }
+    }
+  };
+  
+  const getStatusBadge = (status) => {
+    return status === 'active' ? 'bg-success' : 'bg-secondary';
   };
 
   if (loading) return <div className="p-4">Memuat data banner...</div>;
+  if (error && banners.length === 0) return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
-    <>
-      <div className="container-fluid px-4">
-        <div className="d-flex justify-content-between align-items-center m-4">
-          <h2 className="fs-2 mb-0">Manajemen Banner</h2>
-          <button className="btn btn-primary" onClick={handleShowAddModal}>
-            <i className="fas fa-plus me-2"></i>Tambah Banner Baru
-          </button>
-        </div>
+    <div className="container-fluid p-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="fs-2 mb-0">Manajemen Banner</h2>
+        <button className="btn btn-dark" onClick={() => handleOpenModal()}>
+          <i className="fas fa-plus me-2"></i>Tambah Banner
+        </button>
+      </div>
 
-        <div className="row g-4 px-4">
-          {banners.map((banner) => (
-            <div className="col-md-6" key={banner.id}>
-              <div className="card shadow-sm">
-                {/* Tambahkan base URL server jika perlu */}
-                <img
-                  src={`${banner.imageUrl}`}
-                  className="card-img-top"
-                  alt="Banner"
-                  style={{ height: "150px", objectFit: "cover" }}
-                />
-                <div className="card-body">
-                  <p className="card-text small text-muted">
-                    Link Tujuan: {banner.linkUrl}
-                  </p>
-                  <button
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => handleDeleteBanner(banner.id)}
-                  >
-                    <i className="fas fa-trash-alt me-2"></i>Hapus
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-          {banners.length === 0 && !loading && (
-            <div className="col-12">
-              <p className="text-center text-muted">
-                Belum ada banner yang ditambahkan.
-              </p>
-            </div>
-          )}
+      <div className="table-card p-3 shadow-sm">
+        <div className="table-responsive">
+          <table className="table table-hover align-middle">
+            <thead className="table-light">
+              <tr>
+                <th>Gambar</th>
+                <th>Judul</th>
+                <th>Tautan</th>
+                <th>Status</th>
+                <th className="text-end">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {banners.length > 0 ? (
+                banners.map(banner => (
+                  <tr key={banner.id}>
+                    <td><img src={banner.imageUrl} alt={banner.title} style={{ width: "120px", height:"60px", objectFit: "cover" }} className="rounded"/></td>
+                    <td><span className="fw-bold">{banner.title}</span></td>
+                    <td>{banner.linkUrl || "-"}</td>
+                    <td><span className={`badge ${getStatusBadge(banner.status)}`}>{banner.status}</span></td>
+                    <td className="text-end">
+                      <button className="btn btn-sm btn-outline-dark me-2" onClick={() => handleOpenModal(banner)}>Edit</button>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(banner.id)}>Hapus</button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center py-4">
+                    <p className="text-muted mb-0">Belum ada banner yang ditambahkan.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Modal Tambah Banner */}
-      {showAddModal && (
-        <div
-          className="modal fade show"
-          style={{ display: "block" }}
-          tabIndex="-1"
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Tambah Banner Baru</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseAddModal}
-                ></button>
-              </div>
-              <form onSubmit={handleSaveNewBanner}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label htmlFor="imageFile" className="form-label">
-                      File Gambar
-                    </label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      id="imageFile"
-                      name="imageFile"
-                      onChange={handleAddFormChange}
-                      accept="image/*"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="linkUrl" className="form-label">
-                      Link Tujuan
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="linkUrl"
-                      name="linkUrl"
-                      value={newBannerData.linkUrl}
-                      onChange={handleAddFormChange}
-                      placeholder="/promo"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={handleCloseAddModal}
-                  >
-                    Batal
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Simpan Banner
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-      {showAddModal && <div className="modal-backdrop fade show"></div>}
-    </>
+      <BannerModal
+        show={showModal}
+        handleClose={handleCloseModal}
+        handleSubmit={handleSubmit}
+        bannerData={currentBanner}
+        setBannerData={setCurrentBanner}
+        isUploading={isUploading}
+        handleImageUpload={handleImageUpload}
+      />
+    </div>
   );
 };
 

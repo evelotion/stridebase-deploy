@@ -1,388 +1,160 @@
-import React, { useState, useEffect, useMemo } from "react";
-import API_BASE_URL from "../apiConfig";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { getAllUsers, changeUserRole, changeUserStatus } from "../services/apiService";
 
 const AdminUsersPage = ({ showMessage }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // --- STATE BARU UNTUK PENCARIAN & PAGINASI ---
+  const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const USERS_PER_PAGE = 5; // Tampilkan 5 kartu per halaman
+  const [filterRole, setFilterRole] = useState("all");
 
-  useEffect(() => {
-    // Menambahkan sedikit jeda agar tidak terasa terlalu instan
-    const timer = setTimeout(() => {
-      fetchUsers();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        throw new Error("Gagal mengambil data pengguna.");
-      }
-      const data = await response.json();
+      const data = await getAllUsers();
       setUsers(data);
-    } catch (error) {
-      console.error(error);
-      showMessage(error.message);
+    } catch (err) {
+      setError(err.message);
+      if (showMessage) showMessage(err.message, "Error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [showMessage]);
 
-  // Fungsi untuk mendapatkan inisial nama
-  const getInitials = (name) => {
-    if (!name) return "?";
-    const words = name.split(" ");
-    return words.length > 1
-      ? (words[0][0] + words[words.length - 1][0]).toUpperCase()
-      : name.substring(0, 2).toUpperCase();
-  };
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
-  // --- LOGIKA BARU UNTUK MEMFILTER DAN MEMBAGI DATA ---
-  const filteredUsers = useMemo(() => {
-    return users.filter(
-      (user) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [users, searchTerm]);
-
-  const pageCount = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
-  const currentUsersOnPage = filteredUsers.slice(
-    (currentPage - 1) * USERS_PER_PAGE,
-    currentPage * USERS_PER_PAGE
-  );
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  // Fungsi-fungsi handleRoleChange dan handleStatusChange tetap sama
   const handleRoleChange = async (userId, newRole) => {
-    const token = localStorage.getItem("token");
-    const userName = users.find((u) => u.id === userId)?.name || "Pengguna";
-
-    if (
-      !confirm(
-        `Apakah Anda yakin ingin mengubah peran ${userName} menjadi "${newRole}"?`
-      )
-    ) {
-      return;
-    }
-
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/users/${userId}/role`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ newRole }),
-        }
+      await changeUserRole(userId, newRole);
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId ? { ...user, role: newRole } : user
+        )
       );
-
-      const updatedUser = await response.json();
-      if (!response.ok) {
-        throw new Error(
-          updatedUser.message || "Gagal mengubah peran pengguna."
-        );
-      }
-
-      // Refresh data setelah berhasil
-      fetchUsers();
-      showMessage(`Peran untuk ${userName} berhasil diubah.`);
-    } catch (error) {
-      console.error(error);
-      showMessage(error.message);
+      if (showMessage) showMessage("Peran pengguna berhasil diubah.");
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
     }
   };
 
   const handleStatusChange = async (userId, newStatus) => {
-    const token = localStorage.getItem("token");
-    const userName = users.find((u) => u.id === userId)?.name || "Pengguna";
-    const actionText = newStatus === "blocked" ? "memblokir" : "mengaktifkan";
-
-    if (!confirm(`Apakah Anda yakin ingin ${actionText} ${userName}?`)) {
-      return;
-    }
-
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/admin/users/${userId}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ newStatus }),
-        }
+      await changeUserStatus(userId, newStatus);
+      setUsers(prevUsers => 
+        prevUsers.map(user => 
+          user.id === userId ? { ...user, status: newStatus } : user
+        )
       );
-
-      const updatedUser = await response.json();
-      if (!response.ok) {
-        throw new Error(
-          updatedUser.message || "Gagal mengubah status pengguna."
-        );
-      }
-
-      // Refresh data setelah berhasil
-      fetchUsers();
-      showMessage(
-        `Pengguna ${userName} berhasil di-${
-          newStatus === "blocked" ? "blokir" : "aktifkan"
-        }.`
-      );
-    } catch (error) {
-      console.error(error);
-      showMessage(error.message);
+      if (showMessage) showMessage("Status pengguna berhasil diubah.");
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
     }
   };
 
-  // Komponen untuk Paginasi
-  const Pagination = ({ currentPage, pageCount, onPageChange }) => {
-    if (pageCount <= 1) return null;
-    const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
-
-    return (
-      <nav className="mt-4 d-flex justify-content-center">
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <button
-              className="page-link"
-              onClick={() => onPageChange(currentPage - 1)}
-            >
-              &laquo;
-            </button>
-          </li>
-          {pages.map((num) => (
-            <li
-              key={num}
-              className={`page-item ${currentPage === num ? "active" : ""}`}
-            >
-              <button className="page-link" onClick={() => onPageChange(num)}>
-                {num}
-              </button>
-            </li>
-          ))}
-          <li
-            className={`page-item ${
-              currentPage === pageCount ? "disabled" : ""
-            }`}
-          >
-            <button
-              className="page-link"
-              onClick={() => onPageChange(currentPage + 1)}
-            >
-              &raquo;
-            </button>
-          </li>
-        </ul>
-      </nav>
-    );
+  const getRoleBadge = (role) => {
+    switch (role) {
+      case "admin": return "bg-danger";
+      case "developer": return "bg-dark";
+      case "mitra": return "bg-primary";
+      default: return "bg-secondary";
+    }
   };
 
-  if (loading) {
-    return (
-      <div className="container-fluid px-4">
-        <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
-        <div className="table-card p-3 shadow-sm">
-          <div className="text-center p-5">Memuat data...</div>
-        </div>
-      </div>
-    );
-  }
+  const getStatusBadge = (status) => {
+    return status === 'active' ? 'bg-success' : 'bg-warning text-dark';
+  };
+
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesRole = filterRole === 'all' || user.role === filterRole;
+      return matchesSearch && matchesRole;
+    });
+  }, [users, searchTerm, filterRole]);
+
+
+  if (loading) return <div className="p-4">Memuat data pengguna...</div>;
+  if (error && users.length === 0) return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
-    <div className="container-fluid px-4">
-      <h2 className="fs-2 m-4">Manajemen Pengguna</h2>
+    <div className="container-fluid p-4">
+      <h2 className="fs-2 mb-4">Manajemen Pengguna</h2>
+      <div className="card card-account p-3 mb-4">
+        <div className="row g-2 align-items-center">
+          <div className="col-md-8">
+            <input 
+              type="text" 
+              className="form-control" 
+              placeholder="Cari pengguna berdasarkan nama atau email..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="col-md-4">
+            <select className="form-select" value={filterRole} onChange={e => setFilterRole(e.target.value)}>
+              <option value="all">Semua Peran</option>
+              <option value="pengguna">Pengguna</option>
+              <option value="mitra">Mitra</option>
+              <option value="admin">Admin</option>
+              <option value="developer">Developer</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div className="table-card p-3 shadow-sm">
-        {/* Tampilan Desktop (Tabel) */}
-        <div className="table-responsive d-none d-lg-block">
+        <div className="table-responsive">
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
-                <th>Nama User</th>
+                <th>Nama</th>
                 <th>Email</th>
-                <th>Total Belanja</th>
-                <th>Jml. Transaksi</th>
                 <th>Peran</th>
                 <th>Status</th>
-                <th>Aksi</th>
+                <th>Total Transaksi</th>
+                <th className="text-end">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    <div className="d-flex align-items-center">
-                      <div className="user-avatar avatar-initials me-3">
-                        <span>{getInitials(user.name)}</span>
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map(user => (
+                  <tr key={user.id}>
+                    <td><span className="fw-bold">{user.name}</span></td>
+                    <td>{user.email}</td>
+                    <td><span className={`badge ${getRoleBadge(user.role)}`}>{user.role}</span></td>
+                    <td><span className={`badge ${getStatusBadge(user.status)}`}>{user.status}</span></td>
+                    <td>{user.transactionCount || 0}</td>
+                    <td className="text-end">
+                      <div className="dropdown">
+                        <button className="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Kelola
+                        </button>
+                        <ul className="dropdown-menu dropdown-menu-end">
+                          <li className="dropdown-header">Ubah Peran</li>
+                          <li><button className="dropdown-item" onClick={() => handleRoleChange(user.id, 'pengguna')}>Set as Pengguna</button></li>
+                          <li><button className="dropdown-item" onClick={() => handleRoleChange(user.id, 'mitra')}>Set as Mitra</button></li>
+                          <li><button className="dropdown-item" onClick={() => handleRoleChange(user.id, 'admin')}>Set as Admin</button></li>
+                          <li><hr className="dropdown-divider" /></li>
+                          <li className="dropdown-header">Ubah Status</li>
+                          <li><button className="dropdown-item" onClick={() => handleStatusChange(user.id, 'active')}>Aktifkan</button></li>
+                          <li><button className="dropdown-item" onClick={() => handleStatusChange(user.id, 'blocked')}>Blokir</button></li>
+                        </ul>
                       </div>
-                      {user.name}
-                    </div>
-                  </td>
-                  <td>{user.email}</td>
-                  <td>Rp {user.totalSpent.toLocaleString("id-ID")}</td>
-                  <td>{user.transactionCount}</td>
-                  <td>
-                    <select
-                      className="form-select form-select-sm"
-                      value={user.role || "customer"}
-                      onChange={(e) =>
-                        handleRoleChange(user.id, e.target.value)
-                      }
-                    >
-                      <option value="customer">Customer</option>
-                      <option value="mitra">Mitra</option>
-                      <option value="admin">Admin</option>
-                      <option value="developer">Developer</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge bg-${
-                        (user.status || "active") === "active"
-                          ? "success"
-                          : "danger"
-                      }`}
-                    >
-                      {user.status || "active"}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="btn-group">
-                      {(user.status || "active") === "active" ? (
-                        <button
-                          className="btn btn-sm btn-outline-warning"
-                          title="Blokir Pengguna"
-                          onClick={() => handleStatusChange(user.id, "blocked")}
-                        >
-                          <i className="fas fa-ban"></i>
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-sm btn-outline-success"
-                          title="Aktifkan Pengguna"
-                          onClick={() => handleStatusChange(user.id, "active")}
-                        >
-                          <i className="fas fa-check-circle"></i>
-                        </button>
-                      )}
-                      <button
-                        className="btn btn-sm btn-outline-secondary"
-                        title="Edit Pengguna"
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-                    </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">
+                    <p className="text-muted mb-0">Tidak ada pengguna yang cocok dengan kriteria pencarian.</p>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
-        </div>
-
-        {/* Tampilan Mobile (Card) */}
-        <div className="d-lg-none">
-          <div className="mb-3 px-2">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Cari nama atau email pengguna..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Kembali ke halaman 1 setiap kali mencari
-              }}
-            />
-          </div>
-          <div className="mobile-card-list">
-            {currentUsersOnPage.length > 0 ? (
-              currentUsersOnPage.map((user) => (
-                <div className="mobile-card" key={user.id}>
-                  <div className="mobile-card-header">
-                    <div>
-                      <span className="fw-bold">{user.name}</span>
-                      <small className="d-block text-muted">{user.email}</small>
-                    </div>
-                    <span
-                      className={`badge bg-${
-                        (user.status || "active") === "active"
-                          ? "success"
-                          : "danger"
-                      }`}
-                    >
-                      {user.status || "active"}
-                    </span>
-                  </div>
-                  <div className="mobile-card-body">
-                    <div className="mobile-card-row">
-                      <small>Total Belanja</small>
-                      <span>Rp {user.totalSpent.toLocaleString("id-ID")}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <small>Jml. Transaksi</small>
-                      <span>{user.transactionCount}</span>
-                    </div>
-                    <div className="mobile-card-row">
-                      <small>Peran</small>
-                      <select
-                        className="form-select form-select-sm"
-                        style={{ width: "150px" }}
-                        value={user.role || "customer"}
-                        onChange={(e) =>
-                          handleRoleChange(user.id, e.target.value)
-                        }
-                      >
-                        <option value="customer">Customer</option>
-                        <option value="mitra">Mitra</option>
-                        <option value="admin">Admin</option>
-                        <option value="developer">Developer</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="mobile-card-footer">
-                    {(user.status || "active") === "active" ? (
-                      <button
-                        className="btn btn-sm btn-outline-warning"
-                        onClick={() => handleStatusChange(user.id, "blocked")}
-                      >
-                        <i className="fas fa-ban me-1"></i> Blokir
-                      </button>
-                    ) : (
-                      <button
-                        className="btn btn-sm btn-outline-success"
-                        onClick={() => handleStatusChange(user.id, "active")}
-                      >
-                        <i className="fas fa-check-circle me-1"></i> Aktifkan
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center p-4 text-muted">
-                Tidak ada pengguna yang cocok dengan pencarian Anda.
-              </div>
-            )}
-          </div>
-          <Pagination
-            currentPage={currentPage}
-            pageCount={pageCount}
-            onPageChange={handlePageChange}
-          />
         </div>
       </div>
     </div>

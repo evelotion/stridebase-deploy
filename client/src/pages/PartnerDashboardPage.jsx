@@ -1,6 +1,9 @@
+// File: client/src/pages/PartnerDashboardPage.jsx (Setelah Refaktor)
+
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+// --- PERUBAHAN 1: Impor fungsi dari apiService ---
+import { getPartnerDashboard, getOutstandingInvoices, getPartnerSettings } from "../services/apiService"; // Sesuaikan nama fungsi jika perlu
 
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   <div className="col-lg-6 mb-4">
@@ -21,6 +24,7 @@ const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
 );
 
 const RevenueChart = ({ data }) => {
+  // Komponen ini tidak berubah
   const maxValue = Math.max(...data.map((d) => d.revenue), 1);
   return (
     <div className="table-card p-3 shadow-sm">
@@ -55,30 +59,17 @@ const PartnerDashboardPage = () => {
   const [outstandingInvoices, setOutstandingInvoices] = useState([]);
   const [store, setStore] = useState(null);
 
+  // --- PERUBAHAN 2: Sederhanakan useEffect dengan apiService ---
   useEffect(() => {
     const fetchPartnerStats = async () => {
-      const token = localStorage.getItem("token");
       setLoading(true);
       try {
-        const [statsRes, invoicesRes, storeRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/partner/dashboard`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_BASE_URL}/api/partner/invoices/outstanding`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API_BASE_URL}/api/partner/settings`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+        // Panggil semua data secara paralel
+        const [statsData, invoicesData, storeData] = await Promise.all([
+          getPartnerDashboard(),
+          getOutstandingInvoices(), // Buat fungsi ini di apiService jika belum ada
+          getPartnerSettings()
         ]);
-
-        if (!statsRes.ok || !invoicesRes.ok || !storeRes.ok) {
-          throw new Error("Gagal mengambil data dasbor.");
-        }
-
-        const statsData = await statsRes.json();
-        const invoicesData = await invoicesRes.json();
-        const storeData = await storeRes.json();
 
         setStats(statsData);
         setOutstandingInvoices(invoicesData);

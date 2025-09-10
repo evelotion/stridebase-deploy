@@ -1,7 +1,10 @@
+// File: client/src/pages/StorePage.jsx (Setelah Refaktor)
+
 import React, { useState, useEffect, useCallback } from "react";
 import StoreCard from "../components/StoreCard";
 import { useSearchParams } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+// --- PERUBAHAN 1: Impor fungsi dari apiService ---
+import { getStores } from "../services/apiService";
 
 const UNIQUE_SERVICES = [
   "Fast Clean Sneakers",
@@ -29,11 +32,13 @@ const RatingFilter = ({ rating, setRating }) => (
   </div>
 );
 
-const StorePage = () => {
+// --- PERUBAHAN 2: Tambahkan prop `showMessage` untuk notifikasi error ---
+const StorePage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // State lainnya tetap sama...
   const [searchTerm, setSearchTerm] = useState(
     searchParams.get("search") || ""
   );
@@ -52,6 +57,7 @@ const StorePage = () => {
     searchParams.get("openNow") === "true"
   );
 
+  // --- PERUBAHAN 3: Sederhanakan fungsi fetchStores ---
   const fetchStores = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
@@ -68,22 +74,25 @@ const StorePage = () => {
     if (openNow) {
       params.append("openNow", "true");
     }
-
-    const apiUrl = `${API_BASE_URL}/api/stores?${params.toString()}`;
-
+    
     try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error("Gagal mengambil data toko");
-      const data = await response.json();
+      // Panggil fungsi dari apiService
+      const data = await getStores(params);
       setStores(data);
     } catch (error) {
       console.error("Gagal mengambil data toko:", error);
+      // Tampilkan error ke pengguna
+      if (showMessage) {
+          showMessage(error.message || "Gagal mengambil data toko", "Error");
+      }
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, sortBy, minRating, userLocation, selectedServices, openNow]);
+  }, [searchTerm, sortBy, minRating, userLocation, selectedServices, openNow, showMessage]);
+
 
   useEffect(() => {
+    // Logika di sini tidak perlu diubah, ia akan memicu fetchStores yang baru
     const newParams = new URLSearchParams();
     if (searchTerm) newParams.set("search", searchTerm);
     if (sortBy) newParams.set("sortBy", sortBy);
@@ -111,6 +120,7 @@ const StorePage = () => {
     fetchStores,
   ]);
 
+  // Sisa dari komponen (handleGetUserLocation, handleServiceFilterChange, dll.) tetap sama...
   const handleGetUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -153,6 +163,7 @@ const StorePage = () => {
   return (
     <div className="store-page-redesigned">
       <div className="filter-panel-top">
+        {/* Konten JSX untuk filter panel tetap sama */}
         <div className="container d-flex flex-wrap align-items-center gap-2">
           <div className="search-input-wrapper flex-grow-1">
             <i className="fas fa-search"></i>

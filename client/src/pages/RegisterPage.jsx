@@ -1,165 +1,126 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import React, { useEffect, useState } from "react";
+import { registerUser } from "../services/apiService"; // <-- PERUBAHAN 1
 
-const RegisterPage = ({ theme }) => {
+const RegisterPage = ({ showMessage }) => {
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const redirectInUrl = new URLSearchParams(search).get("redirect");
+  const redirect = redirectInUrl ? redirectInUrl : "/";
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [formErrors, setFormErrors] = useState({});
-  const navigate = useNavigate();
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const validateForm = () => {
-    const errors = {};
-    if (!name.trim()) {
-      errors.name = "Nama lengkap tidak boleh kosong.";
-    }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Format email tidak valid.";
-    }
-    if (password.length < 8) {
-      errors.password = "Password minimal harus 8 karakter.";
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!validateForm()) {
+    if (password !== confirmPassword) {
+      showMessage("Password dan Konfirmasi Password tidak cocok.", "Error");
       return;
     }
-
+    setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Pendaftaran gagal.");
-      }
-
-      setSuccess("Pendaftaran berhasil! Silakan periksa kotak masuk email Anda untuk link verifikasi.");
-      // Hapus timeout dan navigasi otomatis
-      // setTimeout(() => {
-      //   navigate("/login");
-      // }, 2000);
+      // --- PERUBAHAN 2: Ganti fetch dengan apiService ---
+      const data = await registerUser({ name, email, password });
+      showMessage(data.message, "Success");
+      navigate("/login"); // Arahkan ke halaman login setelah registrasi berhasil
     } catch (err) {
-      setError(err.message);
+      showMessage(err.message, "Error");
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate(redirect);
+    }
+  }, [navigate, redirect]);
+
   return (
-    <div className="auth-container">
-      <div className="row g-0 vh-100">
-        <div className="col-lg-7 d-none d-lg-block">
-          <div
-            className="auth-image-panel register-image-side"
-            style={{
-              backgroundImage: `url(${theme?.branding?.registerImageUrl})`,
-            }}
-          >
-            <div className="auth-image-overlay">
-              <h1 className="display-4 fw-bold">
-                Bergabunglah dengan Komunitas Perawatan Sepatu Terbaik.
-              </h1>
-            </div>
-          </div>
+    <div className="auth-page-container">
+      <Helmet>
+        <title>Buat Akun Baru | StrideBase</title>
+      </Helmet>
+      <div className="auth-card">
+        <div className="auth-header">
+          <h2 className="fw-bold">Buat Akun Baru</h2>
+          <p className="text-muted">
+            Daftar untuk mulai menemukan layanan cuci sepatu terbaik.
+          </p>
         </div>
-
-        <div className="col-lg-5 d-flex align-items-center justify-content-center">
-          <div className="auth-form-container">
-            <div className="text-center">
-              <h3 className="fw-bold mb-2">Create Account</h3>
-            </div>
-
-            <form onSubmit={handleSubmit} noValidate>
-              {error && <div className="alert alert-danger">{error}</div>}
-              {success && <div className="alert alert-success">{success}</div>}
-              <div className="mb-3">
-                <label htmlFor="name" className="form-label">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  className={`form-control ${
-                    formErrors.name ? "is-invalid" : ""
-                  }`}
-                  placeholder="e.g., John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-                {formErrors.name && (
-                  <div className="invalid-feedback">{formErrors.name}</div>
-                )}
-              </div>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className={`form-control ${
-                    formErrors.email ? "is-invalid" : ""
-                  }`}
-                  placeholder="e.g., johndoe@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                {formErrors.email && (
-                  <div className="invalid-feedback">{formErrors.email}</div>
-                )}
-              </div>
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  className={`form-control ${
-                    formErrors.password ? "is-invalid" : ""
-                  }`}
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                {formErrors.password && (
-                  <div className="invalid-feedback">{formErrors.password}</div>
-                )}
-              </div>
-              <div className="d-grid my-4">
-                <button type="submit" className="btn btn-dark">
-                  Register
-                </button>
-              </div>
-              <p className="text-center text-muted">
-                Already have an account?{" "}
-                <Link to="/login" style={{ textDecoration: "none" }}>
-                  Sign In
-                </Link>
-              </p>
-            </form>
+        <form onSubmit={submitHandler}>
+          <div className="form-floating mb-3">
+            <input
+              type="text"
+              className="form-control"
+              id="floatingName"
+              placeholder="Nama Lengkap"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <label htmlFor="floatingName">Nama Lengkap</label>
           </div>
+          <div className="form-floating mb-3">
+            <input
+              type="email"
+              className="form-control"
+              id="floatingEmail"
+              placeholder="name@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label htmlFor="floatingEmail">Alamat Email</label>
+          </div>
+          <div className="form-floating mb-3">
+            <input
+              type="password"
+              className="form-control"
+              id="floatingPassword"
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <label htmlFor="floatingPassword">Password</label>
+          </div>
+          <div className="form-floating">
+            <input
+              type="password"
+              className="form-control"
+              id="floatingConfirmPassword"
+              placeholder="Konfirmasi Password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <label htmlFor="floatingConfirmPassword">Konfirmasi Password</label>
+          </div>
+
+          <div className="d-grid mt-4">
+            <button
+              type="submit"
+              className="btn btn-dark btn-lg"
+              disabled={loading}
+            >
+              {loading ? "Memproses..." : "Daftar"}
+            </button>
+          </div>
+        </form>
+        <div className="auth-footer mt-4 text-center">
+          <p>
+            Sudah punya akun?{" "}
+            <Link to={`/login?redirect=${redirect}`}>Masuk di sini</Link>
+          </p>
         </div>
       </div>
     </div>
   );
 };
-
 export default RegisterPage;

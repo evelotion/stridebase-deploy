@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import API_BASE_URL from "../apiConfig";
+import { getStoreDetails, getStoreServices, getStoreReviews, getUserAddresses, addUserAddress } from "../services/apiService";
 
 const ReviewCard = ({ review }) => (
   <div className="review-card mb-3">
@@ -91,21 +91,15 @@ const StoreDetailPage = ({ showMessage }) => {
   const [showGalleryModal, setShowGalleryModal] = useState(false);
 
   const fetchUserAddresses = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!localStorage.getItem("token")) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/api/user/addresses`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
+        const data = await getUserAddresses();
         setAddresses(data);
         if (data.length > 0) {
-          setSelectedAddress(data[0].id);
+            setSelectedAddress(data[0].id);
         }
-      }
     } catch (error) {
-      console.error("Gagal mengambil alamat:", error);
+        console.error("Gagal mengambil alamat:", error);
     }
   };
 
@@ -113,18 +107,11 @@ const StoreDetailPage = ({ showMessage }) => {
     const fetchPageData = async () => {
       setLoading(true);
       try {
-        const [storeRes, servicesRes, reviewsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/stores/${id}`),
-          fetch(`${API_BASE_URL}/api/stores/${id}/services`),
-          fetch(`${API_BASE_URL}/api/reviews/store/${id}`),
+        const [storeData, storeServices, storeReviews] = await Promise.all([
+            getStoreDetails(id),
+            getStoreServices(id),
+            getStoreReviews(id),
         ]);
-
-        if (!storeRes.ok) throw new Error("Toko tidak ditemukan");
-        if (!servicesRes.ok) throw new Error("Gagal memuat layanan toko");
-
-        const storeData = await storeRes.json();
-        const storeServices = await servicesRes.json();
-        const storeReviews = await reviewsRes.json();
 
         setStore(storeData);
         setServicesData(storeServices);
@@ -136,6 +123,7 @@ const StoreDetailPage = ({ showMessage }) => {
         }
       } catch (error) {
         console.error("Gagal mengambil data halaman toko:", error);
+        showMessage(error.message || "Gagal memuat data toko.", "Error");
       } finally {
         setLoading(false);
       }
@@ -143,7 +131,7 @@ const StoreDetailPage = ({ showMessage }) => {
 
     fetchPageData();
     fetchUserAddresses();
-  }, [id]);
+  }, [id, showMessage]);
 
   useEffect(() => {
     if (deliveryOption === "self-delivery") {
@@ -206,24 +194,14 @@ const StoreDetailPage = ({ showMessage }) => {
 
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/user/addresses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(newAddress),
-      });
-      const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.message || "Gagal menyimpan alamat.");
-      setShowAddressModal(false);
-      fetchUserAddresses();
-      showMessage("Alamat baru berhasil disimpan!");
+        const data = await addUserAddress(newAddress);
+        setShowAddressModal(false);
+        setAddresses(prev => [data, ...prev]);
+        setSelectedAddress(data.id);
+        showMessage("Alamat baru berhasil disimpan!");
     } catch (error) {
-      showMessage(error.message);
+        showMessage(error.message, "Error");
     }
   };
 

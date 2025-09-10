@@ -1,158 +1,111 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { loginUser } from "../services/apiService"; // <-- PERUBAHAN 1
 
-const LoginPage = ({ showMessage, theme }) => {
+const LoginPage = ({ showMessage }) => {
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const redirectInUrl = new URLSearchParams(search).get("redirect");
+  const redirect = redirectInUrl ? redirectInUrl : "/";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [formErrors, setFormErrors] = useState({});
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const validateForm = () => {
-    const errors = {};
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Format email tidak valid.";
-    }
-    if (!password) {
-      errors.password = "Password tidak boleh kosong.";
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setError("");
-
-    if (!validateForm()) {
-      return;
-    }
-
+    setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Login gagal.");
-      }
+      // --- PERUBAHAN 2: Ganti fetch dengan apiService ---
+      const data = await loginUser({ email, password });
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      showMessage("Login berhasil!");
+      showMessage("Login berhasil!", "Success");
 
-      // --- PERUBAHAN DIMULAI DI SINI ---
-      // Arahkan berdasarkan peran pengguna
+      // Arahkan pengguna berdasarkan peran setelah login
       switch (data.user.role) {
         case "admin":
           navigate("/admin/dashboard");
           break;
-        case "developer":
-          navigate("/developer/dashboard");
-          break;
         case "mitra":
           navigate("/partner/dashboard");
           break;
+        case "developer":
+          navigate("/developer/dashboard");
+          break;
         default:
-          navigate("/dashboard");
+          navigate(redirect || "/dashboard");
       }
-      // --- PERUBAHAN SELESAI ---
-
-      window.location.reload(); // Reload tetap diperlukan untuk memperbarui state aplikasi
     } catch (err) {
-      setError(err.message);
+      showMessage(err.message, "Error");
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate(redirect);
+    }
+  }, [navigate, redirect]);
+
   return (
-    <div className="auth-container">
-      <div className="row g-0 vh-100">
-        <div className="col-lg-7 d-none d-lg-block">
-          <div
-            className="auth-image-panel login-image-side"
-            style={{
-              backgroundImage: `url(${theme?.branding?.loginImageUrl})`,
-            }}
-          >
-            <div className="auth-image-overlay">
-              <h1 className="display-4 fw-bold">
-                Solusi Perawatan Sepatu, <br />
-                Tepat di Ujung Jari Anda.
-              </h1>
-            </div>
-          </div>
+    <div className="auth-page-container">
+      <Helmet>
+        <title>Masuk ke Akun Anda | StrideBase</title>
+      </Helmet>
+      <div className="auth-card">
+        <div className="auth-header">
+          <h2 className="fw-bold">Selamat Datang Kembali</h2>
+          <p className="text-muted">Masuk untuk melanjutkan ke StrideBase</p>
         </div>
-
-        <div className="col-lg-5 d-flex align-items-center justify-content-center">
-          <div className="auth-form-container">
-            <div className="text-center">
-              <h3 className="fw-bold mb-2">Sign In</h3>
-            </div>
-
-            <form onSubmit={handleSubmit} noValidate>
-              {error && <div className="alert alert-danger">{error}</div>}
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className={`form-control ${
-                    formErrors.email ? "is-invalid" : ""
-                  }`}
-                  placeholder="e.g., evelyne@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                {formErrors.email && (
-                  <div className="invalid-feedback">{formErrors.email}</div>
-                )}
-              </div>
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  className={`form-control ${
-                    formErrors.password ? "is-invalid" : ""
-                  }`}
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                {formErrors.password && (
-                  <div className="invalid-feedback">{formErrors.password}</div>
-                )}
-              </div>
-              <div className="d-flex justify-content-end mb-4">
-                <Link to="/forgot-password" style={{ textDecoration: "none" }}>
-                  Forgot Password?
-                </Link>
-              </div>
-              <div className="d-grid mb-4">
-                <button type="submit" className="btn btn-dark">
-                  Sign In
-                </button>
-              </div>
-              <p className="text-center text-muted">
-                Don't have an account yet?{" "}
-                <Link to="/register" style={{ textDecoration: "none" }}>
-                  Register
-                </Link>
-              </p>
-            </form>
+        <form onSubmit={submitHandler}>
+          <div className="form-floating mb-3">
+            <input
+              type="email"
+              className="form-control"
+              id="floatingInput"
+              placeholder="name@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label htmlFor="floatingInput">Alamat Email</label>
           </div>
+          <div className="form-floating">
+            <input
+              type="password"
+              className="form-control"
+              id="floatingPassword"
+              placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <label htmlFor="floatingPassword">Password</label>
+          </div>
+          <div className="text-end mt-2">
+            <Link to="/forgot-password">Lupa Password?</Link>
+          </div>
+          <div className="d-grid mt-4">
+            <button
+              type="submit"
+              className="btn btn-dark btn-lg"
+              disabled={loading}
+            >
+              {loading ? "Memproses..." : "Masuk"}
+            </button>
+          </div>
+        </form>
+        <div className="auth-footer mt-4 text-center">
+          <p>
+            Belum punya akun?{" "}
+            <Link to={`/register?redirect=${redirect}`}>Daftar Sekarang</Link>
+          </p>
         </div>
       </div>
     </div>
