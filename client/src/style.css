@@ -4500,3 +4500,57 @@ body.has-global-announcement {
     width: 100%; /* Tombol bayar kembali full-width */
   }
 }
+
+/* --- Penyesuaian Form Floating untuk Tampilan Lebih Bersih --- */
+.form-floating > .form-control-lg ~ label {
+    padding-top: 1rem; /* Sesuaikan padding label untuk input lg */
+    padding-bottom: 1rem;
+}
+
+.form-floating > .form-control-lg:focus ~ label,
+.form-floating > .form-control-lg:not(:placeholder-shown) ~ label,
+.form-floating > .form-control-lg:-webkit-autofill ~ label {
+    transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem); /* Pindahkan label ke atas lebih rapi */
+}
+
+/* --- Gaya Tombol Kustom (jika ingin lebih dari default Bootstrap) --- */
+.btn-dark {
+    background-color: var(--primary-color, #212529); /* Menggunakan variabel warna utama */
+    border-color: var(--primary-color, #212529);
+    transition: all 0.3s ease; /* Transisi halus */
+}
+
+.btn-dark:hover {
+    background-color: var(--primary-color-dark, #000000); /* Warna lebih gelap saat hover */
+    border-color: var(--primary-color-dark, #000000);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Efek bayangan saat hover */
+}
+
+.btn-dark:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), .5); /* Efek fokus yang lebih baik */
+}
+
+/* --- Penyesuaian Auth Form Container --- */
+.auth-form-container {
+    max-width: 480px; /* Batasi lebar form untuk tampilan yang lebih baik */
+    width: 100%;
+    margin: auto;
+    background-color: var(--white); /* Pastikan background putih */
+    border-radius: 8px; /* Sudut sedikit membulat */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Sedikit bayangan */
+}
+
+/* --- Overrides untuk form-control focus (opsional) --- */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), .25);
+}
+
+/* Jika Anda memiliki variabel warna primary di `:root` atau sudah diset di tempat lain, pastikan konsisten */
+:root {
+  --primary-color: #212529; /* Contoh warna primary dark */
+  --primary-color-dark: #000000;
+  --primary-rgb: 33, 37, 41; /* Nilai RGB dari primary-color */
+  --secondary-color: #6c757d; /* Contoh warna secondary */
+  --white: #ffffff;
+}
