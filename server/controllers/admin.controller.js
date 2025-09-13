@@ -349,3 +349,67 @@ export const getReportData = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getOperationalSettings = async (req, res, next) => {
+    try {
+        const themeSetting = await prisma.globalSetting.findUnique({
+            where: { key: "themeConfig" },
+        });
+
+        if (themeSetting) {
+            // Hanya kirim data yang relevan untuk admin
+            const relevantSettings = {
+                globalAnnouncement: themeSetting.value.globalAnnouncement || "",
+                enableGlobalAnnouncement: themeSetting.value.featureFlags.enableGlobalAnnouncement || false,
+            };
+            res.json(relevantSettings);
+        } else {
+            res.status(404).json({ message: "Konfigurasi tidak ditemukan." });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Update operational settings
+// @route   POST /api/admin/settings
+export const updateOperationalSettings = async (req, res, next) => {
+    const { globalAnnouncement, enableGlobalAnnouncement } = req.body;
+    
+    try {
+        const currentConfig = await prisma.globalSetting.findUnique({
+            where: { key: "themeConfig" },
+        });
+
+        if (!currentConfig) {
+            return res.status(404).json({ message: "Konfigurasi tidak ditemukan." });
+        }
+
+        const newConfigValue = {
+            ...currentConfig.value,
+            globalAnnouncement: globalAnnouncement,
+            featureFlags: {
+                ...currentConfig.value.featureFlags,
+                enableGlobalAnnouncement: enableGlobalAnnouncement,
+            },
+        };
+
+        const updatedSetting = await prisma.globalSetting.update({
+            where: { key: "themeConfig" },
+            data: { value: newConfigValue },
+        });
+
+        // Siarkan pembaruan tema ke semua klien
+        // Pastikan loadThemeConfig dan broadcastThemeUpdate ada dan diimpor jika file ini terpisah
+        // Untuk amannya, kita panggil fungsi global dari sini jika memungkinkan.
+        const { loadThemeConfig } = await import('../config/theme.js');
+        const { broadcastThemeUpdate } = await import('../socket.js');
+        await loadThemeConfig();
+        broadcastThemeUpdate(newConfigValue);
+
+        res.json({ message: "Pengaturan berhasil disimpan." });
+
+    } catch (error) {
+        next(error);
+    }
+};

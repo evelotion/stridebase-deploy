@@ -16,7 +16,9 @@ import {
     updateBookingStatus,
     getAllReviews,
     deleteReview,
-    getReportData
+    getReportData,
+    getOperationalSettings,   // <-- 1. IMPOR FUNGSI BARU
+    updateOperationalSettings // <-- 2. IMPOR FUNGSI BARU
 } from '../controllers/admin.controller.js';
 
 const router = express.Router();
@@ -46,6 +48,8 @@ router.delete('/reviews/:id', deleteReview);
 router.get('/reports', getReportData);
 router.get('/settings', getGlobalConfig);
 router.post('/settings', updateGlobalConfig);
+router.get('/settings', getOperationalSettings);
+router.post('/settings', updateOperationalSettings);
 
 
 export default router;
