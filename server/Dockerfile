@@ -1,4 +1,4 @@
-# File: server/Dockerfile (Versi Perbaikan Final)
+# File: server/Dockerfile (Versi Perbaikan Final & Paling Andal)
 
 # Menggunakan image Node.js versi 18 yang ringan sebagai dasar
 FROM node:18-alpine
@@ -7,7 +7,6 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Salin file package.json dan package-lock.json terlebih dahulu
-# Ini memanfaatkan caching Docker, build akan lebih cepat jika dependensi tidak berubah
 COPY package*.json ./
 
 # Salin skema prisma agar generate bisa berjalan
@@ -18,7 +17,7 @@ COPY prisma ./prisma/
 RUN npm install --legacy-peer-deps
 
 # Jalankan prisma generate untuk membuat Prisma Client di dalam container
-# Ini akan membuat direktori './generated'
+# Ini akan membuat direktori '.prisma/client' yang digunakan oleh @prisma/client
 RUN npx prisma generate
 
 # Salin sisa kode aplikasi

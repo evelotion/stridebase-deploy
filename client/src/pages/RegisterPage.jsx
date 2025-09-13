@@ -50,35 +50,35 @@ const RegisterPage = ({ showMessage, theme }) => {
       </Helmet>
       <div className="row g-0 vh-100">
          <div className="col-lg-5 d-flex align-items-center justify-content-center auth-form-panel">
-            <div className="auth-form-container p-4 p-md-5"> {/* Padding disesuaikan */}
+            <div className="auth-form-container p-4 p-md-5">
                 <div className="text-center mb-5">
-                    <h3 className="fw-bold fs-2 text-dark">Buat Akun Baru</h3> {/* Ukuran font judul */}
-                    <p className="text-muted fs-6">Daftar untuk mulai menemukan layanan cuci sepatu terbaik.</p> {/* Ukuran font deskripsi */}
+                    <h3 className="fw-bold fs-2 text-dark">Buat Akun Baru</h3>
+                    <p className="text-muted fs-6">Daftar untuk mulai menemukan layanan cuci sepatu terbaik.</p>
                 </div>
                 <form onSubmit={submitHandler}>
                     <div className="form-floating mb-3">
-                        <input type="text" className="form-control form-control-lg" id="name" placeholder="Nama Lengkap" required value={name} onChange={(e) => setName(e.target.value)} /> {/* form-control-lg */}
+                        <input type="text" className="form-control form-control-lg" id="name" placeholder="Nama Lengkap" required value={name} onChange={(e) => setName(e.target.value)} />
                         <label htmlFor="name">Nama Lengkap</label>
                     </div>
                     <div className="form-floating mb-3">
-                        <input type="email" className="form-control form-control-lg" id="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} /> {/* form-control-lg */}
+                        <input type="email" className="form-control form-control-lg" id="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
                         <label htmlFor="email">Alamat Email</label>
                     </div>
                     <div className="form-floating mb-3">
-                        <input type="password" className="form-control form-control-lg" id="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} /> {/* form-control-lg */}
+                        <input type="password" className="form-control form-control-lg" id="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                         <label htmlFor="password">Password</label>
                     </div>
                     <div className="form-floating mb-4">
-                        <input type="password" className="form-control form-control-lg" id="confirmPassword" placeholder="Konfirmasi Password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} /> {/* form-control-lg */}
+                        <input type="password" className="form-control form-control-lg" id="confirmPassword" placeholder="Konfirmasi Password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                         <label htmlFor="confirmPassword">Konfirmasi Password</label>
                     </div>
-                    <div className="d-grid gap-2"> {/* gap-2 untuk jarak antar tombol jika ada */}
-                        <button type="submit" className="btn btn-dark btn-lg fw-bold" disabled={loading}> {/* btn-lg dan fw-bold */}
+                    <div className="d-grid gap-2">
+                        <button type="submit" className="btn btn-dark btn-lg fw-bold" disabled={loading}>
                             {loading ? "Memproses..." : "Daftar"}
                         </button>
                     </div>
-                    <p className="text-center mt-4 fs-6"> {/* Ukuran font teks bawah */}
-                        Sudah punya akun? <Link to={`/login?redirect=${redirect}`} className="text-decoration-none fw-bold">Masuk di sini</Link> {/* fw-bold */}
+                    <p className="text-center mt-4 fs-6">
+                        Sudah punya akun? <Link to={`/login?redirect=${redirect}`} className="text-decoration-none fw-bold">Masuk di sini</Link>
                     </p>
                 </form>
             </div>
