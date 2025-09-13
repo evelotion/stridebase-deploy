@@ -14,7 +14,8 @@ import {
     getAllBookings,
     updateBookingStatus,
     getAllReviews,
-    deleteReview 
+    deleteReview,
+    getReportData
 } from '../controllers/admin.controller.js';
 
 const router = express.Router();
@@ -41,5 +42,6 @@ router.get('/bookings', getAllBookings);
 router.patch('/bookings/:id/status', updateBookingStatus);
 router.get('/reviews', getAllReviews);
 router.delete('/reviews/:id', deleteReview);
+router.get('/reports', getReportData);
 
 export default router;

@@ -252,3 +252,100 @@ export const deleteReview = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Get aggregated report data for admin
+// @route   GET /api/admin/reports
+export const getReportData = async (req, res, next) => {
+    try {
+        const { startDate, endDate } = req.query;
+
+        // Validasi dan set default tanggal (30 hari terakhir jika tidak diset)
+        const end = endDate ? new Date(endDate) : new Date();
+        const start = startDate ? new Date(startDate) : new Date(new Date().setDate(end.getDate() - 30));
+        
+        // Pastikan waktu di akhir hari untuk cakupan yang benar
+        end.setHours(23, 59, 59, 999);
+
+        const dateFilter = {
+            createdAt: {
+                gte: start,
+                lte: end,
+            },
+        };
+
+        // 1. Ambil data total
+        const totalRevenuePromise = prisma.payment.aggregate({
+            _sum: { amount: true },
+            where: { status: 'paid', ...dateFilter },
+        });
+
+        const totalBookingsPromise = prisma.booking.count({ where: dateFilter });
+        
+        const totalPlatformEarningsPromise = prisma.platformEarning.aggregate({
+            _sum: { earnedAmount: true },
+            where: dateFilter
+        });
+
+        // 2. Ambil data untuk tabel
+        const latestTransactionsPromise = prisma.payment.findMany({
+            where: { status: 'paid', ...dateFilter },
+            take: 5,
+            orderBy: { createdAt: 'desc' },
+            include: {
+                booking: {
+                    include: {
+                        user: { select: { name: true } },
+                        store: { select: { name: true } },
+                    },
+                },
+            },
+        });
+        
+        const topStoresPromise = prisma.booking.groupBy({
+            by: ['storeId'],
+            where: { ...dateFilter },
+            _count: { id: true },
+            orderBy: { _count: { id: 'desc' } },
+            take: 5
+        });
+
+        // Jalankan semua query secara paralel
+        const [
+            totalRevenueResult,
+            totalBookings,
+            totalPlatformEarningsResult,
+            latestTransactions,
+            topStoreIds
+        ] = await Promise.all([
+            totalRevenuePromise,
+            totalBookingsPromise,
+            totalPlatformEarningsPromise,
+            latestTransactionsPromise,
+            topStoresPromise
+        ]);
+
+        // Ambil detail nama toko untuk top stores
+        const storeDetails = await prisma.store.findMany({
+            where: { id: { in: topStoreIds.map(s => s.storeId) } },
+            select: { id: true, name: true }
+        });
+        
+        const topStores = topStoreIds.map(s => ({
+            ...s,
+            storeName: storeDetails.find(sd => sd.id === s.storeId)?.name || 'N/A'
+        }));
+
+        res.json({
+            summary: {
+                totalRevenue: totalRevenueResult._sum.amount || 0,
+                totalBookings: totalBookings,
+                totalPlatformEarnings: totalPlatformEarningsResult._sum.earnedAmount || 0,
+            },
+            latestTransactions,
+            topStores,
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};

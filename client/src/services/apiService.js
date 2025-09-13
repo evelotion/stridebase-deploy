@@ -104,3 +104,5 @@ export const getAllBookingsForAdmin = () => apiRequest('/api/admin/bookings');
 export const updateBookingStatusByAdmin = (bookingId, newStatus) => apiRequest(`/api/admin/bookings/${bookingId}/status`, 'PATCH', { newStatus });
 export const getAllReviewsForAdmin = () => apiRequest('/api/admin/reviews');
 export const deleteReviewByAdmin = (reviewId) => apiRequest(`/api/admin/reviews/${reviewId}`, 'DELETE');
+export const getAdminReports = (params) => apiRequest(`/api/admin/reports?${params.toString()}`);
+

@@ -1,172 +1,148 @@
-import React from "react";
-import { useLoaderData, useSearchParams } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+// File: client/src/pages/AdminReportsPage.jsx (Versi Lengkap & Fungsional)
 
-export const loader = async ({ request }) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return redirect("/login");
-  }
+import React, { useState, useEffect, useCallback } from "react";
+import { getAdminReports } from "../services/apiService";
 
-  const url = new URL(request.url);
-  const params = new URLSearchParams(url.search);
-
-  // Default date range to last 30 days if not provided
-  if (!params.has("startDate")) {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(endDate.getDate() - 30);
-    params.set("startDate", startDate.toISOString().split("T")[0]);
-    params.set("endDate", endDate.toISOString().split("T")[0]);
-  }
-
-  try {
-    const [transactionsRes, earningsRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/api/admin/transactions?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${API_BASE_URL}/api/admin/platform-earnings?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-    ]);
-
-    if (!transactionsRes.ok || !earningsRes.ok) {
-      throw new Error("Failed to fetch reports data");
-    }
-
-    const transactionsData = await transactionsRes.json();
-    const earningsData = await earningsRes.json();
-
-    return { transactionsData, earningsData, queryParams: Object.fromEntries(params) };
-  } catch (error) {
-    console.error("Error fetching admin reports:", error);
-    // Return empty state or error message
-    return { 
-      transactionsData: { transactions: [], total: 0, totalPages: 1 }, 
-      earningsData: { earnings: [], total: 0, totalPages: 1, totalAmount: 0 },
-      queryParams: Object.fromEntries(params),
-      error: "Gagal memuat data laporan." 
-    };
-  }
-};
-
-
-const AdminReportsPage = () => {
-  const { transactionsData, earningsData, queryParams, error } = useLoaderData();
-  const [searchParams, setSearchParams] = useSearchParams(queryParams);
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setSearchParams(prev => {
-        prev.set(name, value);
-        return prev;
-    })
-  };
-
-  const handlePageChange = (type, newPage) => {
-    setSearchParams(prev => {
-        prev.set(`${type}Page`, newPage);
-        return prev;
-    });
-  }
-
-  if (error) {
-    return <div className="admin-container"><p className="error-message">{error}</p></div>;
-  }
-  
-  return (
-    <div className="admin-container">
-      <h2>Laporan Platform</h2>
-      <div className="filters">
-        <label>
-          Dari Tanggal:
-          <input
-            type="date"
-            name="startDate"
-            value={searchParams.get('startDate') || ''}
-            onChange={handleFilterChange}
-          />
-        </label>
-        <label>
-          Sampai Tanggal:
-          <input
-            type="date"
-            name="endDate"
-            value={searchParams.get('endDate') || ''}
-            onChange={handleFilterChange}
-          />
-        </label>
-      </div>
-
-      <div className="report-section">
-        <h3>Pendapatan Platform</h3>
-        <p>Total Pendapatan: <strong>Rp {earningsData.totalAmount.toLocaleString()}</strong></p>
-        <table>
-          <thead>
-            <tr>
-              <th>ID Booking</th>
-              <th>Nama Toko</th>
-              <th>Jumlah</th>
-              <th>Tanggal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {earningsData.earnings.map((earning) => (
-              <tr key={earning.id}>
-                <td>{earning.bookingId.substring(0, 8)}</td>
-                <td>{earning.store.name}</td>
-                <td>Rp {earning.earnedAmount.toLocaleString()}</td>
-                <td>{new Date(earning.createdAt).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* Pagination for earnings can be added here if needed */}
-      </div>
-
-      <div className="report-section">
-        <h3>Seluruh Transaksi</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>ID Booking</th>
-              <th>Pengguna</th>
-              <th>Toko</th>
-              <th>Jumlah</th>
-              <th>Status</th>
-              <th>Tanggal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactionsData.transactions.map((payment) => (
-              <tr key={payment.id}>
-                <td>{payment.bookingId.substring(0, 8)}</td>
-                <td>{payment.booking.user.name}</td>
-                <td>{payment.booking.store.name}</td>
-                <td>Rp {payment.amount.toLocaleString()}</td>
-                <td>{payment.status}</td>
-                <td>{new Date(payment.createdAt).toLocaleDateString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {/* Pagination for transactions */}
-        <div className="pagination">
-            <button 
-                onClick={() => handlePageChange('tx', Math.max(1, parseInt(searchParams.get('txPage') || '1') - 1))}
-                disabled={parseInt(searchParams.get('txPage') || '1') === 1}>
-                Previous
-            </button>
-            <span>Halaman {searchParams.get('txPage') || '1'} dari {transactionsData.totalPages}</span>
-            <button 
-                onClick={() => handlePageChange('tx', Math.min(transactionsData.totalPages, parseInt(searchParams.get('txPage') || '1') + 1))}
-                disabled={parseInt(searchParams.get('txPage') || '1') >= transactionsData.totalPages}>
-                Next
-            </button>
+const KpiCard = ({ title, value, icon, colorClass }) => (
+    <div className="col-lg-4 col-md-6 mb-4">
+        <div className="kpi-card p-3 shadow-sm h-100">
+            <div className="kpi-card-content">
+                <div className="kpi-card-text">
+                    <h3 className="fs-2">{value}</h3>
+                    <p className="fs-5 text-muted mb-0">{title}</p>
+                </div>
+                <i className={`fas ${icon} fs-1 ${colorClass} border rounded-full p-3`}></i>
+            </div>
         </div>
-      </div>
     </div>
-  );
+);
+
+const AdminReportsPage = ({ showMessage }) => {
+    const [reportData, setReportData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [filters, setFilters] = useState(() => {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 29); // 30 hari terakhir
+        return {
+            startDate: startDate.toISOString().split("T")[0],
+            endDate: endDate.toISOString().split("T")[0],
+        };
+    });
+
+    const fetchReports = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams(filters);
+            const data = await getAdminReports(params);
+            setReportData(data);
+        } catch (err) {
+            setError(err.message);
+            if (showMessage) showMessage(err.message, "Error");
+        } finally {
+            setLoading(false);
+        }
+    }, [filters, showMessage]);
+
+    useEffect(() => {
+        fetchReports();
+    }, [fetchReports]);
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFilterSubmit = (e) => {
+        e.preventDefault();
+        fetchReports();
+    };
+
+    if (loading) return <div className="p-4">Memuat data laporan...</div>;
+    if (error) return <div className="p-4 text-danger">Error: {error}</div>;
+    if (!reportData) return <div className="p-4">Tidak ada data laporan yang tersedia.</div>;
+
+    const { summary, latestTransactions, topStores } = reportData;
+
+    return (
+        <div className="container-fluid p-4">
+            <h2 className="fs-2 mb-4">Laporan Platform</h2>
+
+            <div className="card card-account p-3 mb-4">
+                <form onSubmit={handleFilterSubmit} className="row g-2 align-items-center">
+                    <div className="col-md-5">
+                        <label htmlFor="startDate" className="form-label visually-hidden">Tanggal Mulai</label>
+                        <input type="date" className="form-control" id="startDate" name="startDate" value={filters.startDate} onChange={handleFilterChange} />
+                    </div>
+                    <div className="col-md-5">
+                        <label htmlFor="endDate" className="form-label visually-hidden">Tanggal Akhir</label>
+                        <input type="date" className="form-control" id="endDate" name="endDate" value={filters.endDate} onChange={handleFilterChange} />
+                    </div>
+                    <div className="col-md-2">
+                        <button type="submit" className="btn btn-dark w-100">Filter</button>
+                    </div>
+                </form>
+            </div>
+
+            <div className="row">
+                <KpiCard title="Total Pendapatan" value={`Rp ${summary.totalRevenue.toLocaleString("id-ID")}`} icon="fa-money-bill-wave" colorClass="text-success" />
+                <KpiCard title="Total Pesanan" value={summary.totalBookings} icon="fa-receipt" colorClass="text-info" />
+                <KpiCard title="Pendapatan Platform" value={`Rp ${summary.totalPlatformEarnings.toLocaleString("id-ID")}`} icon="fa-landmark" colorClass="text-primary" />
+            </div>
+
+            <div className="row mt-2 g-4">
+                <div className="col-lg-7">
+                    <div className="table-card p-3 shadow-sm h-100">
+                        <h5 className="mb-3">Transaksi Terakhir</h5>
+                        <div className="table-responsive">
+                            <table className="table table-hover align-middle">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>Pelanggan</th>
+                                        <th>Toko</th>
+                                        <th className="text-end">Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {latestTransactions.map(tx => (
+                                        <tr key={tx.id}>
+                                            <td>{tx.booking.user.name}</td>
+                                            <td>{tx.booking.store.name}</td>
+                                            <td className="text-end fw-bold">Rp {tx.amount.toLocaleString("id-ID")}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-lg-5">
+                    <div className="table-card p-3 shadow-sm h-100">
+                        <h5 className="mb-3">Toko Terpopuler</h5>
+                         <div className="table-responsive">
+                            <table className="table table-hover align-middle">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>Nama Toko</th>
+                                        <th className="text-end">Jumlah Pesanan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {topStores.map(store => (
+                                        <tr key={store.storeId}>
+                                            <td className="fw-bold">{store.storeName}</td>
+                                            <td className="text-end">{store._count.id}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default AdminReportsPage;
