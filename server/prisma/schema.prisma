@@ -126,6 +126,7 @@ model Store {
   longitude          Float?
   description        String?           @db.Text
   headerImageUrl     String?
+  images             String[]
   owner              User              @relation(fields: [ownerId], references: [id])
   ownerId            String
   storeStatus        StoreStatus       @default(pending)
@@ -168,6 +169,7 @@ model Service {
   name        String
   description String?
   price       Float
+  shoeType    String
   duration    Int // Duration in minutes
   store       Store    @relation(fields: [storeId], references: [id])
   storeId     String

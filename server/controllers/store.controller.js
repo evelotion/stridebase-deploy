@@ -1,12 +1,11 @@
-// File: server/controllers/store.controller.js (Dengan Caching)
+// File: server/controllers/store.controller.js (Perbaikan Final & Optimalisasi)
 
 import prisma from "../config/prisma.js";
 import redisClient from "../redis-client.js";
 
-// Helper function to calculate distance (tidak berubah)
 function getDistance(lat1, lon1, lat2, lon2) {
     if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return Infinity;
-    const R = 6371; // Radius of the earth in km
+    const R = 6371;
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
     const a =
@@ -16,56 +15,62 @@ function getDistance(lat1, lon1, lat2, lon2) {
         Math.sin(dLon / 2) *
         Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in km
+    return R * c;
 }
 
-// @desc    Fetch all stores with filtering, sorting, and location capabilities
-// @route   GET /api/stores
 export const getStores = async (req, res, next) => {
     const { search, sortBy, lat, lng, minRating, services, openNow } = req.query;
-    
-    // Buat kunci cache yang unik berdasarkan semua parameter query
-    const cacheKey = `stores:${JSON.stringify(req.query)}`;
+    const cacheKey = `stores_v2:${JSON.stringify(req.query)}`; // Menggunakan key baru untuk versi V2
 
     try {
-        // 1. Coba ambil data dari cache (Redis) terlebih dahulu
-        const cachedStores = await redisClient.get(cacheKey);
-
-        if (cachedStores) {
-            console.log(`CACHE HIT for key: ${cacheKey}`);
-            return res.json(JSON.parse(cachedStores));
+        if (redisClient.isReady) {
+            const cachedStores = await redisClient.get(cacheKey);
+            if (cachedStores) {
+                console.log(`✅ CACHE HIT V2 untuk key: ${cacheKey}`);
+                return res.json(JSON.parse(cachedStores));
+            }
         }
-        
-        console.log(`CACHE MISS for key: ${cacheKey}. Fetching from database.`);
+    } catch (cacheError) {
+        console.error("❌ Error saat mengambil dari Redis cache:", cacheError.message);
+    }
 
-        // 2. Jika tidak ada di cache, ambil dari database
+    try {
+        console.log(`CACHE MISS V2 untuk key: ${cacheKey}. Mengambil dari database...`);
+        
+        // --- PERUBAHAN LOGIKA UTAMA DIMULAI DI SINI ---
         const whereClause = {
             storeStatus: "active",
             name: { contains: search || "", mode: "insensitive" },
             rating: { gte: parseFloat(minRating) || 0 },
         };
 
-        if (services) {
-            whereClause.services = {
-                some: { name: { in: services.split(","), mode: "insensitive" } },
-            };
-        }
-
         let stores = await prisma.store.findMany({
             where: whereClause,
-            include: { services: { select: { name: true } } },
+            include: { 
+                services: { 
+                    select: { name: true } 
+                } 
+            },
         });
 
-        // (Logika filter dan sorting Anda tidak berubah)
-        if (openNow === "true") {
-            // Logika untuk filter 'openNow'
+        // Lakukan penyaringan berdasarkan layanan di level aplikasi, bukan di database
+        if (services) {
+            const serviceList = services.split(",").map(s => s.toLowerCase().trim());
+            stores = stores.filter(store => 
+                store.services.some(service => 
+                    serviceList.includes(service.name.toLowerCase().trim())
+                )
+            );
         }
+        // --- AKHIR PERUBAHAN LOGIKA ---
+
         if (lat && lng) {
             stores = stores.map(store => ({
                 ...store,
                 distance: getDistance(parseFloat(lat), parseFloat(lng), store.latitude, store.longitude)
             }));
         }
+
         if (sortBy === 'distance' && lat && lng) {
             stores.sort((a, b) => a.distance - b.distance);
         } else if (sortBy === 'createdAt') {
@@ -73,10 +78,15 @@ export const getStores = async (req, res, next) => {
         } else { 
             stores.sort((a, b) => b.rating - a.rating);
         }
-
-        // 3. Simpan hasil dari database ke cache untuk permintaan berikutnya
-        // Simpan selama 5 menit (300 detik)
-        await redisClient.setEx(cacheKey, 300, JSON.stringify(stores));
+        
+        try {
+            if (redisClient.isReady) {
+                await redisClient.setEx(cacheKey, 300, JSON.stringify(stores));
+                console.log(`✅ Data V2 berhasil disimpan ke cache untuk key: ${cacheKey}`);
+            }
+        } catch (cacheError) {
+            console.error("❌ Error saat menyimpan ke Redis cache:", cacheError.message);
+        }
 
         res.json(stores);
     } catch (error) {
@@ -84,11 +94,14 @@ export const getStores = async (req, res, next) => {
     }
 };
 
-// @desc    Fetch a single store by ID
-// @route   GET /api/stores/:id
 export const getStoreById = async (req, res, next) => {
     try {
-        const store = await prisma.store.findUnique({ where: { id: req.params.id } });
+        // PERBAIKAN: Sertakan juga layanan saat mengambil detail toko
+        const store = await prisma.store.findUnique({ 
+            where: { id: req.params.id },
+            include: { services: true } 
+        });
+
         if (store) {
             res.json(store);
         } else {
@@ -99,8 +112,6 @@ export const getStoreById = async (req, res, next) => {
     }
 };
 
-// @desc    Fetch services for a specific store
-// @route   GET /api/stores/:storeId/services
 export const getStoreServices = async (req, res, next) => {
     try {
         const services = await prisma.service.findMany({
@@ -113,8 +124,6 @@ export const getStoreServices = async (req, res, next) => {
     }
 };
 
-// @desc    Fetch reviews for a specific store
-// @route   GET /api/stores/:storeId/reviews
 export const getStoreReviews = async (req, res, next) => {
     try {
         const reviews = await prisma.review.findMany({
