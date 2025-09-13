@@ -1,18 +1,13 @@
-// File: client/src/pages/StorePage.jsx (Setelah Refaktor)
+// File: client/src/pages/StorePage.jsx (Perbaikan Final)
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import StoreCard from "../components/StoreCard";
 import { useSearchParams } from "react-router-dom";
-// --- PERUBAHAN 1: Impor fungsi dari apiService ---
 import { getStores } from "../services/apiService";
 
 const UNIQUE_SERVICES = [
-  "Fast Clean Sneakers",
-  "Deep Clean Leather",
-  "Cuci Cepat Reguler",
-  "Perawatan Suede",
-  "Unyellowing Treatment",
-  "Repair Consultation",
+  "Fast Clean Sneakers", "Deep Clean Leather", "Cuci Cepat Reguler",
+  "Perawatan Suede", "Unyellowing Treatment", "Repair Consultation",
 ];
 
 const RatingFilter = ({ rating, setRating }) => (
@@ -32,20 +27,14 @@ const RatingFilter = ({ rating, setRating }) => (
   </div>
 );
 
-// --- PERUBAHAN 2: Tambahkan prop `showMessage` untuk notifikasi error ---
 const StorePage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // State lainnya tetap sama...
-  const [searchTerm, setSearchTerm] = useState(
-    searchParams.get("search") || ""
-  );
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "rating");
-  const [minRating, setMinRating] = useState(
-    parseInt(searchParams.get("minRating")) || 0
-  );
+  const [minRating, setMinRating] = useState(parseInt(searchParams.get("minRating")) || 0);
   const [userLocation, setUserLocation] = useState({
     lat: searchParams.get("lat") || null,
     lng: searchParams.get("lng") || null,
@@ -53,74 +42,49 @@ const StorePage = ({ showMessage }) => {
   const [selectedServices, setSelectedServices] = useState(
     searchParams.get("services")?.split(",") || []
   );
-  const [openNow, setOpenNow] = useState(
-    searchParams.get("openNow") === "true"
-  );
+  const [openNow, setOpenNow] = useState(searchParams.get("openNow") === "true");
 
-  // --- PERUBAHAN 3: Sederhanakan fungsi fetchStores ---
-  const fetchStores = useCallback(async () => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    if (searchTerm) params.append("search", searchTerm);
-    if (sortBy) params.append("sortBy", sortBy);
-    if (minRating > 0) params.append("minRating", minRating);
-    if (userLocation.lat && userLocation.lng) {
-      params.append("lat", userLocation.lat);
-      params.append("lng", userLocation.lng);
-    }
-    if (selectedServices.length > 0) {
-      params.append("services", selectedServices.join(","));
-    }
-    if (openNow) {
-      params.append("openNow", "true");
-    }
-    
-    try {
-      // Panggil fungsi dari apiService
-      const data = await getStores(params);
-      setStores(data);
-    } catch (error) {
-      console.error("Gagal mengambil data toko:", error);
-      // Tampilkan error ke pengguna
-      if (showMessage) {
-          showMessage(error.message || "Gagal mengambil data toko", "Error");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm, sortBy, minRating, userLocation, selectedServices, openNow, showMessage]);
-
-
+  // --- PERBAIKAN UTAMA DI SINI ---
   useEffect(() => {
-    // Logika di sini tidak perlu diubah, ia akan memicu fetchStores yang baru
-    const newParams = new URLSearchParams();
-    if (searchTerm) newParams.set("search", searchTerm);
-    if (sortBy) newParams.set("sortBy", sortBy);
-    if (minRating > 0) newParams.set("minRating", minRating);
-    if (userLocation.lat && userLocation.lng) {
-      newParams.set("lat", userLocation.lat);
-      newParams.set("lng", userLocation.lng);
-    }
-    if (selectedServices.length > 0)
-      newParams.set("services", selectedServices.join(","));
-    if (openNow) newParams.set("openNow", "true");
+    const fetchStores = async () => {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (searchTerm) params.append("search", searchTerm);
+      if (sortBy) params.append("sortBy", sortBy);
+      if (minRating > 0) params.append("minRating", minRating);
+      if (userLocation.lat && userLocation.lng) {
+        params.append("lat", userLocation.lat);
+        params.append("lng", userLocation.lng);
+      }
+      if (selectedServices.length > 0) {
+        params.append("services", selectedServices.join(","));
+      }
+      if (openNow) {
+        params.append("openNow", "true");
+      }
+      
+      // Update URL search params
+      setSearchParams(params, { replace: true });
 
-    setSearchParams(newParams, { replace: true });
+      try {
+        const data = await getStores(params);
+        setStores(data);
+      } catch (error) {
+        console.error("Gagal mengambil data toko:", error);
+        if (showMessage) {
+            showMessage(error.message || "Gagal mengambil data toko", "Error");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchStores();
-  }, [
-    searchTerm,
-    sortBy,
-    minRating,
-    userLocation.lat,
-    userLocation.lng,
-    selectedServices,
-    openNow,
-    setSearchParams,
-    fetchStores,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, sortBy, minRating, userLocation.lat, userLocation.lng, selectedServices.toString(), openNow, showMessage]);
+  // --- AKHIR PERBAIKAN ---
 
-  // Sisa dari komponen (handleGetUserLocation, handleServiceFilterChange, dll.) tetap sama...
+
   const handleGetUserLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -132,9 +96,7 @@ const StorePage = ({ showMessage }) => {
           setSortBy("distance");
         },
         (error) => {
-          showMessage(
-            "Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi."
-          );
+          showMessage("Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi.");
           console.error(error);
         }
       );
@@ -157,8 +119,7 @@ const StorePage = ({ showMessage }) => {
     setOpenNow(false);
   };
 
-  const hasActiveAdvancedFilters =
-    minRating > 0 || selectedServices.length > 0 || openNow;
+  const hasActiveAdvancedFilters = minRating > 0 || selectedServices.length > 0 || openNow;
 
   return (
     <div className="store-page-redesigned">

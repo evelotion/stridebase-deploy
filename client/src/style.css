@@ -4554,3 +4554,13 @@ body.has-global-announcement {
   --secondary-color: #6c757d; /* Contoh warna secondary */
   --white: #ffffff;
 }
+
+/* Secara default, panel filter menempel 56px dari atas (di bawah navbar) */
+.filter-panel-top {
+  top: 56px;
+}
+
+/* TAPI, jika ada global announcement, dorong panel filter ke bawah lagi */
+body.has-global-announcement .filter-panel-top {
+  top: 110px; /* Sesuaikan nilai ini jika tinggi announcement bar berubah */
+}
