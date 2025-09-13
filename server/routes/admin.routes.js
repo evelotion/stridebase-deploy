@@ -11,8 +11,10 @@ import {
     updateStoreStatus,
     getPayoutRequests,
     resolvePayoutRequest,
-    getAllBookings,      // <-- 1. IMPOR FUNGSI BARU
-    updateBookingStatus  // <-- 2. IMPOR FUNGSI BARU
+    getAllBookings,
+    updateBookingStatus,
+    getAllReviews,
+    deleteReview 
 } from '../controllers/admin.controller.js';
 
 const router = express.Router();
@@ -37,5 +39,7 @@ router.get('/payout-requests', getPayoutRequests);
 router.patch('/payout-requests/:id/resolve', resolvePayoutRequest);
 router.get('/bookings', getAllBookings);
 router.patch('/bookings/:id/status', updateBookingStatus);
+router.get('/reviews', getAllReviews);
+router.delete('/reviews/:id', deleteReview);
 
 export default router;

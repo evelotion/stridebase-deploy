@@ -217,3 +217,38 @@ export const updateBookingStatus = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Get all reviews for admin
+// @route   GET /api/admin/reviews
+export const getAllReviews = async (req, res, next) => {
+    try {
+        const reviews = await prisma.review.findMany({
+            include: {
+                user: { select: { name: true } },
+                store: { select: { name: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(reviews);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Delete a review by ID
+// @route   DELETE /api/admin/reviews/:id
+export const deleteReview = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await prisma.review.delete({
+            where: { id: id }
+        });
+        res.json({ message: "Ulasan berhasil dihapus secara permanen." });
+    } catch (error) {
+        // Tangani kasus jika ulasan tidak ditemukan
+        if (error.code === 'P2025') {
+            return res.status(404).json({ message: "Ulasan tidak ditemukan." });
+        }
+        next(error);
+    }
+};
