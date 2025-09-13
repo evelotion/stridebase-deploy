@@ -1,4 +1,4 @@
-// File: server/controllers/superuser.controller.js
+// File: server/controllers/superuser.controller.js (Versi Lengkap)
 
 import prisma from "../config/prisma.js";
 import { exec } from "child_process";
@@ -9,13 +9,8 @@ import { broadcastThemeUpdate } from '../socket.js';
 // @route   GET /api/superuser/config
 export const getGlobalConfig = async (req, res, next) => {
     try {
-        const settings = await prisma.globalSetting.findMany();
-        const configObject = settings.reduce((acc, setting) => {
-            acc[setting.key] = setting.value;
-            return acc;
-        }, {});
-        // Fallback to theme.json if not in DB
-        res.json(configObject.themeConfig || currentThemeConfig);
+        const settings = await prisma.globalSetting.findUnique({ where: { key: 'themeConfig' } });
+        res.json(settings ? settings.value : currentThemeConfig);
     } catch (error) {
         next(error);
     }
@@ -32,7 +27,6 @@ export const updateGlobalConfig = async (req, res, next) => {
             create: { key: "themeConfig", value: newConfig },
         });
 
-        // Reload config in memory and broadcast
         await loadThemeConfig();
         broadcastThemeUpdate(currentThemeConfig);
 
@@ -41,6 +35,47 @@ export const updateGlobalConfig = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Get all pending approval requests
+// @route   GET /api/superuser/approval-requests
+export const getApprovalRequests = async (req, res, next) => {
+    try {
+        const requests = await prisma.approvalRequest.findMany({
+            where: { status: "PENDING" },
+            include: { requestedBy: { select: { name: true, email: true } } },
+            orderBy: { createdAt: "desc" },
+        });
+        res.json(requests);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Resolve an approval request
+// @route   POST /api/superuser/approval-requests/:id/resolve
+export const resolveApprovalRequest = async (req, res, next) => {
+    const { id } = req.params;
+    const { resolution } = req.body; // "APPROVED" or "REJECTED"
+
+    if (!['APPROVED', 'REJECTED'].includes(resolution)) {
+        return res.status(400).json({ message: "Status resolusi tidak valid." });
+    }
+
+    try {
+        const updatedRequest = await prisma.approvalRequest.update({
+            where: { id: id },
+            data: {
+                status: resolution,
+                reviewedById: req.user.id
+            }
+        });
+        // Di sini Anda bisa menambahkan logika tambahan, seperti notifikasi ke pemohon
+        res.json(updatedRequest);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 // @desc    Reseed the database
 // @route   POST /api/superuser/maintenance/reseed-database
