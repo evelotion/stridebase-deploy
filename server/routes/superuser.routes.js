@@ -5,7 +5,9 @@ import { authenticateToken, checkRole } from '../middleware/authenticateToken.js
 import { 
     getGlobalConfig,
     updateGlobalConfig,
-    reseedDatabase
+    reseedDatabase,
+    getApprovalRequests, // <-- 1. IMPOR FUNGSI YANG HILANG
+    resolveApprovalRequest // <-- 2. IMPOR FUNGSI RESOLVE JUGA
 } from '../controllers/superuser.controller.js';
 
 const router = express.Router();
@@ -16,6 +18,10 @@ router.use(authenticateToken, checkRole(['developer']));
 // Config Management
 router.get('/config', getGlobalConfig);
 router.post('/config', updateGlobalConfig);
+
+// Approval Management (RUTE BARU DITAMBAHKAN DI SINI)
+router.get('/approval-requests', getApprovalRequests);
+router.post('/approval-requests/:id/resolve', resolveApprovalRequest);
 
 // Maintenance
 router.post('/maintenance/reseed-database', reseedDatabase);
