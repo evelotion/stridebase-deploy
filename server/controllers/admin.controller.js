@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js
+// File: server/controllers/admin.controller.js (Perbaikan Final)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from '../socket.js';
@@ -8,10 +8,15 @@ import { createNotificationForUser } from '../socket.js';
 export const getAdminStats = async (req, res, next) => {
     try {
         const totalBookings = await prisma.booking.count();
+        
+        // --- PERBAIKAN DI SINI ---
+        // Mengubah status dari "SUCCESS" menjadi "paid" agar sesuai dengan schema.prisma
         const totalRevenueResult = await prisma.payment.aggregate({
             _sum: { amount: true },
-            where: { status: "SUCCESS" },
+            where: { status: "paid" }, 
         });
+        // --- AKHIR PERBAIKAN ---
+
         const totalUsers = await prisma.user.count();
         const totalStores = await prisma.store.count();
 
@@ -33,7 +38,6 @@ export const getAllUsers = async (req, res, next) => {
         const users = await prisma.user.findMany({
             select: { id: true, name: true, email: true, role: true, status: true, _count: { select: { bookings: true } } },
         });
-        // Menambahkan statistik dummy, bisa dikembangkan
         const usersWithStats = users.map(u => ({...u, totalSpent: 0, transactionCount: u._count.bookings }));
         res.json(usersWithStats);
     } catch (error) {
