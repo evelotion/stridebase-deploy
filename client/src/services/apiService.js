@@ -1,4 +1,4 @@
-// File: client/src/services/apiService.js (Versi Master Final)
+// File: client/src/services/apiService.js (Versi Final Lengkap)
 
 import API_BASE_URL from "../apiConfig";
 
@@ -80,9 +80,10 @@ export const updateWorkStatus = (bookingId, newWorkStatus) => apiRequest(`/api/p
 export const getPartnerReviews = () => apiRequest('/api/partner/reviews');
 export const replyToReview = (reviewId, reply) => apiRequest(`/api/partner/reviews/${reviewId}/reply`, 'POST', { reply });
 export const getPartnerWalletData = () => apiRequest('/api/partner/wallet');
+export const requestPartnerPayout = (amount) => apiRequest('/api/partner/payout-requests', 'POST', { amount });
 export const getPartnerReports = (params) => apiRequest(`/api/partner/reports?${params.toString()}`);
 
-// --- Admin & SuperUser Endpoints ---
+// --- Admin Endpoints ---
 export const getAdminStats = () => apiRequest('/api/admin/stats');
 export const getAllUsers = () => apiRequest('/api/admin/users');
 export const changeUserRole = (userId, newRole) => apiRequest(`/api/admin/users/${userId}/role`, 'PATCH', { newRole });
@@ -95,10 +96,6 @@ export const getAllBanners = () => apiRequest('/api/admin/banners');
 export const createBanner = (bannerData) => apiRequest('/api/admin/banners', 'POST', bannerData);
 export const updateBanner = (bannerId, bannerData) => apiRequest(`/api/admin/banners/${bannerId}`, 'PUT', bannerData);
 export const deleteBanner = (bannerId) => apiRequest(`/api/admin/banners/${bannerId}`, 'DELETE');
-export const getSuperUserConfig = () => apiRequest('/api/superuser/config');
-export const updateSuperUserConfig = (configData) => apiRequest('/api/superuser/config', 'POST', configData);
-export const getApprovalRequests = () => apiRequest('/api/superuser/approval-requests');
-export const resolveApprovalRequest = (requestId, resolution) => apiRequest(`/api/superuser/approval-requests/${requestId}/resolve`, 'POST', { resolution }); 
 export const getAllBookingsForAdmin = () => apiRequest('/api/admin/bookings');
 export const updateBookingStatusByAdmin = (bookingId, newStatus) => apiRequest(`/api/admin/bookings/${bookingId}/status`, 'PATCH', { newStatus });
 export const getAllReviewsForAdmin = () => apiRequest('/api/admin/reviews');
@@ -106,4 +103,10 @@ export const deleteReviewByAdmin = (reviewId) => apiRequest(`/api/admin/reviews/
 export const getAdminReports = (params) => apiRequest(`/api/admin/reports?${params.toString()}`);
 export const getAdminSettings = () => apiRequest('/api/admin/settings');
 export const updateAdminSettings = (configData) => apiRequest('/api/admin/settings', 'POST', configData);
+
+// --- SuperUser Endpoints ---
+export const getSuperUserConfig = () => apiRequest('/api/superuser/config');
+export const updateSuperUserConfig = (configData) => apiRequest('/api/superuser/config', 'POST', configData);
+export const getApprovalRequests = () => apiRequest('/api/superuser/approval-requests');
+export const resolveApprovalRequest = (requestId, resolution) => apiRequest(`/api/superuser/approval-requests/${requestId}/resolve`, 'POST', { resolution }); 
 export const reseedDatabase = () => apiRequest('/api/superuser/maintenance/reseed-database', 'POST');
