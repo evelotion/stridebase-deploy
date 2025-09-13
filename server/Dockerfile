@@ -1,32 +1,29 @@
-# File: server/Dockerfile
+# File: server/Dockerfile (Versi Optimal)
 
-# Menggunakan image Node.js versi 18 yang ringan sebagai dasar
-FROM node:18-alpine
-
-# Menetapkan direktori kerja di dalam container
+# Tahap 1: Build Dependencies
+FROM node:18-alpine AS deps
 WORKDIR /app
-
-# Salin file package.json dan package-lock.json terlebih dahulu
 COPY package*.json ./
+# Hanya instal dependensi produksi untuk mengurangi ukuran
+RUN npm install --only=production --legacy-peer-deps
 
-# Salin skema prisma agar generate bisa berjalan
+# Tahap 2: Build Prisma Client
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY prisma ./prisma/
-
-# Instal SEMUA dependensi (termasuk devDependencies seperti prisma)
-RUN npm install --legacy-peer-deps
-
-# PERBAIKAN 1: Jalankan prisma generate setelah instalasi
-# Ini akan membuat Prisma Client yang kompatibel dengan environment Alpine Linux di dalam container
+# Generate Prisma Client yang kompatibel dengan Alpine Linux
 RUN npx prisma generate
 
-# Salin sisa kode aplikasi
+# Tahap 3: Final Image
+FROM node:18-alpine
+WORKDIR /app
+# Salin semua yang kita butuhkan dari tahap sebelumnya
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/generated ./generated
 COPY . .
 
-# Beri tahu Docker bahwa container akan berjalan di port 5000
 EXPOSE 5000
 
-# PERINTAH YANG DIPERBAIKI:
-# Gunakan shell form untuk menjalankan dua perintah secara berurutan.
-# Ini memastikan migrasi database (migrate deploy) dijalankan setiap kali container dimulai,
-# sebelum server aplikasi (npm start) dijalankan.
+# Perintah CMD tetap sama untuk menjalankan migrasi dan memulai server
 CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]

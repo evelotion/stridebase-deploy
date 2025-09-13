@@ -1,7 +1,9 @@
-// File: server/controllers/store.controller.js
-import prisma from "../config/prisma.js";
+// File: server/controllers/store.controller.js (Dengan Caching)
 
-// Helper function to calculate distance
+import prisma from "../config/prisma.js";
+import redisClient from "../redis-client.js";
+
+// Helper function to calculate distance (tidak berubah)
 function getDistance(lat1, lon1, lat2, lon2) {
     if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return Infinity;
     const R = 6371; // Radius of the earth in km
@@ -21,7 +23,22 @@ function getDistance(lat1, lon1, lat2, lon2) {
 // @route   GET /api/stores
 export const getStores = async (req, res, next) => {
     const { search, sortBy, lat, lng, minRating, services, openNow } = req.query;
+    
+    // Buat kunci cache yang unik berdasarkan semua parameter query
+    const cacheKey = `stores:${JSON.stringify(req.query)}`;
+
     try {
+        // 1. Coba ambil data dari cache (Redis) terlebih dahulu
+        const cachedStores = await redisClient.get(cacheKey);
+
+        if (cachedStores) {
+            console.log(`CACHE HIT for key: ${cacheKey}`);
+            return res.json(JSON.parse(cachedStores));
+        }
+        
+        console.log(`CACHE MISS for key: ${cacheKey}. Fetching from database.`);
+
+        // 2. Jika tidak ada di cache, ambil dari database
         const whereClause = {
             storeStatus: "active",
             name: { contains: search || "", mode: "insensitive" },
@@ -39,27 +56,27 @@ export const getStores = async (req, res, next) => {
             include: { services: { select: { name: true } } },
         });
 
-        // Filtering for openNow (jika ada)
+        // (Logika filter dan sorting Anda tidak berubah)
         if (openNow === "true") {
             // Logika untuk filter 'openNow'
         }
-
-        // Kalkulasi jarak jika ada koordinat
         if (lat && lng) {
             stores = stores.map(store => ({
                 ...store,
                 distance: getDistance(parseFloat(lat), parseFloat(lng), store.latitude, store.longitude)
             }));
         }
-
-        // Sorting
         if (sortBy === 'distance' && lat && lng) {
             stores.sort((a, b) => a.distance - b.distance);
         } else if (sortBy === 'createdAt') {
             stores.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        } else { // Default sort by rating
+        } else { 
             stores.sort((a, b) => b.rating - a.rating);
         }
+
+        // 3. Simpan hasil dari database ke cache untuk permintaan berikutnya
+        // Simpan selama 5 menit (300 detik)
+        await redisClient.setEx(cacheKey, 300, JSON.stringify(stores));
 
         res.json(stores);
     } catch (error) {

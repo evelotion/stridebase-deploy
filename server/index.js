@@ -24,6 +24,7 @@ import uploadRoutes from "./routes/upload.routes.js";
 import partnerRoutes from "./routes/partner.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import superUserRoutes from "./routes/superuser.routes.js";
+import helmet from 'helmet'; 
 
 // Impor Middleware
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -40,6 +41,7 @@ async function startServer() {
   app.use((req, res, next) => { req.io = io; next(); });
 
   app.set("trust proxy", 1);
+  app.use(helmet());
   app.use(cors(corsOptions));
   app.use(express.json());
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));
