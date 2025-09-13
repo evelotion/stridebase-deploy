@@ -2,6 +2,7 @@
 
 import express from 'express';
 import { authenticateToken, checkRole } from '../middleware/authenticateToken.js';
+import { getGlobalConfig, updateGlobalConfig } from '../controllers/superuser.controller.js';
 import { 
     getAdminStats, 
     getAllUsers,
@@ -43,5 +44,8 @@ router.patch('/bookings/:id/status', updateBookingStatus);
 router.get('/reviews', getAllReviews);
 router.delete('/reviews/:id', deleteReview);
 router.get('/reports', getReportData);
+router.get('/settings', getGlobalConfig);
+router.post('/settings', updateGlobalConfig);
+
 
 export default router;
