@@ -2,15 +2,15 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   getSuperUserConfig,
   updateSuperUserConfig,
-  getApprovalRequests,
-  resolveApprovalRequest,
+  getPayoutRequests,
+  resolvePayoutRequest, // Diubah namanya agar konsisten, pastikan di apiService.js juga diubah
   reseedDatabase,
 } from "../services/apiService";
 
 const DeveloperDashboardPage = ({ showMessage }) => {
   const [config, setConfig] = useState(null);
   const [initialConfig, setInitialConfig] = useState(null);
-  const [approvalRequests, setApprovalRequests] = useState([]);
+  const [payoutRequests, setPayoutRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -20,14 +20,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      // Panggil semua data yang dibutuhkan untuk dashboard developer secara paralel
       const [configData, requestsData] = await Promise.all([
         getSuperUserConfig(),
-        getApprovalRequests(),
+        getPayoutRequests(),
       ]);
       setConfig(configData);
-      setInitialConfig(JSON.stringify(configData)); // Simpan sebagai string untuk perbandingan mudah
-      setApprovalRequests(requestsData);
+      setInitialConfig(JSON.stringify(configData));
+      setPayoutRequests(requestsData);
     } catch (err) {
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
@@ -40,18 +39,15 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     fetchData();
   }, [fetchData]);
 
-  // Handler untuk mengubah state config secara dinamis
   const handleConfigChange = (e, path) => {
-    const { name, value, type, checked } = e.target;
+    const { value, type, checked } = e.target;
     const keys = path.split(".");
     setConfig((prevConfig) => {
-      // Deep copy untuk menghindari mutasi state secara langsung
       const newConfig = JSON.parse(JSON.stringify(prevConfig));
       let current = newConfig;
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]];
       }
-      // Terapkan nilai baru
       current[keys[keys.length - 1]] = type === 'checkbox' ? checked : value;
       return newConfig;
     });
@@ -86,17 +82,18 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   };
 
   const handleResolveRequest = async (requestId, resolution) => {
-    if (!window.confirm(`Anda yakin ingin ${resolution.toUpperCase()} permintaan ini?`)) return;
+    const action = resolution === 'APPROVED' ? 'menyetujui' : 'menolak';
+    if (!window.confirm(`Anda yakin ingin ${action} permintaan ini?`)) return;
     try {
-      await resolveApprovalRequest(requestId, resolution);
-      setApprovalRequests(prev => prev.filter(req => req.id !== requestId));
+      // Pastikan nama fungsi di apiService adalah resolvePayoutRequest atau yang sesuai
+      await resolvePayoutRequest(requestId, resolution);
+      setPayoutRequests(prev => prev.filter(req => req.id !== requestId));
       if (showMessage) showMessage(`Permintaan berhasil di-${resolution.toLowerCase()}.`);
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     }
   };
-  
-  // Cek apakah ada perubahan pada config
+
   const hasChanges = JSON.stringify(config) !== initialConfig;
 
   if (loading) return <div className="p-4">Memuat dashboard developer...</div>;
@@ -111,7 +108,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         </li>
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'approvals' ? 'active' : ''}`} onClick={() => setActiveTab('approvals')}>
-            Persetujuan <span className="badge bg-danger ms-1">{approvalRequests.length}</span>
+            Persetujuan Payout <span className="badge bg-danger ms-1">{payoutRequests.length}</span>
           </button>
         </li>
         <li className="nav-item">
@@ -146,46 +143,46 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
       {activeTab === 'approvals' && (
          <div className="table-card p-3 shadow-sm">
-         <h5 className="mb-3">Permintaan Persetujuan</h5>
-         {approvalRequests.length > 0 ? (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>Tanggal</th>
-                    <th>Tipe</th>
-                    <th>Detail</th>
-                    <th>Pemohon</th>
-                    <th className="text-end">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {approvalRequests.map(req => (
-                    <tr key={req.id}>
-                      <td>{new Date(req.createdAt).toLocaleString('id-ID')}</td>
-                      <td><span className="badge bg-info text-dark">{req.type}</span></td>
-                      <td>{req.details}</td>
-                      <td>{req.requestedBy.name}</td>
-                      <td className="text-end">
-                        <button className="btn btn-sm btn-success me-2" onClick={() => handleResolveRequest(req.id, 'APPROVED')}>Setujui</button>
-                        <button className="btn btn-sm btn-danger" onClick={() => handleResolveRequest(req.id, 'REJECTED')}>Tolak</button>
-                      </td>
+           <h5 className="mb-3">Permintaan Penarikan Dana (Payout)</h5>
+           {payoutRequests.length > 0 ? (
+              <div className="table-responsive">
+                <table className="table table-hover align-middle">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Toko</th>
+                      <th>Jumlah</th>
+                      <th>Pemohon</th>
+                      <th className="text-end">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-         ) : (
-           <p className="text-muted text-center p-4">Tidak ada permintaan yang menunggu persetujuan.</p>
-         )}
-       </div>
+                  </thead>
+                  <tbody>
+                    {payoutRequests.map(req => (
+                      <tr key={req.id}>
+                        <td>{new Date(req.createdAt).toLocaleString('id-ID')}</td>
+                        <td>{req.store?.name || 'Nama Toko Tidak Tersedia'}</td>
+                        <td>Rp {req.amount.toLocaleString('id-ID')}</td>
+                        <td>{req.requestedBy?.name || 'Nama Pemohon Tidak Tersedia'}</td>
+                        <td className="text-end">
+                          <button className="btn btn-sm btn-success me-2" onClick={() => handleResolveRequest(req.id, 'APPROVED')}>Setujui</button>
+                          <button className="btn btn-sm btn-danger" onClick={() => handleResolveRequest(req.id, 'REJECTED')}>Tolak</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+           ) : (
+             <p className="text-muted text-center p-4">Tidak ada permintaan penarikan dana yang menunggu.</p>
+           )}
+         </div>
       )}
 
       {activeTab === 'maintenance' && (
         <div className="card card-account p-4">
           <h5 className="mb-4 fw-bold text-danger">Zona Berbahaya</h5>
           <div className="alert alert-danger">
-            <strong>Peringatan:</strong> Aksi di bawah ini dapat menyebabkan perubahan signifikan pada data aplikasi. Lanjutkan dengan hati-hati.
+            <strong>Peringatan:</strong> Aksi di bawah ini akan menghapus semua data transaksi dan mengembalikannya ke kondisi awal (seed). Lanjutkan dengan sangat hati-hati.
           </div>
           <button className="btn btn-outline-danger" onClick={handleReseed} disabled={isSeeding}>
             {isSeeding ? "Memproses..." : "Reset & Seed Ulang Database"}

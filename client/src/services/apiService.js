@@ -97,6 +97,6 @@ export const updateBanner = (bannerId, bannerData) => apiRequest(`/api/admin/ban
 export const deleteBanner = (bannerId) => apiRequest(`/api/admin/banners/${bannerId}`, 'DELETE');
 export const getSuperUserConfig = () => apiRequest('/api/superuser/config');
 export const updateSuperUserConfig = (configData) => apiRequest('/api/superuser/config', 'POST', configData);
-export const getApprovalRequests = () => apiRequest('/api/superuser/approval-requests');
+export const getApprovalRequests = () => apiRequest('/api/admin/payout-requests');
 export const resolveApprovalRequest = (requestId, resolution) => apiRequest(`/api/superuser/approval-requests/${requestId}/resolve`, 'POST', { resolution });
 export const reseedDatabase = () => apiRequest('/api/superuser/maintenance/reseed-database', 'POST');
