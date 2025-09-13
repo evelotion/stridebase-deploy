@@ -273,3 +273,86 @@ export const requestPayout = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Get aggregated report data for a partner's store
+// @route   GET /api/partner/reports
+export const getPartnerReports = async (req, res, next) => {
+    try {
+        const { startDate, endDate } = req.query;
+        const storeId = req.store.id;
+
+        const end = endDate ? new Date(endDate) : new Date();
+        const start = startDate ? new Date(startDate) : new Date(new Date().setDate(end.getDate() - 29));
+        end.setHours(23, 59, 59, 999);
+
+        const dateFilter = {
+            createdAt: { gte: start, lte: end },
+        };
+
+        const bookingDateFilter = {
+            ...dateFilter,
+            storeId: storeId,
+        };
+
+        const paymentDateFilter = {
+            ...dateFilter,
+            booking: { storeId: storeId },
+            status: 'paid'
+        };
+
+        // 1. Ambil data agregat
+        const totalRevenuePromise = prisma.payment.aggregate({
+            _sum: { amount: true },
+            where: paymentDateFilter,
+        });
+
+        const totalOrdersPromise = prisma.booking.count({ where: bookingDateFilter });
+
+        const averageRatingPromise = prisma.review.aggregate({
+            _avg: { rating: true },
+            where: { storeId: storeId, ...dateFilter },
+        });
+        
+        // 2. Ambil data untuk tabel
+        const topServicesPromise = prisma.booking.groupBy({
+            by: ['serviceName'],
+            where: bookingDateFilter,
+            _count: { serviceName: true },
+            orderBy: { _count: { serviceName: 'desc' } },
+            take: 5
+        });
+
+        const recentReviewsPromise = prisma.review.findMany({
+            where: { storeId: storeId },
+            orderBy: { createdAt: 'desc' },
+            take: 5
+        });
+        
+        const [
+            totalRevenueResult,
+            totalOrders,
+            averageRatingResult,
+            topServices,
+            recentReviews
+        ] = await Promise.all([
+            totalRevenuePromise,
+            totalOrdersPromise,
+            averageRatingPromise,
+            topServicesPromise,
+            recentReviewsPromise
+        ]);
+
+        res.json({
+            summary: {
+                totalRevenue: totalRevenueResult._sum.amount || 0,
+                totalOrders: totalOrders || 0,
+                averageRating: averageRatingResult._avg.rating || 0,
+            },
+            topServices: topServices.map(s => ({ name: s.serviceName, count: s._count.serviceName })),
+            recentReviews,
+        });
+
+    } catch (error) {
+        next(error);
+    }
+};

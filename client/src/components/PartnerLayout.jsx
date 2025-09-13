@@ -68,6 +68,11 @@ const PartnerLayout = ({ theme }) => {
             </NavLink>
           </li>
           <li className="list-group-item">
+            <NavLink to="/partner/reports" className="nav-link-admin">
+              <i className="fas fa-chart-line me-2"></i>Laporan & Analitik
+            </NavLink>
+          </li>
+          <li className="list-group-item">
             <NavLink to="/partner/promos" className="nav-link-admin">
               <i className="fas fa-tags me-2"></i>Manajemen Promo
             </NavLink>
@@ -134,6 +139,11 @@ const PartnerLayout = ({ theme }) => {
                 <li>
                   <NavLink className="dropdown-item" to="/partner/reviews">
                     Ulasan
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink className="dropdown-item" to="/partner/reports">
+                    Laporan
                   </NavLink>
                 </li>
                 <li>

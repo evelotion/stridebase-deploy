@@ -90,6 +90,7 @@ const PartnerInvoicePage = React.lazy(() =>
 );
 const PartnerPromosPage = React.lazy(() => import("./pages/PartnerPromosPage"));
 const PartnerWalletPage = React.lazy(() => import("./pages/PartnerWalletPage"));
+const PartnerReportsPage = React.lazy(() => import("./pages/PartnerReportsPage"));
 const DeveloperLayout = React.lazy(() =>
   import("./components/DeveloperLayout")
 );
@@ -423,6 +424,7 @@ function AppContent() {
           />
           <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
           <Route path="wallet" element={<PartnerWalletPage />} />
+           <Route path="reports" element={renderWithProps(PartnerReportsPage)} />
         </Route>
 
         <Route

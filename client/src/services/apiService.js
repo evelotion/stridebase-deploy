@@ -80,7 +80,7 @@ export const updateWorkStatus = (bookingId, newWorkStatus) => apiRequest(`/api/p
 export const getPartnerReviews = () => apiRequest('/api/partner/reviews');
 export const replyToReview = (reviewId, reply) => apiRequest(`/api/partner/reviews/${reviewId}/reply`, 'POST', { reply });
 export const getPartnerWalletData = () => apiRequest('/api/partner/wallet');
-export const requestPartnerPayout = (amount) => apiRequest('/api/partner/payout-requests', 'POST', { amount });
+export const getPartnerReports = (params) => apiRequest(`/api/partner/reports?${params.toString()}`);
 
 // --- Admin & SuperUser Endpoints ---
 export const getAdminStats = () => apiRequest('/api/admin/stats');
