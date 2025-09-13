@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js (Perbaikan Final)
+// File: server/controllers/admin.controller.js (Versi Lengkap Final)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from '../socket.js';
@@ -9,13 +9,10 @@ export const getAdminStats = async (req, res, next) => {
     try {
         const totalBookings = await prisma.booking.count();
         
-        // --- PERBAIKAN DI SINI ---
-        // Mengubah status dari "SUCCESS" menjadi "paid" agar sesuai dengan schema.prisma
         const totalRevenueResult = await prisma.payment.aggregate({
             _sum: { amount: true },
             where: { status: "paid" }, 
         });
-        // --- AKHIR PERBAIKAN ---
 
         const totalUsers = await prisma.user.count();
         const totalStores = await prisma.store.count();
@@ -158,6 +155,64 @@ export const resolvePayoutRequest = async (req, res, next) => {
         }
         
         res.json({ message: `Permintaan berhasil di-${newStatus.toLowerCase()}.` });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Get all bookings for admin
+// @route   GET /api/admin/bookings
+export const getAllBookings = async (req, res, next) => {
+    try {
+        const bookings = await prisma.booking.findMany({
+            include: {
+                user: { select: { name: true } },
+                store: { select: { name: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(bookings);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Update a booking's payment status
+// @route   PATCH /api/admin/bookings/:id/status
+export const updateBookingStatus = async (req, res, next) => {
+    const { id } = req.params;
+    const { newStatus } = req.body;
+
+    try {
+        const booking = await prisma.booking.findUnique({ where: { id } });
+
+        if (!booking) {
+            return res.status(404).json({ message: "Booking tidak ditemukan." });
+        }
+
+        const updatedBooking = await prisma.booking.update({
+            where: { id },
+            data: { status: newStatus }
+        });
+
+        // Kirim notifikasi ke pelanggan
+        await createNotificationForUser(
+            updatedBooking.userId,
+            `Status pesanan Anda #${id.substring(0, 8)} telah diubah oleh admin menjadi: ${newStatus}.`,
+            `/track/${id}`
+        );
+        
+        // Kirim notifikasi ke partner (pemilik toko)
+        const store = await prisma.store.findUnique({ where: { id: updatedBooking.storeId } });
+        if (store) {
+            await createNotificationForUser(
+                store.ownerId,
+                `Status pesanan #${id.substring(0, 8)} telah diubah oleh admin menjadi: ${newStatus}.`,
+                `/partner/orders` // Arahkan ke halaman pesanan partner
+            );
+        }
+
+        res.json({ message: "Status pesanan berhasil diperbarui.", booking: updatedBooking });
     } catch (error) {
         next(error);
     }

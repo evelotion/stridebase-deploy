@@ -100,3 +100,5 @@ export const updateSuperUserConfig = (configData) => apiRequest('/api/superuser/
 export const getApprovalRequests = () => apiRequest('/api/superuser/approval-requests');
 export const resolveApprovalRequest = (requestId, resolution) => apiRequest(`/api/superuser/approval-requests/${requestId}/resolve`, 'POST', { resolution }); 
 export const reseedDatabase = () => apiRequest('/api/superuser/maintenance/reseed-database', 'POST');
+export const getAllBookingsForAdmin = () => apiRequest('/api/admin/bookings');
+export const updateBookingStatusByAdmin = (bookingId, newStatus) => apiRequest(`/api/admin/bookings/${bookingId}/status`, 'PATCH', { newStatus });

@@ -10,7 +10,9 @@ import {
     getAllStores,
     updateStoreStatus,
     getPayoutRequests,
-    resolvePayoutRequest
+    resolvePayoutRequest,
+    getAllBookings,      // <-- 1. IMPOR FUNGSI BARU
+    updateBookingStatus  // <-- 2. IMPOR FUNGSI BARU
 } from '../controllers/admin.controller.js';
 
 const router = express.Router();
@@ -33,5 +35,7 @@ router.patch('/stores/:id/status', updateStoreStatus);
 // Payout Management
 router.get('/payout-requests', getPayoutRequests);
 router.patch('/payout-requests/:id/resolve', resolvePayoutRequest);
+router.get('/bookings', getAllBookings);
+router.patch('/bookings/:id/status', updateBookingStatus);
 
 export default router;
