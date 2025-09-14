@@ -18,7 +18,8 @@ import {
     replyToReview,
     getWalletData,
     requestPayout,
-    getPartnerReports
+    getPartnerReports,
+    getOutstandingInvoices
 } from '../controllers/partner.controller.js';
 import multer from 'multer';
 
@@ -55,6 +56,7 @@ router.post('/reviews/:reviewId/reply', replyToReview);
 // Wallet & Payouts
 router.get('/wallet', getWalletData);
 router.post('/payout-requests', requestPayout);
+router.get('/invoices/outstanding', getOutstandingInvoices);
 router.get('/reports', getPartnerReports);
 
 export default router;

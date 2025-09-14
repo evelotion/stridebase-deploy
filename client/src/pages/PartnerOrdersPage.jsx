@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+// File: client/src/pages/PartnerOrdersPage.jsx (Perbaikan Final)
+
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { getPartnerOrders, updateWorkStatus } from "../services/apiService";
 
@@ -6,7 +8,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState("all");
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -28,9 +30,8 @@ const PartnerOrdersPage = ({ showMessage }) => {
   const handleStatusChange = async (bookingId, newWorkStatus) => {
     try {
       await updateWorkStatus(bookingId, newWorkStatus);
-      // Optimistic update: langsung ubah state tanpa fetch ulang
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
+      setOrders((prev) =>
+        prev.map((order) =>
           order.id === bookingId
             ? { ...order, workStatus: newWorkStatus }
             : order
@@ -44,47 +45,37 @@ const PartnerOrdersPage = ({ showMessage }) => {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case "Completed":
-      case "Reviewed":
+      case "completed":
+      case "reviewed":
         return "bg-success";
-      case "Processing":
+      case "in_progress":
         return "bg-primary";
-      case "Cancelled":
-        return "bg-danger";
-      case "Pending Payment":
+      case "confirmed":
+        return "bg-info text-dark";
+      case "pending":
         return "bg-warning text-dark";
+      case "cancelled":
+        return "bg-danger";
       default:
         return "bg-secondary";
     }
   };
 
-  const getWorkStatusBadge = (status) => {
-    switch (status) {
-      case "RECEIVED":
-        return "bg-info text-dark";
-      case "WASHING":
-        return "bg-primary";
-      case "DRYING":
-        return "bg-warning text-dark";
-      case "READY_FOR_PICKUP":
-        return "bg-success";
-      default:
-        return "bg-light text-dark";
-    }
-  };
-
-  const filteredOrders = orders.filter((order) => {
-    if (filter === "All") return true;
-    if (filter === "New") return order.status === "Processing";
-    if (filter === "Completed")
-      return order.status === "Completed" || order.status === "Reviewed";
-    if (filter === "Cancelled") return order.status === "Cancelled";
-    return true;
-  });
+  const filteredOrders = useMemo(
+    () =>
+      orders.filter((order) => {
+        if (filter === "all") return true;
+        if (filter === "new") return order.status === "confirmed";
+        if (filter === "completed")
+          return ["completed", "reviewed"].includes(order.status);
+        if (filter === "cancelled") return order.status === "cancelled";
+        return true;
+      }),
+    [orders, filter]
+  );
 
   if (loading) return <div className="p-4">Memuat pesanan...</div>;
-  if (error && orders.length === 0)
-    return <div className="p-4 text-danger">Error: {error}</div>;
+  if (error) return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
     <div className="container-fluid p-4">
@@ -93,39 +84,38 @@ const PartnerOrdersPage = ({ showMessage }) => {
         <div className="btn-group mt-2 mt-md-0">
           <button
             className={`btn ${
-              filter === "All" ? "btn-dark" : "btn-outline-dark"
+              filter === "all" ? "btn-dark" : "btn-outline-dark"
             }`}
-            onClick={() => setFilter("All")}
+            onClick={() => setFilter("all")}
           >
             Semua
           </button>
           <button
             className={`btn ${
-              filter === "New" ? "btn-dark" : "btn-outline-dark"
+              filter === "new" ? "btn-dark" : "btn-outline-dark"
             }`}
-            onClick={() => setFilter("New")}
+            onClick={() => setFilter("new")}
           >
             Baru
           </button>
           <button
             className={`btn ${
-              filter === "Completed" ? "btn-dark" : "btn-outline-dark"
+              filter === "completed" ? "btn-dark" : "btn-outline-dark"
             }`}
-            onClick={() => setFilter("Completed")}
+            onClick={() => setFilter("completed")}
           >
             Selesai
           </button>
           <button
             className={`btn ${
-              filter === "Cancelled" ? "btn-dark" : "btn-outline-dark"
+              filter === "cancelled" ? "btn-dark" : "btn-outline-dark"
             }`}
-            onClick={() => setFilter("Cancelled")}
+            onClick={() => setFilter("cancelled")}
           >
             Batal
           </button>
         </div>
       </div>
-
       <div className="table-card p-3 shadow-sm">
         <div className="table-responsive">
           <table className="table table-hover align-middle">
@@ -145,10 +135,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
                 filteredOrders.map((order) => (
                   <tr key={order.id}>
                     <td>
-                      <Link
-                        to={`/partner/orders/${order.id}`}
-                        className="fw-bold text-decoration-none"
-                      >
+                      <Link to="#" className="fw-bold text-decoration-none">
                         #{order.id.substring(0, 8)}
                       </Link>
                     </td>
@@ -160,7 +147,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
                     </td>
                     <td>{order.serviceName}</td>
                     <td>
-                      {new Date(order.scheduleDate).toLocaleDateString("id-ID")}
+                      {new Date(order.bookingTime).toLocaleDateString("id-ID")}
                     </td>
                     <td>
                       <span className={`badge ${getStatusBadge(order.status)}`}>
@@ -168,12 +155,8 @@ const PartnerOrdersPage = ({ showMessage }) => {
                       </span>
                     </td>
                     <td>
-                      <span
-                        className={`badge ${getWorkStatusBadge(
-                          order.workStatus
-                        )}`}
-                      >
-                        {order.workStatus || "Belum Diterima"}
+                      <span className={`badge bg-dark`}>
+                        {order.workStatus || "not_started"}
                       </span>
                     </td>
                     <td className="text-end">
@@ -182,7 +165,6 @@ const PartnerOrdersPage = ({ showMessage }) => {
                           className="btn btn-sm btn-outline-dark dropdown-toggle"
                           type="button"
                           data-bs-toggle="dropdown"
-                          aria-expanded="false"
                         >
                           Ubah Status
                         </button>
@@ -191,40 +173,30 @@ const PartnerOrdersPage = ({ showMessage }) => {
                             <button
                               className="dropdown-item"
                               onClick={() =>
-                                handleStatusChange(order.id, "RECEIVED")
+                                handleStatusChange(order.id, "not_started")
                               }
                             >
-                              Diterima
+                              Belum Dikerjakan
                             </button>
                           </li>
                           <li>
                             <button
                               className="dropdown-item"
                               onClick={() =>
-                                handleStatusChange(order.id, "WASHING")
+                                handleStatusChange(order.id, "in_progress")
                               }
                             >
-                              Dicuci
+                              Sedang Dikerjakan
                             </button>
                           </li>
                           <li>
                             <button
                               className="dropdown-item"
                               onClick={() =>
-                                handleStatusChange(order.id, "DRYING")
+                                handleStatusChange(order.id, "completed")
                               }
                             >
-                              Dikeringkan
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() =>
-                                handleStatusChange(order.id, "READY_FOR_PICKUP")
-                              }
-                            >
-                              Siap Diambil
+                              Selesai
                             </button>
                           </li>
                         </ul>

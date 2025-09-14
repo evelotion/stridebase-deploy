@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerServicesPage.jsx (Setelah Refaktor Lengkap)
+// File: client/src/pages/PartnerServicesPage.jsx (Perbaikan Final)
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -16,7 +16,6 @@ const ServiceModal = ({
   setServiceData,
 }) => {
   if (!show) return null;
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setServiceData((prev) => ({ ...prev, [name]: value }));
@@ -105,6 +104,22 @@ const ServiceModal = ({
                     </select>
                   </div>
                 </div>
+                {/* --- INPUT BARU UNTUK DURASI --- */}
+                <div className="mb-3">
+                  <label htmlFor="duration" className="form-label">
+                    Estimasi Durasi (menit)
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="duration"
+                    name="duration"
+                    value={serviceData.duration}
+                    onChange={handleChange}
+                    required
+                    placeholder="Contoh: 60"
+                  />
+                </div>
               </div>
               <div className="modal-footer">
                 <button
@@ -130,7 +145,6 @@ const ServiceModal = ({
 const PartnerServicesPage = ({ showMessage }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [currentService, setCurrentService] = useState({
     id: null,
@@ -138,6 +152,7 @@ const PartnerServicesPage = ({ showMessage }) => {
     description: "",
     price: "",
     shoeType: "",
+    duration: "",
   });
 
   const fetchServices = useCallback(async () => {
@@ -146,7 +161,6 @@ const PartnerServicesPage = ({ showMessage }) => {
       const data = await getPartnerServices();
       setServices(data);
     } catch (err) {
-      setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
     } finally {
       setLoading(false);
@@ -158,49 +172,43 @@ const PartnerServicesPage = ({ showMessage }) => {
   }, [fetchServices]);
 
   const handleOpenModal = (service = null) => {
-    if (service) {
-      setCurrentService(service);
-    } else {
-      setCurrentService({
+    setCurrentService(
+      service || {
         id: null,
         name: "",
         description: "",
         price: "",
         shoeType: "",
-      });
-    }
+        duration: "",
+      }
+    );
     setShowModal(true);
   };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
+  const handleCloseModal = () => setShowModal(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (currentService.id) {
-        // Update
         await updatePartnerService(currentService.id, currentService);
         if (showMessage) showMessage("Layanan berhasil diperbarui!");
       } else {
-        // Create
         await createPartnerService(currentService);
         if (showMessage) showMessage("Layanan baru berhasil ditambahkan!");
       }
       handleCloseModal();
-      await fetchServices(); // Refresh data
+      await fetchServices();
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     }
   };
 
   const handleDelete = async (serviceId) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus layanan ini?")) {
+    if (window.confirm("Yakin ingin menghapus layanan ini?")) {
       try {
         await deletePartnerService(serviceId);
         if (showMessage) showMessage("Layanan berhasil dihapus.");
-        await fetchServices(); // Refresh data
+        await fetchServices();
       } catch (err) {
         if (showMessage) showMessage(err.message, "Error");
       }
@@ -208,8 +216,6 @@ const PartnerServicesPage = ({ showMessage }) => {
   };
 
   if (loading) return <div className="p-4">Memuat layanan...</div>;
-  if (error && services.length === 0)
-    return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
     <div className="container-fluid p-4">
@@ -219,7 +225,6 @@ const PartnerServicesPage = ({ showMessage }) => {
           <i className="fas fa-plus me-2"></i>Tambah Layanan
         </button>
       </div>
-
       <div className="table-card p-3 shadow-sm">
         <div className="table-responsive">
           <table className="table table-hover align-middle">
@@ -228,6 +233,7 @@ const PartnerServicesPage = ({ showMessage }) => {
                 <th>Nama Layanan</th>
                 <th>Jenis Sepatu</th>
                 <th>Harga</th>
+                <th>Durasi</th>
                 <th className="text-end">Aksi</th>
               </tr>
             </thead>
@@ -250,6 +256,7 @@ const PartnerServicesPage = ({ showMessage }) => {
                       </span>
                     </td>
                     <td>Rp {Number(service.price).toLocaleString("id-ID")}</td>
+                    <td>{service.duration} menit</td>
                     <td className="text-end">
                       <button
                         className="btn btn-sm btn-outline-dark me-2"
@@ -268,7 +275,7 @@ const PartnerServicesPage = ({ showMessage }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center py-4">
+                  <td colSpan="5" className="text-center py-4">
                     <p className="text-muted mb-0">
                       Anda belum menambahkan layanan.
                     </p>
@@ -279,7 +286,6 @@ const PartnerServicesPage = ({ showMessage }) => {
           </table>
         </div>
       </div>
-
       <ServiceModal
         show={showModal}
         handleClose={handleCloseModal}

@@ -1,12 +1,17 @@
-// File: client/src/pages/PartnerDashboardPage.jsx (Setelah Refaktor)
+// File: client/src/pages/PartnerDashboardPage.jsx (Perbaikan Final)
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-// --- PERUBAHAN 1: Impor fungsi dari apiService ---
-import { getPartnerDashboard, getOutstandingInvoices, getPartnerSettings } from "../services/apiService"; // Sesuaikan nama fungsi jika perlu
+import {
+  getPartnerDashboard,
+  getOutstandingInvoices,
+  getPartnerSettings,
+} from "../services/apiService";
 
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
-  <div className="col-lg-6 mb-4">
+  <div className="col-lg-3 col-md-6 mb-4">
+    {" "}
+    {/* Diubah menjadi 4 kolom */}
     <Link to={linkTo} className="text-decoration-none">
       <div className="kpi-card p-3 shadow-sm h-100">
         <div className="kpi-card-content">
@@ -23,35 +28,6 @@ const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   </div>
 );
 
-const RevenueChart = ({ data }) => {
-  // Komponen ini tidak berubah
-  const maxValue = Math.max(...data.map((d) => d.revenue), 1);
-  return (
-    <div className="table-card p-3 shadow-sm">
-      <h5 className="mb-3">Pendapatan 7 Hari Terakhir</h5>
-      <div
-        className="d-flex justify-content-around align-items-end"
-        style={{ height: "200px" }}
-      >
-        {data.map((day, index) => (
-          <div key={index} className="text-center">
-            <div
-              className="bg-primary rounded-top"
-              style={{
-                height: `${(day.revenue / maxValue) * 100}%`,
-                width: "30px",
-                transition: "height 0.5s ease-out",
-              }}
-              title={`Rp ${day.revenue.toLocaleString("id-ID")}`}
-            ></div>
-            <small className="text-muted">{day.date}</small>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const PartnerDashboardPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -59,18 +35,15 @@ const PartnerDashboardPage = () => {
   const [outstandingInvoices, setOutstandingInvoices] = useState([]);
   const [store, setStore] = useState(null);
 
-  // --- PERUBAHAN 2: Sederhanakan useEffect dengan apiService ---
   useEffect(() => {
-    const fetchPartnerStats = async () => {
+    const fetchPartnerData = async () => {
       setLoading(true);
       try {
-        // Panggil semua data secara paralel
         const [statsData, invoicesData, storeData] = await Promise.all([
           getPartnerDashboard(),
-          getOutstandingInvoices(), // Buat fungsi ini di apiService jika belum ada
-          getPartnerSettings()
+          getOutstandingInvoices(),
+          getPartnerSettings(),
         ]);
-
         setStats(statsData);
         setOutstandingInvoices(invoicesData);
         setStore(storeData);
@@ -80,17 +53,19 @@ const PartnerDashboardPage = () => {
         setLoading(false);
       }
     };
-    fetchPartnerStats();
+    fetchPartnerData();
   }, []);
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case "Completed":
-      case "Reviewed":
+      case "completed":
+      case "reviewed":
         return "bg-success";
-      case "Processing":
-        return "bg-warning text-dark";
-      case "Cancelled":
+      case "in_progress":
+        return "bg-primary";
+      case "confirmed":
+        return "bg-info text-dark";
+      case "cancelled":
         return "bg-danger";
       default:
         return "bg-secondary";
@@ -101,8 +76,8 @@ const PartnerDashboardPage = () => {
   if (error) return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
-    <div className="container-fluid px-4">
-      <div className="d-flex align-items-center m-4">
+    <div className="container-fluid p-4">
+      <div className="d-flex align-items-center mb-4">
         <h2 className="fs-2 mb-0 me-3">
           Dashboard: {stats?.storeName || "Toko Anda"}
         </h2>
@@ -111,65 +86,49 @@ const PartnerDashboardPage = () => {
             <i className="fas fa-crown me-1"></i> PRO
           </span>
         )}
-        {store?.tier === "BASIC" && (
-          <span className="badge bg-light text-dark fs-6">BASIC</span>
-        )}
       </div>
 
       {outstandingInvoices.length > 0 && (
-        <div className="alert alert-warning d-flex justify-content-between align-items-center">
-          <span>
-            <i className="fas fa-exclamation-triangle me-2"></i>
-            Anda memiliki <strong>{outstandingInvoices.length}</strong> tagihan
-            yang belum dibayar.
-          </span>
-          <Link
-            to={`/partner/invoices/${outstandingInvoices[0].id}`}
-            className="btn btn-sm btn-dark"
-          >
-            Lihat & Bayar
-          </Link>
+        <div className="alert alert-danger">
+          Anda memiliki <strong>{outstandingInvoices.length}</strong> tagihan
+          yang belum dibayar.
         </div>
       )}
-      <div className="row g-3 my-2">
+
+      <div className="row">
         <KpiCard
           title="Total Pendapatan"
           value={`Rp ${(stats?.totalRevenue || 0).toLocaleString("id-ID")}`}
           icon="fa-money-bill-wave"
-          colorClass="primary-text"
-          linkTo="/partner/orders"
+          colorClass="text-success"
+          linkTo="/partner/reports"
         />
         <KpiCard
           title="Pesanan Baru"
           value={stats?.newOrders || 0}
           icon="fa-receipt"
-          colorClass="secondary-text"
+          colorClass="text-info"
           linkTo="/partner/orders"
         />
         <KpiCard
           title="Pesanan Selesai"
           value={stats?.completedOrders || 0}
           icon="fa-check-circle"
-          colorClass="primary-text"
+          colorClass="text-primary"
           linkTo="/partner/orders"
         />
         <KpiCard
           title="Total Pelanggan"
           value={stats?.totalCustomers || 0}
           icon="fa-users"
-          colorClass="secondary-text"
+          colorClass="text-secondary"
           linkTo="#"
         />
       </div>
 
-      <div className="row g-3 my-4">
-        <div className="col-md-7">
-          {stats?.revenueLast7Days && (
-            <RevenueChart data={stats.revenueLast7Days} />
-          )}
-        </div>
-        <div className="col-md-5">
-          <div className="table-card p-3 shadow-sm h-100">
+      <div className="row mt-4">
+        <div className="col-12">
+          <div className="table-card p-3 shadow-sm">
             <h5 className="mb-3">Pesanan Terbaru</h5>
             <div className="table-responsive">
               <table className="table table-hover align-middle">
