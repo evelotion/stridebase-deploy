@@ -1,10 +1,10 @@
-// File: server/controllers/partner.controller.js (Perbaikan Final untuk Laporan)
+// File: server/controllers/partner.controller.js (Perbaikan Final Lengkap)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
 
-// ... (semua fungsi dari findMyStore hingga requestPayout tetap sama, tidak perlu diubah)
+// Middleware untuk menemukan toko milik mitra dan melampirkannya ke request
 export const findMyStore = async (req, res, next) => {
   try {
     const store = await prisma.store.findFirst({
@@ -26,29 +26,38 @@ export const findMyStore = async (req, res, next) => {
   }
 };
 
+// @desc    Get partner dashboard stats
+// @route   GET /api/partner/dashboard
 export const getPartnerDashboard = async (req, res, next) => {
   try {
     const storeId = req.store.id;
+
     const totalRevenuePromise = prisma.payment.aggregate({
       _sum: { amount: true },
       where: { booking: { storeId: storeId }, status: "paid" },
     });
+
     const newOrdersPromise = prisma.booking.count({
       where: { storeId: storeId, status: "confirmed" },
     });
+
+    // --- PERBAIKAN DI SINI: Hapus status 'reviewed' yang tidak ada di skema ---
     const completedOrdersPromise = prisma.booking.count({
       where: { storeId: storeId, status: "completed" },
     });
+
     const totalCustomersPromise = prisma.booking.groupBy({
       by: ["userId"],
       where: { storeId: storeId },
     });
+
     const recentOrdersPromise = prisma.booking.findMany({
       where: { storeId: storeId },
       take: 5,
       orderBy: { createdAt: "desc" },
       include: { user: { select: { name: true } } },
     });
+
     const [
       totalRevenue,
       newOrders,
@@ -62,6 +71,7 @@ export const getPartnerDashboard = async (req, res, next) => {
       totalCustomersPromise,
       recentOrdersPromise,
     ]);
+
     res.json({
       storeName: req.store.name,
       totalRevenue: totalRevenue._sum.amount || 0,
@@ -80,6 +90,8 @@ export const getPartnerDashboard = async (req, res, next) => {
   }
 };
 
+// @desc    Get all orders for the partner's store
+// @route   GET /api/partner/orders
 export const getPartnerOrders = async (req, res, next) => {
   try {
     const orders = await prisma.booking.findMany({
@@ -93,6 +105,8 @@ export const getPartnerOrders = async (req, res, next) => {
   }
 };
 
+// @desc    Update work status of an order
+// @route   PATCH /api/partner/orders/:bookingId/work-status
 export const updateWorkStatus = async (req, res, next) => {
   const { bookingId } = req.params;
   const { newWorkStatus } = req.body;
@@ -118,6 +132,8 @@ export const updateWorkStatus = async (req, res, next) => {
   }
 };
 
+// @desc    Get all services for the partner's store
+// @route   GET /api/partner/services
 export const getPartnerServices = async (req, res, next) => {
   try {
     const services = await prisma.service.findMany({
@@ -130,6 +146,8 @@ export const getPartnerServices = async (req, res, next) => {
   }
 };
 
+// @desc    Create a new service
+// @route   POST /api/partner/services
 export const createPartnerService = async (req, res, next) => {
   const { name, description, price, shoeType, duration } = req.body;
   try {
@@ -149,6 +167,8 @@ export const createPartnerService = async (req, res, next) => {
   }
 };
 
+// @desc    Update an existing service
+// @route   PUT /api/partner/services/:serviceId
 export const updatePartnerService = async (req, res, next) => {
   const { name, description, price, shoeType, duration } = req.body;
   try {
@@ -168,6 +188,8 @@ export const updatePartnerService = async (req, res, next) => {
   }
 };
 
+// @desc    Delete a service
+// @route   DELETE /api/partner/services/:serviceId
 export const deletePartnerService = async (req, res, next) => {
   try {
     await prisma.service.delete({ where: { id: req.params.serviceId } });
@@ -177,10 +199,14 @@ export const deletePartnerService = async (req, res, next) => {
   }
 };
 
+// @desc    Get partner's store settings
+// @route   GET /api/partner/settings
 export const getPartnerSettings = async (req, res, next) => {
   res.json(req.store);
 };
 
+// @desc    Update partner's store settings
+// @route   PUT /api/partner/settings
 export const updatePartnerSettings = async (req, res, next) => {
   const {
     name,
@@ -195,42 +221,42 @@ export const updatePartnerSettings = async (req, res, next) => {
     if (schedule) {
       for (const day of Object.keys(schedule)) {
         const dayData = schedule[day];
-        const dayOfWeekInt = parseInt(
-          Object.keys(dayLabels).find((key) => dayLabels[key] === day),
-          10
-        );
         await prisma.storeSchedule.upsert({
           where: {
             storeId_dayOfWeek: {
               storeId: req.store.id,
-              dayOfWeek: dayOfWeekInt,
+              dayOfWeek: dayData.dayOfWeek,
             },
           },
           update: {
             openTime: dayData.opens,
             closeTime: dayData.closes,
-            isClosed: !dayData.isOpen,
+            isClosed: dayData.isClosed,
           },
           create: {
             storeId: req.store.id,
-            dayOfWeek: dayOfWeekInt,
+            dayOfWeek: dayData.dayOfWeek,
             openTime: dayData.opens,
             closeTime: dayData.closes,
-            isClosed: !dayData.isOpen,
+            isClosed: dayData.isClosed,
           },
         });
       }
     }
+
     await prisma.store.update({
       where: { id: req.store.id },
       data: { name, description, location, phone, images, headerImageUrl },
     });
+
     res.json({ message: "Pengaturan toko berhasil diperbarui." });
   } catch (error) {
     next(error);
   }
 };
 
+// @desc    Upload photo for the store gallery
+// @route   POST /api/partner/upload-photo
 export const uploadPartnerPhoto = async (req, res, next) => {
   if (!req.file) {
     return res.status(400).json({ message: "Tidak ada file yang diunggah." });
@@ -250,6 +276,8 @@ export const uploadPartnerPhoto = async (req, res, next) => {
   }
 };
 
+// @desc    Get reviews for the partner's store
+// @route   GET /api/partner/reviews
 export const getPartnerReviews = async (req, res, next) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -263,6 +291,8 @@ export const getPartnerReviews = async (req, res, next) => {
   }
 };
 
+// @desc    Reply to a customer review
+// @route   POST /api/partner/reviews/:reviewId/reply
 export const replyToReview = async (req, res, next) => {
   const { reviewId } = req.params;
   const { reply } = req.body;
@@ -277,6 +307,8 @@ export const replyToReview = async (req, res, next) => {
   }
 };
 
+// @desc    Get partner's wallet data
+// @route   GET /api/partner/wallet
 export const getWalletData = async (req, res, next) => {
   try {
     const wallet = await prisma.storeWallet.findUnique({
@@ -289,6 +321,8 @@ export const getWalletData = async (req, res, next) => {
   }
 };
 
+// @desc    Request a payout
+// @route   POST /api/partner/payout-requests
 export const requestPayout = async (req, res, next) => {
   const { amount } = req.body;
   try {
@@ -317,6 +351,8 @@ export const requestPayout = async (req, res, next) => {
   }
 };
 
+// @desc    Get outstanding invoices for a partner
+// @route   GET /api/partner/invoices/outstanding
 export const getOutstandingInvoices = async (req, res, next) => {
   try {
     const invoices = await prisma.invoice.findMany({
@@ -329,6 +365,8 @@ export const getOutstandingInvoices = async (req, res, next) => {
   }
 };
 
+// @desc    Get aggregated report data for a partner's store
+// @route   GET /api/partner/reports
 export const getPartnerReports = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
