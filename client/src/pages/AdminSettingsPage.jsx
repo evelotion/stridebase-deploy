@@ -1,99 +1,220 @@
-// File: client/src/pages/AdminSettingsPage.jsx (Versi Sederhana untuk Admin)
+// File: client/src/pages/AdminStoreSettingsPage.jsx (Perbaikan Final dengan Simpan Otomatis)
 
 import React, { useState, useEffect, useCallback } from "react";
-import { getAdminSettings, updateAdminSettings } from "../services/apiService";
+import { Link, useParams } from "react-router-dom";
+import { getStoreSettingsForAdmin, updateStoreSettingsByAdmin, uploadAdminPhoto } from "../services/apiService";
 
-const AdminSettingsPage = ({ showMessage }) => {
-  const [settings, setSettings] = useState({
-    globalAnnouncement: "",
-    enableGlobalAnnouncement: false,
-  });
+const daysOfWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+const dayLabels = { monday: "Senin", tuesday: "Selasa", wednesday: "Rabu", thursday: "Kamis", friday: "Jumat", saturday: "Sabtu", sunday: "Minggu" };
+
+const AdminStoreSettingsPage = ({ showMessage }) => {
+  const { storeId } = useParams();
+  const [activeTab, setActiveTab] = useState("profile");
+  const [store, setStore] = useState(null);
+  const [schedule, setSchedule] = useState({});
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const fetchSettings = useCallback(async () => {
+  const fetchStoreData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getAdminSettings();
-      setSettings(data);
+      const data = await getStoreSettingsForAdmin(storeId);
+      setStore(data);
+      const initialSchedule = {};
+      daysOfWeek.forEach((day) => {
+        const existingDay = data.schedules.find(s => s.dayOfWeek === day) || {};
+        initialSchedule[day] = {
+            dayOfWeek: day,
+            isClosed: existingDay.isClosed || false,
+            opens: existingDay.openTime || "09:00",
+            closes: existingDay.closeTime || "21:00"
+        };
+      });
+      setSchedule(initialSchedule);
     } catch (err) {
-      if (showMessage) showMessage(err.message, "Error");
+      showMessage(err.message, "Error");
     } finally {
       setLoading(false);
     }
-  }, [showMessage]);
+  }, [storeId, showMessage]);
 
   useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
+    fetchStoreData();
+  }, [fetchStoreData]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setSettings(prev => ({
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setStore((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSetHeaderImage = (imageUrl) => {
+    // Langsung simpan perubahan header
+    const updatedStoreData = { ...store, headerImageUrl: imageUrl };
+    handleSaveChanges(updatedStoreData);
+  };
+
+  const handleScheduleChange = (day, field, value) => {
+    setSchedule((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [day]: { ...prev[day], [field]: value },
     }));
   };
 
-  const handleSaveChanges = async () => {
+  // --- FUNGSI BARU UNTUK MENYIMPAN SECARA KESELURUHAN ---
+  const handleSaveChanges = async (dataToSave = store, newSchedule = schedule) => {
     setIsSaving(true);
     try {
-      await updateAdminSettings(settings);
-      if (showMessage) showMessage("Pengaturan berhasil disimpan dan disiarkan!");
+      const payload = {
+        name: dataToSave.name,
+        description: dataToSave.description,
+        images: dataToSave.images,
+        headerImage: dataToSave.headerImageUrl,
+        schedule: newSchedule,
+      };
+      await updateStoreSettingsByAdmin(storeId, payload);
+      // Perbarui state lokal dengan data yang sudah disimpan untuk konsistensi
+      setStore(dataToSave);
+      setSchedule(newSchedule);
+      showMessage("Perubahan berhasil disimpan!");
     } catch (err) {
-      if (showMessage) showMessage(err.message, "Error");
+      showMessage(err.message, "Error");
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (loading) return <div className="p-4">Memuat pengaturan...</div>;
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("photo", file);
+    setIsUploading(true);
+    try {
+      const result = await uploadAdminPhoto(formData);
+      // Buat state baru dengan gambar yang baru diunggah
+      const updatedStoreWithNewImage = {
+        ...store,
+        images: [...(store.images || []), result.filePath],
+      };
+      // Langsung panggil fungsi simpan utama
+      await handleSaveChanges(updatedStoreWithNewImage);
+      showMessage("Foto berhasil diunggah dan disimpan!");
+    } catch (err) {
+      showMessage(err.message, "Error");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDeleteImage = async (imageToDelete) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus foto ini?")) return;
+    
+    // Buat state baru tanpa gambar yang akan dihapus
+    const newImages = store.images.filter((img) => img !== imageToDelete);
+    const newHeader = store.headerImageUrl === imageToDelete ? (newImages.length > 0 ? newImages[0] : "") : store.headerImageUrl;
+    const updatedStoreWithoutImage = { ...store, images: newImages, headerImageUrl: newHeader };
+
+    // Langsung panggil fungsi simpan utama
+    await handleSaveChanges(updatedStoreWithoutImage);
+    showMessage("Foto berhasil dihapus dan perubahan disimpan!");
+  };
+
+  if (loading || !store) return <div className="p-4">Memuat pengaturan toko...</div>;
+
+  const isPhotoLimitReached = store.images.length >= (store.photoLimit || 5);
 
   return (
-    <div className="container-fluid p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fs-2 mb-0">Pengaturan Operasional</h2>
-        <button className="btn btn-dark" onClick={handleSaveChanges} disabled={isSaving}>
-          {isSaving ? "Menyimpan..." : "Simpan & Siarkan Perubahan"}
+    <div className="container-fluid px-4">
+      <div className="d-flex justify-content-between align-items-center m-4">
+        <div>
+          <Link to="/admin/stores" className="btn btn-sm btn-light me-2">
+            <i className="fas fa-arrow-left"></i>
+          </Link>
+          <h2 className="fs-2 mb-0 d-inline-block align-middle">
+            Kelola Pengaturan: {store.name}
+          </h2>
+        </div>
+        {/* Tombol Simpan utama sekarang hanya untuk form profil & jadwal */}
+        <button onClick={() => handleSaveChanges()} className="btn btn-primary" disabled={isSaving || isUploading}>
+          {isSaving ? "Menyimpan..." : "Simpan Perubahan Teks & Jadwal"}
         </button>
       </div>
 
-      <div className="table-card p-4 shadow-sm">
-        <h5 className="mb-3">Pengumuman Global</h5>
-        <div className="mb-4">
-          <label htmlFor="globalAnnouncement" className="form-label">
-            Isi Pesan Pengumuman
-          </label>
-          <textarea
-            id="globalAnnouncement"
-            name="globalAnnouncement"
-            className="form-control"
-            rows="3"
-            placeholder="Tulis pengumuman yang akan ditampilkan di seluruh situs..."
-            value={settings.globalAnnouncement}
-            onChange={handleChange}
-          ></textarea>
-        </div>
-        <div className="form-check form-switch mb-3">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="enableGlobalAnnouncement"
-            name="enableGlobalAnnouncement"
-            checked={settings.enableGlobalAnnouncement}
-            onChange={handleChange}
-          />
-          <label className="form-check-label" htmlFor="enableGlobalAnnouncement">
-            Tampilkan Pengumuman Global
-          </label>
-          <div className="form-text mt-1">
-            Jika aktif, bar pengumuman akan muncul di bawah navbar untuk semua pengguna.
+      <div className="table-card p-3 p-md-4 shadow-sm">
+        <ul className="nav nav-pills mb-4">
+          <li className="nav-item">
+            <button className={`nav-link ${activeTab === "profile" ? "active" : ""}`} onClick={() => setActiveTab("profile")}>Profil & Galeri</button>
+          </li>
+          <li className="nav-item">
+            <button className={`nav-link ${activeTab === "schedule" ? "active" : ""}`} onClick={() => setActiveTab("schedule")}>Jadwal Operasional</button>
+          </li>
+        </ul>
+
+        {activeTab === "profile" && (
+          <div>
+            <div className="mb-4">
+              <label htmlFor="name" className="form-label">Nama Toko</label>
+              <input type="text" className="form-control" id="name" name="name" value={store.name} onChange={handleProfileChange} />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="description" className="form-label">Deskripsi Toko</label>
+              <textarea className="form-control" id="description" name="description" rows="4" value={store.description} onChange={handleProfileChange}></textarea>
+            </div>
+            <h5 className="mb-3">Galeri Foto ({store.images.length}/{store.photoLimit})</h5>
+            {isPhotoLimitReached && <div className="alert alert-warning small">Toko ini telah mencapai batas maksimal <strong>{store.photoLimit} foto</strong> untuk tier <strong>{store.tier}</strong>.</div>}
+            <div className="row g-3">
+              {store.images.map((img, index) => (
+                <div className="col-md-3" key={index}>
+                  <div className="photo-gallery-item position-relative">
+                    <img src={img} alt={`Store view ${index + 1}`} className="img-fluid rounded" style={{ height: "150px", width: "100%", objectFit: "cover" }} />
+                    <div className="position-absolute top-0 end-0 m-2">
+                      <button type="button" className="btn btn-sm btn-danger" onClick={() => handleDeleteImage(img)} title="Hapus Foto"><i className="fas fa-trash-alt"></i></button>
+                    </div>
+                    <div className="position-absolute bottom-0 start-0 m-2">
+                      {store.headerImageUrl === img ? (<span className="badge bg-success"><i className="fas fa-check me-1"></i> Header</span>) : (<button type="button" className="btn btn-sm btn-light" onClick={() => handleSetHeaderImage(img)} title="Jadikan Header">Jadikan Header</button>)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {!isPhotoLimitReached && (
+                <div className="col-md-3">
+                  <label htmlFor="imageUpload" className="photo-item-add d-flex align-items-center justify-content-center text-center p-3" style={{ height: "150px" }}>
+                    {isUploading ? <div className="spinner-border spinner-border-sm"></div> : <div><i className="fas fa-plus"></i><span className="d-block small">Tambah Foto</span></div>}
+                  </label>
+                  <input type="file" id="imageUpload" accept="image/*" onChange={handleImageUpload} className="d-none" disabled={isUploading} />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
+
+        {activeTab === "schedule" && (
+          <form>
+            {daysOfWeek.map((day) => (
+              <div key={day} className="row align-items-center mb-3 pb-3 border-bottom">
+                <div className="col-md-2"><strong>{dayLabels[day]}</strong></div>
+                <div className="col-md-3">
+                  <div className="form-check form-switch">
+                    <input className="form-check-input" type="checkbox" role="switch" id={`isOpen-${day}`} checked={!schedule[day]?.isClosed} onChange={(e) => handleScheduleChange(day, "isClosed", !e.target.checked)} />
+                    <label className="form-check-label" htmlFor={`isOpen-${day}`}>{!schedule[day]?.isClosed ? "Buka" : "Tutup"}</label>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="input-group">
+                    <input type="time" className="form-control" value={schedule[day]?.opens || "09:00"} onChange={(e) => handleScheduleChange(day, "opens", e.target.value)} disabled={schedule[day]?.isClosed} />
+                    <span className="input-group-text">-</span>
+                    <input type="time" className="form-control" value={schedule[day]?.closes || "21:00"} onChange={(e) => handleScheduleChange(day, "closes", e.target.value)} disabled={schedule[day]?.isClosed} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </form>
+        )}
       </div>
     </div>
   );
 };
 
-export default AdminSettingsPage;
+export default AdminStoreSettingsPage;
