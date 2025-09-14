@@ -1,51 +1,67 @@
-import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom"; // Import useParams
-import API_BASE_URL from "../apiConfig";
+// File: client/src/pages/AdminStoreSettingsPage.jsx (Versi Perbaikan Final)
+
+import React, { useState, useEffect, useCallback } from "react";
+import { Link, useParams } from "react-router-dom";
+import {
+  getStoreSettingsForAdmin,
+  updateStoreSettingsByAdmin,
+  uploadAdminPhoto,
+} from "../services/apiService";
 
 const daysOfWeek = [
-  "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
 ];
 const dayLabels = {
-  monday: "Senin", tuesday: "Selasa", wednesday: "Rabu", thursday: "Kamis",
-  friday: "Jumat", saturday: "Sabtu", sunday: "Minggu",
+  monday: "Senin",
+  tuesday: "Selasa",
+  wednesday: "Rabu",
+  thursday: "Kamis",
+  friday: "Jumat",
+  saturday: "Sabtu",
+  sunday: "Minggu",
 };
 
 const AdminStoreSettingsPage = ({ showMessage }) => {
-  const { storeId } = useParams(); // Dapatkan storeId dari URL
+  const { storeId } = useParams();
   const [activeTab, setActiveTab] = useState("profile");
-  const [store, setStore] = useState(null); // Ubah initial state
+  const [store, setStore] = useState(null);
   const [schedule, setSchedule] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const fetchStoreData = async () => {
-    const token = localStorage.getItem("token");
+  const fetchStoreData = useCallback(async () => {
     setLoading(true);
     try {
-      // UBAH URL FETCH
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/settings`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Gagal mengambil data toko.");
-
+      const data = await getStoreSettingsForAdmin(storeId);
       setStore(data);
       const initialSchedule = {};
-      daysOfWeek.forEach((day) => {
-        initialSchedule[day] = data.schedule?.[day] || { isOpen: true, opens: "09:00", closes: "21:00" };
+      daysOfWeek.forEach((day, index) => {
+        const existingDay = data.schedules.find((s) => s.dayOfWeek === day);
+        initialSchedule[day] = existingDay || {
+          dayOfWeek: day,
+          isOpen: true,
+          opens: "09:00",
+          closes: "21:00",
+        };
       });
       setSchedule(initialSchedule);
     } catch (err) {
-      setError(err.message);
+      showMessage(err.message, "Error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [storeId, showMessage]);
 
   useEffect(() => {
     fetchStoreData();
-  }, [storeId]);
+  }, [fetchStoreData]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -64,31 +80,23 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   };
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const formData = new FormData();
     formData.append("photo", file);
-    const token = localStorage.getItem("token");
-
+    setIsUploading(true);
     try {
-      // UBAH URL UPLOAD
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/upload-photo`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Gagal mengunggah foto.");
-
+      const result = await uploadAdminPhoto(formData);
       setStore((prev) => ({
         ...prev,
-        images: [...prev.images, result.filePath],
-        headerImage: prev.headerImage ? prev.headerImage : result.filePath,
+        images: [...(prev.images || []), result.filePath],
       }));
       showMessage("Foto berhasil diunggah! Jangan lupa simpan perubahan.");
     } catch (err) {
-      showMessage(`Error: ${err.message}`);
+      showMessage(err.message, "Error");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -96,64 +104,56 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
     if (!confirm("Apakah Anda yakin ingin menghapus foto ini?")) return;
     setStore((prev) => {
       const newImages = prev.images.filter((img) => img !== imageToDelete);
-      const newHeader = prev.headerImage === imageToDelete ? (newImages.length > 0 ? newImages[0] : "") : prev.headerImage;
+      const newHeader =
+        prev.headerImage === imageToDelete
+          ? newImages.length > 0
+            ? newImages[0]
+            : ""
+          : prev.headerImage;
       return { ...prev, images: newImages, headerImage: newHeader };
     });
   };
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     setIsSaving(true);
-
-    const payload = {
-      name: store.name,
-      description: store.description,
-      images: store.images,
-      headerImage: store.headerImage,
-      schedule: schedule,
-    };
-
     try {
-      // UBAH URL SAVE
-      const response = await fetch(`${API_BASE_URL}/api/admin/stores/${storeId}/settings`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Gagal menyimpan perubahan.");
+      const payload = {
+        name: store.name,
+        description: store.description,
+        images: store.images,
+        headerImage: store.headerImageUrl,
+        schedule: schedule,
+      };
+      await updateStoreSettingsByAdmin(storeId, payload);
       showMessage("Pengaturan toko berhasil disimpan oleh Admin!");
     } catch (err) {
-      showMessage(`Error: ${err.message}`);
+      showMessage(err.message, "Error");
     } finally {
       setIsSaving(false);
     }
   };
 
-  const isPhotoLimitReached = store ? store.images.length >= store.photoLimit : false;
+  if (loading || !store)
+    return <div className="p-4">Memuat pengaturan toko...</div>;
 
-  if (loading) return <div className="p-4">Memuat pengaturan toko...</div>;
-  if (error) return <div className="p-4 text-danger">Error: {error}</div>;
+  const isPhotoLimitReached = store.images.length >= (store.photoLimit || 5);
 
   return (
     <div className="container-fluid px-4">
       <div className="d-flex justify-content-between align-items-center m-4">
         <div>
-             <Link to="/admin/stores" className="btn btn-sm btn-light me-2">
-                <i className="fas fa-arrow-left"></i>
-            </Link>
-            <h2 className="fs-2 mb-0 d-inline-block align-middle">
-                Kelola Pengaturan: {store?.name || "..."}
-            </h2>
+          <Link to="/admin/stores" className="btn btn-sm btn-light me-2">
+            <i className="fas fa-arrow-left"></i>
+          </Link>
+          <h2 className="fs-2 mb-0 d-inline-block align-middle">
+            Kelola Pengaturan: {store.name}
+          </h2>
         </div>
         <button
           onClick={handleSaveChanges}
           className="btn btn-primary"
-          disabled={isSaving}
+          disabled={isSaving || isUploading}
         >
           {isSaving ? "Menyimpan..." : "Simpan Semua Perubahan"}
         </button>
@@ -207,23 +207,29 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                 onChange={handleProfileChange}
               ></textarea>
             </div>
-
-            <h5 className="mb-3">Galeri Foto ({store.images.length}/{store.photoLimit})</h5>
+            <h5 className="mb-3">
+              Galeri Foto ({store.images.length}/{store.photoLimit})
+            </h5>
             {isPhotoLimitReached && (
               <div className="alert alert-warning small">
-                Toko ini telah mencapai batas maksimal <strong>{store.photoLimit} foto</strong> untuk tier <strong>{store.tier}</strong>.
+                Toko ini telah mencapai batas maksimal{" "}
+                <strong>{store.photoLimit} foto</strong> untuk tier{" "}
+                <strong>{store.tier}</strong>.
               </div>
             )}
-
             <div className="row g-3">
               {store.images.map((img, index) => (
                 <div className="col-md-3" key={index}>
                   <div className="photo-gallery-item position-relative">
                     <img
-                      src={`${img}`}
+                      src={img}
                       alt={`Store view ${index + 1}`}
                       className="img-fluid rounded"
-                      style={{ height: "150px", width: "100%", objectFit: "cover" }}
+                      style={{
+                        height: "150px",
+                        width: "100%",
+                        objectFit: "cover",
+                      }}
                     />
                     <div className="position-absolute top-0 end-0 m-2">
                       <button
@@ -252,7 +258,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                   </div>
                 </div>
               ))}
-
               {!isPhotoLimitReached && (
                 <div className="col-md-3">
                   <label
@@ -260,10 +265,14 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                     className="photo-item-add d-flex align-items-center justify-content-center text-center p-3"
                     style={{ height: "150px" }}
                   >
-                    <div>
-                      <i className="fas fa-plus"></i>
-                      <span className="d-block small">Tambah Foto</span>
-                    </div>
+                    {isUploading ? (
+                      <div className="spinner-border spinner-border-sm"></div>
+                    ) : (
+                      <div>
+                        <i className="fas fa-plus"></i>
+                        <span className="d-block small">Tambah Foto</span>
+                      </div>
+                    )}
                   </label>
                   <input
                     type="file"
@@ -271,6 +280,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                     accept="image/*"
                     onChange={handleImageUpload}
                     className="d-none"
+                    disabled={isUploading}
                   />
                 </div>
               )}
@@ -295,11 +305,16 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                       type="checkbox"
                       role="switch"
                       id={`isOpen-${day}`}
-                      checked={schedule[day]?.isOpen}
-                      onChange={(e) => handleScheduleChange(day, "isOpen", e.target.checked)}
+                      checked={!schedule[day]?.isClosed}
+                      onChange={(e) =>
+                        handleScheduleChange(day, "isClosed", !e.target.checked)
+                      }
                     />
-                    <label className="form-check-label" htmlFor={`isOpen-${day}`}>
-                      {schedule[day]?.isOpen ? "Buka" : "Tutup"}
+                    <label
+                      className="form-check-label"
+                      htmlFor={`isOpen-${day}`}
+                    >
+                      {!schedule[day]?.isClosed ? "Buka" : "Tutup"}
                     </label>
                   </div>
                 </div>
@@ -308,17 +323,21 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                     <input
                       type="time"
                       className="form-control"
-                      value={schedule[day]?.opens}
-                      onChange={(e) => handleScheduleChange(day, "opens", e.target.value)}
-                      disabled={!schedule[day]?.isOpen}
+                      value={schedule[day]?.openTime || "09:00"}
+                      onChange={(e) =>
+                        handleScheduleChange(day, "openTime", e.target.value)
+                      }
+                      disabled={schedule[day]?.isClosed}
                     />
                     <span className="input-group-text">-</span>
                     <input
                       type="time"
                       className="form-control"
-                      value={schedule[day]?.closes}
-                      onChange={(e) => handleScheduleChange(day, "closes", e.target.value)}
-                      disabled={!schedule[day]?.isOpen}
+                      value={schedule[day]?.closeTime || "21:00"}
+                      onChange={(e) =>
+                        handleScheduleChange(day, "closeTime", e.target.value)
+                      }
+                      disabled={schedule[day]?.isClosed}
                     />
                   </div>
                 </div>

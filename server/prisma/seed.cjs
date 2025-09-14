@@ -1,4 +1,4 @@
-// File: server/prisma/seed.cjs (Perbaikan Final dengan images)
+// File: server/prisma/seed.cjs (Perbaikan Final dengan images dan alamat yang benar)
 
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
@@ -8,8 +8,6 @@ async function main() {
   console.log(
     "🚀 [SEED] Memulai proses seeding data trial dengan skema final..."
   );
-
-  // ... (Bagian penghapusan data dan pembuatan user tetap sama)
   console.log("🔥 [SEED] Menghapus data transaksi dan toko lama...");
   await prisma.review.deleteMany();
   await prisma.notification.deleteMany();
@@ -35,14 +33,10 @@ async function main() {
 
   console.log("👤 [SEED] Membuat atau memperbarui pengguna...");
   const passwordHash = await bcrypt.hash("password123", 10);
-  // ... (kode pembuatan user tetap sama)
+
   const dev = await prisma.user.upsert({
     where: { email: "developer@stridebase.com" },
-    update: {
-      password: passwordHash,
-      name: "Developer Stride",
-      isEmailVerified: true,
-    },
+    update: { password: passwordHash, name: "Developer Stride", isEmailVerified: true },
     create: {
       id: "user-dev-01",
       email: "developer@stridebase.com",
@@ -54,11 +48,7 @@ async function main() {
   });
   const admin = await prisma.user.upsert({
     where: { email: "admin@stridebase.com" },
-    update: {
-      password: passwordHash,
-      name: "Super Admin",
-      isEmailVerified: true,
-    },
+    update: { password: passwordHash, name: "Super Admin", isEmailVerified: true },
     create: {
       id: "user-admin-01",
       email: "admin@stridebase.com",
@@ -99,9 +89,14 @@ async function main() {
     },
   });
   console.log(`✅ [SEED] Pengguna berhasil dibuat.`);
+
+  // --- PERBAIKAN DI SINI ---
   await prisma.address.create({
     data: {
       userId: cust1.id,
+      label: "Rumah",
+      recipientName: "Siti Rahayu", // Field yang hilang ditambahkan
+      phoneNumber: "081234567890", // Field yang hilang ditambahkan
       street: "Jl. Melati No. 123",
       city: "Jakarta Timur",
       province: "DKI Jakarta",
@@ -124,7 +119,6 @@ async function main() {
       rating: 4.8,
       headerImageUrl:
         "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
-      // --- PERBAIKAN DI SINI: Mengembalikan data 'images' ---
       images: [
         "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
@@ -132,7 +126,6 @@ async function main() {
       wallet: { create: {} },
     },
   });
-
   const store2 = await prisma.store.create({
     data: {
       name: "Citra Shine Shoes",
@@ -150,7 +143,6 @@ async function main() {
       wallet: { create: {} },
     },
   });
-
   console.log(`✅ [SEED] Toko berhasil dibuat.`);
 
   console.log("🧼 [SEED] Membuat data layanan...");

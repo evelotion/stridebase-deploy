@@ -440,7 +440,7 @@ function AppContent() {
           <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
           <Route path="stores" element={renderWithProps(AdminStoresPage)} />
-          <Route path="payouts" element={<AdminPayoutsPage />} />
+           <Route path="payouts" element={renderWithProps(AdminPayoutsPage)} />
           <Route
             path="stores/:storeId/invoices"
             element={renderWithProps(AdminStoreInvoicePage)}
