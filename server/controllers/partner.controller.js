@@ -34,15 +34,16 @@ export const getPartnerDashboard = async (req, res, next) => {
 
     const totalRevenuePromise = prisma.payment.aggregate({
       _sum: { amount: true },
-      where: { booking: { storeId: storeId }, status: "paid" }, // PERBAIKAN: Menggunakan status 'paid'
+      where: { booking: { storeId: storeId }, status: "paid" },
     });
 
     const newOrdersPromise = prisma.booking.count({
       where: { storeId: storeId, status: "confirmed" },
     });
 
+    // --- PERBAIKAN DI SINI: Hapus status 'reviewed' yang tidak ada ---
     const completedOrdersPromise = prisma.booking.count({
-      where: { storeId: storeId, status: { in: ["completed", "reviewed"] } },
+      where: { storeId: storeId, status: "completed" },
     });
 
     const totalCustomersPromise = prisma.booking.groupBy({
@@ -50,7 +51,6 @@ export const getPartnerDashboard = async (req, res, next) => {
       where: { storeId: storeId },
     });
 
-    // FUNGSI BARU: Ambil 5 pesanan terbaru
     const recentOrdersPromise = prisma.booking.findMany({
       where: { storeId: storeId },
       take: 5,
@@ -78,7 +78,6 @@ export const getPartnerDashboard = async (req, res, next) => {
       newOrders,
       completedOrders,
       totalCustomers: totalCustomers.length,
-      // FUNGSI BARU: Kirim data pesanan terbaru
       recentOrders: recentOrders.map((o) => ({
         id: o.id,
         customerName: o.user.name,
@@ -222,24 +221,28 @@ export const updatePartnerSettings = async (req, res, next) => {
     if (schedule) {
       for (const day of Object.keys(schedule)) {
         const dayData = schedule[day];
+        const dayOfWeekInt = parseInt(
+          Object.keys(dayLabels).find((key) => dayLabels[key] === day),
+          10
+        );
         await prisma.storeSchedule.upsert({
           where: {
             storeId_dayOfWeek: {
               storeId: req.store.id,
-              dayOfWeek: dayData.dayOfWeek,
+              dayOfWeek: dayOfWeekInt,
             },
           },
           update: {
             openTime: dayData.opens,
             closeTime: dayData.closes,
-            isClosed: dayData.isClosed,
+            isClosed: !dayData.isOpen,
           },
           create: {
             storeId: req.store.id,
-            dayOfWeek: dayData.dayOfWeek,
+            dayOfWeek: dayOfWeekInt,
             openTime: dayData.opens,
             closeTime: dayData.closes,
-            isClosed: dayData.isClosed,
+            isClosed: !dayData.isOpen,
           },
         });
       }
@@ -284,8 +287,9 @@ export const getPartnerReviews = async (req, res, next) => {
     const reviews = await prisma.review.findMany({
       where: { storeId: req.store.id },
       orderBy: { createdAt: "desc" },
+      include: { user: { select: { name: true } } },
     });
-    res.json(reviews);
+    res.json(reviews.map((r) => ({ ...r, userName: r.user.name })));
   } catch (error) {
     next(error);
   }
