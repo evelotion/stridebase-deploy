@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerServicesPage.jsx (Perbaikan Final)
+// File: client/src/pages/PartnerServicesPage.jsx (Perbaikan Final Lengkap)
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -16,6 +16,7 @@ const ServiceModal = ({
   setServiceData,
 }) => {
   if (!show) return null;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setServiceData((prev) => ({ ...prev, [name]: value }));
@@ -152,7 +153,7 @@ const PartnerServicesPage = ({ showMessage }) => {
     description: "",
     price: "",
     shoeType: "",
-    duration: "",
+    duration: "", // Tambahkan initial state
   });
 
   const fetchServices = useCallback(async () => {
@@ -184,7 +185,10 @@ const PartnerServicesPage = ({ showMessage }) => {
     );
     setShowModal(true);
   };
-  const handleCloseModal = () => setShowModal(false);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -204,7 +208,7 @@ const PartnerServicesPage = ({ showMessage }) => {
   };
 
   const handleDelete = async (serviceId) => {
-    if (window.confirm("Yakin ingin menghapus layanan ini?")) {
+    if (window.confirm("Apakah Anda yakin ingin menghapus layanan ini?")) {
       try {
         await deletePartnerService(serviceId);
         if (showMessage) showMessage("Layanan berhasil dihapus.");
