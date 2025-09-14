@@ -1,8 +1,7 @@
-// File: server/routes/admin.routes.js
+// File: server/routes/admin.routes.js (Versi Perbaikan Final Lengkap)
 
 import express from 'express';
 import { authenticateToken, checkRole } from '../middleware/authenticateToken.js';
-import { getGlobalConfig, updateGlobalConfig } from '../controllers/superuser.controller.js';
 import { 
     getAdminStats, 
     getAllUsers,
@@ -17,16 +16,23 @@ import {
     getAllReviews,
     deleteReview,
     getReportData,
-    getOperationalSettings,   // <-- 1. IMPOR FUNGSI BARU
-    updateOperationalSettings, // <-- 2. IMPOR FUNGSI BARU
-    getAllBannersForAdmin, // <-- Tambahkan impor ini
-    createBanner,          // <-- Tambahkan impor ini
-    updateBanner,          // <-- Tambahkan impor ini
-    deleteBanner,           // <-- Tambahkan impor ini
-createStoreByAdmin
+    getOperationalSettings,
+    updateOperationalSettings,
+    // --- IMPOR YANG HILANG ADA DI SINI ---
+    getStoreSettingsForAdmin,
+    updateStoreSettingsByAdmin,
+    uploadAdminPhoto,
+    createStoreByAdmin,
+    getAllBannersForAdmin,
+    createBanner,
+    updateBanner,
+    deleteBanner
 } from '../controllers/admin.controller.js';
+import multer from 'multer';
 
 const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // Middleware ini akan berlaku untuk semua rute di bawah
 router.use(authenticateToken, checkRole(['admin', 'developer']));
@@ -41,28 +47,33 @@ router.patch('/users/:id/status', changeUserStatus);
 
 // Store Management
 router.get('/stores', getAllStores);
-router.post('/stores/new', createStoreByAdmin); 
+router.post('/stores/new', createStoreByAdmin);
 router.patch('/stores/:id/status', updateStoreStatus);
-router.get('/stores/:storeId/settings', getStoreSettingsForAdmin); // Parameter: storeId
-router.put('/stores/:storeId/settings', updateStoreSettingsByAdmin); // Parameter: storeId
+router.get('/stores/:storeId/settings', getStoreSettingsForAdmin);
+router.put('/stores/:storeId/settings', updateStoreSettingsByAdmin);
 router.post('/stores/upload-photo', upload.single('photo'), uploadAdminPhoto);
 
 // Payout Management
 router.get('/payout-requests', getPayoutRequests);
 router.patch('/payout-requests/:id/resolve', resolvePayoutRequest);
+
+// Banner Management
 router.get('/banners', getAllBannersForAdmin);
 router.post('/banners', createBanner);
 router.put('/banners/:id', updateBanner);
 router.delete('/banners/:id', deleteBanner);
+
+// Booking & Review Management
 router.get('/bookings', getAllBookings);
 router.patch('/bookings/:id/status', updateBookingStatus);
 router.get('/reviews', getAllReviews);
 router.delete('/reviews/:id', deleteReview);
+
+// Reports
 router.get('/reports', getReportData);
-router.get('/settings', getGlobalConfig);
-router.post('/settings', updateGlobalConfig);
+
+// Settings
 router.get('/settings', getOperationalSettings);
 router.post('/settings', updateOperationalSettings);
-
 
 export default router;
