@@ -18,7 +18,11 @@ import {
     deleteReview,
     getReportData,
     getOperationalSettings,   // <-- 1. IMPOR FUNGSI BARU
-    updateOperationalSettings // <-- 2. IMPOR FUNGSI BARU
+    updateOperationalSettings, // <-- 2. IMPOR FUNGSI BARU
+    getAllBannersForAdmin, // <-- Tambahkan impor ini
+    createBanner,          // <-- Tambahkan impor ini
+    updateBanner,          // <-- Tambahkan impor ini
+    deleteBanner           // <-- Tambahkan impor ini
 } from '../controllers/admin.controller.js';
 
 const router = express.Router();
@@ -41,6 +45,10 @@ router.patch('/stores/:id/status', updateStoreStatus);
 // Payout Management
 router.get('/payout-requests', getPayoutRequests);
 router.patch('/payout-requests/:id/resolve', resolvePayoutRequest);
+router.get('/banners', getAllBannersForAdmin);
+router.post('/banners', createBanner);
+router.put('/banners/:id', updateBanner);
+router.delete('/banners/:id', deleteBanner);
 router.get('/bookings', getAllBookings);
 router.patch('/bookings/:id/status', updateBookingStatus);
 router.get('/reviews', getAllReviews);

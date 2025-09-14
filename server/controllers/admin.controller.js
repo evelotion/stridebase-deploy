@@ -413,3 +413,58 @@ export const updateOperationalSettings = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Get all banners for admin
+// @route   GET /api/admin/banners
+export const getAllBannersForAdmin = async (req, res, next) => {
+    try {
+        const banners = await prisma.banner.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
+        res.json(banners);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Create a new banner
+// @route   POST /api/admin/banners
+export const createBanner = async (req, res, next) => {
+    const { title, description, imageUrl, linkUrl, status } = req.body;
+    try {
+        const newBanner = await prisma.banner.create({
+            data: { title, description, imageUrl, linkUrl, status },
+        });
+        res.status(201).json(newBanner);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Update a banner
+// @route   PUT /api/admin/banners/:id
+export const updateBanner = async (req, res, next) => {
+    const { id } = req.params;
+    const { title, description, imageUrl, linkUrl, status } = req.body;
+    try {
+        const updatedBanner = await prisma.banner.update({
+            where: { id },
+            data: { title, description, imageUrl, linkUrl, status },
+        });
+        res.json(updatedBanner);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Delete a banner
+// @route   DELETE /api/admin/banners/:id
+export const deleteBanner = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await prisma.banner.delete({ where: { id } });
+        res.status(200).json({ message: 'Banner berhasil dihapus.' });
+    } catch (error) {
+        next(error);
+    }
+};
