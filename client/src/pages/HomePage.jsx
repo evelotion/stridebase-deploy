@@ -34,7 +34,7 @@ const HomePage = ({
 
         const [storesRes, bannersRes, recommendationsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/stores`),
-          fetch(`${API_BASE_URL}/api/banners`),
+         fetch(`${API_BASE_URL}/api/public/banners`),
           token
             ? fetch(`${API_BASE_URL}/api/user/recommendations`, { headers })
             : Promise.resolve(null),
