@@ -43,6 +43,9 @@ router.patch('/users/:id/status', changeUserStatus);
 router.get('/stores', getAllStores);
 router.post('/stores/new', createStoreByAdmin); 
 router.patch('/stores/:id/status', updateStoreStatus);
+router.get('/stores/:storeId/settings', getStoreSettingsForAdmin); // Parameter: storeId
+router.put('/stores/:storeId/settings', updateStoreSettingsByAdmin); // Parameter: storeId
+router.post('/stores/upload-photo', upload.single('photo'), uploadAdminPhoto);
 
 // Payout Management
 router.get('/payout-requests', getPayoutRequests);
