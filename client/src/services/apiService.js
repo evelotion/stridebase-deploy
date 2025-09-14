@@ -103,6 +103,9 @@ export const deleteReviewByAdmin = (reviewId) => apiRequest(`/api/admin/reviews/
 export const getAdminReports = (params) => apiRequest(`/api/admin/reports?${params.toString()}`);
 export const getAdminSettings = () => apiRequest('/api/admin/settings');
 export const updateAdminSettings = (configData) => apiRequest('/api/admin/settings', 'POST', configData);
+export const getStoreSettingsForAdmin = (storeId) => apiRequest(`/api/admin/stores/${storeId}/settings`);
+export const updateStoreSettingsByAdmin = (storeId, settingsData) => apiRequest(`/api/admin/stores/${storeId}/settings`, 'PUT', settingsData);
+export const uploadAdminPhoto = (formData) => apiRequest('/api/admin/stores/upload-photo', 'POST', formData, true);
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest('/api/superuser/config');
