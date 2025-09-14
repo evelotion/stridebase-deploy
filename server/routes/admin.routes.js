@@ -22,7 +22,8 @@ import {
     getAllBannersForAdmin, // <-- Tambahkan impor ini
     createBanner,          // <-- Tambahkan impor ini
     updateBanner,          // <-- Tambahkan impor ini
-    deleteBanner           // <-- Tambahkan impor ini
+    deleteBanner,           // <-- Tambahkan impor ini
+createStoreByAdmin
 } from '../controllers/admin.controller.js';
 
 const router = express.Router();
@@ -40,6 +41,7 @@ router.patch('/users/:id/status', changeUserStatus);
 
 // Store Management
 router.get('/stores', getAllStores);
+router.post('/stores/new', createStoreByAdmin); 
 router.patch('/stores/:id/status', updateStoreStatus);
 
 // Payout Management

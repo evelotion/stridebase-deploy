@@ -599,3 +599,47 @@ export const deleteBanner = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Create a new store by Admin, triggering an approval request
+// @route   POST /api/admin/stores/new
+export const createStoreByAdmin = async (req, res, next) => {
+    const { name, location, description, ownerId } = req.body;
+    const adminUserId = req.user.id; // Admin yang membuat
+
+    if (!name || !location || !ownerId) {
+        return res.status(400).json({ message: "Nama, lokasi, dan pemilik toko wajib diisi." });
+    }
+
+    try {
+        const newStore = await prisma.store.create({
+            data: {
+                name,
+                location,
+                description,
+                ownerId,
+                storeStatus: 'pending', // Status awal adalah pending
+                images: [], // Inisialisasi galeri kosong
+            },
+        });
+
+        // Buat approval request untuk developer
+        await prisma.approvalRequest.create({
+            data: {
+                storeId: newStore.id,
+                requestType: 'NEW_STORE_APPROVAL',
+                details: {
+                    message: `Toko baru "${name}" dibuat oleh Admin ${req.user.name} dan menunggu persetujuan.`,
+                    storeName: name,
+                    ownerId: ownerId,
+                    createdByAdmin: adminUserId,
+                },
+                status: 'PENDING',
+                requestedById: adminUserId, // Permintaan datang dari admin
+            },
+        });
+
+        res.status(201).json({ message: "Toko berhasil dibuat dan permintaan persetujuan dikirim.", store: newStore });
+    } catch (error) {
+        next(error);
+    }
+};
