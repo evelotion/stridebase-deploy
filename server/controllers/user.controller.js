@@ -129,7 +129,6 @@ export const getLoyaltyData = async (req, res, next) => {
 };
 
 export const redeemLoyaltyPoints = async (req, res, next) => {
-  // Implementasi Anda di sini
   res.json({ message: "Fungsi redeem belum diimplementasikan." });
 };
 

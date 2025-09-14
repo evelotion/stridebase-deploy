@@ -1,4 +1,4 @@
-// File: server/controllers/partner.controller.js (Perbaikan Final Lengkap)
+// File: server/controllers/partner.controller.js (Perbaikan Final untuk Laporan)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -41,9 +41,8 @@ export const getPartnerDashboard = async (req, res, next) => {
       where: { storeId: storeId, status: "confirmed" },
     });
 
-    // --- PERBAIKAN DI SINI: Hapus status 'reviewed' yang tidak ada di skema ---
     const completedOrdersPromise = prisma.booking.count({
-      where: { storeId: storeId, status: "completed" },
+      where: { storeId: storeId, status: "completed" }, // 'reviewed' status does not exist
     });
 
     const totalCustomersPromise = prisma.booking.groupBy({
@@ -407,7 +406,7 @@ export const getPartnerReports = async (req, res, next) => {
 
     // --- PERBAIKAN DI SINI: Tambahkan `include` untuk mengambil data user ---
     const recentReviewsPromise = prisma.review.findMany({
-      where: { storeId: storeId },
+      where: { storeId: storeId, ...dateFilter }, // Filter by date as well
       orderBy: { createdAt: "desc" },
       take: 5,
       include: { user: { select: { name: true } } },
