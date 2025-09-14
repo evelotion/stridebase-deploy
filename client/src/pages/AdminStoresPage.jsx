@@ -1,4 +1,7 @@
+// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Edit)
+
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Link } from "react-router-dom"; // Pastikan Link diimpor
 import { getAllStoresForAdmin, updateStoreStatus } from "../services/apiService";
 
 const AdminStoresPage = ({ showMessage }) => {
@@ -110,12 +113,18 @@ const AdminStoresPage = ({ showMessage }) => {
                     <td><span className={`badge ${store.tier === 'PRO' ? 'bg-warning text-dark' : 'bg-info text-dark'}`}>{store.tier}</span></td>
                     <td><i className="fas fa-star text-warning me-1"></i> {store.rating || 'N/A'}</td>
                     <td className="text-end">
-                      <div className="dropdown">
+                      
+                      {/* --- TOMBOL BARU DITAMBAHKAN DI SINI --- */}
+                      <Link to={`/admin/stores/${store.id}/settings`} className="btn btn-sm btn-primary me-2">
+                        Kelola Toko
+                      </Link>
+                      {/* --- AKHIR TOMBOL BARU --- */}
+
+                      <div className="dropdown d-inline-block">
                         <button className="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Kelola
+                          Ubah Status
                         </button>
                         <ul className="dropdown-menu dropdown-menu-end">
-                          <li className="dropdown-header">Ubah Status</li>
                           <li><button className="dropdown-item" onClick={() => handleStatusChange(store.id, 'active')}>Setujui (Aktif)</button></li>
                           <li><button className="dropdown-item" onClick={() => handleStatusChange(store.id, 'inactive')}>Nonaktifkan</button></li>
                           <li><button className="dropdown-item" onClick={() => handleStatusChange(store.id, 'rejected')}>Tolak</button></li>

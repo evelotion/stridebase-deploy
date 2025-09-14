@@ -256,8 +256,8 @@ model PlatformEarning {
 
 model ApprovalRequest {
   id            String         @id @default(cuid())
-  store         Store?         @relation(fields: [storeId], references: [id])
-  storeId       String?
+  store         Store?         @relation(fields: [storeId], references: [id]) // JADIKAN OPSIONAL
+  storeId       String?        // JADIKAN OPSIONAL
   requestType   String
   details       Json
   status        ApprovalStatus @default(PENDING)
