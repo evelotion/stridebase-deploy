@@ -66,7 +66,12 @@ const AdminStoresPage = ({ showMessage }) => {
 
   return (
     <div className="container-fluid p-4">
-      <h2 className="fs-2 mb-4">Manajemen Toko</h2>
+       <div className="d-flex justify-content-between align-items-center mb-4">
+      <h2 className="fs-2 mb-0">Manajemen Toko</h2>
+        <Link to="/admin/stores/new" className="btn btn-primary">
+            <i className="fas fa-plus me-2"></i>Tambah Toko Baru
+        </Link>
+      </div>
       <div className="card card-account p-3 mb-4">
         <div className="row g-2 align-items-center">
           <div className="col-md-8">

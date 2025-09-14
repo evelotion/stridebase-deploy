@@ -53,6 +53,7 @@ const AdminDashboardPage = React.lazy(() =>
   import("./pages/AdminDashboardPage")
 );
 const AdminStoresPage = React.lazy(() => import("./pages/AdminStoresPage"));
+const AdminNewStorePage = React.lazy(() => import("./pages/AdminNewStorePage"));
 const AdminUsersPage = React.lazy(() => import("./pages/AdminUsersPage"));
 const AdminReportsPage = React.lazy(() => import("./pages/AdminReportsPage"));
 const AdminPromosPage = React.lazy(() => import("./pages/AdminPromosPage"));
@@ -90,7 +91,9 @@ const PartnerInvoicePage = React.lazy(() =>
 );
 const PartnerPromosPage = React.lazy(() => import("./pages/PartnerPromosPage"));
 const PartnerWalletPage = React.lazy(() => import("./pages/PartnerWalletPage"));
-const PartnerReportsPage = React.lazy(() => import("./pages/PartnerReportsPage"));
+const PartnerReportsPage = React.lazy(() =>
+  import("./pages/PartnerReportsPage")
+);
 const DeveloperLayout = React.lazy(() =>
   import("./components/DeveloperLayout")
 );
@@ -424,7 +427,7 @@ function AppContent() {
           />
           <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
           <Route path="wallet" element={<PartnerWalletPage />} />
-           <Route path="reports" element={renderWithProps(PartnerReportsPage)} />
+          <Route path="reports" element={renderWithProps(PartnerReportsPage)} />
         </Route>
 
         <Route
@@ -440,7 +443,15 @@ function AppContent() {
           <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="reports" element={<AdminReportsPage />} />
           <Route path="stores" element={renderWithProps(AdminStoresPage)} />
-           <Route path="payouts" element={renderWithProps(AdminPayoutsPage)} />
+          <Route
+            path="stores/new"
+            element={renderWithProps(AdminNewStorePage)}
+          />
+          <Route
+            path="stores/:storeId/settings"
+            element={renderWithProps(AdminStoreSettingsPage)}
+          />
+          <Route path="payouts" element={renderWithProps(AdminPayoutsPage)} />
           <Route
             path="stores/:storeId/invoices"
             element={renderWithProps(AdminStoreInvoicePage)}
