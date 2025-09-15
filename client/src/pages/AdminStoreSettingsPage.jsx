@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoreSettingsPage.jsx (Versi Perbaikan Final)
+// File: client/src/pages/AdminStoreSettingsPage.jsx (Perbaikan Final v2)
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -42,13 +42,14 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
       const data = await getStoreSettingsForAdmin(storeId);
       setStore(data);
       const initialSchedule = {};
-      daysOfWeek.forEach((day, index) => {
-        const existingDay = data.schedules.find((s) => s.dayOfWeek === day);
-        initialSchedule[day] = existingDay || {
+      daysOfWeek.forEach((day) => {
+        const existingDay =
+          data.schedules.find((s) => s.dayOfWeek === day) || {};
+        initialSchedule[day] = {
           dayOfWeek: day,
-          isOpen: true,
-          opens: "09:00",
-          closes: "21:00",
+          isClosed: existingDay.isClosed || false,
+          opens: existingDay.openTime || "09:00",
+          closes: existingDay.closeTime || "21:00",
         };
       });
       setSchedule(initialSchedule);
@@ -69,7 +70,8 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   };
 
   const handleSetHeaderImage = (imageUrl) => {
-    setStore((prev) => ({ ...prev, headerImage: imageUrl }));
+    const updatedStoreData = { ...store, headerImageUrl: imageUrl };
+    handleSaveChanges(updatedStoreData);
   };
 
   const handleScheduleChange = (day, field, value) => {
@@ -77,6 +79,33 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
       ...prev,
       [day]: { ...prev[day], [field]: value },
     }));
+  };
+
+  const handleSaveChanges = async (
+    dataToSave = store,
+    newSchedule = schedule
+  ) => {
+    setIsSaving(true);
+    try {
+      // --- PERBAIKAN UTAMA DI SINI ---
+      const payload = {
+        name: dataToSave.name,
+        description: dataToSave.description,
+        images: dataToSave.images,
+        headerImageUrl: dataToSave.headerImageUrl, // Nama key sekarang `headerImageUrl`
+        schedule: newSchedule,
+      };
+      // --- AKHIR PERBAIKAN ---
+
+      await updateStoreSettingsByAdmin(storeId, payload);
+      setStore(dataToSave);
+      setSchedule(newSchedule);
+      showMessage("Perubahan berhasil disimpan!");
+    } catch (err) {
+      showMessage(err.message, "Error");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleImageUpload = async (e) => {
@@ -88,11 +117,12 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
     setIsUploading(true);
     try {
       const result = await uploadAdminPhoto(formData);
-      setStore((prev) => ({
-        ...prev,
-        images: [...(prev.images || []), result.filePath],
-      }));
-      showMessage("Foto berhasil diunggah! Jangan lupa simpan perubahan.");
+      const updatedStoreWithNewImage = {
+        ...store,
+        images: [...(store.images || []), result.filePath],
+      };
+      await handleSaveChanges(updatedStoreWithNewImage);
+      showMessage("Foto berhasil diunggah dan disimpan!");
     } catch (err) {
       showMessage(err.message, "Error");
     } finally {
@@ -100,38 +130,24 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
     }
   };
 
-  const handleDeleteImage = (imageToDelete) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus foto ini?")) return;
-    setStore((prev) => {
-      const newImages = prev.images.filter((img) => img !== imageToDelete);
-      const newHeader =
-        prev.headerImage === imageToDelete
-          ? newImages.length > 0
-            ? newImages[0]
-            : ""
-          : prev.headerImage;
-      return { ...prev, images: newImages, headerImage: newHeader };
-    });
-  };
+  const handleDeleteImage = async (imageToDelete) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus foto ini?")) return;
 
-  const handleSaveChanges = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
-    try {
-      const payload = {
-        name: store.name,
-        description: store.description,
-        images: store.images,
-        headerImage: store.headerImageUrl,
-        schedule: schedule,
-      };
-      await updateStoreSettingsByAdmin(storeId, payload);
-      showMessage("Pengaturan toko berhasil disimpan oleh Admin!");
-    } catch (err) {
-      showMessage(err.message, "Error");
-    } finally {
-      setIsSaving(false);
-    }
+    const newImages = store.images.filter((img) => img !== imageToDelete);
+    const newHeader =
+      store.headerImageUrl === imageToDelete
+        ? newImages.length > 0
+          ? newImages[0]
+          : ""
+        : store.headerImageUrl;
+    const updatedStoreWithoutImage = {
+      ...store,
+      images: newImages,
+      headerImageUrl: newHeader,
+    };
+
+    await handleSaveChanges(updatedStoreWithoutImage);
+    showMessage("Foto berhasil dihapus dan perubahan disimpan!");
   };
 
   if (loading || !store)
@@ -140,7 +156,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   const isPhotoLimitReached = store.images.length >= (store.photoLimit || 5);
 
   return (
-    <div className="container-fluid px-4">
+    <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center m-4">
         <div>
           <Link to="/admin/stores" className="btn btn-sm btn-light me-2">
@@ -151,11 +167,11 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
           </h2>
         </div>
         <button
-          onClick={handleSaveChanges}
+          onClick={() => handleSaveChanges()}
           className="btn btn-primary"
           disabled={isSaving || isUploading}
         >
-          {isSaving ? "Menyimpan..." : "Simpan Semua Perubahan"}
+          {isSaving ? "Menyimpan..." : "Simpan Perubahan Teks & Jadwal"}
         </button>
       </div>
 
@@ -218,7 +234,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
               </div>
             )}
             <div className="row g-3">
-              {store.images.map((img, index) => (
+              {(store.images || []).map((img, index) => (
                 <div className="col-md-3" key={index}>
                   <div className="photo-gallery-item position-relative">
                     <img
@@ -233,6 +249,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                     />
                     <div className="position-absolute top-0 end-0 m-2">
                       <button
+                        type="button"
                         className="btn btn-sm btn-danger"
                         onClick={() => handleDeleteImage(img)}
                         title="Hapus Foto"
@@ -241,12 +258,13 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                       </button>
                     </div>
                     <div className="position-absolute bottom-0 start-0 m-2">
-                      {store.headerImage === img ? (
+                      {store.headerImageUrl === img ? (
                         <span className="badge bg-success">
-                          <i className="fas fa-check me-1"></i> Header Aktif
+                          <i className="fas fa-check me-1"></i> Header
                         </span>
                       ) : (
                         <button
+                          type="button"
                           className="btn btn-sm btn-light"
                           onClick={() => handleSetHeaderImage(img)}
                           title="Jadikan Header"
@@ -323,9 +341,9 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                     <input
                       type="time"
                       className="form-control"
-                      value={schedule[day]?.openTime || "09:00"}
+                      value={schedule[day]?.opens || "09:00"}
                       onChange={(e) =>
-                        handleScheduleChange(day, "openTime", e.target.value)
+                        handleScheduleChange(day, "opens", e.target.value)
                       }
                       disabled={schedule[day]?.isClosed}
                     />
@@ -333,9 +351,9 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                     <input
                       type="time"
                       className="form-control"
-                      value={schedule[day]?.closeTime || "21:00"}
+                      value={schedule[day]?.closes || "21:00"}
                       onChange={(e) =>
-                        handleScheduleChange(day, "closeTime", e.target.value)
+                        handleScheduleChange(day, "closes", e.target.value)
                       }
                       disabled={schedule[day]?.isClosed}
                     />
