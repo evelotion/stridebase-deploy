@@ -134,7 +134,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     try {
       // 1. Unggah gambar seperti biasa
       const result = await uploadImage(formData);
-      
+
       // 2. Buat salinan konfigurasi baru berdasarkan state saat ini
       const updatedConfig = JSON.parse(JSON.stringify(config));
       const keys = path.split(".");
@@ -151,13 +151,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       setConfig(updatedConfig);
       setInitialConfig(JSON.stringify(updatedConfig));
 
-      if (showMessage) showMessage("Gambar berhasil diunggah dan disimpan!", "Success");
+      if (showMessage)
+        showMessage("Gambar berhasil diunggah dan disimpan!", "Success");
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     } finally {
       setUploadingStatus((prev) => ({ ...prev, [path]: false }));
     }
-};
+  };
 
   const handleConfigSave = async () => {
     setIsSaving(true);
@@ -310,6 +311,61 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 <div className="col-md-6">
                   <h5 className="mb-4 fw-bold">Warna & Font</h5>
                   <div className="mb-3">
+                    <label htmlFor="h1FontSize" className="form-label">
+                      Ukuran Font Judul (H1):{" "}
+                      <strong>{config.typography.h1FontSize}</strong>
+                    </label>
+                    <input
+                      type="range"
+                      className="form-range"
+                      id="h1FontSize"
+                      min="24"
+                      max="48"
+                      value={parseInt(config.typography.h1FontSize)}
+                      onChange={(e) =>
+                        handleSliderChange(e, "typography.h1FontSize")
+                      }
+                    />
+                  </div>
+
+                  {/* Slider untuk Ukuran Font Display */}
+                  <div className="mb-3">
+                    <label htmlFor="displayFontSize" className="form-label">
+                      Ukuran Font Display:{" "}
+                      <strong>{config.typography.displayFontSize}</strong>
+                    </label>
+                    <input
+                      type="range"
+                      className="form-range"
+                      id="displayFontSize"
+                      min="40"
+                      max="72"
+                      value={parseInt(config.typography.displayFontSize)}
+                      onChange={(e) =>
+                        handleSliderChange(e, "typography.displayFontSize")
+                      }
+                    />
+                  </div>
+
+                  {/* Slider untuk Ukuran Font Tombol Besar (LG) */}
+                  <div className="mb-3">
+                    <label htmlFor="buttonLgFontSize" className="form-label">
+                      Ukuran Font Tombol (Besar):{" "}
+                      <strong>{config.typography.buttonLgFontSize}</strong>
+                    </label>
+                    <input
+                      type="range"
+                      className="form-range"
+                      id="buttonLgFontSize"
+                      min="14"
+                      max="28"
+                      value={parseInt(config.typography.buttonLgFontSize)}
+                      onChange={(e) =>
+                        handleSliderChange(e, "typography.buttonLgFontSize")
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
                     <label htmlFor="primaryColor" className="form-label">
                       Warna Primer
                     </label>
@@ -444,79 +500,90 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       )}
 
       {activeTab === "approvals" && (
-    <div className="table-card p-3 shadow-sm">
-        <h5 className="mb-3">Log Aktivitas & Persetujuan</h5>
-        {approvalRequests.length > 0 ? (
-        <div className="table-responsive">
-            <table className="table table-hover align-middle">
-            <thead className="table-light">
-                <tr>
-                <th>Tanggal</th>
-                <th>Tipe</th>
-                <th>Detail</th>
-                <th>Pemohon</th>
-                <th>Direview Oleh</th>
-                <th>Status</th>
-                <th className="text-end">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                {approvalRequests.map((req) => (
-                <tr key={req.id}>
-                    <td>{new Date(req.createdAt).toLocaleString("id-ID")}</td>
-                    <td>
-                    <span className="badge bg-info text-dark">
-                        {req.requestType}
-                    </span>
-                    </td>
-                    <td style={{ maxWidth: '300px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                        <small>{JSON.stringify(req.details, null, 2)}</small>
-                    </td>
-                    <td>{req.requestedBy?.name || "N/A"}</td>
-                    <td>{req.reviewedBy?.name || "-"}</td>
-                    <td>
-                        <span className={`badge ${
-                            req.status === 'PENDING' ? 'bg-warning text-dark' :
-                            req.status === 'APPROVED' ? 'bg-success' : 'bg-danger'
-                        }`}>
-                            {req.status}
+        <div className="table-card p-3 shadow-sm">
+          <h5 className="mb-3">Log Aktivitas & Persetujuan</h5>
+          {approvalRequests.length > 0 ? (
+            <div className="table-responsive">
+              <table className="table table-hover align-middle">
+                <thead className="table-light">
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Tipe</th>
+                    <th>Detail</th>
+                    <th>Pemohon</th>
+                    <th>Direview Oleh</th>
+                    <th>Status</th>
+                    <th className="text-end">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {approvalRequests.map((req) => (
+                    <tr key={req.id}>
+                      <td>{new Date(req.createdAt).toLocaleString("id-ID")}</td>
+                      <td>
+                        <span className="badge bg-info text-dark">
+                          {req.requestType}
                         </span>
-                    </td>
-                    <td className="text-end">
-                    {/* Tombol hanya muncul jika status PENDING */}
-                    {req.status === 'PENDING' && (
-                        <>
-                        <button
-                            className="btn btn-sm btn-success me-2"
-                            onClick={() =>
-                            handleResolveRequest(req.id, "APPROVED")
-                            }
+                      </td>
+                      <td
+                        style={{
+                          maxWidth: "300px",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        <small>{JSON.stringify(req.details, null, 2)}</small>
+                      </td>
+                      <td>{req.requestedBy?.name || "N/A"}</td>
+                      <td>{req.reviewedBy?.name || "-"}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            req.status === "PENDING"
+                              ? "bg-warning text-dark"
+                              : req.status === "APPROVED"
+                              ? "bg-success"
+                              : "bg-danger"
+                          }`}
                         >
-                            Setujui
-                        </button>
-                        <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() =>
-                            handleResolveRequest(req.id, "REJECTED")
-                            }
-                        >
-                            Tolak
-                        </button>
-                        </>
-                    )}
-                    </td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
+                          {req.status}
+                        </span>
+                      </td>
+                      <td className="text-end">
+                        {/* Tombol hanya muncul jika status PENDING */}
+                        {req.status === "PENDING" && (
+                          <>
+                            <button
+                              className="btn btn-sm btn-success me-2"
+                              onClick={() =>
+                                handleResolveRequest(req.id, "APPROVED")
+                              }
+                            >
+                              Setujui
+                            </button>
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() =>
+                                handleResolveRequest(req.id, "REJECTED")
+                              }
+                            >
+                              Tolak
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-muted text-center p-4">
+              Tidak ada aktivitas atau permintaan yang menunggu persetujuan.
+            </p>
+          )}
         </div>
-        ) : (
-        <p className="text-muted text-center p-4">
-            Tidak ada aktivitas atau permintaan yang menunggu persetujuan.
-        </p>
-        )}
-    </div>
-)}
+      )}
 
       {activeTab === "maintenance" && (
         <div className="card card-account p-4">
