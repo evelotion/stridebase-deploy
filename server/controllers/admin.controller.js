@@ -443,7 +443,7 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
 // @route   PUT /api/admin/stores/:storeId/settings
 export const updateStoreSettingsByAdmin = async (req, res, next) => {
   const { storeId } = req.params;
-   const { name, description, images, headerImageUrl, schedule } = req.body;
+ const { name, description, images, headerImageUrl, schedule } = req.body;
   const adminUserId = req.user.id; // Mendapatkan ID admin yang sedang login
 
   try {
@@ -487,7 +487,7 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
 
     // 3. Update data toko utama
     const updatedStore = await prisma.store.update({
-     where: { id: storeId },
+            where: { id: storeId },
             data: { name, description, images, headerImageUrl }, // Nama properti sekarang sama
         });
 

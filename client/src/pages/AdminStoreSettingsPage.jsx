@@ -98,7 +98,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
       // --- AKHIR PERBAIKAN ---
 
       await updateStoreSettingsByAdmin(storeId, payload);
-      setStore(dataToSave);
+      setStore(dataToSave); // Perbarui state lokal agar UI sinkron
       setSchedule(newSchedule);
       showMessage("Perubahan berhasil disimpan!");
     } catch (err) {
@@ -153,7 +153,8 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   if (loading || !store)
     return <div className="p-4">Memuat pengaturan toko...</div>;
 
-  const isPhotoLimitReached = store.images.length >= (store.photoLimit || 5);
+  const isPhotoLimitReached =
+    (store.images || []).length >= (store.photoLimit || 5);
 
   return (
     <div className="container-fluid p-4">
@@ -206,7 +207,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                 className="form-control"
                 id="name"
                 name="name"
-                value={store.name}
+                value={store.name || ""}
                 onChange={handleProfileChange}
               />
             </div>
@@ -219,17 +220,18 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                 id="description"
                 name="description"
                 rows="4"
-                value={store.description}
+                value={store.description || ""}
                 onChange={handleProfileChange}
               ></textarea>
             </div>
             <h5 className="mb-3">
-              Galeri Foto ({store.images.length}/{store.photoLimit})
+              Galeri Foto ({(store.images || []).length}/{store.photoLimit || 5}
+              )
             </h5>
             {isPhotoLimitReached && (
               <div className="alert alert-warning small">
                 Toko ini telah mencapai batas maksimal{" "}
-                <strong>{store.photoLimit} foto</strong> untuk tier{" "}
+                <strong>{store.photoLimit || 5} foto</strong> untuk tier{" "}
                 <strong>{store.tier}</strong>.
               </div>
             )}
