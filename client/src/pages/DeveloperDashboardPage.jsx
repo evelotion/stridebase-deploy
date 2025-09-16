@@ -132,24 +132,32 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     formData.append("image", file);
 
     try {
+      // 1. Unggah gambar seperti biasa
       const result = await uploadImage(formData);
+      
+      // 2. Buat salinan konfigurasi baru berdasarkan state saat ini
+      const updatedConfig = JSON.parse(JSON.stringify(config));
       const keys = path.split(".");
-      setConfig((prevConfig) => {
-        const newConfig = JSON.parse(JSON.stringify(prevConfig));
-        let current = newConfig;
-        for (let i = 0; i < keys.length - 1; i++) {
-          current = current[keys[i]];
-        }
-        current[keys[keys.length - 1]] = result.imageUrl;
-        return newConfig;
-      });
-      if (showMessage) showMessage("Gambar berhasil diunggah!", "Success");
+      let current = updatedConfig;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = result.imageUrl;
+
+      // 3. LANGSUNG SIMPAN konfigurasi yang sudah diperbarui ke database
+      await updateSuperUserConfig(updatedConfig);
+
+      // 4. Perbarui state lokal dan state awal agar UI sinkron
+      setConfig(updatedConfig);
+      setInitialConfig(JSON.stringify(updatedConfig));
+
+      if (showMessage) showMessage("Gambar berhasil diunggah dan disimpan!", "Success");
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     } finally {
       setUploadingStatus((prev) => ({ ...prev, [path]: false }));
     }
-  };
+};
 
   const handleConfigSave = async () => {
     setIsSaving(true);
