@@ -129,6 +129,13 @@ const applyTheme = (theme) => {
     root.style.setProperty("--accent-color", theme.colors.accent || "#FFC107");
   }
 
+   if (theme.colors.button) {
+    root.style.setProperty('--button-background-color', theme.colors.button.background);
+    root.style.setProperty('--button-text-color', theme.colors.button.text);
+    root.style.setProperty('--button-background-hover-color', theme.colors.button.backgroundHover);
+    root.style.setProperty('--button-text-hover-color', theme.colors.button.textHover);
+  }
+  
   if (theme.typography) {
     if (theme.typography.fontFamily) {
       const fontFamilyValue = theme.typography.fontFamily;

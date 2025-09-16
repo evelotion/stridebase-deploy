@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   getSuperUserConfig,
   updateSuperUserConfig,
-  getApprovalRequests, // Diarahkan ke /api/superuser/approval-requests
-  resolveApprovalRequest, // Diarahkan ke /api/superuser/approval-requests/:id/resolve
+  getApprovalRequests,
+  resolveApprovalRequest,
   reseedDatabase,
   uploadImage,
 } from "../services/apiService";
@@ -75,11 +75,11 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     try {
       const [configData, requestsData] = await Promise.all([
         getSuperUserConfig(),
-        getApprovalRequests(), // Sekarang memanggil API yang benar
+        getApprovalRequests(),
       ]);
       setConfig(configData);
       setInitialConfig(JSON.stringify(configData));
-      setApprovalRequests(requestsData); // Mengisi state dengan data approval
+      setApprovalRequests(requestsData);
     } catch (err) {
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
@@ -92,7 +92,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     fetchData();
   }, [fetchData]);
 
-  // ... (sisa fungsi handler tidak perlu diubah: handleConfigChange, handleSliderChange, handleImageUpload, dll.)
   const handleConfigChange = (e, path) => {
     const { name, value, type, checked } = e.target;
     const keys = path.split(".");
@@ -132,10 +131,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     formData.append("image", file);
 
     try {
-      // 1. Unggah gambar seperti biasa
       const result = await uploadImage(formData);
 
-      // 2. Buat salinan konfigurasi baru berdasarkan state saat ini
       const updatedConfig = JSON.parse(JSON.stringify(config));
       const keys = path.split(".");
       let current = updatedConfig;
@@ -144,10 +141,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       }
       current[keys[keys.length - 1]] = result.imageUrl;
 
-      // 3. LANGSUNG SIMPAN konfigurasi yang sudah diperbarui ke database
       await updateSuperUserConfig(updatedConfig);
 
-      // 4. Perbarui state lokal dan state awal agar UI sinkron
       setConfig(updatedConfig);
       setInitialConfig(JSON.stringify(updatedConfig));
 
@@ -245,7 +240,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           >
             Persetujuan{" "}
             <span className="badge bg-danger ms-1">
-              {approvalRequests.length}
+              {
+                approvalRequests.filter((req) => req.status === "PENDING")
+                  .length
+              }
             </span>
           </button>
         </li>
@@ -310,61 +308,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 </div>
                 <div className="col-md-6">
                   <h5 className="mb-4 fw-bold">Warna & Font</h5>
-                  <div className="mb-3">
-                    <label htmlFor="h1FontSize" className="form-label">
-                      Ukuran Font Judul (H1):{" "}
-                      <strong>{config.typography.h1FontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="h1FontSize"
-                      min="24"
-                      max="48"
-                      value={parseInt(config.typography.h1FontSize)}
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.h1FontSize")
-                      }
-                    />
-                  </div>
-
-                  {/* Slider untuk Ukuran Font Display */}
-                  <div className="mb-3">
-                    <label htmlFor="displayFontSize" className="form-label">
-                      Ukuran Font Display:{" "}
-                      <strong>{config.typography.displayFontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="displayFontSize"
-                      min="40"
-                      max="72"
-                      value={parseInt(config.typography.displayFontSize)}
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.displayFontSize")
-                      }
-                    />
-                  </div>
-
-                  {/* Slider untuk Ukuran Font Tombol Besar (LG) */}
-                  <div className="mb-3">
-                    <label htmlFor="buttonLgFontSize" className="form-label">
-                      Ukuran Font Tombol (Besar):{" "}
-                      <strong>{config.typography.buttonLgFontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="buttonLgFontSize"
-                      min="14"
-                      max="28"
-                      value={parseInt(config.typography.buttonLgFontSize)}
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.buttonLgFontSize")
-                      }
-                    />
-                  </div>
                   <div className="mb-3">
                     <label htmlFor="primaryColor" className="form-label">
                       Warna Primer
@@ -452,6 +395,121 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       value={parseInt(config.typography.buttonFontSize)}
                       onChange={(e) =>
                         handleSliderChange(e, "typography.buttonFontSize")
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="h1FontSize" className="form-label">
+                      Ukuran Font Judul (H1):{" "}
+                      <strong>{config.typography.h1FontSize}</strong>
+                    </label>
+                    <input
+                      type="range"
+                      className="form-range"
+                      id="h1FontSize"
+                      min="24"
+                      max="48"
+                      value={parseInt(config.typography.h1FontSize)}
+                      onChange={(e) =>
+                        handleSliderChange(e, "typography.h1FontSize")
+                      }
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="displayFontSize" className="form-label">
+                      Ukuran Font Display:{" "}
+                      <strong>{config.typography.displayFontSize}</strong>
+                    </label>
+                    <input
+                      type="range"
+                      className="form-range"
+                      id="displayFontSize"
+                      min="40"
+                      max="72"
+                      value={parseInt(config.typography.displayFontSize)}
+                      onChange={(e) =>
+                        handleSliderChange(e, "typography.displayFontSize")
+                      }
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label htmlFor="buttonLgFontSize" className="form-label">
+                      Ukuran Font Tombol (Besar):{" "}
+                      <strong>{config.typography.buttonLgFontSize}</strong>
+                    </label>
+                    <input
+                      type="range"
+                      className="form-range"
+                      id="buttonLgFontSize"
+                      min="14"
+                      max="28"
+                      value={parseInt(config.typography.buttonLgFontSize)}
+                      onChange={(e) =>
+                        handleSliderChange(e, "typography.buttonLgFontSize")
+                      }
+                    />
+                  </div>
+
+                  <hr className="my-4" />
+                  <h6 className="mb-3 fw-bold">Warna Tombol Utama</h6>
+                  <div className="mb-3">
+                    <label htmlFor="buttonBackground" className="form-label">
+                      Latar Tombol
+                    </label>
+                    <input
+                      type="color"
+                      className="form-control form-control-color"
+                      id="buttonBackground"
+                      value={config.colors.button?.background || "#000000"}
+                      onChange={(e) =>
+                        handleConfigChange(e, "colors.button.background")
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="buttonText" className="form-label">
+                      Teks Tombol
+                    </label>
+                    <input
+                      type="color"
+                      className="form-control form-control-color"
+                      id="buttonText"
+                      value={config.colors.button?.text || "#ffffff"}
+                      onChange={(e) =>
+                        handleConfigChange(e, "colors.button.text")
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label
+                      htmlFor="buttonBackgroundHover"
+                      className="form-label"
+                    >
+                      Latar Tombol (Hover)
+                    </label>
+                    <input
+                      type="color"
+                      className="form-control form-control-color"
+                      id="buttonBackgroundHover"
+                      value={config.colors.button?.backgroundHover || "#000000"}
+                      onChange={(e) =>
+                        handleConfigChange(e, "colors.button.backgroundHover")
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="buttonTextHover" className="form-label">
+                      Teks Tombol (Hover)
+                    </label>
+                    <input
+                      type="color"
+                      className="form-control form-control-color"
+                      id="buttonTextHover"
+                      value={config.colors.button?.textHover || "#ffffff"}
+                      onChange={(e) =>
+                        handleConfigChange(e, "colors.button.textHover")
                       }
                     />
                   </div>
@@ -550,7 +608,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         </span>
                       </td>
                       <td className="text-end">
-                        {/* Tombol hanya muncul jika status PENDING */}
                         {req.status === "PENDING" && (
                           <>
                             <button

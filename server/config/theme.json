@@ -32,7 +32,13 @@
   "colors": {
     "secondary": "#34b5d5",
     "primary": "#1c40d4",
-    "accent": "#ffffff"
+    "accent": "#ffffff",
+    "button": {
+      "background": "#1c40d4",
+      "text": "#ffffff",
+      "backgroundHover": "#34b5d5",
+      "textHover": "#ffffff"
+    }
   },
   "background": {
     "value": "#ffffff"

@@ -3222,19 +3222,30 @@ main.store-detail {
 
 /* Aturan ini akan mengubah tombol .btn-dark dan .btn-outline-dark
    saat kursor diarahkan ke atasnya (hover) */
-.btn-dark:hover,
+.btn-dark, .btn-primary, .btn-gradient, .btn-confirm {
+  background: var(--button-background-color, #212529) !important;
+  color: var(--button-text-color, #ffffff) !important;
+  border-color: var(--button-background-color, #212529) !important;
+  transition: all 0.3s ease;
+}
+
+.btn-dark:hover, 
+.btn-primary:hover, 
+.btn-gradient:hover, 
+.btn-confirm:hover,
 .btn-outline-dark:hover {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--secondary-color)
-  ) !important;
-  border-color: transparent !important;
-  color: var(--bg-white) !important;
+  background: var(--button-background-hover-color, #0dcaf0) !important;
+  color: var(--button-text-hover-color, #ffffff) !important;
+  border-color: var(--button-background-hover-color, #0dcaf0) !important;
   transform: scale(1.05);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Menyelaraskan Warna Tombol Outline dengan warna primer tema */
+.btn-outline-dark {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
 /* =============================================== */
 /* Menyelaraskan Warna Tombol Outline              */
 /* =============================================== */
