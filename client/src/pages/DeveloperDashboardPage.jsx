@@ -9,13 +9,24 @@ import {
 } from "../services/apiService";
 
 const googleFonts = [
+ "Inter",
   "Poppins",
   "Roboto",
-  "Open Sans",
+  "Source Sans Pro",
   "Lato",
   "Montserrat",
   "Nunito Sans",
-  "Inter",
+  "Open Sans",
+  "Work Sans",
+  "Rubik",
+  "DM Sans",
+  // Serif (Untuk Judul atau Tampilan Klasik)
+  "Merriweather",
+  "Playfair Display",
+  "Lora",
+  // Monospace (Untuk Tampilan Teknis)
+  "Roboto Mono",
+  "Source Code Pro",
 ];
 
 const LogDetails = ({ details }) => {
