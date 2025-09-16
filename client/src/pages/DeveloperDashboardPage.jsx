@@ -18,9 +18,6 @@ const googleFonts = [
   "Inter",
 ];
 
-// ====================================================================
-// === KOMPONEN LogDetails YANG DIPERBARUI UNTUK MENAMPILKAN GAMBAR ===
-// ====================================================================
 const LogDetails = ({ details }) => {
   if (!details || typeof details !== "object") {
     return <small>{String(details)}</small>;
@@ -63,7 +60,6 @@ const LogDetails = ({ details }) => {
               <strong>Perubahan:</strong>
               <ul className="list-unstyled ps-3">
                 {Object.entries(value).map(([field, change]) => {
-                  // Jika log adalah penambahan atau penghapusan gambar (array)
                   if (Array.isArray(change)) {
                     return (
                       <li key={field}>
@@ -84,7 +80,6 @@ const LogDetails = ({ details }) => {
                       </li>
                     );
                   }
-                  // Jika log adalah perubahan teks biasa atau gambar header
                   if (
                     typeof change === "object" &&
                     change !== null &&
@@ -117,12 +112,31 @@ const LogDetails = ({ details }) => {
   );
 };
 
+// ====================================================================
+// === KOMPONEN PREVIEW YANG DIPERBARUI DENGAN PREVIEW TOMBOL DINAMIS ===
+// ====================================================================
 const ThemePreview = ({ config }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const previewStyle = {
     fontFamily: config.typography?.fontFamily || "sans-serif",
     "--preview-primary-color": config.colors?.primary || "#0d6efd",
     "--preview-font-size-base": config.typography?.baseFontSize || "16px",
-    "--preview-font-size-button": config.typography?.buttonFontSize || "1rem",
+  };
+
+  const buttonStyle = {
+    backgroundColor: config.colors?.button?.background || "#212529",
+    color: config.colors?.button?.text || "#ffffff",
+    borderColor: config.colors?.button?.background || "#212529",
+    fontSize: config.typography?.buttonFontSize || "1rem",
+    transition: "all 0.2s ease",
+  };
+
+  const buttonHoverStyle = {
+    ...buttonStyle,
+    backgroundColor: config.colors?.button?.backgroundHover || "#0dcaf0",
+    color: config.colors?.button?.textHover || "#ffffff",
+    borderColor: config.colors?.button?.backgroundHover || "#0dcaf0",
   };
 
   return (
@@ -144,13 +158,12 @@ const ThemePreview = ({ config }) => {
             pengaturan font yang Anda pilih.
           </p>
           <button
-            className="btn text-white"
-            style={{
-              backgroundColor: "var(--preview-primary-color)",
-              fontSize: "var(--preview-font-size-button)",
-            }}
+            className="btn"
+            style={isHovered ? buttonHoverStyle : buttonStyle}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
-            Tombol Aksi
+            Tombol Aksi Dinamis
           </button>
         </div>
       </div>
