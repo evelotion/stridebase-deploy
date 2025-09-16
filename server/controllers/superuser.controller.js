@@ -36,14 +36,18 @@ export const updateGlobalConfig = async (req, res, next) => {
     }
 };
 
-// @desc    Get all pending approval requests
+// @desc    Get all approval requests (not just pending)
 // @route   GET /api/superuser/approval-requests
 export const getApprovalRequests = async (req, res, next) => {
     try {
+        // HAPUS FILTER 'where: { status: "PENDING" }' untuk mengambil semua log
         const requests = await prisma.approvalRequest.findMany({
-            where: { status: "PENDING" },
-            include: { requestedBy: { select: { name: true, email: true } } },
-            orderBy: { createdAt: "desc" },
+            include: { 
+                requestedBy: { select: { name: true, email: true } },
+                reviewedBy: { select: { name: true } } // Ambil juga data admin/dev yang mereview
+            },
+            orderBy: { createdAt: "desc" }, // Urutkan berdasarkan yang terbaru
+            take: 50 // Batasi untuk 50 log terbaru agar tidak overload
         });
         res.json(requests);
     } catch (error) {

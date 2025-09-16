@@ -444,61 +444,79 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       )}
 
       {activeTab === "approvals" && (
-        <div className="table-card p-3 shadow-sm">
-          <h5 className="mb-3">Permintaan Persetujuan</h5>
-          {approvalRequests.length > 0 ? (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>Tanggal</th>
-                    <th>Tipe</th>
-                    <th>Detail</th>
-                    <th>Pemohon</th>
-                    <th className="text-end">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {approvalRequests.map((req) => (
-                    <tr key={req.id}>
-                      <td>{new Date(req.createdAt).toLocaleString("id-ID")}</td>
-                      <td>
-                        <span className="badge bg-info text-dark">
-                          {req.requestType}
+    <div className="table-card p-3 shadow-sm">
+        <h5 className="mb-3">Log Aktivitas & Persetujuan</h5>
+        {approvalRequests.length > 0 ? (
+        <div className="table-responsive">
+            <table className="table table-hover align-middle">
+            <thead className="table-light">
+                <tr>
+                <th>Tanggal</th>
+                <th>Tipe</th>
+                <th>Detail</th>
+                <th>Pemohon</th>
+                <th>Direview Oleh</th>
+                <th>Status</th>
+                <th className="text-end">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {approvalRequests.map((req) => (
+                <tr key={req.id}>
+                    <td>{new Date(req.createdAt).toLocaleString("id-ID")}</td>
+                    <td>
+                    <span className="badge bg-info text-dark">
+                        {req.requestType}
+                    </span>
+                    </td>
+                    <td style={{ maxWidth: '300px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                        <small>{JSON.stringify(req.details, null, 2)}</small>
+                    </td>
+                    <td>{req.requestedBy?.name || "N/A"}</td>
+                    <td>{req.reviewedBy?.name || "-"}</td>
+                    <td>
+                        <span className={`badge ${
+                            req.status === 'PENDING' ? 'bg-warning text-dark' :
+                            req.status === 'APPROVED' ? 'bg-success' : 'bg-danger'
+                        }`}>
+                            {req.status}
                         </span>
-                      </td>
-                      <td>{JSON.stringify(req.details)}</td>
-                      <td>{req.requestedBy?.name || "N/A"}</td>
-                      <td className="text-end">
+                    </td>
+                    <td className="text-end">
+                    {/* Tombol hanya muncul jika status PENDING */}
+                    {req.status === 'PENDING' && (
+                        <>
                         <button
-                          className="btn btn-sm btn-success me-2"
-                          onClick={() =>
+                            className="btn btn-sm btn-success me-2"
+                            onClick={() =>
                             handleResolveRequest(req.id, "APPROVED")
-                          }
+                            }
                         >
-                          Setujui
+                            Setujui
                         </button>
                         <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() =>
+                            className="btn btn-sm btn-danger"
+                            onClick={() =>
                             handleResolveRequest(req.id, "REJECTED")
-                          }
+                            }
                         >
-                          Tolak
+                            Tolak
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-muted text-center p-4">
-              Tidak ada permintaan yang menunggu persetujuan.
-            </p>
-          )}
+                        </>
+                    )}
+                    </td>
+                </tr>
+                ))}
+            </tbody>
+            </table>
         </div>
-      )}
+        ) : (
+        <p className="text-muted text-center p-4">
+            Tidak ada aktivitas atau permintaan yang menunggu persetujuan.
+        </p>
+        )}
+    </div>
+)}
 
       {activeTab === "maintenance" && (
         <div className="card card-account p-4">
