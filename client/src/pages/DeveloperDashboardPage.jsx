@@ -19,17 +19,33 @@ const googleFonts = [
 ];
 
 // ====================================================================
-// === KOMPONEN BARU UNTUK MENAMPILKAN DETAIL LOG YANG RAPIH ===
+// === KOMPONEN LogDetails YANG DIPERBARUI UNTUK MENAMPILKAN GAMBAR ===
 // ====================================================================
 const LogDetails = ({ details }) => {
   if (!details || typeof details !== "object") {
     return <small>{String(details)}</small>;
   }
 
-  // Fungsi untuk mengubah camelCase menjadi kalimat biasa
   const formatKey = (key) => {
     const result = key.replace(/([A-Z])/g, " $1");
     return result.charAt(0).toUpperCase() + result.slice(1);
+  };
+
+  const renderChangeValue = (value) => {
+    if (typeof value === "string" && value.startsWith("http")) {
+      return (
+        <a
+          href={value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-truncate d-inline-block"
+          style={{ maxWidth: "150px" }}
+        >
+          {value}
+        </a>
+      );
+    }
+    return `"${value}"`;
   };
 
   return (
@@ -46,12 +62,44 @@ const LogDetails = ({ details }) => {
             <div key={key} className="mt-2">
               <strong>Perubahan:</strong>
               <ul className="list-unstyled ps-3">
-                {Object.entries(value).map(([field, change]) => (
-                  <li key={field}>
-                    - <strong>{formatKey(field)}:</strong> "{change.from}" → "
-                    {change.to}"
-                  </li>
-                ))}
+                {Object.entries(value).map(([field, change]) => {
+                  // Jika log adalah penambahan atau penghapusan gambar (array)
+                  if (Array.isArray(change)) {
+                    return (
+                      <li key={field}>
+                        - <strong>{formatKey(field)}:</strong>
+                        <ul className="list-unstyled ps-2">
+                          {change.map((url, i) => (
+                            <li key={i}>
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Lihat Gambar
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    );
+                  }
+                  // Jika log adalah perubahan teks biasa atau gambar header
+                  if (
+                    typeof change === "object" &&
+                    change !== null &&
+                    "from" in change
+                  ) {
+                    return (
+                      <li key={field}>
+                        - <strong>{formatKey(field)}:</strong>{" "}
+                        {renderChangeValue(change.from)} →{" "}
+                        {renderChangeValue(change.to)}
+                      </li>
+                    );
+                  }
+                  return null;
+                })}
               </ul>
             </div>
           );
@@ -63,7 +111,7 @@ const LogDetails = ({ details }) => {
             </div>
           );
         }
-        return null; // Abaikan objek lain yang tidak ditangani secara spesifik
+        return null;
       })}
     </div>
   );

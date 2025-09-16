@@ -439,15 +439,12 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Update store settings by admin (with full logic and audit trail)
-// @route   PUT /api/admin/stores/:storeId/settings
 export const updateStoreSettingsByAdmin = async (req, res, next) => {
   const { storeId } = req.params;
- const { name, description, images, headerImageUrl, schedule } = req.body;
-  const adminUserId = req.user.id; // Mendapatkan ID admin yang sedang login
+  const { name, description, images, headerImageUrl, schedule } = req.body; // Nama properti sekarang `headerImageUrl`
+  const adminUserId = req.user.id;
 
   try {
-    // 1. Ambil data toko sebelum diubah untuk perbandingan
     const originalStore = await prisma.store.findUnique({
       where: { id: storeId },
     });
@@ -455,68 +452,70 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    // 2. Lakukan update pada jadwal toko
     if (schedule) {
       for (const dayKey of Object.keys(schedule)) {
         const dayData = schedule[dayKey];
-        // Pastikan dayOfWeek ada sebelum upsert
         if (dayData.dayOfWeek) {
           await prisma.storeSchedule.upsert({
-            where: {
-              storeId_dayOfWeek: {
-                storeId: storeId,
-                dayOfWeek: dayData.dayOfWeek,
-              },
-            },
-            update: {
-              openTime: dayData.opens,
-              closeTime: dayData.closes,
-              isClosed: dayData.isClosed,
-            },
-            create: {
-              storeId: storeId,
-              dayOfWeek: dayData.dayOfWeek,
-              openTime: dayData.opens,
-              closeTime: dayData.closes,
-              isClosed: dayData.isClosed,
-            },
+            where: { storeId_dayOfWeek: { storeId: storeId, dayOfWeek: dayData.dayOfWeek } },
+            update: { openTime: dayData.opens, closeTime: dayData.closes, isClosed: dayData.isClosed },
+            create: { storeId: storeId, dayOfWeek: dayData.dayOfWeek, openTime: dayData.opens, closeTime: dayData.closes, isClosed: dayData.isClosed },
           });
         }
       }
     }
 
-    // 3. Update data toko utama
     const updatedStore = await prisma.store.update({
-            where: { id: storeId },
-            data: { name, description, images, headerImageUrl }, // Nama properti sekarang sama
-        });
-
-    // 4. Buat catatan Approval Request sebagai log audit
-    await prisma.approvalRequest.create({
-      data: {
-        storeId: storeId,
-        requestType: "ADMIN_STORE_EDIT",
-        details: {
-          message: `Toko "${originalStore.name}" diubah oleh admin.`,
-          adminName: req.user.name,
-          adminEmail: req.user.email,
-          changes: {
-            name: { from: originalStore.name, to: updatedStore.name },
-            description: {
-              from: originalStore.description,
-              to: updatedStore.description,
-            },
-          },
-        },
-        status: "APPROVED",
-        requestedById: originalStore.ownerId,
-        reviewedById: adminUserId,
-      },
+      where: { id: storeId },
+      data: { name, description, images, headerImageUrl },
     });
 
+    // --- LOGIKA BARU UNTUK MENDETEKSI PERUBAHAN GAMBAR ---
+    const changes = {};
+
+    if (originalStore.name !== updatedStore.name) {
+      changes.Nama = { from: originalStore.name, to: updatedStore.name };
+    }
+    if (originalStore.description !== updatedStore.description) {
+      changes.Deskripsi = { from: originalStore.description, to: updatedStore.description };
+    }
+    if (originalStore.headerImageUrl !== updatedStore.headerImageUrl) {
+      changes.GambarHeader = { from: originalStore.headerImageUrl || "Tidak Ada", to: updatedStore.headerImageUrl };
+    }
+
+    const oldImages = new Set(originalStore.images || []);
+    const newImages = new Set(updatedStore.images || []);
+    const addedImages = [...newImages].filter(img => !oldImages.has(img));
+    const removedImages = [...oldImages].filter(img => !newImages.has(img));
+
+    if (addedImages.length > 0) {
+      changes.GambarDitambahkan = addedImages;
+    }
+    if (removedImages.length > 0) {
+      changes.GambarDihapus = removedImages;
+    }
+    // --- AKHIR LOGIKA BARU ---
+
+    if (Object.keys(changes).length > 0) { // Hanya buat log jika ada perubahan
+        await prisma.approvalRequest.create({
+            data: {
+              storeId: storeId,
+              requestType: "ADMIN_STORE_EDIT",
+              details: {
+                message: `Toko "${originalStore.name}" diubah oleh admin.`,
+                adminName: req.user.name,
+                adminEmail: req.user.email,
+                changes: changes, // Gunakan objek 'changes' yang dinamis
+              },
+              status: "APPROVED",
+              requestedById: originalStore.ownerId,
+              reviewedById: adminUserId,
+            },
+        });
+    }
+
     res.json({
-      message:
-        "Pengaturan toko berhasil diperbarui oleh Admin dan log telah dicatat.",
+      message: "Pengaturan toko berhasil diperbarui oleh Admin dan log telah dicatat.",
       store: updatedStore,
     });
   } catch (error) {
