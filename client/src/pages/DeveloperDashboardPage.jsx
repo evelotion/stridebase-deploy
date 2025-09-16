@@ -18,6 +18,57 @@ const googleFonts = [
   "Inter",
 ];
 
+// ====================================================================
+// === KOMPONEN BARU UNTUK MENAMPILKAN DETAIL LOG YANG RAPIH ===
+// ====================================================================
+const LogDetails = ({ details }) => {
+  if (!details || typeof details !== "object") {
+    return <small>{String(details)}</small>;
+  }
+
+  // Fungsi untuk mengubah camelCase menjadi kalimat biasa
+  const formatKey = (key) => {
+    const result = key.replace(/([A-Z])/g, " $1");
+    return result.charAt(0).toUpperCase() + result.slice(1);
+  };
+
+  return (
+    <div
+      style={{
+        fontSize: "0.8rem",
+        whiteSpace: "normal",
+        wordBreak: "break-word",
+      }}
+    >
+      {Object.entries(details).map(([key, value]) => {
+        if (key === "changes" && typeof value === "object" && value !== null) {
+          return (
+            <div key={key} className="mt-2">
+              <strong>Perubahan:</strong>
+              <ul className="list-unstyled ps-3">
+                {Object.entries(value).map(([field, change]) => (
+                  <li key={field}>
+                    - <strong>{formatKey(field)}:</strong> "{change.from}" → "
+                    {change.to}"
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        }
+        if (typeof value !== "object") {
+          return (
+            <div key={key}>
+              <strong>{formatKey(key)}:</strong> {String(value)}
+            </div>
+          );
+        }
+        return null; // Abaikan objek lain yang tidak ditangani secara spesifik
+      })}
+    </div>
+  );
+};
+
 const ThemePreview = ({ config }) => {
   const previewStyle = {
     fontFamily: config.typography?.fontFamily || "sans-serif",
@@ -238,7 +289,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
             className={`nav-link ${activeTab === "approvals" ? "active" : ""}`}
             onClick={() => setActiveTab("approvals")}
           >
-            Persetujuan{" "}
+            Log Aktivitas{" "}
             <span className="badge bg-danger ms-1">
               {
                 approvalRequests.filter((req) => req.status === "PENDING")
@@ -415,7 +466,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       }
                     />
                   </div>
-
                   <div className="mb-3">
                     <label htmlFor="displayFontSize" className="form-label">
                       Ukuran Font Display:{" "}
@@ -433,7 +483,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       }
                     />
                   </div>
-
                   <div className="mb-3">
                     <label htmlFor="buttonLgFontSize" className="form-label">
                       Ukuran Font Tombol (Besar):{" "}
@@ -451,7 +500,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       }
                     />
                   </div>
-
                   <hr className="my-4" />
                   <h6 className="mb-3 fw-bold">Warna Tombol Utama</h6>
                   <div className="mb-3">
@@ -583,14 +631,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                           {req.requestType}
                         </span>
                       </td>
-                      <td
-                        style={{
-                          maxWidth: "300px",
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        <small>{JSON.stringify(req.details, null, 2)}</small>
+                      <td style={{ maxWidth: "300px" }}>
+                        <LogDetails details={req.details} />
                       </td>
                       <td>{req.requestedBy?.name || "N/A"}</td>
                       <td>{req.reviewedBy?.name || "-"}</td>
@@ -646,9 +688,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         <div className="card card-account p-4">
           <h5 className="mb-4 fw-bold text-danger">Zona Berbahaya</h5>
           <div className="alert alert-danger">
-            <strong>Peringatan:</strong> Aksi di bawah ini akan menghapus semua
-            data transaksi dan mengembalikannya ke kondisi awal. Lanjutkan
-            dengan hati-hati.
+            <strong>Peringatan:</strong> Aksi ini akan menghapus semua data
+            transaksi dan mengembalikannya ke kondisi awal. Lanjutkan dengan
+            hati-hati.
           </div>
           <button
             className="btn btn-outline-danger"
