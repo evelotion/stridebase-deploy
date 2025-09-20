@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js (Versi Lengkap Final dengan Logika Tier & Biaya)
+// File: server/controllers/admin.controller.js (Versi Final Lengkap dengan Alur Persetujuan Developer)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -295,36 +295,6 @@ export const getReportData = async (req, res, next) => {
     end.setHours(23, 59, 59, 999);
     const dateFilter = { createdAt: { gte: start, lte: end } };
 
-    const totalRevenuePromise = prisma.payment.aggregate({
-      _sum: { amount: true },
-      where: { status: "paid", ...dateFilter },
-    });
-    const totalBookingsPromise = prisma.booking.count({ where: dateFilter });
-    const totalPlatformEarningsPromise = prisma.platformEarning.aggregate({
-      _sum: { earnedAmount: true },
-      where: dateFilter,
-    });
-    const latestTransactionsPromise = prisma.payment.findMany({
-      where: { status: "paid", ...dateFilter },
-      take: 5,
-      orderBy: { createdAt: "desc" },
-      include: {
-        booking: {
-          include: {
-            user: { select: { name: true } },
-            store: { select: { name: true } },
-          },
-        },
-      },
-    });
-    const topStoresPromise = prisma.booking.groupBy({
-      by: ["storeId"],
-      where: { ...dateFilter },
-      _count: { id: true },
-      orderBy: { _count: { id: "desc" } },
-      take: 5,
-    });
-
     const [
       totalRevenueResult,
       totalBookings,
@@ -332,11 +302,35 @@ export const getReportData = async (req, res, next) => {
       latestTransactions,
       topStoreIds,
     ] = await Promise.all([
-      totalRevenuePromise,
-      totalBookingsPromise,
-      totalPlatformEarningsPromise,
-      latestTransactionsPromise,
-      topStoresPromise,
+      prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: "paid", ...dateFilter },
+      }),
+      prisma.booking.count({ where: dateFilter }),
+      prisma.platformEarning.aggregate({
+        _sum: { earnedAmount: true },
+        where: dateFilter,
+      }),
+      prisma.payment.findMany({
+        where: { status: "paid", ...dateFilter },
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: {
+          booking: {
+            include: {
+              user: { select: { name: true } },
+              store: { select: { name: true } },
+            },
+          },
+        },
+      }),
+      prisma.booking.groupBy({
+        by: ["storeId"],
+        where: { ...dateFilter },
+        _count: { id: true },
+        orderBy: { _count: { id: "desc" } },
+        take: 5,
+      }),
     ]);
 
     const storeDetails = await prisma.store.findMany({
@@ -435,7 +429,7 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Update store settings by Admin
+// @desc    Update store settings by Admin, creating an approval request for business model changes
 // @route   PUT /api/admin/stores/:storeId/settings
 export const updateStoreSettingsByAdmin = async (req, res, next) => {
   const { storeId } = req.params;
@@ -486,25 +480,65 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
         }
       }
     }
-
-    const updatedStore = await prisma.store.update({
+    await prisma.store.update({
       where: { id: storeId },
-      data: {
-        name,
-        description,
-        images,
-        headerImageUrl,
-        tier,
-        commissionRate: tier === "BASIC" ? parseFloat(commissionRate) : 0,
-        subscriptionFee: tier === "PRO" ? parseFloat(subscriptionFee) : null,
-      },
+      data: { name, description, images, headerImageUrl },
     });
 
-    // ... (logika approval request bisa ditambahkan di sini jika perlu) ...
+    const hasBusinessModelChanged =
+      originalStore.tier !== tier ||
+      originalStore.commissionRate !== parseFloat(commissionRate) ||
+      originalStore.subscriptionFee !== parseFloat(subscriptionFee);
+
+    if (hasBusinessModelChanged) {
+      const existingRequest = await prisma.approvalRequest.findFirst({
+        where: {
+          storeId: storeId,
+          status: "PENDING",
+          requestType: "BUSINESS_MODEL_CHANGE",
+        },
+      });
+
+      if (existingRequest) {
+        return res
+          .status(400)
+          .json({
+            message:
+              "Sudah ada permintaan perubahan model bisnis untuk toko ini yang sedang menunggu persetujuan.",
+          });
+      }
+
+      await prisma.approvalRequest.create({
+        data: {
+          storeId: storeId,
+          requestType: "BUSINESS_MODEL_CHANGE",
+          details: {
+            message: `Admin (${req.user.name}) meminta perubahan model bisnis untuk toko "${originalStore.name}".`,
+            from: {
+              tier: originalStore.tier,
+              commissionRate: originalStore.commissionRate,
+              subscriptionFee: originalStore.subscriptionFee,
+            },
+            to: {
+              tier: tier,
+              commissionRate: tier === "BASIC" ? parseFloat(commissionRate) : 0,
+              subscriptionFee:
+                tier === "PRO" ? parseFloat(subscriptionFee) : null,
+            },
+          },
+          status: "PENDING",
+          requestedById: adminUserId,
+        },
+      });
+
+      return res.json({
+        message:
+          "Perubahan profil berhasil disimpan. Perubahan model bisnis telah dikirim untuk persetujuan Developer.",
+      });
+    }
 
     res.json({
-      message: "Pengaturan toko berhasil diperbarui oleh Admin.",
-      store: updatedStore,
+      message: "Pengaturan toko berhasil diperbarui.",
     });
   } catch (error) {
     next(error);
@@ -667,7 +701,6 @@ export const createStoreInvoice = async (req, res, next) => {
       invoiceAmount = store.subscriptionFee || 0;
       invoiceDescription = `Biaya Langganan StrideBase PRO Periode ${period}`;
     } else {
-      // Asumsi tier BASIC menggunakan komisi
       const [year, month] = period.split("-");
       const startDate = new Date(year, parseInt(month) - 1, 1);
       const endDate = new Date(year, parseInt(month), 0, 23, 59, 59);
@@ -677,10 +710,7 @@ export const createStoreInvoice = async (req, res, next) => {
         where: {
           booking: { storeId: storeId },
           status: "paid",
-          createdAt: {
-            gte: startDate,
-            lte: endDate,
-          },
+          createdAt: { gte: startDate, lte: endDate },
         },
       });
 
