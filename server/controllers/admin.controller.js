@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js (Versi Final Lengkap dengan Alur Persetujuan Developer)
+// File: server/controllers/admin.controller.js (Versi Final dengan Logika Tier & Biaya)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -207,11 +207,9 @@ export const updateBookingStatus = async (req, res, next) => {
 
   try {
     const booking = await prisma.booking.findUnique({ where: { id } });
-
     if (!booking) {
       return res.status(404).json({ message: "Booking tidak ditemukan." });
     }
-
     const updatedBooking = await prisma.booking.update({
       where: { id },
       data: { status: newStatus },
@@ -271,9 +269,7 @@ export const getAllReviews = async (req, res, next) => {
 export const deleteReview = async (req, res, next) => {
   const { id } = req.params;
   try {
-    await prisma.review.delete({
-      where: { id: id },
-    });
+    await prisma.review.delete({ where: { id: id } });
     res.json({ message: "Ulasan berhasil dihapus secara permanen." });
   } catch (error) {
     if (error.code === "P2025") {
@@ -398,7 +394,7 @@ export const updateOperationalSettings = async (req, res, next) => {
         enableGlobalAnnouncement: enableGlobalAnnouncement,
       },
     };
-    const updatedSetting = await prisma.globalSetting.update({
+    await prisma.globalSetting.update({
       where: { key: "themeConfig" },
       data: { value: newConfigValue },
     });

@@ -1,8 +1,12 @@
-// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Edit)
+// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Tagih & Modal)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom"; // Pastikan Link diimpor
-import { getAllStoresForAdmin, updateStoreStatus } from "../services/apiService";
+import { Link } from "react-router-dom";
+import {
+  getAllStoresForAdmin,
+  updateStoreStatus,
+  createStoreInvoiceByAdmin,
+} from "../services/apiService";
 
 const AdminStoresPage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
@@ -10,6 +14,14 @@ const AdminStoresPage = ({ showMessage }) => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+
+  // State baru untuk modal invoice
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [currentStore, setCurrentStore] = useState(null);
+  const [invoiceDetails, setInvoiceDetails] = useState({
+    period: "",
+    notes: "",
+  });
 
   const fetchStores = useCallback(async () => {
     setLoading(true);
@@ -31,8 +43,8 @@ const AdminStoresPage = ({ showMessage }) => {
   const handleStatusChange = async (storeId, newStatus) => {
     try {
       await updateStoreStatus(storeId, newStatus);
-      setStores(prevStores =>
-        prevStores.map(store =>
+      setStores((prevStores) =>
+        prevStores.map((store) =>
           store.id === storeId ? { ...store, storeStatus: newStatus } : store
         )
       );
@@ -42,34 +54,81 @@ const AdminStoresPage = ({ showMessage }) => {
     }
   };
 
+  const handleOpenInvoiceModal = (store) => {
+    setCurrentStore(store);
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const year = lastMonth.getFullYear();
+    const month = (lastMonth.getMonth() + 1).toString().padStart(2, "0");
+
+    setInvoiceDetails({
+      period: `${year}-${month}`,
+      notes: `Tagihan untuk ${store.name} periode ${lastMonth.toLocaleString(
+        "id-ID",
+        { month: "long", year: "numeric" }
+      )}.`,
+    });
+    setShowInvoiceModal(true);
+  };
+
+  const handleCloseInvoiceModal = () => {
+    setShowInvoiceModal(false);
+    setCurrentStore(null);
+  };
+
+  const handleInvoiceSubmit = async (e) => {
+    e.preventDefault();
+    if (!currentStore) return;
+    try {
+      await createStoreInvoiceByAdmin(currentStore.id, {
+        period: invoiceDetails.period,
+        notes: invoiceDetails.notes,
+      });
+      showMessage("Invoice berhasil dikirim ke mitra.", "Success");
+      handleCloseInvoiceModal();
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
+    }
+  };
+
   const getStatusBadge = (status) => {
     switch (status) {
-      case "active": return "bg-success";
-      case "pending": return "bg-warning text-dark";
-      case "rejected": return "bg-danger";
-      case "inactive": return "bg-secondary";
-      default: return "bg-light text-dark";
+      case "active":
+        return "bg-success";
+      case "pending":
+        return "bg-warning text-dark";
+      case "rejected":
+        return "bg-danger";
+      case "inactive":
+        return "bg-secondary";
+      default:
+        return "bg-light text-dark";
     }
   };
 
   const filteredStores = useMemo(() => {
-    return stores.filter(store => {
-      const matchesSearch = store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            store.owner.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = filterStatus === 'all' || store.storeStatus === filterStatus;
+    return stores.filter((store) => {
+      const matchesSearch =
+        store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (store.owner?.name || store.owner || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        filterStatus === "all" || store.storeStatus === filterStatus;
       return matchesSearch && matchesStatus;
     });
   }, [stores, searchTerm, filterStatus]);
 
   if (loading) return <div className="p-4">Memuat data toko...</div>;
-  if (error && stores.length === 0) return <div className="p-4 text-danger">Error: {error}</div>;
+  if (error && stores.length === 0)
+    return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
     <div className="container-fluid p-4">
-       <div className="d-flex justify-content-between align-items-center mb-4">
-      <h2 className="fs-2 mb-0">Manajemen Toko</h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="fs-2 mb-0">Manajemen Toko</h2>
         <Link to="/admin/stores/new" className="btn btn-primary">
-            <i className="fas fa-plus me-2"></i>Tambah Toko Baru
+          <i className="fas fa-plus me-2"></i>Tambah Toko Baru
         </Link>
       </div>
       <div className="card card-account p-3 mb-4">
@@ -80,11 +139,15 @@ const AdminStoresPage = ({ showMessage }) => {
               className="form-control"
               placeholder="Cari toko berdasarkan nama atau pemilik..."
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-4">
-            <select className="form-select" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+            <select
+              className="form-select"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
               <option value="all">Semua Status</option>
               <option value="active">Aktif</option>
               <option value="pending">Menunggu Persetujuan</option>
@@ -110,29 +173,87 @@ const AdminStoresPage = ({ showMessage }) => {
             </thead>
             <tbody>
               {filteredStores.length > 0 ? (
-                filteredStores.map(store => (
+                filteredStores.map((store) => (
                   <tr key={store.id}>
-                    <td><span className="fw-bold">{store.name}</span></td>
-                    <td>{store.owner}</td>
-                    <td><span className={`badge ${getStatusBadge(store.storeStatus)}`}>{store.storeStatus}</span></td>
-                    <td><span className={`badge ${store.tier === 'PRO' ? 'bg-warning text-dark' : 'bg-info text-dark'}`}>{store.tier}</span></td>
-                    <td><i className="fas fa-star text-warning me-1"></i> {store.rating || 'N/A'}</td>
+                    <td>
+                      <span className="fw-bold">{store.name}</span>
+                    </td>
+                    <td>{store.owner.name || store.owner}</td>
+                    <td>
+                      <span
+                        className={`badge ${getStatusBadge(store.storeStatus)}`}
+                      >
+                        {store.storeStatus}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          store.tier === "PRO"
+                            ? "bg-warning text-dark"
+                            : "bg-info text-dark"
+                        }`}
+                      >
+                        {store.tier}
+                      </span>
+                    </td>
+                    <td>
+                      <i className="fas fa-star text-warning me-1"></i>{" "}
+                      {store.rating || "N/A"}
+                    </td>
                     <td className="text-end">
-                      
-                      {/* --- TOMBOL BARU DITAMBAHKAN DI SINI --- */}
-                      <Link to={`/admin/stores/${store.id}/settings`} className="btn btn-sm btn-primary me-2">
-                        Kelola Toko
+                      <button
+                        className="btn btn-sm btn-info me-2"
+                        onClick={() => handleOpenInvoiceModal(store)}
+                      >
+                        Tagih
+                      </button>
+                      <Link
+                        to={`/admin/stores/${store.id}/settings`}
+                        className="btn btn-sm btn-primary me-2"
+                      >
+                        Kelola
                       </Link>
-                      {/* --- AKHIR TOMBOL BARU --- */}
-
                       <div className="dropdown d-inline-block">
-                        <button className="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button
+                          className="btn btn-sm btn-outline-dark dropdown-toggle"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        >
                           Ubah Status
                         </button>
                         <ul className="dropdown-menu dropdown-menu-end">
-                          <li><button className="dropdown-item" onClick={() => handleStatusChange(store.id, 'active')}>Setujui (Aktif)</button></li>
-                          <li><button className="dropdown-item" onClick={() => handleStatusChange(store.id, 'inactive')}>Nonaktifkan</button></li>
-                          <li><button className="dropdown-item" onClick={() => handleStatusChange(store.id, 'rejected')}>Tolak</button></li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(store.id, "active")
+                              }
+                            >
+                              Setujui (Aktif)
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(store.id, "inactive")
+                              }
+                            >
+                              Nonaktifkan
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() =>
+                                handleStatusChange(store.id, "rejected")
+                              }
+                            >
+                              Tolak
+                            </button>
+                          </li>
                         </ul>
                       </div>
                     </td>
@@ -141,7 +262,9 @@ const AdminStoresPage = ({ showMessage }) => {
               ) : (
                 <tr>
                   <td colSpan="6" className="text-center py-4">
-                    <p className="text-muted mb-0">Tidak ada toko yang cocok dengan kriteria.</p>
+                    <p className="text-muted mb-0">
+                      Tidak ada toko yang cocok dengan kriteria.
+                    </p>
                   </td>
                 </tr>
               )}
@@ -149,6 +272,87 @@ const AdminStoresPage = ({ showMessage }) => {
           </table>
         </div>
       </div>
+
+      {showInvoiceModal && currentStore && (
+        <>
+          <div
+            className="modal fade show"
+            style={{ display: "block" }}
+            tabIndex="-1"
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">
+                    Buat Tagihan untuk {currentStore.name}
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={handleCloseInvoiceModal}
+                  ></button>
+                </div>
+                <form onSubmit={handleInvoiceSubmit}>
+                  <div className="modal-body">
+                    <p className="text-muted">
+                      Sistem akan menghitung jumlah tagihan secara otomatis
+                      berdasarkan tier toko.
+                    </p>
+                    <div className="mb-3">
+                      <label htmlFor="period" className="form-label">
+                        Periode Tagihan (YYYY-MM)
+                      </label>
+                      <input
+                        type="month"
+                        className="form-control"
+                        id="period"
+                        value={invoiceDetails.period}
+                        onChange={(e) =>
+                          setInvoiceDetails({
+                            ...invoiceDetails,
+                            period: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="notes" className="form-label">
+                        Catatan (Opsional)
+                      </label>
+                      <textarea
+                        className="form-control"
+                        id="notes"
+                        rows="3"
+                        value={invoiceDetails.notes}
+                        onChange={(e) =>
+                          setInvoiceDetails({
+                            ...invoiceDetails,
+                            notes: e.target.value,
+                          })
+                        }
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={handleCloseInvoiceModal}
+                    >
+                      Batal
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      Kirim Tagihan
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show"></div>
+        </>
+      )}
     </div>
   );
 };

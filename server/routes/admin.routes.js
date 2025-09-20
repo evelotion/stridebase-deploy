@@ -1,4 +1,4 @@
-// File: server/routes/admin.routes.js (Versi Perbaikan Final Lengkap)
+// File: server/routes/admin.routes.js (Versi Final dengan Rute Invoice)
 
 import express from 'express';
 import { authenticateToken, checkRole } from '../middleware/authenticateToken.js';
@@ -18,7 +18,6 @@ import {
     getReportData,
     getOperationalSettings,
     updateOperationalSettings,
-    // --- IMPOR YANG HILANG ADA DI SINI ---
     getStoreSettingsForAdmin,
     updateStoreSettingsByAdmin,
     uploadAdminPhoto,
@@ -26,7 +25,8 @@ import {
     getAllBannersForAdmin,
     createBanner,
     updateBanner,
-    deleteBanner
+    deleteBanner,
+    createStoreInvoice // <-- 1. Impor fungsi baru di sini
 } from '../controllers/admin.controller.js';
 import multer from 'multer';
 
@@ -52,6 +52,7 @@ router.patch('/stores/:id/status', updateStoreStatus);
 router.get('/stores/:storeId/settings', getStoreSettingsForAdmin);
 router.put('/stores/:storeId/settings', updateStoreSettingsByAdmin);
 router.post('/stores/upload-photo', upload.single('photo'), uploadAdminPhoto);
+router.post('/stores/:storeId/invoices', createStoreInvoice); // <-- 2. Tambahkan rute baru di sini
 
 // Payout Management
 router.get('/payout-requests', getPayoutRequests);

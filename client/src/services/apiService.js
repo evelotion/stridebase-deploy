@@ -29,6 +29,7 @@ const apiRequest = async (endpoint, method = 'GET', body = null, isFormData = fa
             const errorData = await response.json().catch(() => ({ message: response.statusText }));
             throw new Error(errorData.message || 'Terjadi kesalahan pada server');
         }
+        // Handle 204 No Content response
         return response.status === 204 ? null : await response.json();
     } catch (error) {
         console.error(`API Error on ${method} ${endpoint}:`, error);
@@ -106,6 +107,7 @@ export const updateAdminSettings = (configData) => apiRequest('/api/admin/settin
 export const getStoreSettingsForAdmin = (storeId) => apiRequest(`/api/admin/stores/${storeId}/settings`);
 export const updateStoreSettingsByAdmin = (storeId, settingsData) => apiRequest(`/api/admin/stores/${storeId}/settings`, 'PUT', settingsData);
 export const uploadAdminPhoto = (formData) => apiRequest('/api/admin/stores/upload-photo', 'POST', formData, true);
+export const createStoreInvoiceByAdmin = (storeId, invoiceData) => apiRequest(`/api/admin/stores/${storeId}/invoices`, 'POST', invoiceData); // <-- TAMBAHKAN FUNGSI BARU INI
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest('/api/superuser/config');

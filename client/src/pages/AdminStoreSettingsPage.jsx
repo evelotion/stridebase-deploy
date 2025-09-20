@@ -70,7 +70,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   };
 
   const handleSetHeaderImage = (imageUrl) => {
-    // Simpan perubahan langsung saat header diubah
     handleSaveChanges({ ...store, headerImageUrl: imageUrl });
   };
 
@@ -87,7 +86,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   ) => {
     setIsSaving(true);
     try {
-      // Kirim semua data yang relevan, termasuk tier dan biayanya
       const payload = {
         name: dataToSave.name,
         description: dataToSave.description,
@@ -99,10 +97,11 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
         subscriptionFee: dataToSave.subscriptionFee,
       };
 
-      await updateStoreSettingsByAdmin(storeId, payload);
-      setStore(dataToSave); // Perbarui state lokal agar UI sinkron
+      const response = await updateStoreSettingsByAdmin(storeId, payload);
+
+      setStore(dataToSave);
       setSchedule(newSchedule);
-      showMessage("Perubahan berhasil disimpan!");
+      showMessage(response.message, "Success");
     } catch (err) {
       showMessage(err.message, "Error");
     } finally {
@@ -123,7 +122,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
         ...store,
         images: [...(store.images || []), result.filePath],
       };
-      // Langsung simpan setelah upload berhasil
       await handleSaveChanges(updatedStoreWithNewImage);
       showMessage("Foto berhasil diunggah dan disimpan!");
     } catch (err) {
@@ -149,7 +147,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
       headerImageUrl: newHeader,
     };
 
-    // Langsung simpan setelah hapus
     await handleSaveChanges(updatedStoreWithoutImage);
     showMessage("Foto berhasil dihapus dan perubahan disimpan!");
   };
@@ -380,6 +377,10 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
 
         {activeTab === "business" && (
           <div>
+            <div className="alert alert-info small">
+              Perubahan pada bagian ini memerlukan persetujuan dari{" "}
+              <strong>Developer</strong> sebelum diterapkan.
+            </div>
             <div className="mb-3">
               <label htmlFor="tier" className="form-label">
                 Tipe Toko
@@ -396,7 +397,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
               </select>
             </div>
 
-            {/* Input Kondisional */}
             {store.tier === "BASIC" ? (
               <div className="mb-4">
                 <label htmlFor="commissionRate" className="form-label">
