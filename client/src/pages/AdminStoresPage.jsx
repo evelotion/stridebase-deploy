@@ -22,6 +22,7 @@ const AdminStoresPage = ({ showMessage }) => {
     period: "",
     notes: "",
   });
+  const [isSubmittingInvoice, setIsSubmittingInvoice] = useState(false);
 
   const fetchStores = useCallback(async () => {
     setLoading(true);
@@ -79,15 +80,21 @@ const AdminStoresPage = ({ showMessage }) => {
   const handleInvoiceSubmit = async (e) => {
     e.preventDefault();
     if (!currentStore) return;
+    setIsSubmittingInvoice(true);
     try {
-      await createStoreInvoiceByAdmin(currentStore.id, {
+      const response = await createStoreInvoiceByAdmin(currentStore.id, {
         period: invoiceDetails.period,
         notes: invoiceDetails.notes,
       });
-      showMessage("Invoice berhasil dikirim ke mitra.", "Success");
+      showMessage(
+        response.message || "Invoice berhasil dikirim ke mitra.",
+        "Success"
+      );
       handleCloseInvoiceModal();
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
+    } finally {
+      setIsSubmittingInvoice(false);
     }
   };
 
@@ -108,11 +115,10 @@ const AdminStoresPage = ({ showMessage }) => {
 
   const filteredStores = useMemo(() => {
     return stores.filter((store) => {
+      const ownerName = store.owner?.name || store.owner || "";
       const matchesSearch =
         store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (store.owner?.name || store.owner || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        ownerName.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
         filterStatus === "all" || store.storeStatus === filterStatus;
       return matchesSearch && matchesStatus;
@@ -178,7 +184,7 @@ const AdminStoresPage = ({ showMessage }) => {
                     <td>
                       <span className="fw-bold">{store.name}</span>
                     </td>
-                    <td>{store.owner.name || store.owner}</td>
+                    <td>{store.owner?.name || store.owner}</td>
                     <td>
                       <span
                         className={`badge ${getStatusBadge(store.storeStatus)}`}
@@ -202,12 +208,14 @@ const AdminStoresPage = ({ showMessage }) => {
                       {store.rating || "N/A"}
                     </td>
                     <td className="text-end">
-                      <button
-                        className="btn btn-sm btn-info me-2"
-                        onClick={() => handleOpenInvoiceModal(store)}
-                      >
-                        Tagih
-                      </button>
+                      {store.tier === "PRO" && (
+                        <button
+                          className="btn btn-sm btn-info me-2"
+                          onClick={() => handleOpenInvoiceModal(store)}
+                        >
+                          Tagih PRO
+                        </button>
+                      )}
                       <Link
                         to={`/admin/stores/${store.id}/settings`}
                         className="btn btn-sm btn-primary me-2"
@@ -295,8 +303,8 @@ const AdminStoresPage = ({ showMessage }) => {
                 <form onSubmit={handleInvoiceSubmit}>
                   <div className="modal-body">
                     <p className="text-muted">
-                      Sistem akan menghitung jumlah tagihan secara otomatis
-                      berdasarkan tier toko.
+                      Sistem akan menagih biaya langganan PRO secara otomatis
+                      berdasarkan pengaturan toko.
                     </p>
                     <div className="mb-3">
                       <label htmlFor="period" className="form-label">
@@ -342,8 +350,12 @@ const AdminStoresPage = ({ showMessage }) => {
                     >
                       Batal
                     </button>
-                    <button type="submit" className="btn btn-primary">
-                      Kirim Tagihan
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={isSubmittingInvoice}
+                    >
+                      {isSubmittingInvoice ? "Mengirim..." : "Kirim Tagihan"}
                     </button>
                   </div>
                 </form>
