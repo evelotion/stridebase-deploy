@@ -1,4 +1,4 @@
-// File: server/prisma/seed.cjs (Perbaikan Final dengan images dan alamat yang benar)
+// File: server/prisma/seed.cjs (Versi Final dengan subscriptionFee)
 
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
@@ -33,7 +33,6 @@ async function main() {
 
   console.log("👤 [SEED] Membuat atau memperbarui pengguna...");
   const passwordHash = await bcrypt.hash("password123", 10);
-
   const dev = await prisma.user.upsert({
     where: { email: "developer@stridebase.com" },
     update: { password: passwordHash, name: "Developer Stride", isEmailVerified: true },
@@ -90,13 +89,12 @@ async function main() {
   });
   console.log(`✅ [SEED] Pengguna berhasil dibuat.`);
 
-  // --- PERBAIKAN DI SINI ---
   await prisma.address.create({
     data: {
       userId: cust1.id,
       label: "Rumah",
-      recipientName: "Siti Rahayu", // Field yang hilang ditambahkan
-      phoneNumber: "081234567890", // Field yang hilang ditambahkan
+      recipientName: "Siti Rahayu",
+      phoneNumber: "081234567890",
       street: "Jl. Melati No. 123",
       city: "Jakarta Timur",
       province: "DKI Jakarta",
@@ -106,7 +104,6 @@ async function main() {
     },
   });
   console.log("✅ [SEED] Alamat untuk customer berhasil dibuat.");
-
   console.log("🏪 [SEED] Membuat data toko...");
   const store1 = await prisma.store.create({
     data: {
@@ -116,6 +113,7 @@ async function main() {
       ownerId: mitra1.id,
       storeStatus: "active",
       tier: "PRO",
+      subscriptionFee: 99000, // <-- Diperbarui
       rating: 4.8,
       headerImageUrl:
         "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
@@ -134,6 +132,7 @@ async function main() {
       ownerId: mitra2.id,
       storeStatus: "active",
       tier: "BASIC",
+      commissionRate: 15, // <-- Diperbarui
       rating: 4.5,
       headerImageUrl:
         "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",

@@ -119,34 +119,34 @@ model User {
   processedPayouts   PayoutRequest[]   @relation("ProcessedPayouts")
   status             String            @default("active") // Menambahkan status user
 }
-
 model Store {
-  id                 String            @id @default(cuid())
-  name               String
-  location           String
-  latitude           Float?
-  longitude          Float?
-  description        String?           @db.Text
-  headerImageUrl     String?
-  images             String[]          // PERBAIKAN: Menambahkan kolom images
-  owner              User              @relation(fields: [ownerId], references: [id])
-  ownerId            String
-  storeStatus        StoreStatus       @default(pending)
-  billingType        String            @default("COMMISSION")
-  commissionRate     Float             @default(10)
-  tier               Tier              @default(BASIC)
-  rating             Float             @default(0)
-  photoLimit         Int               @default(5) // Menambahkan batas foto
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  services           Service[]
-  bookings           Booking[]
-  schedules          StoreSchedule[]
-  approvalRequests   ApprovalRequest[]
-  reviews            Review[]
-  promos             StorePromo[]
-  wallet             StoreWallet?
-  payoutRequests     PayoutRequest[]
+  id               String            @id @default(cuid())
+  name             String
+  location         String
+  latitude         Float?
+  longitude        Float?
+  description      String?           @db.Text
+  headerImageUrl   String?
+  images           String[]
+  owner            User              @relation(fields: [ownerId], references: [id])
+  ownerId          String
+  storeStatus      StoreStatus       @default(pending)
+  billingType      String            @default("COMMISSION")
+  commissionRate   Float             @default(10)
+  subscriptionFee  Float?            // Kolom baru untuk biaya langganan PRO
+  tier             Tier              @default(BASIC)
+  rating           Float             @default(0)
+  photoLimit       Int               @default(5)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  services         Service[]
+  bookings         Booking[]
+  schedules        StoreSchedule[]
+  approvalRequests ApprovalRequest[]
+  reviews          Review[]
+  promos           StorePromo[]
+  wallet           StoreWallet?
+  payoutRequests   PayoutRequest[]
 
   @@index([ownerId])
   @@index([storeStatus])

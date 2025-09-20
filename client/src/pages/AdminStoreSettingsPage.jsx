@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoreSettingsPage.jsx (Perbaikan Final v2)
+// File: client/src/pages/AdminStoreSettingsPage.jsx (Versi Final Lengkap dengan Pengaturan Tier)
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -70,8 +70,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   };
 
   const handleSetHeaderImage = (imageUrl) => {
-    const updatedStoreData = { ...store, headerImageUrl: imageUrl };
-    handleSaveChanges(updatedStoreData);
+    handleSaveChanges({ ...store, headerImageUrl: imageUrl });
   };
 
   const handleScheduleChange = (day, field, value) => {
@@ -87,15 +86,17 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   ) => {
     setIsSaving(true);
     try {
-      // --- PERBAIKAN UTAMA DI SINI ---
+      // Kirim semua data yang relevan, termasuk tier dan biayanya
       const payload = {
         name: dataToSave.name,
         description: dataToSave.description,
         images: dataToSave.images,
-        headerImageUrl: dataToSave.headerImageUrl, // Nama key sekarang `headerImageUrl`
+        headerImageUrl: dataToSave.headerImageUrl,
         schedule: newSchedule,
+        tier: dataToSave.tier,
+        commissionRate: dataToSave.commissionRate,
+        subscriptionFee: dataToSave.subscriptionFee,
       };
-      // --- AKHIR PERBAIKAN ---
 
       await updateStoreSettingsByAdmin(storeId, payload);
       setStore(dataToSave); // Perbarui state lokal agar UI sinkron
@@ -172,7 +173,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
           className="btn btn-primary"
           disabled={isSaving || isUploading}
         >
-          {isSaving ? "Menyimpan..." : "Simpan Perubahan Teks & Jadwal"}
+          {isSaving ? "Menyimpan..." : "Simpan Semua Perubahan"}
         </button>
       </div>
 
@@ -192,6 +193,15 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
               onClick={() => setActiveTab("schedule")}
             >
               Jadwal Operasional
+            </button>
+          </li>
+          {/* TAB BARU */}
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "business" ? "active" : ""}`}
+              onClick={() => setActiveTab("business")}
+            >
+              Bisnis Model
             </button>
           </li>
         </ul>
@@ -364,6 +374,60 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
               </div>
             ))}
           </form>
+        )}
+
+        {/* KONTEN TAB BARU */}
+        {activeTab === "business" && (
+          <div>
+            <div className="mb-3">
+              <label htmlFor="tier" className="form-label">
+                Tipe Toko
+              </label>
+              <select
+                className="form-select"
+                id="tier"
+                name="tier"
+                value={store.tier}
+                onChange={handleProfileChange}
+              >
+                <option value="BASIC">BASIC (Komisi)</option>
+                <option value="PRO">PRO (Langganan)</option>
+              </select>
+            </div>
+
+            {/* Input Kondisional */}
+            {store.tier === "BASIC" ? (
+              <div className="mb-4">
+                <label htmlFor="commissionRate" className="form-label">
+                  Persentase Komisi (%)
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="commissionRate"
+                  name="commissionRate"
+                  value={store.commissionRate || ""}
+                  onChange={handleProfileChange}
+                  required
+                />
+              </div>
+            ) : (
+              <div className="mb-4">
+                <label htmlFor="subscriptionFee" className="form-label">
+                  Biaya Langganan Bulanan (Rp)
+                </label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="subscriptionFee"
+                  name="subscriptionFee"
+                  value={store.subscriptionFee || ""}
+                  onChange={handleProfileChange}
+                  required
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
