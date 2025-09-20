@@ -70,6 +70,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
   };
 
   const handleSetHeaderImage = (imageUrl) => {
+    // Simpan perubahan langsung saat header diubah
     handleSaveChanges({ ...store, headerImageUrl: imageUrl });
   };
 
@@ -122,6 +123,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
         ...store,
         images: [...(store.images || []), result.filePath],
       };
+      // Langsung simpan setelah upload berhasil
       await handleSaveChanges(updatedStoreWithNewImage);
       showMessage("Foto berhasil diunggah dan disimpan!");
     } catch (err) {
@@ -147,6 +149,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
       headerImageUrl: newHeader,
     };
 
+    // Langsung simpan setelah hapus
     await handleSaveChanges(updatedStoreWithoutImage);
     showMessage("Foto berhasil dihapus dan perubahan disimpan!");
   };
@@ -195,7 +198,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
               Jadwal Operasional
             </button>
           </li>
-          {/* TAB BARU */}
           <li className="nav-item">
             <button
               className={`nav-link ${activeTab === "business" ? "active" : ""}`}
@@ -376,7 +378,6 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
           </form>
         )}
 
-        {/* KONTEN TAB BARU */}
         {activeTab === "business" && (
           <div>
             <div className="mb-3">
