@@ -1,4 +1,4 @@
-// File: client/src/pages/DeveloperDashboardPage.jsx (Versi Lengkap Final)
+// File: client/src/pages/DeveloperDashboardPage.jsx (Dengan Perbaikan Tampilan V2)
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -33,24 +33,20 @@ const LogDetails = ({ details }) => {
   if (!details || typeof details !== "object") {
     return <small>{String(details)}</small>;
   }
-
   const formatKey = (key) => {
     const result = key.replace(/([A-Z])/g, " $1");
     return result.charAt(0).toUpperCase() + result.slice(1);
   };
-
   const renderValue = (value) => {
-    if (typeof value === "boolean") {
+    if (typeof value === "boolean")
       return value ? (
         <span className="badge bg-success">Yes</span>
       ) : (
         <span className="badge bg-secondary">No</span>
       );
-    }
     if (value === null) return <em className="text-muted">Not Set</em>;
     return String(value);
   };
-
   const renderChange = (field, change) => (
     <li key={field}>
       <strong>{formatKey(field)}:</strong>
@@ -61,7 +57,6 @@ const LogDetails = ({ details }) => {
       </div>
     </li>
   );
-
   return (
     <div
       style={{
@@ -73,7 +68,6 @@ const LogDetails = ({ details }) => {
       {details.message && (
         <p className="mb-1 fst-italic">"{details.message}"</p>
       )}
-
       {details.from && (
         <div className="mt-2">
           <strong className="d-block text-decoration-underline">
@@ -110,7 +104,6 @@ const ThemePreview = ({ config }) => {
     color: config.colors?.button?.textHover || "#ffffff",
     borderColor: config.colors?.button?.backgroundHover || "#0dcaf0",
   };
-
   return (
     <div style={previewStyle}>
       <h6 className="text-muted small text-uppercase">Live Preview</h6>
@@ -176,6 +169,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     fetchData();
   }, [fetchData]);
 
+  // ... (Sisa fungsi-fungsi handler seperti handleConfigChange, handleConfigSave, dll. tidak berubah)
   const handleConfigChange = (e, path) => {
     const { name, value, type, checked } = e.target;
     const keys = path.split(".");
@@ -342,6 +336,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       </ul>
 
       {activeTab === "theme" && (
+        // Kode untuk tab Konfigurasi Tema (tidak berubah)
         <div className="row g-4">
           <div className="col-lg-8">
             <div className="card card-account p-4">
@@ -651,7 +646,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       <th>Tipe</th>
                       <th style={{ minWidth: "300px" }}>Detail</th>
                       <th>Pemohon</th>
-                      <th>Direview Oleh</th>
+                      <th className="text-nowrap">Direview Oleh</th>{" "}
+                      {/* PERBAIKAN 1: Mencegah text wrap */}
                       <th>Status</th>
                       <th className="text-end">Aksi</th>
                     </tr>
@@ -687,24 +683,27 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         </td>
                         <td className="text-end">
                           {req.status === "PENDING" && (
-                            <>
+                            <div className="btn-group">
+                              {/* PERBAIKAN 2: Mengganti tombol dengan ikon */}
                               <button
-                                className="btn btn-sm btn-success me-2"
+                                className="btn btn-sm btn-outline-success"
                                 onClick={() =>
                                   handleResolveRequest(req.id, "APPROVED")
                                 }
+                                title="Setujui"
                               >
-                                Setujui
+                                <i className="fas fa-check"></i>
                               </button>
                               <button
-                                className="btn btn-sm btn-danger"
+                                className="btn btn-sm btn-outline-danger"
                                 onClick={() =>
                                   handleResolveRequest(req.id, "REJECTED")
                                 }
+                                title="Tolak"
                               >
-                                Tolak
+                                <i className="fas fa-times"></i>
                               </button>
-                            </>
+                            </div>
                           )}
                         </td>
                       </tr>

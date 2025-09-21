@@ -463,3 +463,22 @@ tr:nth-child(8n + 8) .user-avatar {
     max-width: 50%; /* Batasi lebar maksimum badge agar tidak terlalu dominan */
   }
 }
+
+@media (max-width: 767.98px) {
+  .nav-tabs {
+    display: block; /* Override display: flex dari Bootstrap */
+    white-space: nowrap; /* Paksa semua item berada dalam satu baris */
+    overflow-x: auto; /* Buat bisa di-scroll secara horizontal */
+    -ms-overflow-style: none;  /* Sembunyikan scrollbar di IE/Edge */
+    scrollbar-width: none;  /* Sembunyikan scrollbar di Firefox */
+    padding-bottom: 10px; /* Beri sedikit ruang agar shadow tidak terpotong */
+    margin-bottom: 1rem; /* Jaga jarak dengan konten di bawahnya */
+  }
+  .nav-tabs::-webkit-scrollbar {
+    display: none; /* Sembunyikan scrollbar di browser Webkit */
+  }
+  .nav-tabs .nav-item {
+    display: inline-block; /* Buat item sejajar dalam satu baris */
+    float: none;
+  }
+}
