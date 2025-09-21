@@ -1,3 +1,5 @@
+// File: client/src/pages/DeveloperDashboardPage.jsx (Versi Lengkap Final)
+
 import React, { useState, useEffect, useCallback } from "react";
 import {
   getSuperUserConfig,
@@ -9,7 +11,7 @@ import {
 } from "../services/apiService";
 
 const googleFonts = [
- "Inter",
+  "Inter",
   "Poppins",
   "Roboto",
   "Source Sans Pro",
@@ -20,11 +22,9 @@ const googleFonts = [
   "Work Sans",
   "Rubik",
   "DM Sans",
-  // Serif (Untuk Judul atau Tampilan Klasik)
   "Merriweather",
   "Playfair Display",
   "Lora",
-  // Monospace (Untuk Tampilan Teknis)
   "Roboto Mono",
   "Source Code Pro",
 ];
@@ -39,22 +39,28 @@ const LogDetails = ({ details }) => {
     return result.charAt(0).toUpperCase() + result.slice(1);
   };
 
-  const renderChangeValue = (value) => {
-    if (typeof value === "string" && value.startsWith("http")) {
-      return (
-        <a
-          href={value}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-truncate d-inline-block"
-          style={{ maxWidth: "150px" }}
-        >
-          {value}
-        </a>
+  const renderValue = (value) => {
+    if (typeof value === "boolean") {
+      return value ? (
+        <span className="badge bg-success">Yes</span>
+      ) : (
+        <span className="badge bg-secondary">No</span>
       );
     }
-    return `"${value}"`;
+    if (value === null) return <em className="text-muted">Not Set</em>;
+    return String(value);
   };
+
+  const renderChange = (field, change) => (
+    <li key={field}>
+      <strong>{formatKey(field)}:</strong>
+      <div className="ps-2">
+        <span className="text-muted">From:</span> {renderValue(change.from)}
+        <br />
+        <span className="text-success">To:</span> {renderValue(change.to)}
+      </div>
+    </li>
+  );
 
   return (
     <div
@@ -64,77 +70,33 @@ const LogDetails = ({ details }) => {
         wordBreak: "break-word",
       }}
     >
-      {Object.entries(details).map(([key, value]) => {
-        if (key === "changes" && typeof value === "object" && value !== null) {
-          return (
-            <div key={key} className="mt-2">
-              <strong>Perubahan:</strong>
-              <ul className="list-unstyled ps-3">
-                {Object.entries(value).map(([field, change]) => {
-                  if (Array.isArray(change)) {
-                    return (
-                      <li key={field}>
-                        - <strong>{formatKey(field)}:</strong>
-                        <ul className="list-unstyled ps-2">
-                          {change.map((url, i) => (
-                            <li key={i}>
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                Lihat Gambar
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </li>
-                    );
-                  }
-                  if (
-                    typeof change === "object" &&
-                    change !== null &&
-                    "from" in change
-                  ) {
-                    return (
-                      <li key={field}>
-                        - <strong>{formatKey(field)}:</strong>{" "}
-                        {renderChangeValue(change.from)} →{" "}
-                        {renderChangeValue(change.to)}
-                      </li>
-                    );
-                  }
-                  return null;
-                })}
-              </ul>
-            </div>
-          );
-        }
-        if (typeof value !== "object") {
-          return (
-            <div key={key}>
-              <strong>{formatKey(key)}:</strong> {String(value)}
-            </div>
-          );
-        }
-        return null;
-      })}
+      {details.message && (
+        <p className="mb-1 fst-italic">"{details.message}"</p>
+      )}
+
+      {details.from && (
+        <div className="mt-2">
+          <strong className="d-block text-decoration-underline">
+            Perubahan:
+          </strong>
+          <ul className="list-unstyled ps-2 mb-0">
+            {Object.entries(details.to).map(([field, toValue]) =>
+              renderChange(field, { from: details.from[field], to: toValue })
+            )}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
 
-// ====================================================================
-// === KOMPONEN PREVIEW YANG DIPERBARUI DENGAN PREVIEW TOMBOL DINAMIS ===
-// ====================================================================
 const ThemePreview = ({ config }) => {
   const [isHovered, setIsHovered] = useState(false);
-
   const previewStyle = {
     fontFamily: config.typography?.fontFamily || "sans-serif",
     "--preview-primary-color": config.colors?.primary || "#0d6efd",
     "--preview-font-size-base": config.typography?.baseFontSize || "16px",
   };
-
   const buttonStyle = {
     backgroundColor: config.colors?.button?.background || "#212529",
     color: config.colors?.button?.text || "#ffffff",
@@ -142,7 +104,6 @@ const ThemePreview = ({ config }) => {
     fontSize: config.typography?.buttonFontSize || "1rem",
     transition: "all 0.2s ease",
   };
-
   const buttonHoverStyle = {
     ...buttonStyle,
     backgroundColor: config.colors?.button?.backgroundHover || "#0dcaf0",
@@ -190,7 +151,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
-  const [activeTab, setActiveTab] = useState("theme");
+  const [activeTab, setActiveTab] = useState("approvals");
   const [uploadingStatus, setUploadingStatus] = useState({});
 
   const fetchData = useCallback(async () => {
@@ -255,7 +216,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
     try {
       const result = await uploadImage(formData);
-
       const updatedConfig = JSON.parse(JSON.stringify(config));
       const keys = path.split(".");
       let current = updatedConfig;
@@ -263,12 +223,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = result.imageUrl;
-
       await updateSuperUserConfig(updatedConfig);
-
       setConfig(updatedConfig);
       setInitialConfig(JSON.stringify(updatedConfig));
-
       if (showMessage)
         showMessage("Gambar berhasil diunggah dan disimpan!", "Success");
     } catch (err) {
@@ -320,9 +277,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     if (!window.confirm(`Anda yakin ingin ${action} permintaan ini?`)) return;
     try {
       await resolveApprovalRequest(requestId, resolution);
-      setApprovalRequests((prev) => prev.filter((req) => req.id !== requestId));
       if (showMessage)
         showMessage(`Permintaan berhasil di-${resolution.toLowerCase()}.`);
+      fetchData();
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     }
@@ -338,13 +295,15 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fs-2 mb-0">Developer Dashboard</h2>
-        <button
-          className="btn btn-dark"
-          onClick={handleConfigSave}
-          disabled={isSaving || !hasChanges}
-        >
-          {isSaving ? "Menyimpan..." : "Simpan & Siarkan Konfigurasi"}
-        </button>
+        {activeTab === "theme" && (
+          <button
+            className="btn btn-dark"
+            onClick={handleConfigSave}
+            disabled={isSaving || !hasChanges}
+          >
+            {isSaving ? "Menyimpan..." : "Simpan & Siarkan Konfigurasi"}
+          </button>
+        )}
       </div>
 
       <ul className="nav nav-tabs mb-4">
@@ -679,75 +638,137 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
       {activeTab === "approvals" && (
         <div className="table-card p-3 shadow-sm">
-          <h5 className="mb-3">Log Aktivitas & Persetujuan</h5>
+          <h5 className="mb-3 d-none d-lg-block">
+            Log Aktivitas & Persetujuan
+          </h5>
           {approvalRequests.length > 0 ? (
-            <div className="table-responsive">
-              <table className="table table-hover align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>Tanggal</th>
-                    <th>Tipe</th>
-                    <th>Detail</th>
-                    <th>Pemohon</th>
-                    <th>Direview Oleh</th>
-                    <th>Status</th>
-                    <th className="text-end">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {approvalRequests.map((req) => (
-                    <tr key={req.id}>
-                      <td>{new Date(req.createdAt).toLocaleString("id-ID")}</td>
-                      <td>
-                        <span className="badge bg-info text-dark">
-                          {req.requestType}
-                        </span>
-                      </td>
-                      <td style={{ maxWidth: "300px" }}>
-                        <LogDetails details={req.details} />
-                      </td>
-                      <td>{req.requestedBy?.name || "N/A"}</td>
-                      <td>{req.reviewedBy?.name || "-"}</td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            req.status === "PENDING"
-                              ? "bg-warning text-dark"
-                              : req.status === "APPROVED"
-                              ? "bg-success"
-                              : "bg-danger"
-                          }`}
-                        >
-                          {req.status}
-                        </span>
-                      </td>
-                      <td className="text-end">
-                        {req.status === "PENDING" && (
-                          <>
-                            <button
-                              className="btn btn-sm btn-success me-2"
-                              onClick={() =>
-                                handleResolveRequest(req.id, "APPROVED")
-                              }
-                            >
-                              Setujui
-                            </button>
-                            <button
-                              className="btn btn-sm btn-danger"
-                              onClick={() =>
-                                handleResolveRequest(req.id, "REJECTED")
-                              }
-                            >
-                              Tolak
-                            </button>
-                          </>
-                        )}
-                      </td>
+            <>
+              <div className="table-responsive d-none d-lg-block">
+                <table className="table table-hover align-top">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Tipe</th>
+                      <th style={{ minWidth: "300px" }}>Detail</th>
+                      <th>Pemohon</th>
+                      <th>Direview Oleh</th>
+                      <th>Status</th>
+                      <th className="text-end">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {approvalRequests.map((req) => (
+                      <tr key={req.id}>
+                        <td>
+                          {new Date(req.createdAt).toLocaleString("id-ID")}
+                        </td>
+                        <td>
+                          <span className="badge bg-info text-dark">
+                            {req.requestType}
+                          </span>
+                        </td>
+                        <td>
+                          <LogDetails details={req.details} />
+                        </td>
+                        <td>{req.requestedBy?.name || "N/A"}</td>
+                        <td>{req.reviewedBy?.name || "-"}</td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              req.status === "PENDING"
+                                ? "bg-warning text-dark"
+                                : req.status === "APPROVED"
+                                ? "bg-success"
+                                : "bg-danger"
+                            }`}
+                          >
+                            {req.status}
+                          </span>
+                        </td>
+                        <td className="text-end">
+                          {req.status === "PENDING" && (
+                            <>
+                              <button
+                                className="btn btn-sm btn-success me-2"
+                                onClick={() =>
+                                  handleResolveRequest(req.id, "APPROVED")
+                                }
+                              >
+                                Setujui
+                              </button>
+                              <button
+                                className="btn btn-sm btn-danger"
+                                onClick={() =>
+                                  handleResolveRequest(req.id, "REJECTED")
+                                }
+                              >
+                                Tolak
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mobile-card-list d-lg-none">
+                {approvalRequests.map((req) => (
+                  <div className="mobile-card" key={req.id}>
+                    <div className="mobile-card-header">
+                      <span className="fw-bold">{req.requestType}</span>
+                      <span
+                        className={`badge ${
+                          req.status === "PENDING"
+                            ? "bg-warning text-dark"
+                            : req.status === "APPROVED"
+                            ? "bg-success"
+                            : "bg-danger"
+                        }`}
+                      >
+                        {req.status}
+                      </span>
+                    </div>
+                    <div className="mobile-card-body">
+                      <div className="mobile-card-row">
+                        <small>Tanggal</small>
+                        <span>
+                          {new Date(req.createdAt).toLocaleDateString("id-ID")}
+                        </span>
+                      </div>
+                      <div className="mobile-card-row">
+                        <small>Pemohon</small>
+                        <span>{req.requestedBy?.name || "N/A"}</span>
+                      </div>
+                      <div className="mt-2">
+                        <small className="text-muted d-block">Detail:</small>
+                        <LogDetails details={req.details} />
+                      </div>
+                    </div>
+                    {req.status === "PENDING" && (
+                      <div className="mobile-card-footer d-flex justify-content-end gap-2">
+                        <button
+                          className="btn btn-sm btn-success"
+                          onClick={() =>
+                            handleResolveRequest(req.id, "APPROVED")
+                          }
+                        >
+                          Setujui
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() =>
+                            handleResolveRequest(req.id, "REJECTED")
+                          }
+                        >
+                          Tolak
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
             <p className="text-muted text-center p-4">
               Tidak ada aktivitas atau permintaan yang menunggu persetujuan.
