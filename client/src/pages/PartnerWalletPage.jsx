@@ -1,7 +1,11 @@
+// File: client/src/pages/PartnerWalletPage.jsx (Dengan Daftar Invoice)
+
 import React, { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import {
   getPartnerWalletData,
   requestPartnerPayout,
+  getOutstandingInvoices,
 } from "../services/apiService";
 
 const PayoutModal = ({
@@ -84,16 +88,20 @@ const PayoutModal = ({
 
 const PartnerWalletPage = ({ showMessage }) => {
   const [walletData, setWalletData] = useState(null);
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [payoutAmount, setPayoutAmount] = useState("");
 
   const fetchWalletData = useCallback(async () => {
-    setLoading(true);
     try {
-      const data = await getPartnerWalletData();
-      setWalletData(data);
+      const [wallet, outstandingInvoices] = await Promise.all([
+        getPartnerWalletData(),
+        getOutstandingInvoices(),
+      ]);
+      setWalletData(wallet);
+      setInvoices(outstandingInvoices);
     } catch (err) {
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
@@ -103,6 +111,7 @@ const PartnerWalletPage = ({ showMessage }) => {
   }, [showMessage]);
 
   useEffect(() => {
+    setLoading(true);
     fetchWalletData();
   }, [fetchWalletData]);
 
@@ -155,6 +164,47 @@ const PartnerWalletPage = ({ showMessage }) => {
           Rp {walletData.balance.toLocaleString("id-ID")}
         </h2>
       </div>
+
+      {invoices.length > 0 && (
+        <div className="table-card p-3 shadow-sm mb-4">
+          <h5 className="mb-3 text-danger">Tagihan Belum Dibayar</h5>
+          <div className="table-responsive">
+            <table className="table table-hover align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>No. Invoice</th>
+                  <th>Periode</th>
+                  <th className="text-end">Jumlah (Rp)</th>
+                  <th className="text-end">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((invoice) => (
+                  <tr key={invoice.id}>
+                    <td>
+                      <span className="fw-bold">{invoice.invoiceNumber}</span>
+                    </td>
+                    <td>
+                      {new Date(invoice.issueDate).toLocaleDateString("id-ID")}
+                    </td>
+                    <td className="text-end fw-bold text-danger">
+                      {invoice.totalAmount.toLocaleString("id-ID")}
+                    </td>
+                    <td className="text-end">
+                      <Link
+                        to={`/partner/invoices/${invoice.id}`}
+                        className="btn btn-sm btn-success"
+                      >
+                        Lihat & Bayar
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       <div className="table-card p-3 shadow-sm">
         <h5 className="mb-3">Riwayat Transaksi</h5>

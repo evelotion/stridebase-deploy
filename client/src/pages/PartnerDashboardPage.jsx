@@ -89,11 +89,14 @@ const PartnerDashboardPage = () => {
       </div>
 
       {outstandingInvoices.length > 0 && (
-        <div className="alert alert-danger">
-          Anda memiliki <strong>{outstandingInvoices.length}</strong> tagihan
-          yang belum dibayar.
-        </div>
-      )}
+  <div className="alert alert-danger">
+    Anda memiliki <strong>{outstandingInvoices.length}</strong> tagihan
+    yang belum dibayar.
+    <Link to="/partner/wallet" className="alert-link ms-2">
+      Lihat dan Bayar Sekarang
+    </Link>
+  </div>
+)}
 
       <div className="row">
         <KpiCard
