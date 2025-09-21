@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Tagih & Modal)
+// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Tagih & Tampilan Mobile)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -15,7 +15,7 @@ const AdminStoresPage = ({ showMessage }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  // State baru untuk modal invoice
+  // State untuk modal invoice
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [currentStore, setCurrentStore] = useState(null);
   const [invoiceDetails, setInvoiceDetails] = useState({
@@ -165,7 +165,8 @@ const AdminStoresPage = ({ showMessage }) => {
       </div>
 
       <div className="table-card p-3 shadow-sm">
-        <div className="table-responsive">
+        {/* --- TAMPILAN DESKTOP (d-none d-lg-block) --- */}
+        <div className="table-responsive d-none d-lg-block">
           <table className="table table-hover align-middle">
             <thead className="table-light">
               <tr>
@@ -279,6 +280,102 @@ const AdminStoresPage = ({ showMessage }) => {
             </tbody>
           </table>
         </div>
+
+        {/* --- TAMPILAN MOBILE BARU (d-lg-none) --- */}
+        <div className="mobile-card-list d-lg-none">
+          {filteredStores.map((store) => (
+            <div className="mobile-card" key={store.id}>
+              <div className="mobile-card-header">
+                <span className="fw-bold text-truncate">{store.name}</span>
+                <span className={`badge ${getStatusBadge(store.storeStatus)}`}>
+                  {store.storeStatus}
+                </span>
+              </div>
+              <div className="mobile-card-body">
+                <div className="mobile-card-row">
+                  <small>Pemilik</small>
+                  <span>{store.owner?.name || store.owner}</span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Tier</small>
+                  <span
+                    className={`badge ${
+                      store.tier === "PRO"
+                        ? "bg-warning text-dark"
+                        : "bg-info text-dark"
+                    }`}
+                  >
+                    {store.tier}
+                  </span>
+                </div>
+                <div className="mobile-card-row">
+                  <small>Rating</small>
+                  <span>
+                    <i className="fas fa-star text-warning me-1"></i>{" "}
+                    {store.rating || "N/A"}
+                  </span>
+                </div>
+              </div>
+              <div className="mobile-card-footer d-flex justify-content-end gap-2">
+                {store.tier === "PRO" && (
+                  <button
+                    className="btn btn-sm btn-info"
+                    onClick={() => handleOpenInvoiceModal(store)}
+                  >
+                    Tagih PRO
+                  </button>
+                )}
+                <Link
+                  to={`/admin/stores/${store.id}/settings`}
+                  className="btn btn-sm btn-primary"
+                >
+                  Kelola
+                </Link>
+                <div className="dropdown">
+                  <button
+                    className="btn btn-sm btn-outline-dark dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                  >
+                    Status
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => handleStatusChange(store.id, "active")}
+                      >
+                        Aktif
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => handleStatusChange(store.id, "inactive")}
+                      >
+                        Nonaktifkan
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => handleStatusChange(store.id, "rejected")}
+                      >
+                        Tolak
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredStores.length === 0 && !loading && (
+          <div className="text-center p-4 text-muted">
+            Data toko tidak ditemukan.
+          </div>
+        )}
       </div>
 
       {showInvoiceModal && currentStore && (
