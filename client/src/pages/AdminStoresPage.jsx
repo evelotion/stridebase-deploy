@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Tagih & Tampilan Mobile)
+// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Tagih & Tampilan Mobile + PAGINATION)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -8,6 +8,47 @@ import {
   createStoreInvoiceByAdmin,
 } from "../services/apiService";
 
+// KOMPONEN BARU: Pagination untuk Tampilan Mobile
+const Pagination = ({ currentPage, pageCount, onPageChange }) => {
+  if (pageCount <= 1) return null;
+  const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+
+  return (
+    <nav className="mt-4 d-flex justify-content-center">
+      <ul className="pagination">
+        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+          <button
+            className="page-link"
+            onClick={() => onPageChange(currentPage - 1)}
+          >
+            &laquo;
+          </button>
+        </li>
+        {pages.map((num) => (
+          <li
+            key={num}
+            className={`page-item ${currentPage === num ? "active" : ""}`}
+          >
+            <button className="page-link" onClick={() => onPageChange(num)}>
+              {num}
+            </button>
+          </li>
+        ))}
+        <li
+          className={`page-item ${currentPage === pageCount ? "disabled" : ""}`}
+        >
+          <button
+            className="page-link"
+            onClick={() => onPageChange(currentPage + 1)}
+          >
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+};
+
 const AdminStoresPage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +56,10 @@ const AdminStoresPage = ({ showMessage }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  // State untuk modal invoice
+  // STATE BARU: Untuk Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const STORES_PER_PAGE = 5;
+
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [currentStore, setCurrentStore] = useState(null);
   const [invoiceDetails, setInvoiceDetails] = useState({
@@ -40,6 +84,11 @@ const AdminStoresPage = ({ showMessage }) => {
   useEffect(() => {
     fetchStores();
   }, [fetchStores]);
+
+  // EFEK BARU: Reset ke halaman 1 jika filter atau pencarian berubah
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus]);
 
   const handleStatusChange = async (storeId, newStatus) => {
     try {
@@ -125,6 +174,13 @@ const AdminStoresPage = ({ showMessage }) => {
     });
   }, [stores, searchTerm, filterStatus]);
 
+  // LOGIKA BARU: Membagi data toko untuk halaman saat ini
+  const pageCount = Math.ceil(filteredStores.length / STORES_PER_PAGE);
+  const currentStoresOnPage = filteredStores.slice(
+    (currentPage - 1) * STORES_PER_PAGE,
+    currentPage * STORES_PER_PAGE
+  );
+
   if (loading) return <div className="p-4">Memuat data toko...</div>;
   if (error && stores.length === 0)
     return <div className="p-4 text-danger">Error: {error}</div>;
@@ -165,7 +221,7 @@ const AdminStoresPage = ({ showMessage }) => {
       </div>
 
       <div className="table-card p-3 shadow-sm">
-        {/* --- TAMPILAN DESKTOP (d-none d-lg-block) --- */}
+        {/* --- TAMPILAN DESKTOP (Tidak Diubah) --- */}
         <div className="table-responsive d-none d-lg-block">
           <table className="table table-hover align-middle">
             <thead className="table-light">
@@ -281,9 +337,9 @@ const AdminStoresPage = ({ showMessage }) => {
           </table>
         </div>
 
-        {/* --- TAMPILAN MOBILE BARU (d-lg-none) --- */}
+        {/* --- TAMPILAN MOBILE BARU (Dengan Pagination) --- */}
         <div className="mobile-card-list d-lg-none">
-          {filteredStores.map((store) => (
+          {currentStoresOnPage.map((store) => (
             <div className="mobile-card" key={store.id}>
               <div className="mobile-card-header">
                 <span className="fw-bold text-truncate">{store.name}</span>
@@ -369,6 +425,12 @@ const AdminStoresPage = ({ showMessage }) => {
               </div>
             </div>
           ))}
+
+          <Pagination
+            currentPage={currentPage}
+            pageCount={pageCount}
+            onPageChange={setCurrentPage}
+          />
         </div>
 
         {filteredStores.length === 0 && !loading && (
