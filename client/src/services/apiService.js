@@ -1,4 +1,4 @@
-// File: client/src/services/apiService.js (Versi Final Lengkap dengan Preview)
+// File: client/src/services/apiService.js (Penambahan fungsi riwayat & cek)
 
 import API_BASE_URL from "../apiConfig";
 
@@ -29,7 +29,6 @@ const apiRequest = async (endpoint, method = 'GET', body = null, isFormData = fa
             const errorData = await response.json().catch(() => ({ message: response.statusText }));
             throw new Error(errorData.message || 'Terjadi kesalahan pada server');
         }
-        // Handle 204 No Content response
         return response.status === 204 ? null : await response.json();
     } catch (error) {
         console.error(`API Error on ${method} ${endpoint}:`, error);
@@ -108,7 +107,9 @@ export const getStoreSettingsForAdmin = (storeId) => apiRequest(`/api/admin/stor
 export const updateStoreSettingsByAdmin = (storeId, settingsData) => apiRequest(`/api/admin/stores/${storeId}/settings`, 'PUT', settingsData);
 export const uploadAdminPhoto = (formData) => apiRequest('/api/admin/stores/upload-photo', 'POST', formData, true);
 export const createStoreInvoiceByAdmin = (storeId, invoiceData) => apiRequest(`/api/admin/stores/${storeId}/invoices`, 'POST', invoiceData);
-export const previewStoreInvoiceByAdmin = (storeId, periodData) => apiRequest(`/api/admin/stores/${storeId}/invoices/preview`, 'POST', periodData); // <-- FUNGSI BARU DITAMBAHKAN
+export const previewStoreInvoiceByAdmin = (storeId, periodData) => apiRequest(`/api/admin/stores/${storeId}/invoices/preview`, 'POST', periodData);
+export const getStoreInvoicesByAdmin = (storeId) => apiRequest(`/api/admin/stores/${storeId}/invoices`); // <-- FUNGSI BARU DITAMBAHKAN
+export const checkExistingInvoiceByAdmin = (storeId, periodData) => apiRequest(`/api/admin/stores/${storeId}/invoices/check`, 'POST', periodData); // <-- FUNGSI BARU DITAMBAHKAN
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest('/api/superuser/config');

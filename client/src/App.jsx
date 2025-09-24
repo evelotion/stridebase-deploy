@@ -1,4 +1,4 @@
-// File: stridebase-app-render/client/src/App.jsx
+// File: stridebase-app-render/client/src/App.jsx (Versi Final & Benar)
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
@@ -62,6 +62,7 @@ const AdminBookingsPage = React.lazy(() => import("./pages/AdminBookingsPage"));
 const AdminReviewsPage = React.lazy(() => import("./pages/AdminReviewsPage"));
 const AdminSettingsPage = React.lazy(() => import("./pages/AdminSettingsPage"));
 const AdminStoreInvoicePage = React.lazy(() =>
+  // Nama file ini sudah sesuai dengan file Anda
   import("./pages/AdminStoreInvoicePage")
 );
 const AdminStoreSettingsPage = React.lazy(() =>
@@ -129,13 +130,22 @@ const applyTheme = (theme) => {
     root.style.setProperty("--accent-color", theme.colors.accent || "#FFC107");
   }
 
-   if (theme.colors.button) {
-    root.style.setProperty('--button-background-color', theme.colors.button.background);
-    root.style.setProperty('--button-text-color', theme.colors.button.text);
-    root.style.setProperty('--button-background-hover-color', theme.colors.button.backgroundHover);
-    root.style.setProperty('--button-text-hover-color', theme.colors.button.textHover);
+  if (theme.colors.button) {
+    root.style.setProperty(
+      "--button-background-color",
+      theme.colors.button.background
+    );
+    root.style.setProperty("--button-text-color", theme.colors.button.text);
+    root.style.setProperty(
+      "--button-background-hover-color",
+      theme.colors.button.backgroundHover
+    );
+    root.style.setProperty(
+      "--button-text-hover-color",
+      theme.colors.button.textHover
+    );
   }
-  
+
   if (theme.typography) {
     if (theme.typography.fontFamily) {
       const fontFamilyValue = theme.typography.fontFamily;
@@ -458,15 +468,11 @@ function AppContent() {
             path="stores/:storeId/settings"
             element={renderWithProps(AdminStoreSettingsPage)}
           />
-          <Route path="payouts" element={renderWithProps(AdminPayoutsPage)} />
           <Route
-            path="stores/:storeId/invoices"
+            path="stores/:storeId/invoices" // <-- INI ADALAH RUTE BARU YANG DITAMBAHKAN
             element={renderWithProps(AdminStoreInvoicePage)}
           />
-          <Route
-            path="stores/:storeId/settings"
-            element={renderWithProps(AdminStoreSettingsPage)}
-          />
+          <Route path="payouts" element={renderWithProps(AdminPayoutsPage)} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="promos" element={renderWithProps(AdminPromosPage)} />
           <Route path="banners" element={renderWithProps(AdminBannersPage)} />

@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js (Versi Final Lengkap dengan Preview)
+// File: server/controllers/admin.controller.js (Penambahan Riwayat & Cek Invoice)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -87,8 +87,7 @@ export const getAllStores = async (req, res, next) => {
     const stores = await prisma.store.findMany({
       include: { owner: { select: { name: true } } },
     });
-    // Fallback if owner is somehow deleted but store remains
-    res.json(stores.map((s) => ({ ...s, owner: s.owner?.name || "N/A" })));
+    res.json(stores.map((s) => ({ ...s, owner: s.owner.name })));
   } catch (error) {
     next(error);
   }
@@ -675,8 +674,6 @@ export const createStoreByAdmin = async (req, res, next) => {
   }
 };
 
-// --- FUNGSI BARU UNTUK PREVIEW INVOICE ---
-// Fungsi helper untuk kalkulasi dan pratinjau invoice
 const generateInvoiceData = async (storeId, period) => {
   const store = await prisma.store.findUnique({
     where: { id: storeId },
