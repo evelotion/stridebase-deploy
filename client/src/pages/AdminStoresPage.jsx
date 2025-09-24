@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Tombol Tagih & Tampilan Mobile + PAGINATION)
+// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Preview Invoice & Pagination)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -6,6 +6,7 @@ import {
   getAllStoresForAdmin,
   updateStoreStatus,
   createStoreInvoiceByAdmin,
+  previewStoreInvoiceByAdmin, // Pastikan ini diimpor
 } from "../services/apiService";
 
 // KOMPONEN BARU: Pagination untuk Tampilan Mobile
@@ -56,7 +57,6 @@ const AdminStoresPage = ({ showMessage }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
 
-  // STATE BARU: Untuk Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const STORES_PER_PAGE = 5;
 
@@ -66,6 +66,8 @@ const AdminStoresPage = ({ showMessage }) => {
     period: "",
     notes: "",
   });
+  const [invoicePreview, setInvoicePreview] = useState(null);
+  const [isPreviewing, setIsPreviewing] = useState(false);
   const [isSubmittingInvoice, setIsSubmittingInvoice] = useState(false);
 
   const fetchStores = useCallback(async () => {
@@ -85,7 +87,6 @@ const AdminStoresPage = ({ showMessage }) => {
     fetchStores();
   }, [fetchStores]);
 
-  // EFEK BARU: Reset ke halaman 1 jika filter atau pencarian berubah
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterStatus]);
@@ -118,6 +119,7 @@ const AdminStoresPage = ({ showMessage }) => {
         { month: "long", year: "numeric" }
       )}.`,
     });
+    setInvoicePreview(null);
     setShowInvoiceModal(true);
   };
 
@@ -126,9 +128,29 @@ const AdminStoresPage = ({ showMessage }) => {
     setCurrentStore(null);
   };
 
+  const handlePreviewInvoice = async () => {
+    if (!currentStore || !invoiceDetails.period) return;
+    setIsPreviewing(true);
+    setInvoicePreview(null);
+    try {
+      const previewData = await previewStoreInvoiceByAdmin(currentStore.id, {
+        period: invoiceDetails.period,
+      });
+      setInvoicePreview(previewData);
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
+      setInvoicePreview(null);
+    } finally {
+      setIsPreviewing(false);
+    }
+  };
+
   const handleInvoiceSubmit = async (e) => {
     e.preventDefault();
-    if (!currentStore) return;
+    if (!currentStore || !invoicePreview) {
+      showMessage("Silakan pratinjau invoice terlebih dahulu.", "Error");
+      return;
+    }
     setIsSubmittingInvoice(true);
     try {
       const response = await createStoreInvoiceByAdmin(currentStore.id, {
@@ -174,7 +196,6 @@ const AdminStoresPage = ({ showMessage }) => {
     });
   }, [stores, searchTerm, filterStatus]);
 
-  // LOGIKA BARU: Membagi data toko untuk halaman saat ini
   const pageCount = Math.ceil(filteredStores.length / STORES_PER_PAGE);
   const currentStoresOnPage = filteredStores.slice(
     (currentPage - 1) * STORES_PER_PAGE,
@@ -221,7 +242,6 @@ const AdminStoresPage = ({ showMessage }) => {
       </div>
 
       <div className="table-card p-3 shadow-sm">
-        {/* --- TAMPILAN DESKTOP (Tidak Diubah) --- */}
         <div className="table-responsive d-none d-lg-block">
           <table className="table table-hover align-middle">
             <thead className="table-light">
@@ -337,7 +357,6 @@ const AdminStoresPage = ({ showMessage }) => {
           </table>
         </div>
 
-        {/* --- TAMPILAN MOBILE BARU (Dengan Pagination) --- */}
         <div className="mobile-card-list d-lg-none">
           {currentStoresOnPage.map((store) => (
             <div className="mobile-card" key={store.id}>
@@ -425,7 +444,6 @@ const AdminStoresPage = ({ showMessage }) => {
               </div>
             </div>
           ))}
-
           <Pagination
             currentPage={currentPage}
             pageCount={pageCount}
@@ -449,22 +467,18 @@ const AdminStoresPage = ({ showMessage }) => {
           >
             <div className="modal-dialog modal-dialog-centered">
               <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title">
-                    Buat Tagihan untuk {currentStore.name}
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleCloseInvoiceModal}
-                  ></button>
-                </div>
                 <form onSubmit={handleInvoiceSubmit}>
+                  <div className="modal-header">
+                    <h5 className="modal-title">
+                      Buat Tagihan untuk {currentStore.name}
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={handleCloseInvoiceModal}
+                    ></button>
+                  </div>
                   <div className="modal-body">
-                    <p className="text-muted">
-                      Sistem akan menagih biaya langganan PRO secara otomatis
-                      berdasarkan pengaturan toko.
-                    </p>
                     <div className="mb-3">
                       <label htmlFor="period" className="form-label">
                         Periode Tagihan (YYYY-MM)
@@ -474,12 +488,13 @@ const AdminStoresPage = ({ showMessage }) => {
                         className="form-control"
                         id="period"
                         value={invoiceDetails.period}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setInvoiceDetails({
                             ...invoiceDetails,
                             period: e.target.value,
-                          })
-                        }
+                          });
+                          setInvoicePreview(null);
+                        }}
                         required
                       />
                     </div>
@@ -500,6 +515,27 @@ const AdminStoresPage = ({ showMessage }) => {
                         }
                       ></textarea>
                     </div>
+                    {isPreviewing && (
+                      <div className="text-center my-2">
+                        <div className="spinner-border spinner-border-sm"></div>
+                        <p className="text-muted small">Menghitung...</p>
+                      </div>
+                    )}
+                    {invoicePreview && (
+                      <div className="alert alert-secondary mt-3">
+                        <h6 className="alert-heading fw-bold">
+                          Pratinjau Invoice
+                        </h6>
+                        <p className="mb-1">
+                          <strong>Deskripsi:</strong>{" "}
+                          {invoicePreview.description}
+                        </p>
+                        <p className="mb-0">
+                          <strong>Jumlah:</strong> Rp{" "}
+                          {invoicePreview.amount.toLocaleString("id-ID")}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="modal-footer">
                     <button
@@ -510,9 +546,17 @@ const AdminStoresPage = ({ showMessage }) => {
                       Batal
                     </button>
                     <button
+                      type="button"
+                      className="btn btn-info"
+                      onClick={handlePreviewInvoice}
+                      disabled={isPreviewing || !invoiceDetails.period}
+                    >
+                      {isPreviewing ? "..." : "Pratinjau"}
+                    </button>
+                    <button
                       type="submit"
                       className="btn btn-primary"
-                      disabled={isSubmittingInvoice}
+                      disabled={isSubmittingInvoice || !invoicePreview}
                     >
                       {isSubmittingInvoice ? "Mengirim..." : "Kirim Tagihan"}
                     </button>

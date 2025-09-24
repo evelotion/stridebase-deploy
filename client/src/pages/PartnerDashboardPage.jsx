@@ -10,8 +10,6 @@ import {
 
 const KpiCard = ({ title, value, icon, colorClass, linkTo }) => (
   <div className="col-lg-3 col-md-6 mb-4">
-    {" "}
-    {/* Diubah menjadi 4 kolom */}
     <Link to={linkTo} className="text-decoration-none">
       <div className="kpi-card p-3 shadow-sm h-100">
         <div className="kpi-card-content">
@@ -89,14 +87,16 @@ const PartnerDashboardPage = () => {
       </div>
 
       {outstandingInvoices.length > 0 && (
-  <div className="alert alert-danger">
-    Anda memiliki <strong>{outstandingInvoices.length}</strong> tagihan
-    yang belum dibayar.
-    <Link to="/partner/wallet" className="alert-link ms-2">
-      Lihat dan Bayar Sekarang
-    </Link>
-  </div>
-)}
+        <div className="alert alert-danger d-flex justify-content-between align-items-center">
+          <span>
+            Anda memiliki <strong>{outstandingInvoices.length}</strong> tagihan
+            yang belum dibayar.
+          </span>
+          <Link to="/partner/wallet" className="btn btn-sm btn-danger">
+            Lihat & Bayar Sekarang
+          </Link>
+        </div>
+      )}
 
       <div className="row">
         <KpiCard

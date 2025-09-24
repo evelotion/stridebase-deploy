@@ -1,4 +1,4 @@
-// File: client/src/services/apiService.js (Versi Final Lengkap)
+// File: client/src/services/apiService.js (Versi Final Lengkap dengan Preview)
 
 import API_BASE_URL from "../apiConfig";
 
@@ -107,7 +107,8 @@ export const updateAdminSettings = (configData) => apiRequest('/api/admin/settin
 export const getStoreSettingsForAdmin = (storeId) => apiRequest(`/api/admin/stores/${storeId}/settings`);
 export const updateStoreSettingsByAdmin = (storeId, settingsData) => apiRequest(`/api/admin/stores/${storeId}/settings`, 'PUT', settingsData);
 export const uploadAdminPhoto = (formData) => apiRequest('/api/admin/stores/upload-photo', 'POST', formData, true);
-export const createStoreInvoiceByAdmin = (storeId, invoiceData) => apiRequest(`/api/admin/stores/${storeId}/invoices`, 'POST', invoiceData); // <-- TAMBAHKAN FUNGSI BARU INI
+export const createStoreInvoiceByAdmin = (storeId, invoiceData) => apiRequest(`/api/admin/stores/${storeId}/invoices`, 'POST', invoiceData);
+export const previewStoreInvoiceByAdmin = (storeId, periodData) => apiRequest(`/api/admin/stores/${storeId}/invoices/preview`, 'POST', periodData); // <-- FUNGSI BARU DITAMBAHKAN
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest('/api/superuser/config');

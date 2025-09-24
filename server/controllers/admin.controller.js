@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js (Versi Final dengan Logika Tier & Biaya)
+// File: server/controllers/admin.controller.js (Versi Final Lengkap dengan Preview)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -87,7 +87,8 @@ export const getAllStores = async (req, res, next) => {
     const stores = await prisma.store.findMany({
       include: { owner: { select: { name: true } } },
     });
-    res.json(stores.map((s) => ({ ...s, owner: s.owner.name })));
+    // Fallback if owner is somehow deleted but store remains
+    res.json(stores.map((s) => ({ ...s, owner: s.owner?.name || "N/A" })));
   } catch (error) {
     next(error);
   }
@@ -674,6 +675,57 @@ export const createStoreByAdmin = async (req, res, next) => {
   }
 };
 
+// --- FUNGSI BARU UNTUK PREVIEW INVOICE ---
+// Fungsi helper untuk kalkulasi dan pratinjau invoice
+const generateInvoiceData = async (storeId, period) => {
+  const store = await prisma.store.findUnique({
+    where: { id: storeId },
+    include: { owner: { select: { name: true } } },
+  });
+
+  if (!store) {
+    throw new Error("Toko tidak ditemukan.");
+  }
+
+  let invoiceAmount = 0;
+  let invoiceDescription = "";
+
+  if (store.tier === "PRO") {
+    invoiceAmount = store.subscriptionFee || 0;
+    invoiceDescription = `Biaya Langganan StrideBase PRO Periode ${period}`;
+    if (invoiceAmount <= 0) {
+      throw new Error(
+        "Toko PRO ini tidak memiliki biaya langganan yang valid."
+      );
+    }
+  } else {
+    // Logika untuk tier BASIC (Komisi) bisa ditambahkan di sini jika perlu
+    throw new Error("Fitur ini hanya untuk toko PRO.");
+  }
+
+  return {
+    storeName: store.name,
+    ownerName: store.owner.name,
+    amount: invoiceAmount,
+    description: invoiceDescription,
+    period: period,
+  };
+};
+
+// @desc    Preview an invoice before sending
+// @route   POST /api/admin/stores/:storeId/invoices/preview
+export const previewStoreInvoice = async (req, res, next) => {
+  const { storeId } = req.params;
+  const { period } = req.body;
+  try {
+    const previewData = await generateInvoiceData(storeId, period);
+    res.json(previewData);
+  } catch (error) {
+    // Menggunakan next(error) agar ditangani oleh errorHandler global
+    next(error);
+  }
+};
+
 // @desc    Create and send an invoice to a store based on its tier
 // @route   POST /api/admin/stores/:storeId/invoices
 export const createStoreInvoice = async (req, res, next) => {
@@ -683,57 +735,19 @@ export const createStoreInvoice = async (req, res, next) => {
   try {
     const store = await prisma.store.findUnique({
       where: { id: storeId },
-      include: { owner: { select: { name: true } } },
     });
 
     if (!store) {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    let invoiceAmount = 0;
-    let invoiceDescription = "";
+    const {
+      amount: invoiceAmount,
+      description: invoiceDescription,
+      storeName,
+    } = await generateInvoiceData(storeId, period);
 
-    if (store.tier === "PRO") {
-      invoiceAmount = store.subscriptionFee || 0;
-      invoiceDescription = `Biaya Langganan StrideBase PRO Periode ${period}`;
-
-      if (invoiceAmount <= 0) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "Toko PRO ini tidak memiliki biaya langganan yang valid. Silakan atur di halaman Kelola Toko.",
-          });
-      }
-    } else {
-      // Logika untuk tier BASIC (Komisi)
-      const [year, month] = period.split("-");
-      const startDate = new Date(year, parseInt(month) - 1, 1);
-      const endDate = new Date(year, parseInt(month), 0, 23, 59, 59);
-
-      const payments = await prisma.payment.aggregate({
-        _sum: { amount: true },
-        where: {
-          booking: { storeId: storeId },
-          status: "paid",
-          createdAt: { gte: startDate, lte: endDate },
-        },
-      });
-
-      const totalRevenue = payments._sum.amount || 0;
-      invoiceAmount = totalRevenue * (store.commissionRate / 100);
-      invoiceDescription = `Biaya Komisi (${store.commissionRate}%) StrideBase Periode ${period}`;
-
-      if (invoiceAmount <= 0) {
-        return res
-          .status(400)
-          .json({
-            message: `Tidak ada pendapatan untuk ditagih pada periode ${period} untuk toko ini.`,
-          });
-      }
-    }
-
-    const storeNameForInvoice = store.name || "STORE";
+    const storeNameForInvoice = storeName || "STORE";
 
     const newInvoice = await prisma.invoice.create({
       data: {
@@ -759,20 +773,20 @@ export const createStoreInvoice = async (req, res, next) => {
       },
     });
 
-    await createNotificationForUser(
-      store.ownerId,
-      `Anda memiliki tagihan baru sebesar Rp ${invoiceAmount.toLocaleString(
-        "id-ID"
-      )} yang perlu dibayar.`,
-      `/partner/dashboard`
-    );
+    if (store) {
+      await createNotificationForUser(
+        store.ownerId,
+        `Anda memiliki tagihan baru sebesar Rp ${invoiceAmount.toLocaleString(
+          "id-ID"
+        )} yang perlu dibayar.`,
+        `/partner/wallet`
+      );
+    }
 
-    res
-      .status(201)
-      .json({
-        message: "Invoice berhasil dibuat dan dikirim ke mitra.",
-        invoice: newInvoice,
-      });
+    res.status(201).json({
+      message: "Invoice berhasil dibuat dan dikirim ke mitra.",
+      invoice: newInvoice,
+    });
   } catch (error) {
     next(error);
   }
