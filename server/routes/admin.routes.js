@@ -1,4 +1,4 @@
-// File: server/routes/admin.routes.js (Penambahan Rute Riwayat & Cek Invoice)
+// File: server/routes/admin.routes.js (Versi Lengkap & Perbaikan)
 
 import express from "express";
 import {
@@ -31,8 +31,9 @@ import {
   deleteBanner,
   createStoreInvoice,
   previewStoreInvoice,
-  getStoreInvoices, // <-- FUNGSI BARU DIIMPOR
-  checkExistingInvoice, // <-- FUNGSI BARU DIIMPOR
+  getStoreInvoices,
+  checkExistingInvoice,
+  getInvoiceByIdForAdmin, // <-- FUNGSI BARU DIIMPOR
 } from "../controllers/admin.controller.js";
 import multer from "multer";
 
@@ -40,16 +41,18 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Autentikasi dan Otorisasi Middleware untuk semua rute di bawah
-router.use(authenticateToken, checkRole(["SUPERUSER", "ADMIN"]));
+// Middleware Autentikasi dan Otorisasi untuk semua rute admin
+router.use(authenticateToken, checkRole(["admin", "developer"]));
 
-// ... (rute lain dari /stats sampai /stores/upload-photo tidak berubah) ...
+// Dashboard & Statistik
 router.get("/stats", getAdminStats);
-// User Management
+
+// Manajemen Pengguna
 router.get("/users", getAllUsers);
 router.patch("/users/:id/role", changeUserRole);
 router.patch("/users/:id/status", changeUserStatus);
-// Store Management
+
+// Manajemen Toko
 router.get("/stores", getAllStores);
 router.post("/stores/new", createStoreByAdmin);
 router.patch("/stores/:id/status", updateStoreStatus);
@@ -57,27 +60,34 @@ router.get("/stores/:storeId/settings", getStoreSettingsForAdmin);
 router.put("/stores/:storeId/settings", updateStoreSettingsByAdmin);
 router.post("/stores/upload-photo", upload.single("photo"), uploadAdminPhoto);
 
-// --- PENAMBAHAN DAN MODIFIKASI RUTE INVOICE ---
-router.get("/stores/:storeId/invoices", getStoreInvoices); // <-- RUTE BARU: Mengambil riwayat
-router.post("/stores/:storeId/invoices/check", checkExistingInvoice); // <-- RUTE BARU: Cek duplikat
+// Manajemen Invoice (Tagihan)
+router.get("/stores/:storeId/invoices", getStoreInvoices);
+router.post("/stores/:storeId/invoices/check", checkExistingInvoice);
 router.post("/stores/:storeId/invoices/preview", previewStoreInvoice);
 router.post("/stores/:storeId/invoices", createStoreInvoice);
+// --- RUTE BARU DITAMBAHKAN DI SINI ---
+router.get("/invoices/:invoiceId", getInvoiceByIdForAdmin); // Untuk halaman cetak invoice
 
-// Payouts
+// Manajemen Payouts (Penarikan Dana)
 router.get("/payout-requests", getPayoutRequests);
 router.patch("/payout-requests/:id/resolve", resolvePayoutRequest);
-// Bookings
+
+// Manajemen Booking (Pesanan)
 router.get("/bookings", getAllBookings);
 router.patch("/bookings/:id/status", updateBookingStatus);
-// Reviews
+
+// Manajemen Ulasan
 router.get("/reviews", getAllReviews);
 router.delete("/reviews/:id", deleteReview);
-// Reports
+
+// Laporan
 router.get("/reports", getReportData);
-// Operational Settings
+
+// Pengaturan Operasional
 router.get("/settings", getOperationalSettings);
 router.post("/settings", updateOperationalSettings);
-// Banner Management
+
+// Manajemen Banner
 router.get("/banners", getAllBannersForAdmin);
 router.post("/banners", createBanner);
 router.put("/banners/:id", updateBanner);

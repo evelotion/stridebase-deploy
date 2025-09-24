@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js (Penambahan Riwayat & Cek Invoice)
+// File: server/controllers/admin.controller.js (Versi Lengkap & Perbaikan)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -784,6 +784,85 @@ export const createStoreInvoice = async (req, res, next) => {
       message: "Invoice berhasil dibuat dan dikirim ke mitra.",
       invoice: newInvoice,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --- FUNGSI BARU UNTUK MENGAMBIL INVOICE BERDASARKAN ID ---
+// @desc    Get a single invoice by its ID for admin
+// @route   GET /api/admin/invoices/:invoiceId
+export const getInvoiceByIdForAdmin = async (req, res, next) => {
+  try {
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: req.params.invoiceId },
+      include: {
+        store: {
+          include: {
+            owner: { select: { name: true, email: true } },
+          },
+        },
+      },
+    });
+
+    if (!invoice) {
+      return res.status(404).json({ message: "Invoice tidak ditemukan." });
+    }
+
+    // Memastikan hanya admin atau developer yang bisa akses
+    if (req.user.role !== "admin" && req.user.role !== "developer") {
+      return res.status(403).json({ message: "Akses ditolak." });
+    }
+
+    res.json(invoice);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --- FUNGSI BARU UNTUK MENGAMBIL RIWAYAT INVOICE TOKO ---
+// @desc    Get all invoices for a specific store
+// @route   GET /api/admin/stores/:storeId/invoices
+export const getStoreInvoices = async (req, res, next) => {
+  try {
+    const invoices = await prisma.invoice.findMany({
+      where: { storeId: req.params.storeId },
+      orderBy: { issueDate: "desc" },
+    });
+    res.json(invoices);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// --- FUNGSI BARU UNTUK MENGECEK INVOICE YANG SUDAH ADA ---
+// @desc    Check if an invoice for a specific period already exists
+// @route   POST /api/admin/stores/:storeId/invoices/check
+export const checkExistingInvoice = async (req, res, next) => {
+  const { storeId } = req.params;
+  const { period } = req.body; // period dalam format "YYYY-MM"
+
+  try {
+    const startDate = new Date(`${period}-01T00:00:00.000Z`);
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1);
+    endDate.setDate(endDate.getDate() - 1);
+
+    const existingInvoice = await prisma.invoice.findFirst({
+      where: {
+        storeId: storeId,
+        issueDate: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+
+    if (existingInvoice) {
+      return res.status(200).json({ exists: true, invoice: existingInvoice });
+    } else {
+      return res.status(200).json({ exists: false });
+    }
   } catch (error) {
     next(error);
   }
