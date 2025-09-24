@@ -1,8 +1,8 @@
-// StrideBase Schema
+// File: stridebase-app-render/server/prisma/schema.prisma (Lengkap & Sudah Diperbaiki)
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -23,7 +23,7 @@ enum BookingStatus {
   cancelled
   completed
   in_progress
-  reviewed // Ditambahkan untuk konsistensi
+  reviewed
 }
 
 enum WorkStatus {
@@ -80,7 +80,6 @@ enum LogAction {
   DEVELOPER_ACTION
 }
 
-// Wallet System Enums
 enum WalletTransactionType {
   CREDIT
   DEBIT
@@ -95,58 +94,60 @@ enum PayoutStatus {
 
 // Models
 model User {
-  id                 String            @id @default(cuid())
-  email              String            @unique
-  name               String
-  password           String
-  role               UserRole          @default(customer)
-  isEmailVerified    Boolean           @default(false)
-  emailVerificationToken String?       @unique
-  resetPasswordToken String?           @unique
-  resetPasswordExpires DateTime?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  stores             Store[]
-  bookings           Booking[]
-  addresses          Address[]
-  approvalRequests   ApprovalRequest[] @relation("RequestedApprovals")
-  approvedRequests   ApprovalRequest[] @relation("ApprovedApprovals")
-  securityLogs       SecurityLog[]
-  notifications      Notification[]
-  loyaltyPoints      LoyaltyPoint?
-  reviews            Review[]
-  requestedPayouts   PayoutRequest[]   @relation("RequestedPayouts")
-  processedPayouts   PayoutRequest[]   @relation("ProcessedPayouts")
-  status             String            @default("active") // Menambahkan status user
+  id                     String            @id @default(cuid())
+  email                  String            @unique
+  name                   String
+  password               String
+  role                   UserRole          @default(customer)
+  isEmailVerified        Boolean           @default(false)
+  emailVerificationToken String?           @unique
+  resetPasswordToken     String?           @unique
+  resetPasswordExpires   DateTime?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  stores                 Store[]
+  bookings               Booking[]
+  addresses              Address[]
+  approvalRequests       ApprovalRequest[] @relation("RequestedApprovals")
+  approvedRequests       ApprovalRequest[] @relation("ApprovedApprovals")
+  securityLogs           SecurityLog[]
+  notifications          Notification[]
+  loyaltyPoints          LoyaltyPoint?
+  reviews                Review[]
+  requestedPayouts       PayoutRequest[]   @relation("RequestedPayouts")
+  processedPayouts       PayoutRequest[]   @relation("ProcessedPayouts")
+  status                 String            @default("active")
+  issuedInvoices         Invoice[]         @relation("InvoiceIssuer") // <-- PERBAIKAN DI SINI
 }
+
 model Store {
-  id               String            @id @default(cuid())
-  name             String
-  location         String
-  latitude         Float?
-  longitude        Float?
-  description      String?           @db.Text
-  headerImageUrl   String?
-  images           String[]
-  owner            User              @relation(fields: [ownerId], references: [id])
-  ownerId          String
-  storeStatus      StoreStatus       @default(pending)
-  billingType      String            @default("COMMISSION")
-  commissionRate   Float             @default(10)
-  subscriptionFee  Float?            // Kolom baru untuk biaya langganan PRO
-  tier             Tier              @default(BASIC)
-  rating           Float             @default(0)
-  photoLimit       Int               @default(5)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  services         Service[]
-  bookings         Booking[]
-  schedules        StoreSchedule[]
+  id              String            @id @default(cuid())
+  name            String
+  location        String
+  latitude        Float?
+  longitude       Float?
+  description     String?           @db.Text
+  headerImageUrl  String?
+  images          String[]
+  owner           User              @relation(fields: [ownerId], references: [id])
+  ownerId         String
+  storeStatus     StoreStatus       @default(pending)
+  billingType     String            @default("COMMISSION")
+  commissionRate  Float             @default(10)
+  subscriptionFee Float?
+  tier            Tier              @default(BASIC)
+  rating          Float             @default(0)
+  photoLimit      Int               @default(5)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  services        Service[]
+  bookings        Booking[]
+  schedules       StoreSchedule[]
   approvalRequests ApprovalRequest[]
-  reviews          Review[]
-  promos           StorePromo[]
-  wallet           StoreWallet?
-  payoutRequests   PayoutRequest[]
+  reviews         Review[]
+  promos          StorePromo[]
+  wallet          StoreWallet?
+  payoutRequests  PayoutRequest[]
 
   @@index([ownerId])
   @@index([storeStatus])
@@ -154,21 +155,21 @@ model Store {
 }
 
 model Address {
-  id              String    @id @default(cuid())
-  user            User      @relation(fields: [userId], references: [id])
-  userId          String
-  label           String?
-  recipientName   String
-  phoneNumber     String
-  street          String
-  city            String
-  province        String
-  postalCode      String
-  country         String
-  isPrimary       Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  bookings        Booking[]
+  id            String    @id @default(cuid())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+  label         String?
+  recipientName String
+  phoneNumber   String
+  street        String
+  city          String
+  province      String
+  postalCode    String
+  country       String
+  isPrimary     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  bookings      Booking[]
 }
 
 model Service {
@@ -176,7 +177,7 @@ model Service {
   name        String
   description String?
   price       Float
-  shoeType    String   // PERBAIKAN: Menambahkan kembali kolom shoeType
+  shoeType    String
   duration    Int
   store       Store    @relation(fields: [storeId], references: [id])
   storeId     String
@@ -188,15 +189,15 @@ model Service {
 }
 
 model StoreSchedule {
-  id          String   @id @default(cuid())
-  store       Store    @relation(fields: [storeId], references: [id])
-  storeId     String
-  dayOfWeek   String   // Mengubah ke String untuk kemudahan
-  openTime    String
-  closeTime   String
-  isClosed    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   String
+  dayOfWeek String
+  openTime  String
+  closeTime String
+  isClosed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([storeId, dayOfWeek])
 }
@@ -209,9 +210,9 @@ model Booking {
   storeId           String
   service           Service            @relation(fields: [serviceId], references: [id])
   serviceId         String
-  serviceName       String             // Menambahkan salinan nama layanan
-  deliveryOption    String             // self-delivery atau pickup
-  scheduleDate      DateTime?          // Mengganti bookingTime
+  serviceName       String
+  deliveryOption    String
+  scheduleDate      DateTime?
   totalPrice        Float
   notes             String?
   address           Address?           @relation(fields: [addressId], references: [id])
@@ -226,22 +227,22 @@ model Booking {
   review            Review?
   walletTransaction WalletTransaction?
 
-   @@index([userId])
+  @@index([userId])
   @@index([storeId])
   @@index([status])
 }
 
 model Payment {
-  id              String        @id @default(cuid())
-  booking         Booking       @relation(fields: [bookingId], references: [id])
-  bookingId       String        @unique
+  id              String   @id @default(cuid())
+  booking         Booking  @relation(fields: [bookingId], references: [id])
+  bookingId       String   @unique
   amount          Float
-  status          String        @default("pending") // Mengubah ke String
+  status          String   @default("pending")
   midtransToken   String?
-  midtransOrderId String        @unique
+  midtransOrderId String   @unique
   paymentMethod   String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   invoice         Invoice?
 }
 
@@ -256,8 +257,8 @@ model PlatformEarning {
 
 model ApprovalRequest {
   id            String         @id @default(cuid())
-  store         Store?         @relation(fields: [storeId], references: [id]) // JADIKAN OPSIONAL
-  storeId       String?        // JADIKAN OPSIONAL
+  store         Store?         @relation(fields: [storeId], references: [id])
+  storeId       String?
   requestType   String
   details       Json
   status        ApprovalStatus @default(PENDING)
@@ -270,13 +271,13 @@ model ApprovalRequest {
 }
 
 model SecurityLog {
-  id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id])
   userId    String
   action    LogAction
   ipAddress String?
   details   String?
-  timestamp DateTime @default(now())
+  timestamp DateTime  @default(now())
 }
 
 model Notification {
@@ -297,42 +298,42 @@ model LoyaltyPoint {
   userId       String   @unique
   points       Int      @default(0)
   updatedAt    DateTime @updatedAt
-  transactions Json[]   // Menyimpan riwayat transaksi poin
+  transactions Json[]
 }
 
 model Review {
-  id              String    @id @default(cuid())
-  user            User      @relation(fields: [userId], references: [id])
-  userId          String
-  userName        String    // Menambahkan salinan nama user
-  store           Store     @relation(fields: [storeId], references: [id])
-  storeId         String
-  booking         Booking   @relation(fields: [bookingId], references: [id])
-  bookingId       String    @unique
-  rating          Int
-  comment         String?   @db.Text
-  imageUrl        String?
-  partnerReply    String?   @db.Text
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  userName     String
+  store        Store     @relation(fields: [storeId], references: [id])
+  storeId      String
+  booking      Booking   @relation(fields: [bookingId], references: [id])
+  bookingId    String    @unique
+  rating       Int
+  comment      String?   @db.Text
+  imageUrl     String?
+  partnerReply String?   @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Promo {
-  id              String       @id @default(cuid())
-  code            String       @unique
-  description     String
-  discountType    String       // percentage atau fixed
-  value           Float
-  startDate       DateTime?
-  endDate         DateTime?
-  usageLimit      Int?
-  usageCount      Int          @default(0)
-  minTransaction  Float?
-  forNewUser      Boolean      @default(false)
-  status          String       @default("active") // active atau inactive
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  stores          StorePromo[]
+  id             String       @id @default(cuid())
+  code           String       @unique
+  description    String
+  discountType   String
+  value          Float
+  startDate      DateTime?
+  endDate        DateTime?
+  usageLimit     Int?
+  usageCount     Int          @default(0)
+  minTransaction Float?
+  forNewUser     Boolean      @default(false)
+  status         String       @default("active")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  stores         StorePromo[]
 }
 
 model StorePromo {
@@ -355,19 +356,21 @@ model Invoice {
   issueDate     DateTime
   dueDate       DateTime
   paidAt        DateTime?
-  status        String    // SENT, PAID, OVERDUE
+  status        String
   items         Json
   notes         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   payment       Payment?  @relation(fields: [paymentId], references: [id])
   paymentId     String?   @unique
+  issuedById    String?
+  issuer        User?     @relation("InvoiceIssuer", fields: [issuedById], references: [id]) // <-- PERBAIKAN DI SINI
 }
 
 model GlobalSetting {
   id          String   @id @default(cuid())
   key         String   @unique
-  value       Json     // Menggunakan tipe JSONB
+  value       Json
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -379,12 +382,11 @@ model Banner {
   description String?
   imageUrl    String
   linkUrl     String?
-  status      String   @default("active") // active atau inactive
+  status      String   @default("active")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-// Wallet System Models
 model StoreWallet {
   id             String              @id @default(cuid())
   balance        Float               @default(0)
@@ -397,17 +399,17 @@ model StoreWallet {
 }
 
 model WalletTransaction {
-  id              String                @id @default(cuid())
-  wallet          StoreWallet           @relation(fields: [walletId], references: [id])
+  id              String         @id @default(cuid())
+  wallet          StoreWallet    @relation(fields: [walletId], references: [id])
   walletId        String
   amount          Float
   type            WalletTransactionType
   description     String
-  booking         Booking?              @relation(fields: [bookingId], references: [id])
-  bookingId       String?               @unique
-  payoutRequest   PayoutRequest?        @relation(fields: [payoutRequestId], references: [id])
-  payoutRequestId String?               @unique
-  createdAt       DateTime              @default(now())
+  booking         Booking?       @relation(fields: [bookingId], references: [id])
+  bookingId       String?        @unique
+  payoutRequest   PayoutRequest? @relation(fields: [payoutRequestId], references: [id])
+  payoutRequestId String?        @unique
+  createdAt       DateTime       @default(now())
 }
 
 model PayoutRequest {

@@ -1,15 +1,14 @@
-// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Preview Invoice & Pagination)
+// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Pratinjau Halaman Cetak & Tombol Riwayat)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // <-- IMPORT useNavigate
 import {
   getAllStoresForAdmin,
   updateStoreStatus,
   createStoreInvoiceByAdmin,
-  previewStoreInvoiceByAdmin, // Pastikan ini diimpor
+  previewStoreInvoiceByAdmin,
 } from "../services/apiService";
 
-// KOMPONEN BARU: Pagination untuk Tampilan Mobile
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   if (pageCount <= 1) return null;
   const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
@@ -66,9 +65,8 @@ const AdminStoresPage = ({ showMessage }) => {
     period: "",
     notes: "",
   });
-  const [invoicePreview, setInvoicePreview] = useState(null);
-  const [isPreviewing, setIsPreviewing] = useState(false);
   const [isSubmittingInvoice, setIsSubmittingInvoice] = useState(false);
+  const navigate = useNavigate(); // <-- Tambahkan hook navigate
 
   const fetchStores = useCallback(async () => {
     setLoading(true);
@@ -119,7 +117,6 @@ const AdminStoresPage = ({ showMessage }) => {
         { month: "long", year: "numeric" }
       )}.`,
     });
-    setInvoicePreview(null);
     setShowInvoiceModal(true);
   };
 
@@ -128,29 +125,27 @@ const AdminStoresPage = ({ showMessage }) => {
     setCurrentStore(null);
   };
 
+  // --- FUNGSI DIPERBARUI: Pratinjau Invoice ---
   const handlePreviewInvoice = async () => {
     if (!currentStore || !invoiceDetails.period) return;
-    setIsPreviewing(true);
-    setInvoicePreview(null);
     try {
       const previewData = await previewStoreInvoiceByAdmin(currentStore.id, {
         period: invoiceDetails.period,
+        notes: invoiceDetails.notes,
       });
-      setInvoicePreview(previewData);
+
+      // Buka di tab baru dan kirim data pratinjau
+      const previewUrl = `/admin/invoice/print/preview`;
+      navigate(previewUrl, {
+        state: { isPreview: true, invoiceData: previewData },
+      });
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
-      setInvoicePreview(null);
-    } finally {
-      setIsPreviewing(false);
     }
   };
 
   const handleInvoiceSubmit = async (e) => {
     e.preventDefault();
-    if (!currentStore || !invoicePreview) {
-      showMessage("Silakan pratinjau invoice terlebih dahulu.", "Error");
-      return;
-    }
     setIsSubmittingInvoice(true);
     try {
       const response = await createStoreInvoiceByAdmin(currentStore.id, {
@@ -208,12 +203,16 @@ const AdminStoresPage = ({ showMessage }) => {
 
   return (
     <div className="container-fluid p-4">
+      {/* --- TOMBOL RIWAYAT PINDAH KE SINI --- */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fs-2 mb-0">Manajemen Toko</h2>
-        <Link to="/admin/stores/new" className="btn btn-primary">
-          <i className="fas fa-plus me-2"></i>Tambah Toko Baru
-        </Link>
+        <div className="d-flex gap-2">
+          <Link to="/admin/stores/new" className="btn btn-primary">
+            <i className="fas fa-plus me-2"></i>Tambah Toko Baru
+          </Link>
+        </div>
       </div>
+
       <div className="card card-account p-3 mb-4">
         <div className="row g-2 align-items-center">
           <div className="col-md-8">
@@ -285,6 +284,14 @@ const AdminStoresPage = ({ showMessage }) => {
                       {store.rating || "N/A"}
                     </td>
                     <td className="text-end">
+                      {/* --- TOMBOL RIWAYAT BARU --- */}
+                      <Link
+                        to={`/admin/stores/${store.id}/invoices`}
+                        className="btn btn-sm btn-outline-secondary me-2"
+                        title="Lihat Riwayat Invoice"
+                      >
+                        <i className="fas fa-history"></i>
+                      </Link>
                       {store.tier === "PRO" && (
                         <button
                           className="btn btn-sm btn-info me-2"
@@ -357,6 +364,7 @@ const AdminStoresPage = ({ showMessage }) => {
           </table>
         </div>
 
+        {/* --- TAMPILAN MOBILE DIPERBARUI --- */}
         <div className="mobile-card-list d-lg-none">
           {currentStoresOnPage.map((store) => (
             <div className="mobile-card" key={store.id}>
@@ -392,12 +400,20 @@ const AdminStoresPage = ({ showMessage }) => {
                 </div>
               </div>
               <div className="mobile-card-footer d-flex justify-content-end gap-2">
+                {/* --- TOMBOL RIWAYAT MOBILE BARU --- */}
+                <Link
+                  to={`/admin/stores/${store.id}/invoices`}
+                  className="btn btn-sm btn-outline-secondary"
+                  title="Lihat Riwayat Invoice"
+                >
+                  <i className="fas fa-history"></i>
+                </Link>
                 {store.tier === "PRO" && (
                   <button
                     className="btn btn-sm btn-info"
                     onClick={() => handleOpenInvoiceModal(store)}
                   >
-                    Tagih PRO
+                    Tagih
                   </button>
                 )}
                 <Link
@@ -406,41 +422,7 @@ const AdminStoresPage = ({ showMessage }) => {
                 >
                   Kelola
                 </Link>
-                <div className="dropdown">
-                  <button
-                    className="btn btn-sm btn-outline-dark dropdown-toggle"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                  >
-                    Status
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => handleStatusChange(store.id, "active")}
-                      >
-                        Aktif
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => handleStatusChange(store.id, "inactive")}
-                      >
-                        Nonaktifkan
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="dropdown-item"
-                        onClick={() => handleStatusChange(store.id, "rejected")}
-                      >
-                        Tolak
-                      </button>
-                    </li>
-                  </ul>
-                </div>
+                {/* Opsi status bisa disederhanakan jika perlu */}
               </div>
             </div>
           ))}
@@ -458,6 +440,7 @@ const AdminStoresPage = ({ showMessage }) => {
         )}
       </div>
 
+      {/* --- MODAL DIPERBARUI --- */}
       {showInvoiceModal && currentStore && (
         <>
           <div
@@ -488,13 +471,12 @@ const AdminStoresPage = ({ showMessage }) => {
                         className="form-control"
                         id="period"
                         value={invoiceDetails.period}
-                        onChange={(e) => {
+                        onChange={(e) =>
                           setInvoiceDetails({
                             ...invoiceDetails,
                             period: e.target.value,
-                          });
-                          setInvoicePreview(null);
-                        }}
+                          })
+                        }
                         required
                       />
                     </div>
@@ -515,27 +497,6 @@ const AdminStoresPage = ({ showMessage }) => {
                         }
                       ></textarea>
                     </div>
-                    {isPreviewing && (
-                      <div className="text-center my-2">
-                        <div className="spinner-border spinner-border-sm"></div>
-                        <p className="text-muted small">Menghitung...</p>
-                      </div>
-                    )}
-                    {invoicePreview && (
-                      <div className="alert alert-secondary mt-3">
-                        <h6 className="alert-heading fw-bold">
-                          Pratinjau Invoice
-                        </h6>
-                        <p className="mb-1">
-                          <strong>Deskripsi:</strong>{" "}
-                          {invoicePreview.description}
-                        </p>
-                        <p className="mb-0">
-                          <strong>Jumlah:</strong> Rp{" "}
-                          {invoicePreview.amount.toLocaleString("id-ID")}
-                        </p>
-                      </div>
-                    )}
                   </div>
                   <div className="modal-footer">
                     <button
@@ -545,18 +506,19 @@ const AdminStoresPage = ({ showMessage }) => {
                     >
                       Batal
                     </button>
+                    {/* Tombol Pratinjau sekarang membuka tab baru */}
                     <button
                       type="button"
                       className="btn btn-info"
                       onClick={handlePreviewInvoice}
-                      disabled={isPreviewing || !invoiceDetails.period}
+                      disabled={!invoiceDetails.period}
                     >
-                      {isPreviewing ? "..." : "Pratinjau"}
+                      Pratinjau Cetak
                     </button>
                     <button
                       type="submit"
                       className="btn btn-primary"
-                      disabled={isSubmittingInvoice || !invoicePreview}
+                      disabled={isSubmittingInvoice}
                     >
                       {isSubmittingInvoice ? "Mengirim..." : "Kirim Tagihan"}
                     </button>

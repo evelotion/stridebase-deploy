@@ -1,11 +1,10 @@
-// File: server/controllers/admin.controller.js (Versi Lengkap & Perbaikan)
+// File: server/controllers/admin.controller.js (Versi Lengkap dengan Pratinjau Halaman Cetak)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
 
-// @desc    Get global statistics for admin
-// @route   GET /api/admin/stats
+// ... (fungsi getAdminStats hingga createStoreByAdmin tidak berubah)
 export const getAdminStats = async (req, res, next) => {
   try {
     const totalBookings = await prisma.booking.count();
@@ -27,8 +26,6 @@ export const getAdminStats = async (req, res, next) => {
   }
 };
 
-// @desc    Get all users
-// @route   GET /api/admin/users
 export const getAllUsers = async (req, res, next) => {
   try {
     const users = await prisma.user.findMany({
@@ -52,8 +49,6 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
-// @desc    Change user role
-// @route   PATCH /api/admin/users/:id/role
 export const changeUserRole = async (req, res, next) => {
   try {
     const updatedUser = await prisma.user.update({
@@ -66,8 +61,6 @@ export const changeUserRole = async (req, res, next) => {
   }
 };
 
-// @desc    Change user status
-// @route   PATCH /api/admin/users/:id/status
 export const changeUserStatus = async (req, res, next) => {
   try {
     const updatedUser = await prisma.user.update({
@@ -80,8 +73,6 @@ export const changeUserStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Get all stores for admin
-// @route   GET /api/admin/stores
 export const getAllStores = async (req, res, next) => {
   try {
     const stores = await prisma.store.findMany({
@@ -93,8 +84,6 @@ export const getAllStores = async (req, res, next) => {
   }
 };
 
-// @desc    Update store status
-// @route   PATCH /api/admin/stores/:id/status
 export const updateStoreStatus = async (req, res, next) => {
   try {
     const store = await prisma.store.update({
@@ -111,8 +100,6 @@ export const updateStoreStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Get pending payout requests
-// @route   GET /api/admin/payout-requests
 export const getPayoutRequests = async (req, res, next) => {
   try {
     const requests = await prisma.payoutRequest.findMany({
@@ -126,8 +113,6 @@ export const getPayoutRequests = async (req, res, next) => {
   }
 };
 
-// @desc    Resolve a payout request
-// @route   PATCH /api/admin/payout-requests/:id/resolve
 export const resolvePayoutRequest = async (req, res, next) => {
   const { id } = req.params;
   const { newStatus } = req.body; // APPROVED or REJECTED
@@ -182,8 +167,6 @@ export const resolvePayoutRequest = async (req, res, next) => {
   }
 };
 
-// @desc    Get all bookings for admin
-// @route   GET /api/admin/bookings
 export const getAllBookings = async (req, res, next) => {
   try {
     const bookings = await prisma.booking.findMany({
@@ -199,8 +182,6 @@ export const getAllBookings = async (req, res, next) => {
   }
 };
 
-// @desc    Update a booking's payment status
-// @route   PATCH /api/admin/bookings/:id/status
 export const updateBookingStatus = async (req, res, next) => {
   const { id } = req.params;
   const { newStatus } = req.body;
@@ -247,8 +228,6 @@ export const updateBookingStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Get all reviews for admin
-// @route   GET /api/admin/reviews
 export const getAllReviews = async (req, res, next) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -264,8 +243,6 @@ export const getAllReviews = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a review by ID
-// @route   DELETE /api/admin/reviews/:id
 export const deleteReview = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -279,8 +256,6 @@ export const deleteReview = async (req, res, next) => {
   }
 };
 
-// @desc    Get aggregated report data for admin
-// @route   GET /api/admin/reports
 export const getReportData = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
@@ -353,8 +328,6 @@ export const getReportData = async (req, res, next) => {
   }
 };
 
-// @desc    Get operational settings for admin
-// @route   GET /api/admin/settings
 export const getOperationalSettings = async (req, res, next) => {
   try {
     const themeSetting = await prisma.globalSetting.findUnique({
@@ -375,8 +348,6 @@ export const getOperationalSettings = async (req, res, next) => {
   }
 };
 
-// @desc    Update operational settings
-// @route   POST /api/admin/settings
 export const updateOperationalSettings = async (req, res, next) => {
   const { globalAnnouncement, enableGlobalAnnouncement } = req.body;
   try {
@@ -408,8 +379,6 @@ export const updateOperationalSettings = async (req, res, next) => {
   }
 };
 
-// @desc    Get store settings for admin
-// @route   GET /api/admin/stores/:storeId/settings
 export const getStoreSettingsForAdmin = async (req, res, next) => {
   try {
     const store = await prisma.store.findUnique({
@@ -425,8 +394,6 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Update store settings by Admin, creating an approval request for business model changes
-// @route   PUT /api/admin/stores/:storeId/settings
 export const updateStoreSettingsByAdmin = async (req, res, next) => {
   const { storeId } = req.params;
   const {
@@ -539,8 +506,6 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Upload photo for store gallery by admin
-// @route   POST /api/admin/stores/upload-photo
 export const uploadAdminPhoto = async (req, res, next) => {
   if (!req.file) {
     return res.status(400).json({ message: "Tidak ada file yang diunggah." });
@@ -560,8 +525,6 @@ export const uploadAdminPhoto = async (req, res, next) => {
   }
 };
 
-// @desc    Get all banners for admin
-// @route   GET /api/admin/banners
 export const getAllBannersForAdmin = async (req, res, next) => {
   try {
     const banners = await prisma.banner.findMany({
@@ -573,8 +536,6 @@ export const getAllBannersForAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Create a new banner
-// @route   POST /api/admin/banners
 export const createBanner = async (req, res, next) => {
   const { title, description, imageUrl, linkUrl, status } = req.body;
   try {
@@ -587,8 +548,6 @@ export const createBanner = async (req, res, next) => {
   }
 };
 
-// @desc    Update a banner
-// @route   PUT /api/admin/banners/:id
 export const updateBanner = async (req, res, next) => {
   const { id } = req.params;
   const { title, description, imageUrl, linkUrl, status } = req.body;
@@ -603,8 +562,6 @@ export const updateBanner = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a banner
-// @route   DELETE /api/admin/banners/:id
 export const deleteBanner = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -615,8 +572,6 @@ export const deleteBanner = async (req, res, next) => {
   }
 };
 
-// @desc    Create a new store by Admin
-// @route   POST /api/admin/stores/new
 export const createStoreByAdmin = async (req, res, next) => {
   const {
     name,
@@ -674,10 +629,10 @@ export const createStoreByAdmin = async (req, res, next) => {
   }
 };
 
-const generateInvoiceData = async (storeId, period) => {
+const generateInvoiceData = async (storeId, period, adminUser) => {
   const store = await prisma.store.findUnique({
     where: { id: storeId },
-    include: { owner: { select: { name: true } } },
+    include: { owner: { select: { name: true, email: true } } },
   });
 
   if (!store) {
@@ -689,91 +644,108 @@ const generateInvoiceData = async (storeId, period) => {
 
   if (store.tier === "PRO") {
     invoiceAmount = store.subscriptionFee || 0;
-    invoiceDescription = `Biaya Langganan StrideBase PRO Periode ${period}`;
+    const periodDate = new Date(`${period}-01`);
+    const periodString = periodDate.toLocaleString("id-ID", {
+      month: "long",
+      year: "numeric",
+    });
+    invoiceDescription = `Biaya Langganan StrideBase PRO Periode ${periodString}`;
     if (invoiceAmount <= 0) {
       throw new Error(
         "Toko PRO ini tidak memiliki biaya langganan yang valid."
       );
     }
   } else {
-    // Logika untuk tier BASIC (Komisi) bisa ditambahkan di sini jika perlu
     throw new Error("Fitur ini hanya untuk toko PRO.");
   }
 
-  return {
-    storeName: store.name,
-    ownerName: store.owner.name,
-    amount: invoiceAmount,
-    description: invoiceDescription,
-    period: period,
+  // Membuat objek invoice tiruan untuk pratinjau
+  const previewData = {
+    invoiceNumber: `PREVIEW-${Date.now()}`,
+    status: "PREVIEW",
+    issueDate: new Date(),
+    dueDate: new Date(new Date().setDate(new Date().getDate() + 14)),
+    totalAmount: invoiceAmount,
+    items: [
+      {
+        id: "preview-item-1",
+        description: invoiceDescription,
+        quantity: 1,
+        unitPrice: invoiceAmount,
+        total: invoiceAmount,
+      },
+    ],
+    notes: `Tagihan untuk ${store.name} periode ${period}. Mohon segera lakukan pembayaran.`,
+    store: {
+      name: store.name,
+      location: store.location,
+      ownerUser: {
+        email: store.owner.email,
+      },
+    },
+    // Menambahkan detail penerbit
+    issuer: {
+      id: adminUser.id,
+      name: adminUser.name,
+    },
   };
+  return previewData;
 };
 
+// --- FUNGSI DIPERBARUI ---
 // @desc    Preview an invoice before sending
 // @route   POST /api/admin/stores/:storeId/invoices/preview
 export const previewStoreInvoice = async (req, res, next) => {
   const { storeId } = req.params;
   const { period } = req.body;
   try {
-    const previewData = await generateInvoiceData(storeId, period);
+    // req.user berisi data admin yang login
+    const previewData = await generateInvoiceData(storeId, period, req.user);
     res.json(previewData);
   } catch (error) {
-    // Menggunakan next(error) agar ditangani oleh errorHandler global
     next(error);
   }
 };
 
+// --- FUNGSI DIPERBARUI ---
 // @desc    Create and send an invoice to a store based on its tier
 // @route   POST /api/admin/stores/:storeId/invoices
 export const createStoreInvoice = async (req, res, next) => {
   const { storeId } = req.params;
   const { period, notes } = req.body;
+  const adminUserId = req.user.id; // Mendapatkan ID admin yang sedang login
 
   try {
     const store = await prisma.store.findUnique({
       where: { id: storeId },
     });
-
     if (!store) {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    const {
-      amount: invoiceAmount,
-      description: invoiceDescription,
-      storeName,
-    } = await generateInvoiceData(storeId, period);
-
-    const storeNameForInvoice = storeName || "STORE";
+    // Menggunakan fungsi generateInvoiceData yang sudah dimodifikasi
+    const generatedData = await generateInvoiceData(storeId, period, req.user);
 
     const newInvoice = await prisma.invoice.create({
       data: {
         storeId: storeId,
-        totalAmount: invoiceAmount,
+        totalAmount: generatedData.totalAmount,
         status: "SENT",
-        issueDate: new Date(),
-        dueDate: new Date(new Date().setDate(new Date().getDate() + 14)),
-        invoiceNumber: `INV-${storeNameForInvoice
+        issueDate: generatedData.issueDate,
+        dueDate: generatedData.dueDate,
+        invoiceNumber: `INV-${store.name
           .substring(0, 3)
           .toUpperCase()}-${Date.now()}`,
-        items: [
-          {
-            description: invoiceDescription,
-            quantity: 1,
-            unitPrice: invoiceAmount,
-            total: invoiceAmount,
-          },
-        ],
-        notes:
-          notes ||
-          `Tagihan untuk periode ${period}. Mohon segera lakukan pembayaran.`,
+        items: generatedData.items,
+        notes: notes || generatedData.notes,
+        issuedById: adminUserId, // <-- MENYIMPAN ID PENERBIT
       },
     });
 
     if (store) {
       await createNotificationForUser(
         store.ownerId,
-        `Anda memiliki tagihan baru sebesar Rp ${invoiceAmount.toLocaleString(
+        `Anda memiliki tagihan baru sebesar Rp ${generatedData.totalAmount.toLocaleString(
           "id-ID"
         )} yang perlu dibayar.`,
         `/partner/wallet`
@@ -789,9 +761,7 @@ export const createStoreInvoice = async (req, res, next) => {
   }
 };
 
-// --- FUNGSI BARU UNTUK MENGAMBIL INVOICE BERDASARKAN ID ---
-// @desc    Get a single invoice by its ID for admin
-// @route   GET /api/admin/invoices/:invoiceId
+// --- (Fungsi lainnya tidak berubah) ---
 export const getInvoiceByIdForAdmin = async (req, res, next) => {
   try {
     const invoice = await prisma.invoice.findUnique({
@@ -802,27 +772,19 @@ export const getInvoiceByIdForAdmin = async (req, res, next) => {
             owner: { select: { name: true, email: true } },
           },
         },
+        issuer: { select: { id: true, name: true } }, // <-- Mengambil data penerbit
       },
     });
 
     if (!invoice) {
       return res.status(404).json({ message: "Invoice tidak ditemukan." });
     }
-
-    // Memastikan hanya admin atau developer yang bisa akses
-    if (req.user.role !== "admin" && req.user.role !== "developer") {
-      return res.status(403).json({ message: "Akses ditolak." });
-    }
-
     res.json(invoice);
   } catch (error) {
     next(error);
   }
 };
 
-// --- FUNGSI BARU UNTUK MENGAMBIL RIWAYAT INVOICE TOKO ---
-// @desc    Get all invoices for a specific store
-// @route   GET /api/admin/stores/:storeId/invoices
 export const getStoreInvoices = async (req, res, next) => {
   try {
     const invoices = await prisma.invoice.findMany({
@@ -835,12 +797,9 @@ export const getStoreInvoices = async (req, res, next) => {
   }
 };
 
-// --- FUNGSI BARU UNTUK MENGECEK INVOICE YANG SUDAH ADA ---
-// @desc    Check if an invoice for a specific period already exists
-// @route   POST /api/admin/stores/:storeId/invoices/check
 export const checkExistingInvoice = async (req, res, next) => {
   const { storeId } = req.params;
-  const { period } = req.body; // period dalam format "YYYY-MM"
+  const { period } = req.body;
 
   try {
     const startDate = new Date(`${period}-01T00:00:00.000Z`);

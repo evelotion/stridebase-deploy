@@ -1,34 +1,43 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import "../invoice.css"; // Tetap gunakan file CSS yang sama
-import API_BASE_URL from "../apiConfig";
+// File: client/src/pages/InvoicePrintPage.jsx (Versi Final dengan Mode Pratinjau & Detail Penerbit)
 
-const InvoicePrintPage = ({ user }) => {
+import React, { useState, useEffect, useMemo } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import "../invoice.css";
+import API_BASE_URL from "../apiConfig";
+import { getInvoiceByIdForAdmin } from "../services/apiService";
+
+const InvoicePrintPage = () => {
   const { invoiceId } = useParams();
+  const location = useLocation();
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(null); // State untuk menyimpan tema
+  const [theme, setTheme] = useState(null);
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+
+  // Cek apakah ini mode pratinjau dari state navigasi
+  const isPreview = useMemo(() => location.state?.isPreview, [location.state]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      const token = localStorage.getItem("token");
+      setLoading(true);
       try {
-        // ==================== PERBAIKAN DI SINI ====================
-        const headers = { Authorization: `Bearer ${token}` }; // Definisikan header
-
-        const [invoiceRes, themeRes] = await Promise.all([
-          // Tambahkan { headers } ke dalam fetch invoice
-          fetch(`${API_BASE_URL}/api/admin/invoices/${invoiceId}`, { headers }),
-          fetch(`${API_BASE_URL}/api/public/theme-config`),
-        ]);
-
-        if (!invoiceRes.ok) throw new Error("Gagal mengambil detail invoice.");
-        const invoiceData = await invoiceRes.json();
-        setInvoice(invoiceData);
-
+        // Ambil data tema secara paralel
+        const themeRes = await fetch(`${API_BASE_URL}/api/public/theme-config`);
         if (themeRes.ok) {
           const themeData = await themeRes.json();
           setTheme(themeData);
+        }
+
+        // Jika ini mode PRATINJAU, ambil data dari state
+        if (isPreview && location.state.invoiceData) {
+          setInvoice(location.state.invoiceData);
+        }
+        // Jika BUKAN mode pratinjau, ambil dari API berdasarkan ID
+        else if (invoiceId) {
+          const invoiceData = await getInvoiceByIdForAdmin(invoiceId);
+          setInvoice(invoiceData);
+        } else {
+          throw new Error("Data invoice tidak ditemukan.");
         }
       } catch (error) {
         console.error(error);
@@ -37,20 +46,38 @@ const InvoicePrintPage = ({ user }) => {
       }
     };
     fetchInitialData();
-  }, [invoiceId]);
+  }, [invoiceId, isPreview, location.state]);
 
   useEffect(() => {
-    if (invoice && theme) {
-      // Tunggu invoice dan theme siap sebelum mencetak
+    // Otomatis picu dialog cetak jika BUKAN mode pratinjau dan data sudah siap
+    if (!isPreview && invoice && theme) {
       window.print();
     }
-  }, [invoice, theme]);
+  }, [isPreview, invoice, theme]);
 
   if (loading) return <div>Memuat invoice...</div>;
   if (!invoice) return <div>Invoice tidak ditemukan.</div>;
 
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "PAID":
+        return "status-paid";
+      case "SENT":
+        return "status-sent";
+      case "OVERDUE":
+        return "status-overdue";
+      default:
+        return "status-preview";
+    }
+  };
+
   return (
     <div className="invoice-box">
+      {isPreview && (
+        <div className="preview-banner">
+          --- INI ADALAH PRATINJAU / PREVIEW ---
+        </div>
+      )}
       <header className="invoice-header">
         <div className="invoice-header__logo">
           {theme?.branding?.logoUrl ? (
@@ -66,7 +93,7 @@ const InvoicePrintPage = ({ user }) => {
           </p>
           <p>
             <strong>Status:</strong>{" "}
-            <span className={`status-${invoice.status.toLowerCase()}`}>
+            <span className={getStatusClass(invoice.status)}>
               {invoice.status}
             </span>
           </p>
@@ -81,7 +108,9 @@ const InvoicePrintPage = ({ user }) => {
             <br />
             {invoice.store.location}
             <br />
-            {invoice.store.ownerUser?.email || "Email tidak tersedia"}
+            {invoice.store.owner?.email ||
+              invoice.store.ownerUser?.email ||
+              "Email tidak tersedia"}
           </p>
         </div>
         <div className="invoice-meta__dates">
@@ -116,8 +145,8 @@ const InvoicePrintPage = ({ user }) => {
           </tr>
         </thead>
         <tbody>
-          {invoice.items.map((item) => (
-            <tr key={item.id}>
+          {(invoice.items || []).map((item, index) => (
+            <tr key={item.id || index}>
               <td>{item.description}</td>
               <td className="text-center">{item.quantity}</td>
               <td className="text-right">
@@ -154,9 +183,10 @@ const InvoicePrintPage = ({ user }) => {
       <footer className="invoice-footer">
         <div className="audit-trail">
           <p>
-            Dicetak oleh: {user?.name || "N/A"} (ID: {user?.id || "N/A"})
+            Diterbitkan oleh: {invoice.issuer?.name || "N/A"} (ID:{" "}
+            {invoice.issuer?.id || "N/A"})
             <br />
-            Pada:{" "}
+            Tanggal Cetak:{" "}
             {new Date().toLocaleString("id-ID", {
               dateStyle: "full",
               timeStyle: "long",
