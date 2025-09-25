@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoreInvoicesPage.jsx (File Baru)
+// File: client/src/pages/AdminStoreInvoicesPage.jsx (Perbaikan Final toLocaleString)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
@@ -15,10 +15,9 @@ const AdminStoreInvoicesPage = ({ showMessage }) => {
     const fetchInvoiceHistory = useCallback(async () => {
         setLoading(true);
         try {
-            // Mengambil data invoice dan nama toko secara bersamaan
             const [invoicesData, storeData] = await Promise.all([
                 getStoreInvoicesByAdmin(storeId),
-                getStoreSettingsForAdmin(storeId) // Mengambil detail toko untuk mendapatkan nama
+                getStoreSettingsForAdmin(storeId)
             ]);
             setInvoices(invoicesData);
             setStoreName(storeData.name);
@@ -77,7 +76,10 @@ const AdminStoreInvoicesPage = ({ showMessage }) => {
                                         <td className="fw-bold">{invoice.invoiceNumber}</td>
                                         <td>{new Date(invoice.issueDate).toLocaleDateString('id-ID')}</td>
                                         <td>{new Date(invoice.dueDate).toLocaleDateString('id-ID')}</td>
-                                        <td>Rp {invoice.totalAmount.toLocaleString('id-ID')}</td>
+                                        <td>
+                                            {/* --- PERBAIKAN UTAMA DI SINI --- */}
+                                            Rp {(invoice.totalAmount || 0).toLocaleString('id-ID')}
+                                        </td>
                                         <td>
                                             <span className={`badge ${getStatusBadge(invoice.status)}`}>
                                                 {invoice.status}
@@ -85,9 +87,9 @@ const AdminStoreInvoicesPage = ({ showMessage }) => {
                                         </td>
                                         <td className="text-end">
                                             <Link 
-                                                to={`/invoice/print/${invoice.id}`} 
+                                                to={`/admin/invoice/print/${invoice.id}`} 
                                                 className="btn btn-sm btn-outline-primary"
-                                                target="_blank" // Membuka di tab baru
+                                                target="_blank"
                                             >
                                                 Lihat & Cetak
                                             </Link>

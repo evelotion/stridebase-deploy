@@ -1,4 +1,4 @@
-// File: stridebase-app-render/client/src/App.jsx (Versi Final & Benar)
+// File: client/src/App.jsx (Versi Final & Lengkap)
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
@@ -6,11 +6,11 @@ import {
   Routes,
   Route,
   Outlet,
-  NavLink,
   Navigate,
   useNavigate,
 } from "react-router-dom";
 import { io } from "socket.io-client";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -61,9 +61,8 @@ const AdminBannersPage = React.lazy(() => import("./pages/AdminBannersPage"));
 const AdminBookingsPage = React.lazy(() => import("./pages/AdminBookingsPage"));
 const AdminReviewsPage = React.lazy(() => import("./pages/AdminReviewsPage"));
 const AdminSettingsPage = React.lazy(() => import("./pages/AdminSettingsPage"));
-const AdminStoreInvoicePage = React.lazy(() =>
-  // Nama file ini sudah sesuai dengan file Anda
-  import("./pages/AdminStoreInvoicePage")
+const AdminStoreInvoicesPage = React.lazy(() =>
+  import("./pages/AdminStoreInvoicesPage")
 );
 const AdminStoreSettingsPage = React.lazy(() =>
   import("./pages/AdminStoreSettingsPage")
@@ -162,11 +161,9 @@ const applyTheme = (theme) => {
         fontLink.rel = "stylesheet";
         document.head.appendChild(fontLink);
       }
-
       fontLink.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@400;500;600;700&display=swap`;
       root.style.setProperty("--font-family", fontFamilyValue);
     }
-
     root.style.setProperty(
       "--font-size-base",
       theme.typography.baseFontSize || "16px"
@@ -209,7 +206,6 @@ const applyTheme = (theme) => {
 
 const PageStatusWrapper = ({ children, path, theme }) => {
   const isEnabled = theme?.featureFlags?.pageStatus?.[path] ?? true;
-
   if (isEnabled) {
     return children;
   }
@@ -310,13 +306,11 @@ function AppContent() {
       theme?.featureFlags?.enableGlobalAnnouncement &&
       theme?.globalAnnouncement &&
       isAnnouncementVisible;
-
     if (shouldShowAnnouncement) {
       document.body.classList.add("has-global-announcement");
     } else {
       document.body.classList.remove("has-global-announcement");
     }
-
     return () => {
       document.body.classList.remove("has-global-announcement");
     };
@@ -340,18 +334,13 @@ function AppContent() {
     const socketUrl = import.meta.env.PROD
       ? import.meta.env.VITE_API_PRODUCTION_URL
       : "/";
-
     if (user && user.id) {
-      socket = io(socketUrl, {
-        query: { userId: user.id },
-      });
-
+      socket = io(socketUrl, { query: { userId: user.id } });
       socket.on("connect", () => {
         console.log(
           `✅ Terhubung ke server Socket.IO dengan ID: ${socket.id} untuk user ${user.id}`
         );
       });
-
       socket.on("new_notification", (notification) => {
         console.log("Menerima notifikasi baru:", notification);
         setNotifications((prev) => [notification, ...prev]);
@@ -431,7 +420,7 @@ function AppContent() {
             path="services"
             element={renderWithProps(PartnerServicesPage)}
           />
-          <Route path="orders" element={<PartnerOrdersPage />} />
+          <Route path="orders" element={renderWithProps(PartnerOrdersPage)} />
           <Route
             path="settings"
             element={renderWithProps(PartnerSettingsPage)}
@@ -443,7 +432,7 @@ function AppContent() {
             element={renderWithProps(PartnerInvoicePage)}
           />
           <Route path="promos" element={renderWithProps(PartnerPromosPage)} />
-          <Route path="wallet" element={<PartnerWalletPage />} />
+          <Route path="wallet" element={renderWithProps(PartnerWalletPage)} />
           <Route path="reports" element={renderWithProps(PartnerReportsPage)} />
         </Route>
 
@@ -455,10 +444,13 @@ function AppContent() {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<AdminDashboardPage />} />
-          <Route path="bookings" element={<AdminBookingsPage />} />
-          <Route path="reviews" element={<AdminReviewsPage />} />
-          <Route path="reports" element={<AdminReportsPage />} />
+          <Route
+            path="dashboard"
+            element={renderWithProps(AdminDashboardPage)}
+          />
+          <Route path="bookings" element={renderWithProps(AdminBookingsPage)} />
+          <Route path="reviews" element={renderWithProps(AdminReviewsPage)} />
+          <Route path="reports" element={renderWithProps(AdminReportsPage)} />
           <Route path="stores" element={renderWithProps(AdminStoresPage)} />
           <Route
             path="stores/new"
@@ -469,18 +461,20 @@ function AppContent() {
             element={renderWithProps(AdminStoreSettingsPage)}
           />
           <Route
-            path="stores/:storeId/invoices" // <-- INI ADALAH RUTE BARU YANG DITAMBAHKAN
-            element={renderWithProps(AdminStoreInvoicePage)}
+            path="stores/:storeId/invoices"
+            element={renderWithProps(AdminStoreInvoicesPage)}
           />
           <Route path="payouts" element={renderWithProps(AdminPayoutsPage)} />
-          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="users" element={renderWithProps(AdminUsersPage)} />
           <Route path="promos" element={renderWithProps(AdminPromosPage)} />
           <Route path="banners" element={renderWithProps(AdminBannersPage)} />
           <Route path="settings" element={renderWithProps(AdminSettingsPage)} />
           <Route
             path="invoice/print/:invoiceId"
-            element={<InvoicePrintPage user={user} />}
+            element={<InvoicePrintPage />}
           />
+          {/* Rute Tambahan untuk Pratinjau Invoice */}
+          <Route path="invoice/print/preview" element={<InvoicePrintPage />} />
         </Route>
 
         <Route
@@ -535,17 +529,15 @@ function AppContent() {
               </PageStatusWrapper>
             }
           />
-
           <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="terms-conditions" element={<TermsConditionsPage />} />
           <Route path="legal" element={<LegalPage />} />
           <Route path="sitemap" element={<SitemapPage />} />
-
           <Route
             path="store"
             element={
               <PageStatusWrapper path="/store" theme={theme}>
-                <StorePage />
+                <StorePage showMessage={showMessage} />
               </PageStatusWrapper>
             }
           />
@@ -568,8 +560,14 @@ function AppContent() {
             path="reset-password"
             element={renderWithProps(ResetPasswordPage)}
           />
-          <Route path="register" element={<RegisterPage theme={theme} />} />
-          <Route path="dashboard" element={<DashboardPage />} />
+          <Route
+            path="register"
+            element={<RegisterPage theme={theme} showMessage={showMessage} />}
+          />
+          <Route
+            path="dashboard"
+            element={<DashboardPage showMessage={showMessage} />}
+          />
           <Route path="track/:bookingId" element={<TrackOrderPage />} />
           <Route path="payment-finish" element={<PaymentFinishPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
@@ -584,7 +582,9 @@ function AppContent() {
 const App = () => {
   return (
     <Router>
-      <AppContent />
+      <HelmetProvider>
+        <AppContent />
+      </HelmetProvider>
     </Router>
   );
 };
