@@ -1,4 +1,4 @@
-// File: stridebase-app-render/server/prisma/schema.prisma (Lengkap & Sudah Diperbaiki)
+// File: server/prisma/schema.prisma (Versi Final Lengkap & Bersih)
 
 datasource db {
   provider = "postgresql"
@@ -117,37 +117,38 @@ model User {
   requestedPayouts       PayoutRequest[]   @relation("RequestedPayouts")
   processedPayouts       PayoutRequest[]   @relation("ProcessedPayouts")
   status                 String            @default("active")
-  issuedInvoices         Invoice[]         @relation("InvoiceIssuer") // <-- PERBAIKAN DI SINI
+  issuedInvoices         Invoice[]         @relation("InvoiceIssuer")
 }
 
 model Store {
-  id              String            @id @default(cuid())
-  name            String
-  location        String
-  latitude        Float?
-  longitude       Float?
-  description     String?           @db.Text
-  headerImageUrl  String?
-  images          String[]
-  owner           User              @relation(fields: [ownerId], references: [id])
-  ownerId         String
-  storeStatus     StoreStatus       @default(pending)
-  billingType     String            @default("COMMISSION")
-  commissionRate  Float             @default(10)
-  subscriptionFee Float?
-  tier            Tier              @default(BASIC)
-  rating          Float             @default(0)
-  photoLimit      Int               @default(5)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  services        Service[]
-  bookings        Booking[]
-  schedules       StoreSchedule[]
+  id               String            @id @default(cuid())
+  name             String
+  location         String
+  latitude         Float?
+  longitude        Float?
+  description      String?           @db.Text
+  headerImageUrl   String?
+  images           String[]
+  owner            User              @relation(fields: [ownerId], references: [id])
+  ownerId          String
+  storeStatus      StoreStatus       @default(pending)
+  billingType      String            @default("COMMISSION")
+  commissionRate   Float             @default(10)
+  subscriptionFee  Float?
+  tier             Tier              @default(BASIC)
+  rating           Float             @default(0)
+  photoLimit       Int               @default(5)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  services         Service[]
+  bookings         Booking[]
+  schedules        StoreSchedule[]
   approvalRequests ApprovalRequest[]
-  reviews         Review[]
-  promos          StorePromo[]
-  wallet          StoreWallet?
-  payoutRequests  PayoutRequest[]
+  reviews          Review[]
+  promos           StorePromo[]
+  wallet           StoreWallet?
+  payoutRequests   PayoutRequest[]
+  invoices         Invoice[]
 
   @@index([ownerId])
   @@index([storeStatus])
@@ -351,7 +352,6 @@ model StorePromo {
 model Invoice {
   id            String    @id @default(cuid())
   invoiceNumber String    @unique
-  storeId       String
   totalAmount   Float
   issueDate     DateTime
   dueDate       DateTime
@@ -364,7 +364,9 @@ model Invoice {
   payment       Payment?  @relation(fields: [paymentId], references: [id])
   paymentId     String?   @unique
   issuedById    String?
-  issuer        User?     @relation("InvoiceIssuer", fields: [issuedById], references: [id]) // <-- PERBAIKAN DI SINI
+  issuer        User?     @relation("InvoiceIssuer", fields: [issuedById], references: [id])
+  store         Store     @relation(fields: [storeId], references: [id])
+  storeId       String
 }
 
 model GlobalSetting {
