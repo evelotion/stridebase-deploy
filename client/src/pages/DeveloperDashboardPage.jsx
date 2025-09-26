@@ -874,16 +874,70 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           )}
         </div>
       )}
+
       {activeTab === "security" && (
         <div className="table-card p-3 shadow-sm">
           <h5 className="mb-3">Log Keamanan Terbaru</h5>
           <div className="table-responsive">
             <table className="table table-hover align-middle">
-              {/* ... isi tabel log keamanan ... */}
+              <thead className="table-light">
+                <tr>
+                  <th>Waktu</th>
+                  <th>Pengguna</th>
+                  <th>Aksi</th>
+                  <th>Alamat IP</th>
+                  <th style={{ minWidth: "300px" }}>Detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                {securityLogs.length > 0 ? (
+                  securityLogs.map((log) => (
+                    <tr key={log.id}>
+                      <td className="text-nowrap">
+                        {new Date(log.timestamp).toLocaleString("id-ID")}
+                      </td>
+                      <td>
+                        {log.user ? (
+                          <>
+                            {log.user.name}
+                            <small className="d-block text-muted">
+                              {log.user.email}
+                            </small>
+                          </>
+                        ) : (
+                          "N/A"
+                        )}
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            log.action === "LOGIN_FAILURE"
+                              ? "bg-danger"
+                              : "bg-secondary"
+                          }`}
+                        >
+                          {log.action}
+                        </span>
+                      </td>
+                      <td>{log.ipAddress || "-"}</td>
+                      <td>
+                        <small>{log.details}</small>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center p-4 text-muted">
+                      Belum ada log keamanan yang tercatat.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
             </table>
           </div>
         </div>
       )}
+
       {activeTab === "maintenance" && (
         <div className="card card-account p-4">
           <h5 className="mb-4 fw-bold text-danger">Zona Berbahaya</h5>
