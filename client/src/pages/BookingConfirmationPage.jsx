@@ -1,3 +1,5 @@
+// File: client/src/pages/BookingConfirmationPage.jsx (Versi Lengkap & Perbaikan Alur)
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
@@ -123,6 +125,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
     }
   };
 
+  // --- FUNGSI UTAMA YANG DIPERBARUI ---
   const handleConfirmAndPay = async () => {
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
@@ -133,7 +136,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
     };
 
     try {
-      const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
+      // 1. Buat booking di database terlebih dahulu
+      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -142,32 +146,16 @@ const BookingConfirmationPage = ({ showMessage }) => {
         body: JSON.stringify(finalBookingDetails),
       });
 
-      const newBookingData = await bookingResponse.json();
-      if (!bookingResponse.ok) {
+      const newBookingData = await response.json();
+      if (!response.ok) {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      const paymentResponse = await fetch(
-        `${API_BASE_URL}/api/payments/create-transaction`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ bookingId: newBookingData.id }),
-        }
-      );
-
-      const paymentData = await paymentResponse.json();
-      if (!paymentResponse.ok) {
-        throw new Error(
-          paymentData.message || "Gagal memulai sesi pembayaran."
-        );
-      }
-
+      // 2. Hapus data booking sementara
       localStorage.removeItem("pendingBooking");
-      window.location.href = paymentData.redirectUrl;
+
+      // 3. Arahkan ke halaman simulasi pembayaran dengan ID booking yang baru dibuat
+      navigate(`/payment-simulation/${newBookingData.id}`);
     } catch (error) {
       showMessage(error.message);
       setIsSubmitting(false);
