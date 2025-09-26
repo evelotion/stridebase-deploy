@@ -105,8 +105,9 @@ const ForgotPasswordPage = React.lazy(() =>
   import("./pages/ForgotPasswordPage")
 );
 const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
-const PaymentSimulationPage = React.lazy(() => import("./pages/PaymentSimulationPage"));
-const PaymentSuccessPage = React.lazy(() => import("./pages/PaymentSuccessPage"));
+const PaymentSuccessPage = React.lazy(() =>
+  import("./pages/PaymentSuccessPage.jsx")
+);
 
 let socket;
 
@@ -571,8 +572,10 @@ function AppContent() {
             element={<DashboardPage showMessage={showMessage} />}
           />
           <Route path="track/:bookingId" element={<TrackOrderPage />} />
-                    <Route path="payment-simulation/:bookingId" element={renderWithProps(PaymentSimulationPage)} />
-          <Route path="payment-success/:bookingId" element={renderWithProps(PaymentSuccessPage)} />
+          <Route
+            path="payment-success/:bookingId"
+            element={renderWithProps(PaymentSuccessPage)}
+          />
           <Route path="payment-finish" element={<PaymentFinishPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="email-verified" element={<EmailVerifiedPage />} />
