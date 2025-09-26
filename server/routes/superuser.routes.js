@@ -7,7 +7,8 @@ import {
     updateGlobalConfig,
     reseedDatabase,
     getApprovalRequests, // <-- 1. IMPOR FUNGSI YANG HILANG
-    resolveApprovalRequest // <-- 2. IMPOR FUNGSI RESOLVE JUGA
+    resolveApprovalRequest, // <-- 2. IMPOR FUNGSI RESOLVE JUGA
+    getSecurityLogs
 } from '../controllers/superuser.controller.js';
 
 const router = express.Router();
@@ -22,6 +23,8 @@ router.post('/config', updateGlobalConfig);
 // Approval Management (RUTE BARU DITAMBAHKAN DI SINI)
 router.get('/approval-requests', getApprovalRequests);
 router.post('/approval-requests/:id/resolve', resolveApprovalRequest);
+// Security Log Management
+router.get('/security-logs', getSecurityLogs);
 
 // Maintenance
 router.post('/maintenance/reseed-database', reseedDatabase);
