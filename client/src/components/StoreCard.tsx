@@ -1,14 +1,13 @@
-// File: client/src/components/StoreCard.tsx (Versi Perbaikan)
+// File: client/src/components/StoreCard.tsx (Versi Perbaikan Final)
 
 import { Link } from "react-router-dom";
 
-// --- PERUBAHAN 1: Memperbaiki interface agar sesuai dengan data dari API ---
 interface Store {
   id: string;
   name: string;
   location: string;
   rating: number;
-  services: { name: string }[]; // Diubah dari servicesAvailable: number
+  services?: { name: string }[]; // Diubah menjadi opsional dengan '?'
   images: string[];
   headerImage?: string;
   distance?: number;
@@ -20,12 +19,14 @@ interface StoreCardProps {
 }
 
 const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
+  // --- PERBAIKAN UTAMA DI SINI ---
+  // Kita pastikan 'services' adalah array, jika tidak ada, kita anggap sebagai array kosong.
   const {
     id,
     name,
     location,
     rating,
-    services, // --- PERUBAHAN 2: Menggunakan 'services' (array)
+    services = [], // Default ke array kosong jika tidak ada
     images,
     headerImage,
     distance,
@@ -65,7 +66,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
           </p>
           <div className="d-flex justify-content-between align-items-center mb-2">
             <p className="store-grid__rating mb-0">
-              {/* --- PERUBAHAN 3: Menghitung jumlah layanan dari panjang array --- */}
+              {/* Kode ini sekarang aman karena 'services' dijamin adalah array */}
               <i className="fas fa-star"></i> {rating} | {services.length}{" "}
               layanan
             </p>
