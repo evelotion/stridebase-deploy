@@ -99,12 +99,13 @@ const BookingConfirmationPage = ({ showMessage }) => {
     }, 100);
   };
 
-  const handleApplyPromo = async (codeToApply = promoCode) => {
+ const handleApplyPromo = async (codeToApply = promoCode) => {
     setPromoError("");
     const token = localStorage.getItem("token");
     try {
+      // URL DIPERBAIKI: dari /api/admin/promos/validate menjadi /api/user/promos/validate
       const response = await fetch(
-        `${API_BASE_URL}/api/admin/promos/validate`,
+        `${API_BASE_URL}/api/user/promos/validate`,
         {
           method: "POST",
           headers: {
@@ -124,7 +125,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
       setAppliedPromo(null);
     }
   };
-
   // --- FUNGSI UTAMA YANG DIPERBARUI ---
   const handleConfirmAndPay = async () => {
     setIsSubmitting(true);

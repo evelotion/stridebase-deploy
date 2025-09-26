@@ -1,4 +1,4 @@
-// File: server/routes/admin.routes.js (Versi Lengkap & Perbaikan)
+// File: server/routes/admin.routes.js (Versi Final Lengkap & Perbaikan)
 
 import express from "express";
 import {
@@ -33,7 +33,8 @@ import {
   previewStoreInvoice,
   getStoreInvoices,
   checkExistingInvoice,
-  getInvoiceByIdForAdmin, // <-- FUNGSI BARU DIIMPOR
+  getInvoiceByIdForAdmin,
+  validatePromoCode // <-- FUNGSI BARU DIIMPOR
 } from "../controllers/admin.controller.js";
 import multer from "multer";
 
@@ -65,8 +66,7 @@ router.get("/stores/:storeId/invoices", getStoreInvoices);
 router.post("/stores/:storeId/invoices/check", checkExistingInvoice);
 router.post("/stores/:storeId/invoices/preview", previewStoreInvoice);
 router.post("/stores/:storeId/invoices", createStoreInvoice);
-// --- RUTE BARU DITAMBAHKAN DI SINI ---
-router.get("/invoices/:invoiceId", getInvoiceByIdForAdmin); // Untuk halaman cetak invoice
+router.get("/invoices/:invoiceId", getInvoiceByIdForAdmin);
 
 // Manajemen Payouts (Penarikan Dana)
 router.get("/payout-requests", getPayoutRequests);
@@ -92,5 +92,9 @@ router.get("/banners", getAllBannersForAdmin);
 router.post("/banners", createBanner);
 router.put("/banners/:id", updateBanner);
 router.delete("/banners/:id", deleteBanner);
+
+// RUTE BARU DITAMBAHKAN DI SINI UNTUK VALIDASI PROMO
+router.post("/promos/validate", validatePromoCode);
+
 
 export default router;
