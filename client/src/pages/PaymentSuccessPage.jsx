@@ -1,10 +1,11 @@
-// File: client/src/pages/PaymentSuccessPage.jsx (BARU)
+// File: client/src/pages/PaymentSuccessPage.jsx (Updated)
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getBookingDetails } from '../services/apiService';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import API_BASE_URL from '../apiConfig';
 
 const PaymentSuccessPage = ({ showMessage }) => {
     const { bookingId } = useParams();
@@ -12,22 +13,34 @@ const PaymentSuccessPage = ({ showMessage }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchBooking = async () => {
+        const confirmAndFetchBooking = async () => {
+            setLoading(true);
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
             try {
+                // Langkah 1: Kirim konfirmasi pembayaran ke backend
+                await fetch(`${API_BASE_URL}/api/payments/confirm-simulation/${bookingId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                // Langkah 2: Ambil detail booking yang sudah terupdate
                 const data = await getBookingDetails(bookingId);
                 setBooking(data);
+
             } catch (error) {
                 showMessage(error.message, "Error");
             } finally {
                 setLoading(false);
             }
         };
-        fetchBooking();
+        
+        confirmAndFetchBooking();
     }, [bookingId, showMessage]);
 
     const generatePDF = () => {
         if (!booking) return;
-
         const doc = new jsPDF();
         
         doc.setFontSize(20);
@@ -48,7 +61,7 @@ const PaymentSuccessPage = ({ showMessage }) => {
         doc.save(`receipt-stridebase-${booking.id.substring(0, 8)}.pdf`);
     };
 
-    if (loading) return <div className="container py-5 text-center">Memuat tanda terima...</div>;
+    if (loading) return <div className="container py-5 text-center">Mengonfirmasi pembayaran dan memuat tanda terima...</div>;
     if (!booking) return <div className="container py-5 text-center">Gagal memuat data pesanan.</div>;
 
     return (

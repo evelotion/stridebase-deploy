@@ -47,3 +47,42 @@ export const paymentNotificationHandler = async (req, res, next) => {
     // Untuk saat ini, kita anggap semua notifikasi sukses
     res.status(200).json({ message: "Webhook received." });
 };
+
+// @desc    Confirm a booking payment after successful simulation
+// @route   POST /api/payments/confirm-simulation/:bookingId
+export const confirmPaymentSimulation = async (req, res, next) => {
+    const { bookingId } = req.params;
+    const userId = req.user.id;
+
+    try {
+        const booking = await prisma.booking.findFirst({
+            where: { id: bookingId, userId: userId },
+            include: { store: true }
+        });
+
+        if (!booking) {
+            return res.status(404).json({ message: "Pesanan tidak ditemukan atau Anda tidak berwenang." });
+        }
+
+        // Hanya update jika status masih 'pending'
+        if (booking.status === 'pending') {
+            const updatedBooking = await prisma.booking.update({
+                where: { id: bookingId },
+                data: { status: 'confirmed' }, // Mengubah status menjadi 'confirmed'
+            });
+            
+            // Kirim notifikasi ke pemilik toko bahwa pesanan sudah dibayar
+            await createNotificationForUser(
+              booking.store.ownerId,
+              `Pesanan #${booking.id.substring(0,8)} telah dibayar dan dikonfirmasi.`,
+              `/partner/orders`
+            );
+
+            res.json({ message: "Pembayaran berhasil dikonfirmasi.", booking: updatedBooking });
+        } else {
+            res.status(200).json({ message: "Status pesanan ini sudah diproses sebelumnya." });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
