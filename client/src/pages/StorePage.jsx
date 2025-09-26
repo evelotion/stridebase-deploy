@@ -1,13 +1,17 @@
-// File: client/src/pages/StorePage.jsx (Perbaikan Final)
+// File: client/src/pages/StorePage.jsx (Versi Perbaikan Final)
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import StoreCard from "../components/StoreCard";
 import { useSearchParams } from "react-router-dom";
 import { getStores } from "../services/apiService";
 
 const UNIQUE_SERVICES = [
-  "Fast Clean Sneakers", "Deep Clean Leather", "Cuci Cepat Reguler",
-  "Perawatan Suede", "Unyellowing Treatment", "Repair Consultation",
+  "Fast Clean Sneakers",
+  "Deep Clean Leather",
+  "Cuci Cepat Reguler",
+  "Perawatan Suede",
+  "Unyellowing Treatment",
+  "Repair Consultation",
 ];
 
 const RatingFilter = ({ rating, setRating }) => (
@@ -32,9 +36,14 @@ const StorePage = ({ showMessage }) => {
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
+  // State untuk filter, diinisialisasi dari URL
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get("search") || ""
+  );
   const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "rating");
-  const [minRating, setMinRating] = useState(parseInt(searchParams.get("minRating")) || 0);
+  const [minRating, setMinRating] = useState(
+    parseInt(searchParams.get("minRating")) || 0
+  );
   const [userLocation, setUserLocation] = useState({
     lat: searchParams.get("lat") || null,
     lng: searchParams.get("lng") || null,
@@ -42,48 +51,61 @@ const StorePage = ({ showMessage }) => {
   const [selectedServices, setSelectedServices] = useState(
     searchParams.get("services")?.split(",") || []
   );
-  const [openNow, setOpenNow] = useState(searchParams.get("openNow") === "true");
+  const [openNow, setOpenNow] = useState(
+    searchParams.get("openNow") === "true"
+  );
 
-  // --- PERBAIKAN UTAMA DI SINI ---
+  // --- PERBAIKAN UTAMA ADA DI useEffect INI ---
   useEffect(() => {
-    const fetchStores = async () => {
-      setLoading(true);
+    // Fungsi ini akan membuat parameter URL berdasarkan state filter saat ini
+    const updateUrlParams = () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append("search", searchTerm);
       if (sortBy) params.append("sortBy", sortBy);
-      if (minRating > 0) params.append("minRating", minRating);
+      if (minRating > 0) params.append("minRating", minRating.toString());
       if (userLocation.lat && userLocation.lng) {
         params.append("lat", userLocation.lat);
         params.append("lng", userLocation.lng);
       }
-      if (selectedServices.length > 0) {
+      if (selectedServices.length > 0)
         params.append("services", selectedServices.join(","));
-      }
-      if (openNow) {
-        params.append("openNow", "true");
-      }
-      
-      // Update URL search params
-      setSearchParams(params, { replace: true });
+      if (openNow) params.append("openNow", "true");
 
+      // Ganti URL tanpa memicu re-render yang tidak perlu
+      setSearchParams(params, { replace: true });
+    };
+
+    // Fungsi untuk mengambil data dari API
+    const fetchStores = async () => {
+      setLoading(true);
+      const params = new URLSearchParams(searchParams); // Ambil parameter langsung dari URL
       try {
         const data = await getStores(params);
         setStores(data);
       } catch (error) {
         console.error("Gagal mengambil data toko:", error);
         if (showMessage) {
-            showMessage(error.message || "Gagal mengambil data toko", "Error");
+          showMessage(error.message || "Gagal mengambil data toko", "Error");
         }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStores();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, sortBy, minRating, userLocation.lat, userLocation.lng, selectedServices.toString(), openNow, showMessage]);
-  // --- AKHIR PERBAIKAN ---
+    updateUrlParams(); // Pertama, update URL
+    fetchStores(); // Kedua, ambil data berdasarkan URL yang baru
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    searchTerm,
+    sortBy,
+    minRating,
+    userLocation.lat,
+    userLocation.lng,
+    selectedServices,
+    openNow,
+  ]);
+  // --- AKHIR PERBAIKAN ---
 
   const handleGetUserLocation = () => {
     if (navigator.geolocation) {
@@ -96,7 +118,9 @@ const StorePage = ({ showMessage }) => {
           setSortBy("distance");
         },
         (error) => {
-          showMessage("Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi.");
+          showMessage(
+            "Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi."
+          );
           console.error(error);
         }
       );
@@ -119,12 +143,12 @@ const StorePage = ({ showMessage }) => {
     setOpenNow(false);
   };
 
-  const hasActiveAdvancedFilters = minRating > 0 || selectedServices.length > 0 || openNow;
+  const hasActiveAdvancedFilters =
+    minRating > 0 || selectedServices.length > 0 || openNow;
 
   return (
     <div className="store-page-redesigned">
       <div className="filter-panel-top">
-        {/* Konten JSX untuk filter panel tetap sama */}
         <div className="container d-flex flex-wrap align-items-center gap-2">
           <div className="search-input-wrapper flex-grow-1">
             <i className="fas fa-search"></i>
