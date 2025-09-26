@@ -60,17 +60,24 @@ const AddressCard: React.FC<AddressCardProps> = ({ address, onDelete }) => (
     </div>
 );
 
-const VisitedStoreCard: React.FC<VisitedStoreCardProps> = ({ store }) => (
-    <div className="col-md-4">
-        <Link to={`/store/${store.id}`} className="card text-decoration-none text-dark h-100">
-            <img src={store.images[0]} className="card-img-top" alt={store.name} style={{ height: "120px", objectFit: "cover" }} />
-            <div className="card-body">
-                <h6 className="card-title fw-bold text-truncate">{store.name}</h6>
-                <p className="card-text small text-muted text-truncate">{store.location}</p>
-            </div>
-        </Link>
-    </div>
-);
+const VisitedStoreCard: React.FC<VisitedStoreCardProps> = ({ store }) => {
+    // Perbaikan: Pastikan 'images' ada dan memiliki isi sebelum diakses
+    const imageUrl = store.images && store.images.length > 0
+        ? store.images[0]
+        : "https://via.placeholder.com/300x180.png?text=No+Image";
+
+    return (
+        <div className="col-md-4">
+            <Link to={`/store/${store.id}`} className="card text-decoration-none text-dark h-100">
+                <img src={imageUrl} className="card-img-top" alt={store.name} style={{ height: "120px", objectFit: "cover" }} />
+                <div className="card-body">
+                    <h6 className="card-title fw-bold text-truncate">{store.name}</h6>
+                    <p className="card-text small text-muted text-truncate">{store.location}</p>
+                </div>
+            </Link>
+        </div>
+    );
+};
 
 
 const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
