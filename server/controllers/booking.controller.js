@@ -123,3 +123,38 @@ export const getBookingById = async (req, res, next) => {
     next(error);
   }
 };
+
+// Fungsi baru untuk membatalkan booking
+export const cancelBooking = async (req, res) => {
+    const { bookingId } = req.params;
+    const userId = req.user.id; // Diambil dari token JWT
+
+    try {
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId },
+        });
+
+        if (!booking) {
+            return res.status(404).json({ message: 'Pesanan tidak ditemukan.' });
+        }
+
+        // Pastikan hanya user yang membuat booking yang bisa membatalkan
+        if (booking.userId !== userId) {
+            return res.status(403).json({ message: 'Anda tidak berwenang untuk aksi ini.' });
+        }
+
+        // Hanya batalkan jika statusnya masih PENDING
+        if (booking.status === 'PENDING') {
+            const cancelledBooking = await prisma.booking.update({
+                where: { id: bookingId },
+                data: { status: 'CANCELLED' },
+            });
+            res.status(200).json({ message: 'Pesanan berhasil dibatalkan.', booking: cancelledBooking });
+        } else {
+            // Jika sudah dibayar atau sudah batal sebelumnya
+            res.status(400).json({ message: `Pesanan tidak dapat dibatalkan karena statusnya sudah ${booking.status}.` });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Terjadi kesalahan pada server.', error: error.message });
+    }
+};
