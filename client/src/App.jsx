@@ -105,6 +105,9 @@ const ForgotPasswordPage = React.lazy(() =>
   import("./pages/ForgotPasswordPage")
 );
 const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
+const PaymentSimulationPage = React.lazy(() =>
+  import("./pages/PaymentSimulationPage.jsx")
+);
 const PaymentSuccessPage = React.lazy(() =>
   import("./pages/PaymentSuccessPage.jsx")
 );
@@ -572,6 +575,10 @@ function AppContent() {
             element={<DashboardPage showMessage={showMessage} />}
           />
           <Route path="track/:bookingId" element={<TrackOrderPage />} />
+          <Route
+            path="payment-simulation/:bookingId"
+            element={renderWithProps(PaymentSimulationPage)}
+          />
           <Route
             path="payment-success/:bookingId"
             element={renderWithProps(PaymentSuccessPage)}
