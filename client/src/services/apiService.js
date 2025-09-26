@@ -182,3 +182,4 @@ export const resolveApprovalRequest = (requestId, resolution) =>
   });
 export const reseedDatabase = () =>
   apiRequest("/api/superuser/maintenance/reseed-database", "POST");
+export const getSecurityLogs = () => apiRequest("/api/superuser/security-logs");

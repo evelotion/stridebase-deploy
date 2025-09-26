@@ -5,6 +5,15 @@ import crypto from "crypto";
 import prisma from "../config/prisma.js";
 import { sendVerificationEmail, sendPasswordResetEmail } from "../email-service.js";
 
+// --- PERUBAHAN DIMULAI DI SINI ---
+
+// Variabel ini akan bertindak sebagai cache sederhana di memori server
+// untuk melacak percobaan login yang gagal.
+// Key: email, Value: { attempts: number, lastAttempt: timestamp }
+const failedLoginAttempts = new Map();
+const MAX_LOGIN_ATTEMPTS = 5;
+const COOLDOWN_PERIOD = 30 * 1000; // 30 detik dalam milidetik
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 export const registerUser = async (req, res, next) => {
@@ -39,6 +48,14 @@ export const registerUser = async (req, res, next) => {
 export const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
     try {
+        const cooldownInfo = failedLoginAttempts.get(email);
+
+        // 1. Cek apakah pengguna sedang dalam masa cooldown
+        if (cooldownInfo && cooldownInfo.attempts >= MAX_LOGIN_ATTEMPTS && (Date.now() - cooldownInfo.lastAttempt) < COOLDOWN_PERIOD) {
+            const timeLeft = Math.ceil((cooldownInfo.lastAttempt + COOLDOWN_PERIOD - Date.now()) / 1000);
+            return res.status(429).json({ message: `Terlalu banyak percobaan gagal. Silakan coba lagi dalam ${timeLeft} detik.` });
+        }
+
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (!user || user.status === 'blocked') {
@@ -47,9 +64,29 @@ export const loginUser = async (req, res, next) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
+            // 2. Jika password salah, catat percobaan gagal
+            const attempts = (failedLoginAttempts.get(email)?.attempts || 0) + 1;
+            failedLoginAttempts.set(email, { attempts, lastAttempt: Date.now() });
+
+            // 3. Jika percobaan mencapai batas, catat di SecurityLog dan mulai cooldown
+            if (attempts >= MAX_LOGIN_ATTEMPTS) {
+                await prisma.securityLog.create({
+                    data: {
+                        userId: user.id,
+                        action: 'LOGIN_FAILURE',
+                        details: `Pengguna mencapai ${MAX_LOGIN_ATTEMPTS} kali percobaan login gagal. Cooldown 30 detik dimulai.`,
+                        ipAddress: req.ip,
+                    },
+                });
+                return res.status(429).json({ message: `Akun Anda terkunci sementara karena terlalu banyak percobaan gagal. Silakan coba lagi dalam 30 detik.` });
+            }
+
             return res.status(401).json({ message: 'Email atau password salah.' });
         }
 
+        // 4. Jika login berhasil, hapus catatan percobaan gagal dari Map
+        failedLoginAttempts.delete(email);
+        
         if (!user.isEmailVerified) {
             return res.status(403).json({
                 message: 'Akun Anda belum diverifikasi. Silakan periksa email Anda.',

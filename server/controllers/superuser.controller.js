@@ -1,9 +1,9 @@
-// File: server/controllers/superuser.controller.js (Versi Final Lengkap dengan Logika Approval)
+// File: server/controllers/superuser.controller.js (Versi Lengkap)
 
 import prisma from "../config/prisma.js";
 import { exec } from "child_process";
 import { loadThemeConfig, currentThemeConfig } from "../config/theme.js";
-import { broadcastThemeUpdate, createNotificationForUser } from '../socket.js'; // <-- Tambahkan createNotificationForUser
+import { broadcastThemeUpdate, createNotificationForUser } from '../socket.js';
 
 // @desc    Get all global configurations
 // @route   GET /api/superuser/config
@@ -73,7 +73,6 @@ export const resolveApprovalRequest = async (req, res, next) => {
             return res.status(400).json({ message: "Permintaan ini sudah diproses sebelumnya." });
         }
 
-        // Jika request disetujui DAN tipenya adalah perubahan model bisnis, update data toko
         if (request.requestType === 'BUSINESS_MODEL_CHANGE' && resolution === 'APPROVED') {
             const changes = request.details.to;
             await prisma.store.update({
@@ -86,7 +85,6 @@ export const resolveApprovalRequest = async (req, res, next) => {
             });
         }
 
-        // Update status request itu sendiri
         const updatedRequest = await prisma.approvalRequest.update({
             where: { id: id },
             data: {
@@ -95,7 +93,6 @@ export const resolveApprovalRequest = async (req, res, next) => {
             }
         });
 
-        // Kirim notifikasi kembali ke admin yang meminta
         await createNotificationForUser(
             request.requestedById,
             `Permintaan Anda untuk mengubah model bisnis toko telah di-${resolution.toLowerCase()} oleh developer.`,
@@ -118,4 +115,29 @@ export const reseedDatabase = (req, res, next) => {
         }
         res.json({ message: "Database berhasil di-reset dan di-seed ulang.", output: stdout });
     });
+};
+
+// --- FUNGSI BARU UNTUK MENGAMBIL LOG KEAMANAN ---
+// @desc    Get all security logs
+// @route   GET /api/superuser/security-logs
+export const getSecurityLogs = async (req, res, next) => {
+    try {
+        const logs = await prisma.securityLog.findMany({
+            take: 100, // Ambil 100 log terbaru untuk efisiensi
+            orderBy: {
+                timestamp: 'desc',
+            },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+        res.json(logs);
+    } catch (error) {
+        next(error);
+    }
 };

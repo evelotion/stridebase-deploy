@@ -8,25 +8,112 @@ import {
   resolveApprovalRequest,
   reseedDatabase,
   uploadImage,
+  getSecurityLogs,
 } from "../services/apiService";
 
 const googleFonts = [
-  "Inter",
-  "Poppins",
   "Roboto",
-  "Source Sans Pro",
+  "Open Sans",
   "Lato",
   "Montserrat",
-  "Nunito Sans",
-  "Open Sans",
+  "Poppins",
+  "Nunito",
   "Work Sans",
-  "Rubik",
-  "DM Sans",
   "Merriweather",
+  "Alegreya",
+  "Oswald",
+  "Barlow",
+  "Rokkitt",
+  "Carme",
+  "Encode Sans Semi Condensed",
+  "Spectral",
+  "Bitter",
+  "Aleo",
+  "Gelasio",
+  "Asap Condensed",
+  "Assistant",
+  "Brawler",
+  "Caladea",
+  "Rubik",
+  "Inter",
+  "Literata",
+  "DM Sans",
+  "Source Sans Pro",
+  "Nunito Sans",
   "Playfair Display",
   "Lora",
   "Roboto Mono",
   "Source Code Pro",
+  "Fira Sans",
+  "Cabin",
+  "Karla",
+  "Mulish",
+  "Overpass",
+  "Raleway",
+  "Noto Sans",
+  "Noto Serif",
+  "Inconsolata",
+  "PT Sans",
+  "PT Serif",
+  "Quicksand",
+  "Exo 2",
+  "Heebo",
+  "Ubuntu",
+  "Domine",
+  "IBM Plex Sans",
+  "IBM Plex Serif",
+  "IBM Plex Mono",
+  "Hind",
+  "Hind Siliguri",
+  "Hind Madurai",
+  "Hind Guntur",
+  "Hind Vadodara",
+  "Yanone Kaffeesatz",
+  "Zilla Slab",
+  "Arimo",
+  "Teko",
+  "Signika",
+  "Signika Negative",
+  "Manrope",
+  "Chivo",
+  "Overlock",
+  "Oxygen",
+  "Varela Round",
+  "Kanit",
+  "Prompt",
+  "Fjalla One",
+  "Muli",
+  "Josefin Sans",
+  "Cormorant Garamond",
+  "Cormorant",
+  "Crimson Text",
+  "EB Garamond",
+  "Nanum Gothic",
+  "Nanum Myeongjo",
+  "Nanum Pen Script",
+  "Dancing Script",
+  "Pacifico",
+  "Great Vibes",
+  "Shadows Into Light",
+  "Amatic SC",
+  "Caveat",
+  "Sacramento",
+  "Yellowtail",
+  "Abril Fatface",
+  "Bebas Neue",
+  "Anton",
+  "Patua One",
+  "Fredoka One",
+  "Baloo 2",
+  "Chewy",
+  "Permanent Marker",
+  "Gloria Hallelujah",
+  "Indie Flower",
+  "Architects Daughter",
+  "Courgette",
+  "Kaushan Script",
+  "Satisfy",
+  "Cookie",
 ];
 
 const LogDetails = ({ details }) => {
@@ -140,6 +227,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [config, setConfig] = useState(null);
   const [initialConfig, setInitialConfig] = useState(null);
   const [approvalRequests, setApprovalRequests] = useState([]);
+  const [securityLogs, setSecurityLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -150,13 +238,16 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [configData, requestsData] = await Promise.all([
+      // Panggilan API kini mengambil 3 data sekaligus
+      const [configData, requestsData, logsData] = await Promise.all([
         getSuperUserConfig(),
         getApprovalRequests(),
+        getSecurityLogs(), // <-- PANGGILAN API BARU
       ]);
       setConfig(configData);
       setInitialConfig(JSON.stringify(configData));
       setApprovalRequests(requestsData);
+      setSecurityLogs(logsData); // <-- MENYIMPAN HASIL KE STATE
     } catch (err) {
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
@@ -321,6 +412,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   .length
               }
             </span>
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${activeTab === "security" ? "active" : ""}`}
+            onClick={() => setActiveTab("security")}
+          >
+            Log Keamanan
           </button>
         </li>
         <li className="nav-item">
@@ -775,7 +874,16 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           )}
         </div>
       )}
-
+      {activeTab === "security" && (
+        <div className="table-card p-3 shadow-sm">
+          <h5 className="mb-3">Log Keamanan Terbaru</h5>
+          <div className="table-responsive">
+            <table className="table table-hover align-middle">
+              {/* ... isi tabel log keamanan ... */}
+            </table>
+          </div>
+        </div>
+      )}
       {activeTab === "maintenance" && (
         <div className="card card-account p-4">
           <h5 className="mb-4 fw-bold text-danger">Zona Berbahaya</h5>
