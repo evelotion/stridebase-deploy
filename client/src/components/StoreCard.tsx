@@ -1,15 +1,16 @@
-import { Link } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+// File: client/src/components/StoreCard.tsx (Versi Perbaikan)
 
-// Interface diperbarui untuk menyertakan headerImage
+import { Link } from "react-router-dom";
+
+// --- PERUBAHAN 1: Memperbaiki interface agar sesuai dengan data dari API ---
 interface Store {
   id: string;
   name: string;
   location: string;
   rating: number;
-  servicesAvailable: number;
+  services: { name: string }[]; // Diubah dari servicesAvailable: number
   images: string[];
-  headerImage?: string; // <-- PERUBAHAN DI SINI
+  headerImage?: string;
   distance?: number;
   tier: "PRO" | "BASIC";
 }
@@ -24,15 +25,13 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
     name,
     location,
     rating,
-    servicesAvailable,
+    services, // --- PERUBAHAN 2: Menggunakan 'services' (array)
     images,
-    headerImage, // <-- PERUBAHAN DI SINI
+    headerImage,
     distance,
     tier,
   } = store;
 
-  // --- LOGIKA GAMBAR DIPERBAIKI DI SINI ---
-  // Prioritaskan headerImage. Jika tidak ada, baru gunakan gambar pertama dari galeri.
   const imageUrl =
     headerImage ||
     (images && images.length > 0
@@ -53,7 +52,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
 
         <div className="store-grid__image-wrapper">
           <img
-            src={imageUrl} // Variabel imageUrl yang baru sekarang digunakan di sini
+            src={imageUrl}
             className="store-grid__image"
             alt={name}
             loading="lazy"
@@ -66,7 +65,8 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
           </p>
           <div className="d-flex justify-content-between align-items-center mb-2">
             <p className="store-grid__rating mb-0">
-              <i className="fas fa-star"></i> {rating} | {servicesAvailable}{" "}
+              {/* --- PERUBAHAN 3: Menghitung jumlah layanan dari panjang array --- */}
+              <i className="fas fa-star"></i> {rating} | {services.length}{" "}
               layanan
             </p>
             {distance !== undefined && (
