@@ -179,7 +179,7 @@ const StoreDetailPage = ({ showMessage }) => {
       storeId: store.id,
       storeName: store.name,
       shoeType: selectedShoeType,
-      service: selectedService,
+      serviceId: selectedService.id, 
       deliveryOption: deliveryOption,
       schedule: finalSchedule,
       addressId: selectedAddress,

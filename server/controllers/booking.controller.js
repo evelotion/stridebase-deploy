@@ -33,39 +33,33 @@ export const getUserBookings = async (req, res, next) => {
 // @desc    Create a new booking
 // @route   POST /api/bookings
 export const createBooking = async (req, res, next) => {
-  const { storeId, service, deliveryOption, schedule, addressId, promoCode } =
-    req.body;
+  // Ganti 'service' menjadi 'serviceId'
+  const { storeId, serviceId, deliveryOption, schedule, addressId, promoCode } = req.body;
   const userId = req.user.id;
 
-  if (!storeId || !service || !deliveryOption) {
+  if (!storeId || !serviceId || !deliveryOption) { // Cek serviceId
     return res.status(400).json({ message: "Data booking tidak lengkap." });
   }
 
   try {
+    // Cari layanan berdasarkan serviceId
     const originalService = await prisma.service.findUnique({
-      where: { id: service.id },
+      where: { id: serviceId }, 
     });
     if (!originalService) {
-      return res
-        .status(404)
-        .json({ message: "Layanan yang dipilih tidak ditemukan." });
+      return res.status(404).json({ message: "Layanan yang dipilih tidak ditemukan." });
     }
 
-    // Kalkulasi harga yang akurat, sama seperti di frontend
+    // Kalkulasi harga (logika tetap sama)
     const handlingFee = 2000;
     const deliveryFee = deliveryOption === "pickup" ? 10000 : 0;
     let discountAmount = 0;
-
-    // (Opsional) Tambahkan validasi promo code di sini jika diperlukan
-    // ...
-
-    const finalTotalPrice =
-      originalService.price + handlingFee + deliveryFee - discountAmount;
+    const finalTotalPrice = originalService.price + handlingFee + deliveryFee - discountAmount;
 
     const newBooking = await prisma.booking.create({
       data: {
         totalPrice: finalTotalPrice,
-        status: "pending", // PERBAIKAN: Menggunakan enum 'pending' yang valid
+        status: "pending",
         serviceName: originalService.name,
         deliveryOption: deliveryOption,
         scheduleDate: schedule?.date ? new Date(schedule.date) : null,
@@ -73,18 +67,14 @@ export const createBooking = async (req, res, next) => {
         addressId: deliveryOption === "pickup" ? addressId : null,
         userId: userId,
         storeId: storeId,
-        serviceId: service.id,
+        serviceId: serviceId, // Langsung gunakan serviceId
       },
       include: { store: { select: { ownerId: true } } },
     });
 
-    // Kirim notifikasi ke pemilik toko
     await createNotificationForUser(
       newBooking.store.ownerId,
-      `Pesanan baru #${newBooking.id.substring(
-        0,
-        8
-      )} telah masuk dari ${req.user.name}.`,
+      `Pesanan baru #${newBooking.id.substring(0,8)} telah masuk dari ${req.user.name}.`,
       `/partner/orders`
     );
 
