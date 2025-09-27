@@ -204,35 +204,35 @@ model StoreSchedule {
 }
 
 model Booking {
-  id                String             @id @default(cuid())
-  user              User               @relation(fields: [userId], references: [id])
-  userId            String
-  store             Store              @relation(fields: [storeId], references: [id])
-  storeId           String
-  service           Service            @relation(fields: [serviceId], references: [id])
-  serviceId         String
-  serviceName       String
-  deliveryOption    String
-  scheduleDate      DateTime?
-  totalPrice        Float
-  notes             String?
-  address           Address?           @relation(fields: [addressId], references: [id])
-  addressId         String?
-  status            BookingStatus      @default(pending)
-  workStatus        WorkStatus         @default(not_started)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  payment           Payment?
-  platformEarning   PlatformEarning?
-  notifications     Notification[]
-  review            Review?
+  id              String   @id @default(cuid())
+  user            User     @relation(fields: [userId], references: [id])
+  userId          String
+  store           Store    @relation(fields: [storeId], references: [id])
+  storeId         String
+  service         Service  @relation(fields: [serviceId], references: [id])
+  serviceId       String
+  serviceName     String
+  deliveryOption  String
+  scheduleDate    DateTime?
+  totalPrice      Float
+  notes           String?
+  address         Address? @relation(fields: [addressId], references: [id])
+  addressId       String?
+  status          BookingStatus @default(pending)
+  workStatus      WorkStatus    @default(not_started)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  payment         Payment?
+  platformEarning PlatformEarning?
+  notifications   Notification[]
+  review          Review?
   walletTransaction WalletTransaction?
+  expiresAt       DateTime? // <-- TAMBAHKAN BARIS INI DI SINI
 
   @@index([userId])
   @@index([storeId])
   @@index([status])
 }
-
 model Payment {
   id              String   @id @default(cuid())
   booking         Booking  @relation(fields: [bookingId], references: [id])
