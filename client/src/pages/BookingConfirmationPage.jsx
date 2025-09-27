@@ -1,15 +1,9 @@
-// File: client/src/pages/BookingConfirmationPage.jsx (Perbaikan Final)
+// File: client/src/pages/BookingConfirmationPage.jsx (Perbaikan Final V2)
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
-// --- PERBAIKAN UTAMA DI SINI ---
-// Mengimpor fungsi yang benar dari apiService
-import {
-  getStoreServices,
-  getUserAddresses,
-  addUserAddress,
-} from "../services/apiService";
+import { getStoreServices, getUserAddresses } from "../services/apiService";
 
 const BookingConfirmationPage = ({ showMessage }) => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -36,7 +30,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
 
     const fetchExtraData = async () => {
       try {
-        // Menggunakan fungsi getStoreServices yang sudah diimpor
         const allServices = await getStoreServices(bookingData.storeId);
         const foundService = allServices.find(
           (s) => s.id === bookingData.serviceId
@@ -44,7 +37,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
         if (!foundService) throw new Error("Layanan tidak ditemukan.");
         setServiceDetails(foundService);
 
-        // Menggunakan fungsi getUserAddresses yang sudah diimpor
         if (bookingData.deliveryOption === "pickup" && bookingData.addressId) {
           const addresses = await getUserAddresses();
           const foundAddress = addresses.find(
@@ -54,7 +46,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
         }
       } catch (err) {
         showMessage(err.message, "Error");
-        // Arahkan kembali ke halaman toko jika data gagal dimuat
         navigate(`/store/${bookingData.storeId || ""}`);
       }
     };
@@ -67,7 +58,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/admin/promos/validate`, // Endpoint ini masih menggunakan /admin/, kita akan perbaiki nanti jika masih error
+        `${API_BASE_URL}/api/admin/promos/validate`,
         {
           method: "POST",
           headers: {
@@ -88,6 +79,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
     }
   };
 
+  // --- FUNGSI INI ADALAH PERBAIKAN UTAMA ---
   const handleConfirmAndPay = async () => {
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
@@ -111,29 +103,21 @@ const BookingConfirmationPage = ({ showMessage }) => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      // Langkah 2: Buat transaksi pembayaran untuk booking yang baru
-      const paymentResponse = await fetch(
-        `${API_BASE_URL}/api/payments/create-transaction`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ bookingId: newBookingData.id }),
-        }
-      );
+      // Langkah 2: Buat transaksi pembayaran untuk mendapatkan ID-nya
+      // (Kita tidak perlu redirect_url lagi di sini)
+      await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ bookingId: newBookingData.id }),
+      });
 
-      const paymentData = await paymentResponse.json();
-      if (!paymentResponse.ok) {
-        throw new Error(
-          paymentData.message || "Gagal memulai sesi pembayaran."
-        );
-      }
-
-      // Langkah 3: Arahkan pengguna ke URL yang diberikan oleh backend
+      // Langkah 3: Gunakan React Router (navigate) untuk pindah halaman
+      // Ini adalah navigasi internal yang tidak menyebabkan refresh
       localStorage.removeItem("pendingBooking");
-      window.location.href = paymentData.redirectUrl; // Menggunakan redirectUrl dari backend
+      navigate(`/payment-simulation/${newBookingData.id}`);
     } catch (error) {
       showMessage(error.message, "Error");
       setIsSubmitting(false);
