@@ -5,7 +5,11 @@ import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 // --- PERBAIKAN UTAMA DI SINI ---
 // Mengimpor fungsi yang benar dari apiService
-import { getStoreServices, getUserAddresses } from "../services/apiService";
+import {
+  getStoreServices,
+  getUserAddresses,
+  addUserAddress,
+} from "../services/apiService";
 
 const BookingConfirmationPage = ({ showMessage }) => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -89,7 +93,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+      // Langkah 1: Buat booking terlebih dahulu
+      const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,12 +106,34 @@ const BookingConfirmationPage = ({ showMessage }) => {
         }),
       });
 
-      const newBookingData = await response.json();
-      if (!response.ok)
+      const newBookingData = await bookingResponse.json();
+      if (!bookingResponse.ok) {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
+      }
 
+      // Langkah 2: Buat transaksi pembayaran untuk booking yang baru
+      const paymentResponse = await fetch(
+        `${API_BASE_URL}/api/payments/create-transaction`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ bookingId: newBookingData.id }),
+        }
+      );
+
+      const paymentData = await paymentResponse.json();
+      if (!paymentResponse.ok) {
+        throw new Error(
+          paymentData.message || "Gagal memulai sesi pembayaran."
+        );
+      }
+
+      // Langkah 3: Arahkan pengguna ke URL yang diberikan oleh backend
       localStorage.removeItem("pendingBooking");
-      navigate(`/payment-simulation/${newBookingData.id}`);
+      window.location.href = paymentData.redirectUrl; // Menggunakan redirectUrl dari backend
     } catch (error) {
       showMessage(error.message, "Error");
       setIsSubmitting(false);
