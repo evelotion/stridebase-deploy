@@ -1,4 +1,4 @@
-// File: client/src/pages/DashboardPage.tsx (Dengan Lacak & Lanjutkan Pembayaran)
+// File: client/src/pages/DashboardPage.tsx (Dengan Avatar Inisial)
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -17,7 +17,7 @@ import {
 } from "../services/apiService";
 import API_BASE_URL from "../apiConfig";
 
-// Interface dan definisi tipe lainnya
+// Interface dan definisi tipe
 interface DashboardPageProps {
   showMessage: (message: string, title?: string) => void;
 }
@@ -32,7 +32,6 @@ interface Store {
   images: string[];
   location: string;
 }
-// TAMBAHKAN paymentStatus pada interface Booking
 interface Booking {
   id: string;
   service: string;
@@ -94,6 +93,62 @@ const socketUrl = import.meta.env.PROD
   ? import.meta.env.VITE_API_PRODUCTION_URL
   : "/";
 let socket;
+
+// --- AWAL DARI LOGIKA AVATAR ---
+const getInitials = (name: string): string => {
+  if (!name) return "?";
+  const names = name.split(" ");
+  const initials = names.map((n) => n[0]).join("");
+  return initials.slice(0, 2).toUpperCase();
+};
+
+const getAvatarColor = (name: string): string => {
+  if (!name) return "#6c757d"; // Warna default
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const colors = [
+    "#0d6efd",
+    "#6f42c1",
+    "#d63384",
+    "#dc3545",
+    "#fd7e14",
+    "#198754",
+    "#0dcaf0",
+    "#20c997",
+  ];
+  const index = Math.abs(hash % colors.length);
+  return colors[index];
+};
+
+const UserAvatar: React.FC<{ name: string; size?: number }> = ({
+  name,
+  size = 90,
+}) => {
+  const style = {
+    width: `${size}px`,
+    height: `${size}px`,
+    backgroundColor: getAvatarColor(name),
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "bold",
+    color: "white",
+    textTransform: "uppercase" as "uppercase",
+    fontSize: `${size / 2.5}px`,
+    border: "3px solid #fff",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+  };
+
+  return (
+    <div style={style} title={name}>
+      {getInitials(name)}
+    </div>
+  );
+};
+// --- AKHIR DARI LOGIKA AVATAR ---
 
 const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
@@ -501,14 +556,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
           <div className="col-lg-3">
             <div className="account-sidebar">
               <div className="profile-header">
-                <img
-                  src="/user-avatar-placeholder.png"
-                  alt="User"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://i.pravatar.cc/90";
-                  }}
-                />
+                <UserAvatar name={user.name} size={90} />
                 <h5 className="mb-0 mt-3">{user.name}</h5>
                 <p className="text-muted small">{user.email}</p>
               </div>
@@ -668,7 +716,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
                 </div>
               )}
 
-              {/* ... Kode untuk tab lain tetap sama ... */}
               {activeTab === "loyalty" && (
                 <div>
                   <h6 className="fw-bold mb-3">Poin Loyalitas Anda</h6>

@@ -1,7 +1,60 @@
+// File: client/src/components/Navbar.jsx (Dengan Avatar Inisial)
+
 import React from "react";
-// TAMBAHKAN 'useLocation' DARI REACT ROUTER
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
+
+// --- AWAL DARI LOGIKA AVATAR ---
+const getInitials = (name) => {
+  if (!name) return "?";
+  const names = name.split(" ");
+  const initials = names.map((n) => n[0]).join("");
+  return initials.slice(0, 2).toUpperCase();
+};
+
+const getAvatarColor = (name) => {
+  if (!name) return "#6c757d"; // Warna default
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const colors = [
+    "#0d6efd",
+    "#6f42c1",
+    "#d63384",
+    "#dc3545",
+    "#fd7e14",
+    "#198754",
+    "#0dcaf0",
+    "#20c997",
+  ];
+  const index = Math.abs(hash % colors.length);
+  return colors[index];
+};
+
+const UserAvatar = ({ name, size = 32 }) => {
+  const style = {
+    width: `${size}px`,
+    height: `${size}px`,
+    backgroundColor: getAvatarColor(name),
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "500",
+    color: "white",
+    textTransform: "uppercase",
+    fontSize: `${size / 2.2}px`,
+    marginRight: size > 32 ? "0px" : "8px", // Menghapus margin jika ukurannya besar (untuk mobile)
+  };
+
+  return (
+    <div style={style} title={name}>
+      {getInitials(name)}
+    </div>
+  );
+};
+// --- AKHIR DARI LOGIKA AVATAR ---
 
 const Navbar = ({
   theme,
@@ -12,8 +65,6 @@ const Navbar = ({
 }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
-
-  // KODE BARU: Mendeteksi path saat ini
   const location = useLocation();
   const isHomePage = location.pathname === "/";
 
@@ -49,7 +100,6 @@ const Navbar = ({
 
   return (
     <>
-      {/* --- Navbar untuk Desktop (Tidak berubah) --- */}
       <nav className="navbar navbar-expand-lg d-none d-lg-flex">
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
@@ -165,14 +215,7 @@ const Navbar = ({
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    <img
-                      src="/user-avatar-placeholder.png"
-                      alt="User"
-                      className="user-avatar-sm me-2"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://i.pravatar.cc/32";
-                      }}
-                    />
+                    <UserAvatar name={user.name} size={32} />
                     {user.name.split(" ")[0]}
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
@@ -182,24 +225,24 @@ const Navbar = ({
                           to="/developer/dashboard"
                           className="dropdown-item"
                         >
-                          <i className="fas fa-crown fa-fw me-2"></i>
-                          SuperUser Panel
+                          <i className="fas fa-crown fa-fw me-2"></i>SuperUser
+                          Panel
                         </Link>
                       </li>
                     )}
                     {user.role === "admin" && (
                       <li>
                         <Link to="/admin/dashboard" className="dropdown-item">
-                          <i className="fas fa-user-shield fa-fw me-2"></i>
-                          Panel Admin
+                          <i className="fas fa-user-shield fa-fw me-2"></i>Panel
+                          Admin
                         </Link>
                       </li>
                     )}
                     {user.role === "mitra" && (
                       <li>
                         <Link to="/partner/dashboard" className="dropdown-item">
-                          <i className="fas fa-store fa-fw me-2"></i>
-                          Panel Toko Saya
+                          <i className="fas fa-store fa-fw me-2"></i>Panel Toko
+                          Saya
                         </Link>
                       </li>
                     )}
@@ -231,9 +274,6 @@ const Navbar = ({
           </div>
         </div>
       </nav>
-
-      {/* --- Header & Navigasi Bawah untuk Mobile --- */}
-      {/* KONDISI BARU: JANGAN RENDER JIKA isHomePage true */}
       {!isHomePage && (
         <div className="mobile-header d-lg-none">
           <div className="mobile-logo-container">
@@ -247,7 +287,6 @@ const Navbar = ({
           </div>
           <div className="mobile-user-container">
             {user ? (
-              // Dropdown untuk pengguna yang sudah login (tidak berubah)
               <div className="dropdown">
                 <button
                   className="btn btn-user-profile"
@@ -255,14 +294,7 @@ const Navbar = ({
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  <img
-                    src="/user-avatar-placeholder.png"
-                    alt="User"
-                    className="user-avatar-sm"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://i.pravatar.cc/32";
-                    }}
-                  />
+                  <UserAvatar name={user.name} size={40} />
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
                   {user.role === "developer" && (
@@ -309,12 +341,10 @@ const Navbar = ({
                 </ul>
               </div>
             ) : location.pathname === "/login" ? (
-              // JIKA DI HALAMAN LOGIN, TAMPILKAN TOMBOL REGISTER
               <Link to="/register" className="btn btn-gradient btn-sm">
                 Register
               </Link>
             ) : (
-              // JIKA DI HALAMAN LAIN, TAMPILKAN TOMBOL LOGIN
               <Link to="/login" className="btn btn-gradient btn-sm">
                 Login
               </Link>
@@ -322,8 +352,6 @@ const Navbar = ({
           </div>
         </div>
       )}
-
-      {/* Navigasi Bawah tetap ada di semua halaman mobile */}
       <div className="mobile-bottom-nav d-lg-none">
         <NavLink to="/" className="nav-link">
           <i className="fas fa-home"></i>
