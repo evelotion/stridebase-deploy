@@ -1,6 +1,6 @@
-// File: client/src/pages/DashboardPage.tsx (Dengan Avatar Inisial)
+// File: client/src/pages/DashboardPage.tsx (Versi Final Lengkap)
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { io } from "socket.io-client";
 import {
@@ -225,6 +225,51 @@ const VisitedStoreCard: React.FC<VisitedStoreCardProps> = ({ store }) => {
   );
 };
 
+// --- KOMPONEN BARU UNTUK NAVIGASI HALAMAN ---
+const Pagination: React.FC<{
+  currentPage: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
+}> = ({ currentPage, pageCount, onPageChange }) => {
+  if (pageCount <= 1) return null;
+  const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+
+  return (
+    <nav className="mt-4 d-flex justify-content-center">
+      <ul className="pagination">
+        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+          <button
+            className="page-link"
+            onClick={() => onPageChange(currentPage - 1)}
+          >
+            &laquo;
+          </button>
+        </li>
+        {pages.map((num) => (
+          <li
+            key={num}
+            className={`page-item ${currentPage === num ? "active" : ""}`}
+          >
+            <button className="page-link" onClick={() => onPageChange(num)}>
+              {num}
+            </button>
+          </li>
+        ))}
+        <li
+          className={`page-item ${currentPage === pageCount ? "disabled" : ""}`}
+        >
+          <button
+            className="page-link"
+            onClick={() => onPageChange(currentPage + 1)}
+          >
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  );
+};
+
 const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
   const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -258,6 +303,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
     city: "",
     postalCode: "",
   });
+
+  // --- STATE BARU UNTUK PAGINATION ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5; // Tampilkan 5 booking per halaman
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -456,6 +505,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
   const handleProfileFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
   };
+
   const filteredBookings = bookings.filter((booking) => {
     if (bookingFilter === "all") return true;
     if (bookingFilter === "processing")
@@ -466,6 +516,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
       return booking.status === "pending";
     return true;
   });
+
+  const pageCount = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
+  const currentBookings = filteredBookings.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const lastVisitedStores = bookings
     .sort(
@@ -665,45 +721,52 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
                       </button>
                     </div>
                   </div>
-                  {filteredBookings.length > 0 ? (
-                    <ul className="list-unstyled history-list">
-                      {filteredBookings.map((booking) => {
-                        const statusInfo = getStatusInfo(booking);
-                        return (
-                          <li className="history-item" key={booking.id}>
-                            <div className="history-icon">
-                              <i className={`fas fa-receipt text-muted`}></i>
-                            </div>
-                            <div className="history-details">
-                              <div className="info-value">
-                                {booking.service} di {booking.storeName}
+                  {currentBookings.length > 0 ? (
+                    <>
+                      <ul className="list-unstyled history-list">
+                        {currentBookings.map((booking) => {
+                          const statusInfo = getStatusInfo(booking);
+                          return (
+                            <li className="history-item" key={booking.id}>
+                              <div className="history-icon">
+                                <i className={`fas fa-receipt text-muted`}></i>
                               </div>
-                              <div className="small text-muted">
-                                {new Date(
-                                  booking.scheduleDate
-                                ).toLocaleDateString("id-ID", {
-                                  weekday: "long",
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                })}
+                              <div className="history-details">
+                                <div className="info-value">
+                                  {booking.service} di {booking.storeName}
+                                </div>
+                                <div className="small text-muted">
+                                  {new Date(
+                                    booking.scheduleDate
+                                  ).toLocaleDateString("id-ID", {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })}
+                                </div>
                               </div>
-                            </div>
-                            <div
-                              className="ms-auto text-end"
-                              style={{ minWidth: "150px" }}
-                            >
-                              <span
-                                className={`badge ${statusInfo.badgeClass} ms-auto mb-2`}
+                              <div
+                                className="ms-auto text-end"
+                                style={{ minWidth: "150px" }}
                               >
-                                {statusInfo.text}
-                              </span>
-                              {statusInfo.action}
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                                <span
+                                  className={`badge ${statusInfo.badgeClass} ms-auto mb-2`}
+                                >
+                                  {statusInfo.text}
+                                </span>
+                                {statusInfo.action}
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                      <Pagination
+                        currentPage={currentPage}
+                        pageCount={pageCount}
+                        onPageChange={setCurrentPage}
+                      />
+                    </>
                   ) : (
                     <EmptyState
                       icon="fa-receipt"
@@ -715,7 +778,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
                   )}
                 </div>
               )}
-
               {activeTab === "loyalty" && (
                 <div>
                   <h6 className="fw-bold mb-3">Poin Loyalitas Anda</h6>
