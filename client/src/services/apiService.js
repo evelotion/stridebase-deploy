@@ -1,4 +1,4 @@
-// File: client/src/services/apiService.js (Versi Final dengan Export yang Hilang)
+// File: client/src/services/apiService.js (Perbaikan Final)
 
 import API_BASE_URL from "../apiConfig";
 
@@ -48,8 +48,10 @@ export const getStores = (params) =>
   apiRequest(`/api/stores?${params.toString()}`);
 export const getStoreDetails = (storeId) =>
   apiRequest(`/api/stores/${storeId}`);
+// --- BARIS YANG HILANG DITAMBAHKAN DI SINI ---
 export const getStoreServices = (storeId) =>
   apiRequest(`/api/stores/${storeId}/services`);
+// --- AKHIR PENAMBAHAN ---
 export const getStoreReviews = (storeId) =>
   apiRequest(`/api/stores/${storeId}/reviews`);
 export const getPublicBanners = () => apiRequest("/api/public/banners");
@@ -168,7 +170,7 @@ export const getStoreInvoicesByAdmin = (storeId) =>
 export const checkExistingInvoiceByAdmin = (storeId, periodData) =>
   apiRequest(`/api/admin/stores/${storeId}/invoices/check`, "POST", periodData);
 export const getInvoiceByIdForAdmin = (invoiceId) =>
-  apiRequest(`/api/admin/invoices/${invoiceId}`); // <-- **INI FUNGSI YANG DIPERLUKAN**
+  apiRequest(`/api/admin/invoices/${invoiceId}`);
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest("/api/superuser/config");
