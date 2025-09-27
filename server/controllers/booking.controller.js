@@ -9,8 +9,11 @@ export const getUserBookings = async (req, res, next) => {
   try {
     const userBookings = await prisma.booking.findMany({
       where: { userId: req.user.id },
-      include: { store: true },
-      orderBy: { createdAt: "desc" }, // Diubah agar lebih relevan
+      include: { 
+        store: true,
+        payment: { select: { status: true } } // <-- TAMBAHKAN INI
+      },
+      orderBy: { createdAt: "desc" },
     });
 
     // Format data sebelum dikirim ke frontend
@@ -19,10 +22,11 @@ export const getUserBookings = async (req, res, next) => {
       storeId: b.store.id,
       service: b.serviceName,
       storeName: b.store.name,
-      scheduleDate: b.scheduleDate, // Menggunakan createdAt sebagai fallback jika scheduleDate null
+      scheduleDate: b.scheduleDate,
       status: b.status,
+      paymentStatus: b.payment?.status || 'pending', // <-- TAMBAHKAN INI
       store: b.store,
-      userId: b.userId, // Menambahkan userId untuk socket update
+      userId: b.userId,
     }));
     res.json(formattedBookings);
   } catch (error) {
