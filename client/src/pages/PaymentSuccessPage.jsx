@@ -1,4 +1,4 @@
-// File: client/src/pages/PaymentSuccessPage.jsx (Updated)
+// File: client/src/pages/PaymentSuccessPage.jsx (Hanya untuk Tanda Terima)
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -13,22 +13,22 @@ const PaymentSuccessPage = ({ showMessage }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const confirmAndFetchBooking = async () => {
+        // Fungsi ini sekarang hanya mengambil detail booking yang sudah dikonfirmasi
+        const fetchBookingReceipt = async () => {
             setLoading(true);
             const token = localStorage.getItem('token');
-            if (!token) return;
+            if (!token) {
+                // Jika tidak ada token (misal, halaman dibuka langsung tanpa login)
+                // Sebaiknya arahkan ke halaman login
+                showMessage("Silakan login untuk melihat detail pesanan.", "Error");
+                // navigate('/login'); // Anda bisa uncomment ini jika perlu
+                return;
+            }
 
             try {
-                // Langkah 1: Kirim konfirmasi pembayaran ke backend
-                await fetch(`${API_BASE_URL}/api/payments/confirm-simulation/${bookingId}`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
-                // Langkah 2: Ambil detail booking yang sudah terupdate
+                // Langsung ambil detail booking yang sudah terupdate
                 const data = await getBookingDetails(bookingId);
                 setBooking(data);
-
             } catch (error) {
                 showMessage(error.message, "Error");
             } finally {
@@ -36,7 +36,7 @@ const PaymentSuccessPage = ({ showMessage }) => {
             }
         };
         
-        confirmAndFetchBooking();
+        fetchBookingReceipt();
     }, [bookingId, showMessage]);
 
     const generatePDF = () => {
@@ -61,7 +61,7 @@ const PaymentSuccessPage = ({ showMessage }) => {
         doc.save(`receipt-stridebase-${booking.id.substring(0, 8)}.pdf`);
     };
 
-    if (loading) return <div className="container py-5 text-center">Mengonfirmasi pembayaran dan memuat tanda terima...</div>;
+    if (loading) return <div className="container py-5 text-center">Memuat tanda terima...</div>;
     if (!booking) return <div className="container py-5 text-center">Gagal memuat data pesanan.</div>;
 
     return (

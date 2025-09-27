@@ -43,6 +43,9 @@ const RegisterPage = React.lazy(() => import("./pages/RegisterPage"));
 const DashboardPage = React.lazy(() => import("./pages/DashboardPage"));
 const NotFoundPage = React.lazy(() => import("./pages/NotFoundPage"));
 const PaymentFinishPage = React.lazy(() => import("./pages/PaymentFinishPage"));
+const PaymentConfirmMobilePage = React.lazy(() =>
+  import("./pages/PaymentConfirmMobilePage.jsx")
+);
 const TrackOrderPage = React.lazy(() => import("./pages/TrackOrderPage"));
 const NotificationsPage = React.lazy(() => import("./pages/NotificationsPage"));
 const MaintenanceNoticePage = React.lazy(() =>
@@ -579,6 +582,10 @@ function AppContent() {
             path="payment-simulation/:bookingId"
             element={renderWithProps(PaymentSimulationPage)}
           />
+          <Route
+    path="payment-confirm-mobile/:bookingId"
+    element={renderWithProps(PaymentConfirmMobilePage)}
+  />
           <Route
             path="payment-success/:bookingId"
             element={renderWithProps(PaymentSuccessPage)}

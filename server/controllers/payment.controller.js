@@ -1,5 +1,6 @@
 // File: server/controllers/payment.controller.js
 import prisma from "../config/prisma.js";
+import { createNotificationForUser } from "../socket.js"; // 
 
 // @desc    Create a payment transaction for a booking
 // @route   POST /api/payments/create-transaction
@@ -52,26 +53,31 @@ export const paymentNotificationHandler = async (req, res, next) => {
 // @route   POST /api/payments/confirm-simulation/:bookingId
 export const confirmPaymentSimulation = async (req, res, next) => {
     const { bookingId } = req.params;
-    const userId = req.user.id;
+    const io = req.io; // Mengambil instance Socket.IO dari request
 
     try {
-        const booking = await prisma.booking.findFirst({
-            where: { id: bookingId, userId: userId },
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId },
             include: { store: true }
         });
 
         if (!booking) {
-            return res.status(404).json({ message: "Pesanan tidak ditemukan atau Anda tidak berwenang." });
+            return res.status(404).json({ message: "Pesanan tidak ditemukan." });
         }
 
-        // Hanya update jika status masih 'pending'
         if (booking.status === 'pending') {
             const updatedBooking = await prisma.booking.update({
                 where: { id: bookingId },
-                data: { status: 'confirmed' }, // Mengubah status menjadi 'confirmed'
+                data: { status: 'confirmed' },
             });
+
+            // LANGKAH PENTING: Kirim event WebSocket ke semua client
+            if (io) {
+                io.emit('payment_confirmed', { bookingId: updatedBooking.id });
+                console.log(`Socket event 'payment_confirmed' dipancarkan untuk booking ${updatedBooking.id}`);
+            }
             
-            // Kirim notifikasi ke pemilik toko bahwa pesanan sudah dibayar
+            // Kirim notifikasi ke pemilik toko (ini bisa tetap ada)
             await createNotificationForUser(
               booking.store.ownerId,
               `Pesanan #${booking.id.substring(0,8)} telah dibayar dan dikonfirmasi.`,
