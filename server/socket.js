@@ -1,4 +1,5 @@
-// File: server/socket.js
+// File: server/socket.js (Dengan Perbaikan Ekspor)
+
 import { Server } from "socket.io";
 import prisma from "./config/prisma.js";
 
@@ -48,3 +49,5 @@ export const broadcastThemeUpdate = (newTheme) => {
     io.emit("themeUpdated", newTheme);
     console.log("🚀 Pembaruan tema disiarkan ke semua klien.");
 };
+
+export { io }; // <-- TAMBAHKAN BARIS INI

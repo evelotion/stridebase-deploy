@@ -1,11 +1,15 @@
-// File: server/index.js (Dengan Penambahan Cron Job)
+// File: server/index.js (Dengan Perbaikan Urutan Inisialisasi)
 
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
-import { Server } from 'socket.io';
 import dotenv from 'dotenv';
+import errorHandler from './middleware/errorHandler.js';
+import { setupSocket } from './socket.js'; // Hanya impor setupSocket
+import corsOptions from './config/cors.js';
+import { checkMaintenanceMode } from './middleware/maintenance.js';
 
+// Impor Routes
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import storeRoutes from './routes/store.routes.js';
@@ -17,19 +21,19 @@ import publicRoutes from './routes/public.routes.js';
 import paymentRoutes from './routes/payment.routes.js';
 import superuserRoutes from './routes/superuser.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
-import errorHandler from './middleware/errorHandler.js';
-import { setupSocket, io } from './socket.js';
-import corsOptions from './config/cors.js';
-import { checkMaintenanceMode } from './middleware/maintenance.js';
-import cancelExpiredBookingsJob from './cron/jobs.js'; // <-- BARIS BARU: Impor cron job
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 
-// Setup Socket.IO dengan server HTTP
-setupSocket(server);
+// Setup Socket.IO dan dapatkan instance io
+const io = setupSocket(server);
+
+// Setelah io diinisialisasi, baru kita impor dan jalankan cron job
+import cancelExpiredBookingsJob from './cron/jobs.js';
+cancelExpiredBookingsJob.start();
+console.log('Cron jobs for the application have been scheduled.');
 
 // Middleware
 app.use(cors(corsOptions));
@@ -37,13 +41,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-// Middleware untuk menambahkan 'io' ke setiap request
 app.use((req, res, next) => {
-  req.io = io;
+  req.io = io; // Lampirkan io ke request
   next();
 });
 
-// Middleware untuk mode maintenance (jika diaktifkan)
 app.use(checkMaintenanceMode);
 
 // Routes
@@ -65,10 +67,6 @@ app.get('/', (req, res) => {
 
 // Error Handler
 app.use(errorHandler);
-
-// START CRON JOBS
-cancelExpiredBookingsJob.start(); // <-- BARIS BARU: Menjalankan cron job
-console.log('Cron jobs for the application have been scheduled.');
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
