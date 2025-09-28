@@ -1,7 +1,7 @@
-// File: client/src/pages/AdminStoresPage.jsx (Versi Final dengan Pratinjau Halaman Cetak & Tombol Riwayat)
+// File: client/src/pages/AdminStoresPage.jsx (Dengan Tombol Riwayat Invoice Kondisional)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom"; // <-- IMPORT useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import {
   getAllStoresForAdmin,
   updateStoreStatus,
@@ -66,7 +66,7 @@ const AdminStoresPage = ({ showMessage }) => {
     notes: "",
   });
   const [isSubmittingInvoice, setIsSubmittingInvoice] = useState(false);
-  const navigate = useNavigate(); // <-- Tambahkan hook navigate
+  const navigate = useNavigate();
 
   const fetchStores = useCallback(async () => {
     setLoading(true);
@@ -125,7 +125,6 @@ const AdminStoresPage = ({ showMessage }) => {
     setCurrentStore(null);
   };
 
-  // --- FUNGSI DIPERBARUI: Pratinjau Invoice ---
   const handlePreviewInvoice = async () => {
     if (!currentStore || !invoiceDetails.period) return;
     try {
@@ -134,7 +133,6 @@ const AdminStoresPage = ({ showMessage }) => {
         notes: invoiceDetails.notes,
       });
 
-      // Buka di tab baru dan kirim data pratinjau
       const previewUrl = `/admin/invoice/print/preview`;
       navigate(previewUrl, {
         state: { isPreview: true, invoiceData: previewData },
@@ -203,7 +201,6 @@ const AdminStoresPage = ({ showMessage }) => {
 
   return (
     <div className="container-fluid p-4">
-      {/* --- TOMBOL RIWAYAT PINDAH KE SINI --- */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fs-2 mb-0">Manajemen Toko</h2>
         <div className="d-flex gap-2">
@@ -284,22 +281,25 @@ const AdminStoresPage = ({ showMessage }) => {
                       {store.rating || "N/A"}
                     </td>
                     <td className="text-end">
-                      {/* --- TOMBOL RIWAYAT BARU --- */}
-                      <Link
-                        to={`/admin/stores/${store.id}/invoices`}
-                        className="btn btn-sm btn-outline-secondary me-2"
-                        title="Lihat Riwayat Invoice"
-                      >
-                        <i className="fas fa-history"></i>
-                      </Link>
+                      {/* --- AWAL PERUBAHAN TAMPILAN DESKTOP --- */}
                       {store.tier === "PRO" && (
-                        <button
-                          className="btn btn-sm btn-info me-2"
-                          onClick={() => handleOpenInvoiceModal(store)}
-                        >
-                          Tagih PRO
-                        </button>
+                        <>
+                          <Link
+                            to={`/admin/stores/${store.id}/invoices`}
+                            className="btn btn-sm btn-outline-secondary me-2"
+                            title="Lihat Riwayat Invoice"
+                          >
+                            <i className="fas fa-history"></i>
+                          </Link>
+                          <button
+                            className="btn btn-sm btn-info me-2"
+                            onClick={() => handleOpenInvoiceModal(store)}
+                          >
+                            Tagih PRO
+                          </button>
+                        </>
                       )}
+                      {/* --- AKHIR PERUBAHAN TAMPILAN DESKTOP --- */}
                       <Link
                         to={`/admin/stores/${store.id}/settings`}
                         className="btn btn-sm btn-primary me-2"
@@ -364,7 +364,6 @@ const AdminStoresPage = ({ showMessage }) => {
           </table>
         </div>
 
-        {/* --- TAMPILAN MOBILE DIPERBARUI --- */}
         <div className="mobile-card-list d-lg-none">
           {currentStoresOnPage.map((store) => (
             <div className="mobile-card" key={store.id}>
@@ -400,29 +399,31 @@ const AdminStoresPage = ({ showMessage }) => {
                 </div>
               </div>
               <div className="mobile-card-footer d-flex justify-content-end gap-2">
-                {/* --- TOMBOL RIWAYAT MOBILE BARU --- */}
-                <Link
-                  to={`/admin/stores/${store.id}/invoices`}
-                  className="btn btn-sm btn-outline-secondary"
-                  title="Lihat Riwayat Invoice"
-                >
-                  <i className="fas fa-history"></i>
-                </Link>
+                {/* --- AWAL PERUBAHAN TAMPILAN MOBILE --- */}
                 {store.tier === "PRO" && (
-                  <button
-                    className="btn btn-sm btn-info"
-                    onClick={() => handleOpenInvoiceModal(store)}
-                  >
-                    Tagih
-                  </button>
+                  <>
+                    <Link
+                      to={`/admin/stores/${store.id}/invoices`}
+                      className="btn btn-sm btn-outline-secondary"
+                      title="Lihat Riwayat Invoice"
+                    >
+                      <i className="fas fa-history"></i>
+                    </Link>
+                    <button
+                      className="btn btn-sm btn-info"
+                      onClick={() => handleOpenInvoiceModal(store)}
+                    >
+                      Tagih
+                    </button>
+                  </>
                 )}
+                {/* --- AKHIR PERUBAHAN TAMPILAN MOBILE --- */}
                 <Link
                   to={`/admin/stores/${store.id}/settings`}
                   className="btn btn-sm btn-primary"
                 >
                   Kelola
                 </Link>
-                {/* Opsi status bisa disederhanakan jika perlu */}
               </div>
             </div>
           ))}
@@ -440,7 +441,6 @@ const AdminStoresPage = ({ showMessage }) => {
         )}
       </div>
 
-      {/* --- MODAL DIPERBARUI --- */}
       {showInvoiceModal && currentStore && (
         <>
           <div
@@ -506,7 +506,6 @@ const AdminStoresPage = ({ showMessage }) => {
                     >
                       Batal
                     </button>
-                    {/* Tombol Pratinjau sekarang membuka tab baru */}
                     <button
                       type="button"
                       className="btn btn-info"
