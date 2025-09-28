@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { getStoreDetails, getStoreServices, getStoreReviews, getUserAddresses, addUserAddress } from "../services/apiService";
+import {
+  getStoreDetails,
+  getStoreServices,
+  getStoreReviews,
+  getUserAddresses,
+  addUserAddress,
+} from "../services/apiService";
 
 const ReviewCard = ({ review }) => (
   <div className="review-card mb-3">
@@ -93,13 +99,13 @@ const StoreDetailPage = ({ showMessage }) => {
   const fetchUserAddresses = async () => {
     if (!localStorage.getItem("token")) return;
     try {
-        const data = await getUserAddresses();
-        setAddresses(data);
-        if (data.length > 0) {
-            setSelectedAddress(data[0].id);
-        }
+      const data = await getUserAddresses();
+      setAddresses(data);
+      if (data.length > 0) {
+        setSelectedAddress(data[0].id);
+      }
     } catch (error) {
-        console.error("Gagal mengambil alamat:", error);
+      console.error("Gagal mengambil alamat:", error);
     }
   };
 
@@ -108,9 +114,9 @@ const StoreDetailPage = ({ showMessage }) => {
       setLoading(true);
       try {
         const [storeData, storeServices, storeReviews] = await Promise.all([
-            getStoreDetails(id),
-            getStoreServices(id),
-            getStoreReviews(id),
+          getStoreDetails(id),
+          getStoreServices(id),
+          getStoreReviews(id),
         ]);
 
         setStore(storeData);
@@ -179,7 +185,7 @@ const StoreDetailPage = ({ showMessage }) => {
       storeId: store.id,
       storeName: store.name,
       shoeType: selectedShoeType,
-      serviceId: selectedService.id, 
+      serviceId: selectedService.id,
       deliveryOption: deliveryOption,
       schedule: finalSchedule,
       addressId: selectedAddress,
@@ -195,13 +201,13 @@ const StoreDetailPage = ({ showMessage }) => {
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
     try {
-        const data = await addUserAddress(newAddress);
-        setShowAddressModal(false);
-        setAddresses(prev => [data, ...prev]);
-        setSelectedAddress(data.id);
-        showMessage("Alamat baru berhasil disimpan!");
+      const data = await addUserAddress(newAddress);
+      setShowAddressModal(false);
+      setAddresses((prev) => [data, ...prev]);
+      setSelectedAddress(data.id);
+      showMessage("Alamat baru berhasil disimpan!");
     } catch (error) {
-        showMessage(error.message, "Error");
+      showMessage(error.message, "Error");
     }
   };
 
@@ -290,14 +296,7 @@ const StoreDetailPage = ({ showMessage }) => {
 
         <div className="store-detail-main">
           <div className="store-header">
-            {store.tier === "PRO" && (
-              <span
-                className="badge bg-warning text-dark position-absolute top-0 end-0 m-3 fs-6"
-                style={{ zIndex: 2 }}
-              >
-                <i className="fas fa-crown me-1"></i> PRO
-              </span>
-            )}
+            {/* --- BAGIAN KODE BADGE PRO DIHAPUS DARI SINI --- */}
             <img
               src={
                 headerImage
