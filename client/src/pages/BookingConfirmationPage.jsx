@@ -79,24 +79,35 @@ const BookingConfirmationPage = ({ showMessage }) => {
     }
   };
 
-  // --- FUNGSI INI ADALAH PERBAIKAN UTAMA ---
   const handleConfirmAndPay = async () => {
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
 
     try {
-      // Langkah 1: Buat booking terlebih dahulu
+      // --- AWAL PERBAIKAN ---
+
+      // 1. Siapkan payload yang benar untuk dikirim ke server.
+      const payload = {
+        ...bookingDetails,
+        // Ambil 'date' dari objek 'schedule' dan jadikan 'scheduleDate'
+        scheduleDate: bookingDetails.schedule?.date,
+        promoCode: appliedPromo ? appliedPromo.code : undefined,
+      };
+      // Hapus objek 'schedule' yang sudah tidak diperlukan
+      delete payload.schedule;
+
+      // Langkah 1: Buat booking dengan payload yang sudah diperbaiki
       const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...bookingDetails,
-          promoCode: appliedPromo ? appliedPromo.code : undefined,
-        }),
+        // 2. Gunakan payload yang sudah benar
+        body: JSON.stringify(payload),
       });
+
+      // --- AKHIR PERBAIKAN ---
 
       const newBookingData = await bookingResponse.json();
       if (!bookingResponse.ok) {
@@ -104,7 +115,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
       }
 
       // Langkah 2: Buat transaksi pembayaran untuk mendapatkan ID-nya
-      // (Kita tidak perlu redirect_url lagi di sini)
       await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
         method: "POST",
         headers: {
@@ -115,7 +125,6 @@ const BookingConfirmationPage = ({ showMessage }) => {
       });
 
       // Langkah 3: Gunakan React Router (navigate) untuk pindah halaman
-      // Ini adalah navigasi internal yang tidak menyebabkan refresh
       localStorage.removeItem("pendingBooking");
       navigate(`/payment-simulation/${newBookingData.id}`);
     } catch (error) {
