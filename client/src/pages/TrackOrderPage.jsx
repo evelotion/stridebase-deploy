@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { io } from "socket.io-client";
-import API_BASE_URL from '../apiConfig';
+import API_BASE_URL from "../apiConfig";
 
 const socket = io("");
 
@@ -41,9 +41,12 @@ const TrackOrderPage = () => {
         return;
       }
       try {
-        const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/bookings/${bookingId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (!response.ok) {
           throw new Error(
             "Pesanan tidak ditemukan atau Anda tidak memiliki akses."

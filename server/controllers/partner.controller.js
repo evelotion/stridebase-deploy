@@ -1,4 +1,4 @@
-// File: server/controllers/partner.controller.js (Perbaikan Final untuk Laporan)
+// File: server/controllers/partner.controller.js (Dengan Live Update)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -109,11 +109,25 @@ export const getPartnerOrders = async (req, res, next) => {
 export const updateWorkStatus = async (req, res, next) => {
   const { bookingId } = req.params;
   const { newWorkStatus } = req.body;
+  const io = req.io; // Mengambil instance Socket.IO dari request
+
   try {
     const updatedBooking = await prisma.booking.update({
       where: { id: bookingId },
       data: { workStatus: newWorkStatus },
     });
+
+    // --- AWAL PERBAIKAN ---
+    // 1. Pancarkan event 'bookingUpdated' ke semua client yang terhubung
+    if (io) {
+      io.emit("bookingUpdated", updatedBooking);
+      console.log(
+        `Socket event 'bookingUpdated' dipancarkan untuk booking ${updatedBooking.id}`
+      );
+    }
+    // --- AKHIR PERBAIKAN ---
+
+    // 2. Kirim notifikasi personal ke pengguna (ini sudah benar)
     await createNotificationForUser(
       updatedBooking.userId,
       `Status pengerjaan pesanan Anda #${bookingId.substring(
@@ -122,6 +136,7 @@ export const updateWorkStatus = async (req, res, next) => {
       )} telah diperbarui menjadi: ${newWorkStatus}.`,
       `/track/${bookingId}`
     );
+
     res.json({
       message: "Status pengerjaan berhasil diperbarui.",
       booking: updatedBooking,
@@ -130,6 +145,8 @@ export const updateWorkStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+// ... (sisa kode controller lainnya tidak berubah)
 
 // @desc    Get all services for the partner's store
 // @route   GET /api/partner/services
@@ -339,12 +356,10 @@ export const requestPayout = async (req, res, next) => {
         requestedById: req.user.id,
       },
     });
-    res
-      .status(201)
-      .json({
-        message: "Permintaan penarikan dana berhasil diajukan.",
-        request: newRequest,
-      });
+    res.status(201).json({
+      message: "Permintaan penarikan dana berhasil diajukan.",
+      request: newRequest,
+    });
   } catch (error) {
     next(error);
   }
@@ -404,9 +419,8 @@ export const getPartnerReports = async (req, res, next) => {
       take: 5,
     });
 
-    // --- PERBAIKAN DI SINI: Tambahkan `include` untuk mengambil data user ---
     const recentReviewsPromise = prisma.review.findMany({
-      where: { storeId: storeId, ...dateFilter }, // Filter by date as well
+      where: { storeId: storeId, ...dateFilter },
       orderBy: { createdAt: "desc" },
       take: 5,
       include: { user: { select: { name: true } } },
@@ -436,7 +450,6 @@ export const getPartnerReports = async (req, res, next) => {
         name: s.serviceName,
         count: s._count.serviceName,
       })),
-      // --- PERBAIKAN DI SINI: Pastikan 'user' ada sebelum diakses ---
       recentReviews: recentReviews.map((r) => ({
         id: r.id,
         userName: r.user?.name || "N/A",
