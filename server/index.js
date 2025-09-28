@@ -1,12 +1,12 @@
-// File: server/index.js (Dengan Perbaikan Urutan Inisialisasi)
+// File: server/index.js (Dengan Perbaikan Impor corsOptions)
 
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import errorHandler from './middleware/errorHandler.js';
-import { setupSocket } from './socket.js'; // Hanya impor setupSocket
-import corsOptions from './config/cors.js';
+import { setupSocket } from './socket.js';
+import { corsOptions } from './config/cors.js'; // <-- PERBAIKAN DI BARIS INI
 import { checkMaintenanceMode } from './middleware/maintenance.js';
 
 // Impor Routes
