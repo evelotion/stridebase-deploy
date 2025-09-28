@@ -296,7 +296,6 @@ const StoreDetailPage = ({ showMessage }) => {
 
         <div className="store-detail-main">
           <div className="store-header">
-            {/* --- BAGIAN KODE BADGE PRO DIHAPUS DARI SINI --- */}
             <img
               src={
                 headerImage
@@ -429,38 +428,30 @@ const StoreDetailPage = ({ showMessage }) => {
             >
               <h6 className="fw-semibold mb-3">3. Atur Pengantaran</h6>
               <div className="delivery-option-group">
-                <label className="delivery-option">
-                  <input
-                    type="radio"
-                    name="delivery"
-                    value="pickup"
-                    checked={deliveryOption === "pickup"}
-                    onChange={(e) => setDeliveryOption(e.target.value)}
-                  />
-                  <div className="delivery-option-label">
-                    <i className="fas fa-motorcycle"></i>
-                    <div>
-                      <strong>Antar Jemput</strong>
-                      <small>Kurir akan mengambil sepatumu.</small>
-                    </div>
+                <div
+                  className={`delivery-option-label ${
+                    deliveryOption === "pickup" ? "active" : ""
+                  }`}
+                  onClick={() => setDeliveryOption("pickup")}
+                >
+                  <i className="fas fa-motorcycle"></i>
+                  <div>
+                    <strong>Antar Jemput</strong>
+                    <small>Kurir akan mengambil sepatumu.</small>
                   </div>
-                </label>
-                <label className="delivery-option">
-                  <input
-                    type="radio"
-                    name="delivery"
-                    value="self-delivery"
-                    checked={deliveryOption === "self-delivery"}
-                    onChange={(e) => setDeliveryOption(e.target.value)}
-                  />
-                  <div className="delivery-option-label">
-                    <i className="fas fa-walking"></i>
-                    <div>
-                      <strong>Antar Sendiri</strong>
-                      <small>Datang langsung ke toko.</small>
-                    </div>
+                </div>
+                <div
+                  className={`delivery-option-label ${
+                    deliveryOption === "self-delivery" ? "active" : ""
+                  }`}
+                  onClick={() => setDeliveryOption("self-delivery")}
+                >
+                  <i className="fas fa-walking"></i>
+                  <div>
+                    <strong>Antar Sendiri</strong>
+                    <small>Datang langsung ke toko.</small>
                   </div>
-                </label>
+                </div>
               </div>
               {deliveryOption === "pickup" && (
                 <div className="mt-3">
