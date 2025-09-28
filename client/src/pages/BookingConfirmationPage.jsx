@@ -1,4 +1,4 @@
-// File: client/src/pages/BookingConfirmationPage.jsx (Perbaikan Final V2)
+// File: client/src/pages/BookingConfirmationPage.jsx (Dengan Perbaikan Final untuk Data Wajib)
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -85,15 +85,17 @@ const BookingConfirmationPage = ({ showMessage }) => {
 
     try {
       // --- AWAL PERBAIKAN ---
-
-      // 1. Siapkan payload yang benar untuk dikirim ke server.
+      // Siapkan payload yang benar untuk dikirim ke server.
       const payload = {
         ...bookingDetails,
-        // Ambil 'date' dari objek 'schedule' dan jadikan 'scheduleDate'
-        scheduleDate: bookingDetails.schedule?.date,
+        // FIX 1: Tambahkan serviceName dari state serviceDetails
+        serviceName: serviceDetails?.name,
+        // FIX 2: Atasi scheduleDate yang kosong untuk 'self-delivery'
+        // Gunakan tanggal hari ini jika tidak ada jadwal yang dipilih (untuk opsi "Langsung ke Toko")
+        scheduleDate: bookingDetails.schedule?.date || new Date(),
         promoCode: appliedPromo ? appliedPromo.code : undefined,
       };
-      // Hapus objek 'schedule' yang sudah tidak diperlukan
+      // Hapus objek 'schedule' yang sudah tidak diperlukan agar tidak duplikat
       delete payload.schedule;
 
       // Langkah 1: Buat booking dengan payload yang sudah diperbaiki
@@ -103,10 +105,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        // 2. Gunakan payload yang sudah benar
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload), // Gunakan payload yang sudah benar
       });
-
       // --- AKHIR PERBAIKAN ---
 
       const newBookingData = await bookingResponse.json();
@@ -114,7 +114,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
         throw new Error(newBookingData.message || "Gagal membuat pesanan.");
       }
 
-      // Langkah 2: Buat transaksi pembayaran untuk mendapatkan ID-nya
+      // Langkah 2: Buat transaksi pembayaran
       await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
         method: "POST",
         headers: {
@@ -124,7 +124,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
         body: JSON.stringify({ bookingId: newBookingData.id }),
       });
 
-      // Langkah 3: Gunakan React Router (navigate) untuk pindah halaman
+      // Langkah 3: Arahkan ke halaman simulasi
       localStorage.removeItem("pendingBooking");
       navigate(`/payment-simulation/${newBookingData.id}`);
     } catch (error) {
