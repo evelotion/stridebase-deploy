@@ -325,6 +325,7 @@ function AppContent() {
     };
   }, [theme, isAnnouncementVisible]);
 
+  // EFEK BARU #1: KHUSUS UNTUK MENGAMBIL TEMA (BERJALAN SEKALI)
   useEffect(() => {
     const fetchThemeConfig = async () => {
       try {
@@ -339,10 +340,15 @@ function AppContent() {
       }
     };
     fetchThemeConfig();
+  }, []); // <-- Dependency kosong berarti hanya berjalan sekali saat komponen dimuat
 
+  // EFEK BARU #2: KHUSUS UNTUK LOGIKA PENGGUNA & REAL-TIME
+  useEffect(() => {
     const socketUrl = import.meta.env.PROD
       ? import.meta.env.VITE_API_PRODUCTION_URL
       : "/";
+
+    // Socket untuk notifikasi pengguna
     if (user && user.id) {
       socket = io(socketUrl, { query: { userId: user.id } });
       socket.on("connect", () => {
@@ -375,6 +381,7 @@ function AppContent() {
       fetchNotifications();
     }
 
+    // Socket untuk pembaruan tema global
     const themeSocket = io(socketUrl);
     themeSocket.on("themeUpdated", (newThemeConfig) => {
       console.log("Menerima pembaruan tema secara real-time:", newThemeConfig);
@@ -383,6 +390,7 @@ function AppContent() {
       showMessage("Tampilan tema telah diperbarui oleh administrator.");
     });
 
+    // Fungsi cleanup untuk semua koneksi socket
     return () => {
       if (socket) {
         socket.off("connect");
@@ -392,7 +400,7 @@ function AppContent() {
       themeSocket.off("themeUpdated");
       themeSocket.disconnect();
     };
-  }, [user]);
+  }, [user]); // <-- Efek ini tetap bergantung pada 'user'
 
   const renderWithProps = (Component, extraProps = {}) => (
     <Component showMessage={showMessage} {...extraProps} />
@@ -583,9 +591,9 @@ function AppContent() {
             element={renderWithProps(PaymentSimulationPage)}
           />
           <Route
-    path="payment-confirm-mobile/:bookingId"
-    element={renderWithProps(PaymentConfirmMobilePage)}
-  />
+            path="payment-confirm-mobile/:bookingId"
+            element={renderWithProps(PaymentConfirmMobilePage)}
+          />
           <Route
             path="payment-success/:bookingId"
             element={renderWithProps(PaymentSuccessPage)}

@@ -4645,3 +4645,15 @@ body.has-global-announcement .filter-panel-top {
   color: #212529;
   font-weight: 600;
 }
+
+/* === Perbaikan Layout Konsisten untuk Halaman Akun/Dashboard === */
+.account-page-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-grow: 1; /* Memastikan kontainer mengisi sisa ruang di <main> */
+}
+
+.account-page-container > .row {
+  flex-grow: 1; /* Memastikan baris di dalamnya juga ikut mengisi ruang */
+}
