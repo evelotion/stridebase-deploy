@@ -140,6 +140,7 @@ const UserAvatar: React.FC<{ name: string; size?: number }> = ({
     fontSize: `${size / 2.5}px`,
     border: "3px solid #fff",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+     margin: "0 auto",
   };
 
   return (
