@@ -1,4 +1,4 @@
-// File: client/src/components/Navbar.jsx (Dengan Avatar Inisial)
+// File: client/src/components/Navbar.jsx (Dengan Perbaikan Final untuk Logo)
 
 import React from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
@@ -98,20 +98,35 @@ const Navbar = ({
     }
   };
 
+  // --- PERBAIKAN UTAMA ADA DI SINI ---
+  const renderLogo = () => {
+    if (theme?.branding?.logoUrl) {
+      return (
+        <img
+          src={theme.branding.logoUrl}
+          alt="StrideBase Logo"
+          style={{ maxHeight: "32px" }}
+        />
+      );
+    }
+    // Tampilkan teks hanya jika URL logo tidak ada
+    return <span className="fs-4">StrideBase</span>;
+  };
+
+  const renderMobileLogo = () => {
+    if (theme?.branding?.logoUrl) {
+      return <img src={theme.branding.logoUrl} alt="StrideBase Logo" />;
+    }
+    return <span>StrideBase</span>;
+  };
+  // --- AKHIR PERBAIKAN ---
+
   return (
     <>
       <nav className="navbar navbar-expand-lg d-none d-lg-flex">
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
-            {theme?.branding?.logoUrl ? (
-              <img
-                src={`${theme.branding.logoUrl}`}
-                alt="StrideBase Logo"
-                style={{ maxHeight: "32px" }}
-              />
-            ) : (
-              <span className="fs-4">StrideBase</span>
-            )}
+            {renderLogo()} {/* Panggil fungsi renderLogo di sini */}
           </Link>
           <ul className="nav-menu-list list-unstyled d-flex mb-0 ms-auto">
             <li>
@@ -278,11 +293,8 @@ const Navbar = ({
         <div className="mobile-header d-lg-none">
           <div className="mobile-logo-container">
             <Link className="navbar-brand" to="/">
-              {theme?.branding?.logoUrl ? (
-                <img src={`${theme.branding.logoUrl}`} alt="StrideBase Logo" />
-              ) : (
-                <span>StrideBase</span>
-              )}
+              {renderMobileLogo()}{" "}
+              {/* Panggil fungsi renderMobileLogo di sini */}
             </Link>
           </div>
           <div className="mobile-user-container">
