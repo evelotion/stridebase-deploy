@@ -1,4 +1,4 @@
-// File: client/src/App.jsx (Versi Final & Lengkap)
+// File: client/src/App.jsx (Dengan Perbaikan Final pada Fungsi applyTheme)
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
@@ -117,6 +117,7 @@ const PaymentSuccessPage = React.lazy(() =>
 
 let socket;
 
+// --- PERBAIKAN UTAMA ADA DI FUNGSI INI ---
 const applyTheme = (theme) => {
   if (!theme) return;
   const root = document.documentElement;
@@ -126,6 +127,7 @@ const applyTheme = (theme) => {
     favicon.href = `${theme.branding.faviconUrl}`;
   }
 
+  // Cek jika 'colors' ada sebelum menggunakannya
   if (theme.colors) {
     root.style.setProperty(
       "--primary-color",
@@ -136,24 +138,26 @@ const applyTheme = (theme) => {
       theme.colors.secondary || "#28a745"
     );
     root.style.setProperty("--accent-color", theme.colors.accent || "#FFC107");
+
+    // Cek jika 'button' di dalam 'colors' ada
+    if (theme.colors.button) {
+      root.style.setProperty(
+        "--button-background-color",
+        theme.colors.button.background
+      );
+      root.style.setProperty("--button-text-color", theme.colors.button.text);
+      root.style.setProperty(
+        "--button-background-hover-color",
+        theme.colors.button.backgroundHover
+      );
+      root.style.setProperty(
+        "--button-text-hover-color",
+        theme.colors.button.textHover
+      );
+    }
   }
 
-  if (theme.colors.button) {
-    root.style.setProperty(
-      "--button-background-color",
-      theme.colors.button.background
-    );
-    root.style.setProperty("--button-text-color", theme.colors.button.text);
-    root.style.setProperty(
-      "--button-background-hover-color",
-      theme.colors.button.backgroundHover
-    );
-    root.style.setProperty(
-      "--button-text-hover-color",
-      theme.colors.button.textHover
-    );
-  }
-
+  // Cek jika 'typography' ada
   if (theme.typography) {
     if (theme.typography.fontFamily) {
       const fontFamilyValue = theme.typography.fontFamily;
@@ -199,6 +203,7 @@ const applyTheme = (theme) => {
     );
   }
 
+  // Cek jika 'background' ada
   if (theme.background) {
     if (theme.background.type === "image" && theme.background.imageUrl) {
       document.body.style.backgroundImage = `url(${theme.background.imageUrl})`;
@@ -325,7 +330,6 @@ function AppContent() {
     };
   }, [theme, isAnnouncementVisible]);
 
-  // EFEK BARU #1: KHUSUS UNTUK MENGAMBIL TEMA (BERJALAN SEKALI)
   useEffect(() => {
     const fetchThemeConfig = async () => {
       try {
@@ -334,21 +338,24 @@ function AppContent() {
           const data = await response.json();
           setTheme(data);
           applyTheme(data);
+        } else {
+          // Jika gagal (misal server error), set tema default agar tidak crash
+          console.error("Gagal memuat tema, menggunakan fallback.");
+          applyTheme({}); // Panggil dengan objek kosong
         }
       } catch (error) {
         console.error("Gagal mengambil konfigurasi tema:", error);
+        applyTheme({}); // Panggil dengan objek kosong jika ada network error
       }
     };
     fetchThemeConfig();
-  }, []); // <-- Dependency kosong berarti hanya berjalan sekali saat komponen dimuat
+  }, []);
 
-  // EFEK BARU #2: KHUSUS UNTUK LOGIKA PENGGUNA & REAL-TIME
   useEffect(() => {
     const socketUrl = import.meta.env.PROD
       ? import.meta.env.VITE_API_PRODUCTION_URL
       : "/";
 
-    // Socket untuk notifikasi pengguna
     if (user && user.id) {
       socket = io(socketUrl, { query: { userId: user.id } });
       socket.on("connect", () => {
@@ -381,7 +388,6 @@ function AppContent() {
       fetchNotifications();
     }
 
-    // Socket untuk pembaruan tema global
     const themeSocket = io(socketUrl);
     themeSocket.on("themeUpdated", (newThemeConfig) => {
       console.log("Menerima pembaruan tema secara real-time:", newThemeConfig);
@@ -390,7 +396,6 @@ function AppContent() {
       showMessage("Tampilan tema telah diperbarui oleh administrator.");
     });
 
-    // Fungsi cleanup untuk semua koneksi socket
     return () => {
       if (socket) {
         socket.off("connect");
@@ -400,7 +405,7 @@ function AppContent() {
       themeSocket.off("themeUpdated");
       themeSocket.disconnect();
     };
-  }, [user]); // <-- Efek ini tetap bergantung pada 'user'
+  }, [user]);
 
   const renderWithProps = (Component, extraProps = {}) => (
     <Component showMessage={showMessage} {...extraProps} />
@@ -490,7 +495,6 @@ function AppContent() {
             path="invoice/print/:invoiceId"
             element={<InvoicePrintPage />}
           />
-          {/* Rute Tambahan untuk Pratinjau Invoice */}
           <Route path="invoice/print/preview" element={<InvoicePrintPage />} />
         </Route>
 
