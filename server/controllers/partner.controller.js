@@ -1,4 +1,4 @@
-// File: server/controllers/partner.controller.js (Dengan Live Update)
+// File: server/controllers/partner.controller.js
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
@@ -117,17 +117,16 @@ export const updateWorkStatus = async (req, res, next) => {
       data: { workStatus: newWorkStatus },
     });
 
-    // --- AWAL PERBAIKAN ---
-    // 1. Pancarkan event 'bookingUpdated' ke semua client yang terhubung
+    // --- PERBAIKAN UTAMA: Kirim event ke room spesifik pengguna ---
     if (io) {
-      io.emit("bookingUpdated", updatedBooking);
+      // Kirim pembaruan real-time hanya ke pengguna yang memesan
+      io.to(updatedBooking.userId).emit("bookingUpdated", updatedBooking);
       console.log(
-        `Socket event 'bookingUpdated' dipancarkan untuk booking ${updatedBooking.id}`
+        `Socket event 'bookingUpdated' dipancarkan untuk booking ${updatedBooking.id} ke user ${updatedBooking.userId}`
       );
     }
     // --- AKHIR PERBAIKAN ---
 
-    // 2. Kirim notifikasi personal ke pengguna (ini sudah benar)
     await createNotificationForUser(
       updatedBooking.userId,
       `Status pengerjaan pesanan Anda #${bookingId.substring(
@@ -145,8 +144,6 @@ export const updateWorkStatus = async (req, res, next) => {
     next(error);
   }
 };
-
-// ... (sisa kode controller lainnya tidak berubah)
 
 // @desc    Get all services for the partner's store
 // @route   GET /api/partner/services

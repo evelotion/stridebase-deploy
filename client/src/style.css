@@ -4575,3 +4575,75 @@ body.has-global-announcement {
 body.has-global-announcement .filter-panel-top {
   top: 110px; /* Sesuaikan nilai ini jika tinggi announcement bar berubah */
 }
+
+/* Tambahkan kode ini di bagian akhir file style.css Anda */
+
+/* === Gaya Halaman Pelacakan Pesanan (V2) === */
+.progress-tracker-container {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 2rem 0;
+}
+
+.progress-bar-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 4px;
+  background-color: #20c997; /* Warna hijau untuk progres yang selesai */
+  z-index: 1;
+  transition: width 0.5s ease-in-out;
+}
+
+.progress-tracker-container::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 4px;
+  background-color: #e9ecef; /* Warna abu-abu untuk garis dasar */
+  width: 100%;
+  z-index: 0;
+}
+
+.progress-step {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  width: 100px; /* Lebar setiap langkah */
+}
+
+.progress-step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  color: #adb5bd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+  border: 3px solid #e9ecef;
+  transition: all 0.4s ease;
+}
+
+.progress-step-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #adb5bd;
+  transition: color 0.4s ease;
+}
+
+.progress-step.active .progress-step-icon {
+  background-color: #20c997;
+  border-color: #20c997;
+  color: #fff;
+}
+
+.progress-step.active .progress-step-title {
+  color: #212529;
+  font-weight: 600;
+}
