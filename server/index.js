@@ -1,13 +1,14 @@
-// File: server/index.js (Dengan Perbaikan Impor errorHandler)
+// File: server/index.js (Dengan Perbaikan Final untuk Memuat Tema)
 
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { errorHandler } from './middleware/errorHandler.js'; // <-- PERBAIKAN DI BARIS INI
+import { errorHandler } from './middleware/errorHandler.js';
 import { setupSocket } from './socket.js';
 import { corsOptions } from './config/cors.js';
 import { checkMaintenanceMode } from './middleware/maintenance.js';
+import { loadThemeConfig } from './config/theme.js'; // <-- 1. TAMBAHKAN BARIS IMPOR INI
 
 // Impor Routes
 import authRoutes from './routes/auth.routes.js';
@@ -69,6 +70,13 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+// Jalankan server setelah memuat konfigurasi tema
+const startServer = async () => {
+  await loadThemeConfig(); // <-- 2. PANGGIL FUNGSI UNTUK MEMUAT TEMA
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
