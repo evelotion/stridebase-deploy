@@ -79,59 +79,81 @@ const BookingConfirmationPage = ({ showMessage }) => {
     }
   };
 
-  const handleConfirmAndPay = async () => {
+const handleConfirmAndPay = async () => {
     setIsSubmitting(true);
     const token = localStorage.getItem("token");
 
     try {
-      // --- AWAL PERBAIKAN ---
-      // Siapkan payload yang benar untuk dikirim ke server.
-      const payload = {
-        ...bookingDetails,
-        // FIX 1: Tambahkan serviceName dari state serviceDetails
-        serviceName: serviceDetails?.name,
-        // FIX 2: Atasi scheduleDate yang kosong untuk 'self-delivery'
-        // Gunakan tanggal hari ini jika tidak ada jadwal yang dipilih (untuk opsi "Langsung ke Toko")
-        scheduleDate: bookingDetails.schedule?.date || new Date(),
-        promoCode: appliedPromo ? appliedPromo.code : undefined,
-      };
-      // Hapus objek 'schedule' yang sudah tidak diperlukan agar tidak duplikat
-      delete payload.schedule;
+        const payload = {
+            storeId: bookingDetails.storeId,
+            serviceId: bookingDetails.serviceId,
+            serviceName: serviceDetails?.name,
+            scheduleDate: bookingDetails.schedule?.date || new Date(),
+            deliveryOption: bookingDetails.deliveryOption,
+            addressId: bookingDetails.addressId,
+            notes: "", // Anda bisa menambahkan input untuk ini
+            promoCode: appliedPromo ? appliedPromo.code : undefined,
+        };
 
-      // Langkah 1: Buat booking dengan payload yang sudah diperbaiki
-      const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload), // Gunakan payload yang sudah benar
-      });
-      // --- AKHIR PERBAIKAN ---
+        // 1. Buat booking terlebih dahulu
+        const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
 
-      const newBookingData = await bookingResponse.json();
-      if (!bookingResponse.ok) {
-        throw new Error(newBookingData.message || "Gagal membuat pesanan.");
-      }
+        const newBookingData = await bookingResponse.json();
+        if (!bookingResponse.ok) {
+            throw new Error(newBookingData.message || "Gagal membuat pesanan.");
+        }
 
-      // Langkah 2: Buat transaksi pembayaran
-      await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ bookingId: newBookingData.id }),
-      });
+        // 2. Buat transaksi pembayaran (Midtrans atau Simulasi)
+        const transactionResponse = await fetch(`${API_BASE_URL}/api/payments/create-transaction`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ bookingId: newBookingData.id }),
+        });
 
-      // Langkah 3: Arahkan ke halaman simulasi
-      localStorage.removeItem("pendingBooking");
-      navigate(`/payment-simulation/${newBookingData.id}`);
+        const transactionData = await transactionResponse.json();
+        if (!transactionResponse.ok) {
+            throw new Error(transactionData.message || "Gagal membuat transaksi pembayaran.");
+        }
+
+        localStorage.removeItem("pendingBooking");
+
+        // 3. Arahkan berdasarkan metode pembayaran
+        if (transactionData.paymentMethod === 'simulation') {
+            // Jika simulasi, arahkan ke halaman simulasi lama
+            navigate(`/payment-simulation/${newBookingData.id}`);
+        } else {
+            // Jika Midtrans, buka Snap popup
+            window.snap.pay(transactionData.token, {
+                onSuccess: function(result){
+                  navigate(`/payment-finish?order_id=${result.order_id}&status=success`);
+                },
+                onPending: function(result){
+                  navigate(`/payment-finish?order_id=${result.order_id}&status=pending`);
+                },
+                onError: function(result){
+                  navigate(`/payment-finish?order_id=${result.order_id}&status=error`);
+                },
+                onClose: function(){
+                  showMessage('Anda menutup popup tanpa menyelesaikan pembayaran.', 'Info');
+                }
+            });
+        }
+
     } catch (error) {
-      showMessage(error.message, "Error");
-      setIsSubmitting(false);
+        showMessage(error.message, "Error");
+        setIsSubmitting(false);
     }
-  };
+};
 
   if (!bookingDetails || !serviceDetails) {
     return (
