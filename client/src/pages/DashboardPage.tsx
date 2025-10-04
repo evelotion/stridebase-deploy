@@ -1,4 +1,4 @@
-// File: client/src/pages/DashboardPage.tsx (Versi Final Lengkap)
+// client/src/pages/DashboardPage.tsx
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -140,7 +140,7 @@ const UserAvatar: React.FC<{ name: string; size?: number }> = ({
     fontSize: `${size / 2.5}px`,
     border: "3px solid #fff",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-     margin: "0 auto",
+    margin: "0 auto",
   };
 
   return (
@@ -364,6 +364,63 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
     };
   }, [navigate]);
 
+  const handleContinuePayment = async (bookingId: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      // 1. Panggil create-transaction untuk mendapatkan token Midtrans baru
+      const transactionResponse = await fetch(
+        `${API_BASE_URL}/api/payments/create-transaction`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ bookingId }),
+        }
+      );
+
+      const transactionData = await transactionResponse.json();
+      if (!transactionResponse.ok) {
+        throw new Error(
+          transactionData.message || "Gagal membuat transaksi pembayaran."
+        );
+      }
+
+      // 2. Buka popup Snap Midtrans
+      if (transactionData.paymentMethod === "midtrans") {
+        window.snap.pay(transactionData.token, {
+          onSuccess: function (result) {
+            navigate(
+              `/payment-finish?order_id=${result.order_id}&status=success`
+            );
+          },
+          onPending: function (result) {
+            navigate(
+              `/payment-finish?order_id=${result.order_id}&status=pending`
+            );
+          },
+          onError: function (result) {
+            navigate(
+              `/payment-finish?order_id=${result.order_id}&status=error`
+            );
+          },
+          onClose: function () {
+            showMessage(
+              "Anda menutup popup tanpa menyelesaikan pembayaran.",
+              "Info"
+            );
+          },
+        });
+      } else {
+        // Fallback jika mode masih simulasi
+        navigate(`/payment-simulation/${bookingId}`);
+      }
+    } catch (error) {
+      showMessage((error as Error).message, "Error");
+    }
+  };
+
   const handleRedeemPoints = async () => {
     if (!confirm(`Anda akan menukarkan 100 poin. Lanjutkan?`)) return;
     try {
@@ -542,12 +599,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ showMessage }) => {
         badgeClass: "bg-warning text-dark",
         text: "Menunggu Pembayaran",
         action: (
-          <Link
-            to={`/payment-simulation/${booking.id}`}
+          <button
+            onClick={() => handleContinuePayment(booking.id)}
             className="btn btn-sm btn-danger d-block w-100"
           >
             Lanjutkan Pembayaran
-          </Link>
+          </button>
         ),
       };
     }

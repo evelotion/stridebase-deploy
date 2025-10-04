@@ -1,3 +1,5 @@
+// client/src/pages/StoreDetailPage.jsx
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -231,7 +233,10 @@ const StoreDetailPage = ({ showMessage }) => {
       <button
         className="btn btn-dark btn-lg w-100"
         type="button"
-        disabled={!selectedService}
+        disabled={
+          !selectedService ||
+          (deliveryOption === "pickup" && (!finalSchedule || !selectedAddress))
+        }
         onClick={handleBooking}
       >
         Pesan Sekarang
@@ -428,32 +433,46 @@ const StoreDetailPage = ({ showMessage }) => {
             >
               <h6 className="fw-semibold mb-3">3. Atur Pengantaran</h6>
               <div className="delivery-option-group">
-                <div
+                <label
+                  htmlFor="delivery-pickup"
                   className={`delivery-option-label ${
                     deliveryOption === "pickup" ? "active" : ""
                   }`}
-                  onClick={() => setDeliveryOption("pickup")}
                 >
+                  <input
+                    type="radio"
+                    id="delivery-pickup"
+                    name="deliveryOption"
+                    value="pickup"
+                    checked={deliveryOption === "pickup"}
+                    onChange={(e) => setDeliveryOption(e.target.value)}
+                  />
                   <i className="fas fa-motorcycle"></i>
                   <div>
                     <strong>Antar Jemput</strong>
                     <small>Kurir akan mengambil sepatumu.</small>
                   </div>
-                </div>
-                
-                {/* --- DAN PERBAIKAN DI SINI: Gunakan div dengan onClick --- */}
-                <div
+                </label>
+                <label
+                  htmlFor="delivery-self"
                   className={`delivery-option-label ${
                     deliveryOption === "self-delivery" ? "active" : ""
                   }`}
-                  onClick={() => setDeliveryOption("self-delivery")}
                 >
+                  <input
+                    type="radio"
+                    id="delivery-self"
+                    name="deliveryOption"
+                    value="self-delivery"
+                    checked={deliveryOption === "self-delivery"}
+                    onChange={(e) => setDeliveryOption(e.target.value)}
+                  />
                   <i className="fas fa-walking"></i>
                   <div>
                     <strong>Antar Sendiri</strong>
                     <small>Datang langsung ke toko.</small>
                   </div>
-                </div>
+                </label>
               </div>
               {deliveryOption === "pickup" && (
                 <div className="mt-3">
