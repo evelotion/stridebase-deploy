@@ -91,7 +91,7 @@ const StoreDetailPage = ({ showMessage }) => {
     label: "Rumah",
     recipientName: "",
     phoneNumber: "",
-    fullAddress: "",
+    street: "", // PERBAIKAN: dari fullAddress ke street
     city: "",
     postalCode: "",
   });
@@ -491,8 +491,7 @@ const StoreDetailPage = ({ showMessage }) => {
                       <div className="address-option-label">
                         <strong>{addr.label}</strong>
                         <small>
-                          {addr.recipientName} -{" "}
-                          {addr.fullAddress.substring(0, 30)}...
+                          {addr.recipientName} - {addr.street?.substring(0, 30)}...
                         </small>
                       </div>
                     </label>
@@ -816,14 +815,14 @@ const StoreDetailPage = ({ showMessage }) => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="fullAddress" className="form-label">
+                      <label htmlFor="street" className="form-label">
                         Alamat Lengkap
                       </label>
                       <textarea
                         className="form-control"
-                        id="fullAddress"
-                        name="fullAddress"
-                        value={newAddress.fullAddress}
+                        id="street"
+                        name="street"
+                        value={newAddress.street}
                         onChange={handleAddressFormChange}
                         rows={3}
                         required
