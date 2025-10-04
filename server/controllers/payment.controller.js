@@ -48,7 +48,8 @@ export const createPaymentTransaction = async (req, res, next) => {
       const parameter = {
         transaction_details: {
           order_id: order_id,
-          gross_amount: booking.totalPrice,
+          // --- PERBAIKAN UTAMA DI SINI ---
+          gross_amount: Math.round(booking.totalPrice), // Pastikan harga adalah integer
         },
         customer_details: {
           first_name: booking.user.name,
