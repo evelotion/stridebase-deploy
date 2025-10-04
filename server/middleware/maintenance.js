@@ -1,9 +1,12 @@
 // File: server/middleware/maintenance.js
 
-import { currentThemeConfig } from '../config/theme.js';
+import { getTheme } from '../config/theme.js'; // Ubah import di sini
 
 export const checkMaintenanceMode = (req, res, next) => {
   const user = req.user; // Diambil dari middleware authenticateToken jika ada
+  
+  // Panggil fungsi getTheme() untuk mendapatkan konfigurasi
+  const currentThemeConfig = getTheme(); 
   
   // Cek apakah maintenance mode aktif dari konfigurasi tema
   const maintenanceMode = currentThemeConfig?.featureFlags?.maintenanceMode || false;
