@@ -1,8 +1,8 @@
-// File: server/controllers/payment.controller.js (MODIFIKASI LENGKAP)
-import prisma from "../config/prisma.js";
-import { createNotificationForUser } from "../socket.js";
-import { snap } from "../config/midtrans.js"; // Impor Midtrans Snap
+// File: server/controllers/payment.controller.js (Perbaikan Final v3)
 
+import prisma from "../config/prisma.js";
+import { snap } from "../config/midtrans.js";
+import { createNotificationForUser } from "../socket.js";
 
 // @desc    Create a payment transaction for a booking
 // @route   POST /api/payments/create-transaction
@@ -15,7 +15,11 @@ export const createPaymentTransaction = async (req, res, next) => {
   try {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { user: true, service: true },
+      include: {
+        user: true,
+        service: true,
+        address: true, // Sertakan data alamat untuk mendapatkan nomor telepon
+      },
     });
 
     if (!booking || booking.userId !== req.user.id) {
@@ -39,59 +43,41 @@ export const createPaymentTransaction = async (req, res, next) => {
       });
       res.json({ paymentMethod: "simulation", bookingId: booking.id });
     } else {
-      // --- PERBAIKAN UTAMA DIMULAI DI SINI ---
-      const nameParts = booking.user.name.split(' ');
+      // --- LOGIKA MIDTRANS YANG DIPERBAIKI SECARA TOTAL ---
+      const nameParts = booking.user.name.split(" ");
       const firstName = nameParts[0];
-      const lastName = nameParts.slice(1).join(' ') || firstName;
-
-      const itemDetails = [{
-        id: booking.service.id,
-        price: Math.round(booking.service.price),
-        quantity: 1,
-        name: booking.service.name,
-      }];
-
-      const handlingFee = 2000; // Definisikan biaya penanganan
-      if (handlingFee > 0) {
-        itemDetails.push({
-          id: 'HANDLING_FEE',
-          price: handlingFee,
-          quantity: 1,
-          name: 'Biaya Penanganan',
-        });
-      }
-      
-      const deliveryFee = booking.deliveryOption === "pickup" ? 10000 : 0;
-      if (deliveryFee > 0) {
-        itemDetails.push({
-            id: 'DELIVERY_FEE',
-            price: deliveryFee,
-            quantity: 1,
-            name: 'Biaya Antar Jemput',
-        });
-      }
-
-      // Pastikan total harga dari semua item sama dengan gross_amount
-      const calculatedGrossAmount = itemDetails.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      const lastName = nameParts.slice(1).join(" ") || firstName;
 
       const parameter = {
         transaction_details: {
           order_id: order_id,
-          gross_amount: calculatedGrossAmount, // Gunakan total yang dihitung ulang
+          // 1. Gunakan total harga final dari booking sebagai sumber kebenaran
+          gross_amount: Math.round(booking.totalPrice),
         },
-        item_details: itemDetails,
+        // 2. Buat item_details menjadi satu baris saja yang nilainya PASTI SAMA dengan gross_amount
+        item_details: [
+          {
+            id: booking.serviceId,
+            price: Math.round(booking.totalPrice), // Harganya adalah total harga akhir
+            quantity: 1,
+            name: `Layanan: ${booking.serviceName}`, // Deskripsi umum
+          },
+        ],
         customer_details: {
           first_name: firstName,
           last_name: lastName,
           email: booking.user.email,
+          phone: booking.address?.phoneNumber, // Tambahkan nomor telepon jika ada
         },
         callbacks: {
-          finish: `${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-finish`,
+          finish: `${
+            process.env.FRONTEND_URL || "http://localhost:5173"
+          }/payment-finish`,
         },
       };
 
       const transaction = await snap.createTransaction(parameter);
-      // --- PERBAIKAN UTAMA SELESAI ---
+      // --- AKHIR PERBAIKAN ---
 
       await prisma.payment.create({
         data: {
@@ -119,7 +105,6 @@ export const createPaymentTransaction = async (req, res, next) => {
 // @route   POST /api/payments/notification
 export const paymentNotificationHandler = async (req, res, next) => {
   try {
-    // Gunakan snap.notification untuk memverifikasi notifikasi secara aman
     const statusResponse = await snap.transaction.notification(req.body);
     const orderId = statusResponse.order_id;
     const transactionStatus = statusResponse.transaction_status;
@@ -136,14 +121,12 @@ export const paymentNotificationHandler = async (req, res, next) => {
       return res.status(404).send("Payment not found");
     }
 
-    // Ambil status booking saat ini
     const currentBooking = await prisma.booking.findUnique({
       where: { id: payment.bookingId },
     });
     let newPaymentStatus = payment.status;
     let newBookingStatus = currentBooking.status;
 
-    // Logika update status berdasarkan notifikasi Midtrans
     if (transactionStatus == "capture" || transactionStatus == "settlement") {
       if (fraudStatus == "accept") {
         newPaymentStatus = "paid";
@@ -158,7 +141,6 @@ export const paymentNotificationHandler = async (req, res, next) => {
       newBookingStatus = "cancelled";
     }
 
-    // Lakukan update hanya jika ada perubahan status
     if (newPaymentStatus !== payment.status) {
       await prisma.payment.update({
         where: { midtransOrderId: orderId },
@@ -173,7 +155,6 @@ export const paymentNotificationHandler = async (req, res, next) => {
         include: { store: true },
       });
 
-      // Kirim notifikasi ke pemilik toko jika pembayaran berhasil
       if (newBookingStatus === "confirmed") {
         await createNotificationForUser(
           updatedBooking.store.ownerId,
@@ -189,12 +170,11 @@ export const paymentNotificationHandler = async (req, res, next) => {
     res.status(200).send("OK");
   } catch (error) {
     console.error("Webhook Error:", error.message);
-    // Jangan teruskan ke 'next(error)' standar agar Midtrans menerima respons yang benar
     res.status(500).send({ message: error.message });
   }
 };
 
-// @desc    Confirm a booking payment after successful simulation (TIDAK BERUBAH)
+// @desc    Confirm a booking payment after successful simulation
 // @route   POST /api/payments/confirm-simulation/:bookingId
 export const confirmPaymentSimulation = async (req, res, next) => {
   const { bookingId } = req.params;
@@ -218,9 +198,6 @@ export const confirmPaymentSimulation = async (req, res, next) => {
 
       if (io) {
         io.emit("payment_confirmed", { bookingId: updatedBooking.id });
-        console.log(
-          `Socket event 'payment_confirmed' dipancarkan untuk booking ${updatedBooking.id}`
-        );
       }
 
       await createNotificationForUser(
