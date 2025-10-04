@@ -14,7 +14,7 @@ export const createPaymentTransaction = async (req, res, next) => {
   try {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { user: true }, // Ambil data user untuk detail pelanggan
+      include: { user: true, service: true }, // Ambil data user DAN service
     });
 
     if (!booking || booking.userId !== req.user.id) {
@@ -27,7 +27,7 @@ export const createPaymentTransaction = async (req, res, next) => {
 
     // Cek mode pembayaran dari environment variable
     if (process.env.PAYMENT_GATEWAY_MODE === "simulation") {
-      // --- LOGIKA LAMA (SIMULASI) ---
+      // --- LOGIKA SIMULASI (TIDAK BERUBAH) ---
       await prisma.payment.create({
         data: {
           bookingId: booking.id,
@@ -38,21 +38,33 @@ export const createPaymentTransaction = async (req, res, next) => {
         },
       });
 
-      // Arahkan ke halaman simulasi lama di frontend
       res.json({
         paymentMethod: "simulation",
         bookingId: booking.id,
       });
     } else {
-      // --- LOGIKA BARU (MIDTRANS) ---
+      // --- LOGIKA BARU YANG DIPERBAIKI (MIDTRANS) ---
+      
+      // Memisahkan nama depan dan nama belakang
+      const nameParts = booking.user.name.split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.slice(1).join(' ') || firstName;
+
       const parameter = {
         transaction_details: {
           order_id: order_id,
-          // --- PERBAIKAN UTAMA DI SINI ---
-          gross_amount: Math.round(booking.totalPrice), // Pastikan harga adalah integer
+          gross_amount: Math.round(booking.totalPrice),
         },
+        // --- PERBAIKAN UTAMA DI SINI ---
+        item_details: [{
+            id: booking.service.id,
+            price: Math.round(booking.service.price),
+            quantity: 1,
+            name: booking.service.name,
+        }],
         customer_details: {
-          first_name: booking.user.name,
+          first_name: firstName,
+          last_name: lastName,
           email: booking.user.email,
         },
         callbacks: {
@@ -75,13 +87,14 @@ export const createPaymentTransaction = async (req, res, next) => {
         },
       });
 
-      // Kirim token ke frontend untuk dibuka oleh Snap
       res.json({
         paymentMethod: "midtrans",
         token: transaction.token,
       });
     }
   } catch (error) {
+    // Menambahkan log error yang lebih detail di server
+    console.error("Midtrans Transaction Creation Error:", error);
     next(error);
   }
 };
