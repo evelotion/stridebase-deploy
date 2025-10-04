@@ -440,6 +440,8 @@ const StoreDetailPage = ({ showMessage }) => {
                     <small>Kurir akan mengambil sepatumu.</small>
                   </div>
                 </div>
+                
+                {/* --- DAN PERBAIKAN DI SINI: Gunakan div dengan onClick --- */}
                 <div
                   className={`delivery-option-label ${
                     deliveryOption === "self-delivery" ? "active" : ""
