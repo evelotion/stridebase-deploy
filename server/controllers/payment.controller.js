@@ -3,6 +3,7 @@ import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
 import { snap } from "../config/midtrans.js"; // Impor Midtrans Snap
 
+
 // @desc    Create a payment transaction for a booking
 // @route   POST /api/payments/create-transaction
 export const createPaymentTransaction = async (req, res, next) => {
@@ -14,7 +15,7 @@ export const createPaymentTransaction = async (req, res, next) => {
   try {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { user: true, service: true }, // Ambil data user DAN service
+      include: { user: true, service: true },
     });
 
     if (!booking || booking.userId !== req.user.id) {
@@ -25,9 +26,8 @@ export const createPaymentTransaction = async (req, res, next) => {
 
     const order_id = `BOOK-${booking.id}-${Date.now()}`;
 
-    // Cek mode pembayaran dari environment variable
     if (process.env.PAYMENT_GATEWAY_MODE === "simulation") {
-      // --- LOGIKA SIMULASI (TIDAK BERUBAH) ---
+      // Logika simulasi (tidak berubah)
       await prisma.payment.create({
         data: {
           bookingId: booking.id,
@@ -37,44 +37,61 @@ export const createPaymentTransaction = async (req, res, next) => {
           paymentMethod: "Simulasi",
         },
       });
-
-      res.json({
-        paymentMethod: "simulation",
-        bookingId: booking.id,
-      });
+      res.json({ paymentMethod: "simulation", bookingId: booking.id });
     } else {
-      // --- LOGIKA BARU YANG DIPERBAIKI (MIDTRANS) ---
-      
-      // Memisahkan nama depan dan nama belakang
+      // --- PERBAIKAN UTAMA DIMULAI DI SINI ---
       const nameParts = booking.user.name.split(' ');
       const firstName = nameParts[0];
       const lastName = nameParts.slice(1).join(' ') || firstName;
 
+      const itemDetails = [{
+        id: booking.service.id,
+        price: Math.round(booking.service.price),
+        quantity: 1,
+        name: booking.service.name,
+      }];
+
+      const handlingFee = 2000; // Definisikan biaya penanganan
+      if (handlingFee > 0) {
+        itemDetails.push({
+          id: 'HANDLING_FEE',
+          price: handlingFee,
+          quantity: 1,
+          name: 'Biaya Penanganan',
+        });
+      }
+      
+      const deliveryFee = booking.deliveryOption === "pickup" ? 10000 : 0;
+      if (deliveryFee > 0) {
+        itemDetails.push({
+            id: 'DELIVERY_FEE',
+            price: deliveryFee,
+            quantity: 1,
+            name: 'Biaya Antar Jemput',
+        });
+      }
+
+      // Pastikan total harga dari semua item sama dengan gross_amount
+      const calculatedGrossAmount = itemDetails.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
       const parameter = {
         transaction_details: {
           order_id: order_id,
-          gross_amount: Math.round(booking.totalPrice),
+          gross_amount: calculatedGrossAmount, // Gunakan total yang dihitung ulang
         },
-        // --- PERBAIKAN UTAMA DI SINI ---
-        item_details: [{
-            id: booking.service.id,
-            price: Math.round(booking.service.price),
-            quantity: 1,
-            name: booking.service.name,
-        }],
+        item_details: itemDetails,
         customer_details: {
           first_name: firstName,
           last_name: lastName,
           email: booking.user.email,
         },
         callbacks: {
-          finish: `${
-            process.env.FRONTEND_URL || "http://localhost:5173"
-          }/payment-finish`,
+          finish: `${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-finish`,
         },
       };
 
       const transaction = await snap.createTransaction(parameter);
+      // --- PERBAIKAN UTAMA SELESAI ---
 
       await prisma.payment.create({
         data: {
@@ -93,7 +110,6 @@ export const createPaymentTransaction = async (req, res, next) => {
       });
     }
   } catch (error) {
-    // Menambahkan log error yang lebih detail di server
     console.error("Midtrans Transaction Creation Error:", error);
     next(error);
   }
