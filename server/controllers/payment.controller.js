@@ -1,10 +1,10 @@
-// File: server/controllers/payment.controller.js (Perbaikan Final v3)
+// File: server/controllers/payment.controller.js (Perbaikan Final v4 - Lanjutkan Pembayaran)
 
 import prisma from "../config/prisma.js";
 import { snap } from "../config/midtrans.js";
 import { createNotificationForUser } from "../socket.js";
 
-// @desc    Create a payment transaction for a booking
+// @desc    Create or update a payment transaction for a booking
 // @route   POST /api/payments/create-transaction
 export const createPaymentTransaction = async (req, res, next) => {
   const { bookingId } = req.body;
@@ -18,7 +18,7 @@ export const createPaymentTransaction = async (req, res, next) => {
       include: {
         user: true,
         service: true,
-        address: true, // Sertakan data alamat untuk mendapatkan nomor telepon
+        address: true,
       },
     });
 
@@ -28,22 +28,28 @@ export const createPaymentTransaction = async (req, res, next) => {
         .json({ message: "Booking tidak ditemukan atau akses ditolak." });
     }
 
+    // Midtrans requires a unique order ID for every transaction attempt
     const order_id = `BOOK-${booking.id}-${Date.now()}`;
 
     if (process.env.PAYMENT_GATEWAY_MODE === "simulation") {
-      // Logika simulasi (tidak berubah)
-      await prisma.payment.create({
-        data: {
-          bookingId: booking.id,
-          midtransOrderId: order_id,
-          amount: booking.totalPrice,
-          status: "pending",
-          paymentMethod: "Simulasi",
-        },
+      // Logic for simulation remains the same, it doesn't create multiple payments.
+      const existingPayment = await prisma.payment.findFirst({
+        where: { bookingId },
       });
-      res.json({ paymentMethod: "simulation", bookingId: booking.id });
+      if (!existingPayment) {
+        await prisma.payment.create({
+          data: {
+            bookingId: booking.id,
+            midtransOrderId: order_id,
+            amount: booking.totalPrice,
+            status: "pending",
+            paymentMethod: "Simulasi",
+          },
+        });
+      }
+      return res.json({ paymentMethod: "simulation", bookingId: booking.id });
     } else {
-      // --- LOGIKA MIDTRANS YANG DIPERBAIKI SECARA TOTAL ---
+      // --- LOGIKA MIDTRANS DENGAN PENANGANAN LANJUTKAN PEMBAYARAN ---
       const nameParts = booking.user.name.split(" ");
       const firstName = nameParts[0];
       const lastName = nameParts.slice(1).join(" ") || firstName;
@@ -51,23 +57,21 @@ export const createPaymentTransaction = async (req, res, next) => {
       const parameter = {
         transaction_details: {
           order_id: order_id,
-          // 1. Gunakan total harga final dari booking sebagai sumber kebenaran
           gross_amount: Math.round(booking.totalPrice),
         },
-        // 2. Buat item_details menjadi satu baris saja yang nilainya PASTI SAMA dengan gross_amount
         item_details: [
           {
             id: booking.serviceId,
-            price: Math.round(booking.totalPrice), // Harganya adalah total harga akhir
+            price: Math.round(booking.totalPrice),
             quantity: 1,
-            name: `Layanan: ${booking.serviceName}`, // Deskripsi umum
+            name: `Layanan: ${booking.serviceName}`,
           },
         ],
         customer_details: {
           first_name: firstName,
           last_name: lastName,
           email: booking.user.email,
-          phone: booking.address?.phoneNumber, // Tambahkan nomor telepon jika ada
+          phone: booking.address?.phoneNumber,
         },
         callbacks: {
           finish: `${
@@ -77,18 +81,36 @@ export const createPaymentTransaction = async (req, res, next) => {
       };
 
       const transaction = await snap.createTransaction(parameter);
-      // --- AKHIR PERBAIKAN ---
 
-      await prisma.payment.create({
-        data: {
-          bookingId: booking.id,
-          midtransOrderId: order_id,
-          amount: booking.totalPrice,
-          status: "pending",
-          midtransToken: transaction.token,
-          paymentMethod: "Midtrans",
-        },
+      // --- PERBAIKAN UTAMA DI SINI ---
+      // Cek apakah sudah ada pembayaran untuk booking ini
+      const existingPayment = await prisma.payment.findFirst({
+        where: { bookingId: booking.id },
       });
+
+      if (existingPayment) {
+        // JIKA SUDAH ADA: Perbarui token dan order ID yang ada
+        await prisma.payment.update({
+          where: { id: existingPayment.id },
+          data: {
+            midtransToken: transaction.token,
+            midtransOrderId: order_id, // Perbarui dengan order_id baru
+          },
+        });
+      } else {
+        // JIKA BELUM ADA: Buat data pembayaran baru
+        await prisma.payment.create({
+          data: {
+            bookingId: booking.id,
+            midtransOrderId: order_id,
+            amount: booking.totalPrice,
+            status: "pending",
+            midtransToken: transaction.token,
+            paymentMethod: "Midtrans",
+          },
+        });
+      }
+      // --- AKHIR PERBAIKAN ---
 
       res.json({
         paymentMethod: "midtrans",
@@ -101,6 +123,8 @@ export const createPaymentTransaction = async (req, res, next) => {
   }
 };
 
+// ... (sisa controller lainnya tidak berubah)
+
 // @desc    Webhook handler for payment notifications from Midtrans
 // @route   POST /api/payments/notification
 export const paymentNotificationHandler = async (req, res, next) => {
@@ -110,11 +134,8 @@ export const paymentNotificationHandler = async (req, res, next) => {
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
 
-    console.log(
-      `Menerima notifikasi dari Midtrans untuk Order ID: ${orderId} - Status: ${transactionStatus}`
-    );
-
-    const payment = await prisma.payment.findUnique({
+    const payment = await prisma.payment.findFirst({
+      // findFirst untuk keamanan
       where: { midtransOrderId: orderId },
     });
     if (!payment) {
@@ -124,6 +145,10 @@ export const paymentNotificationHandler = async (req, res, next) => {
     const currentBooking = await prisma.booking.findUnique({
       where: { id: payment.bookingId },
     });
+    if (!currentBooking) {
+      return res.status(404).send("Booking not found");
+    }
+
     let newPaymentStatus = payment.status;
     let newBookingStatus = currentBooking.status;
 
@@ -141,14 +166,18 @@ export const paymentNotificationHandler = async (req, res, next) => {
       newBookingStatus = "cancelled";
     }
 
-    if (newPaymentStatus !== payment.status) {
+    // Lakukan update hanya jika ada perubahan status untuk mencegah race condition
+    if (newPaymentStatus !== payment.status && payment.status === "pending") {
       await prisma.payment.update({
-        where: { midtransOrderId: orderId },
+        where: { id: payment.id },
         data: { status: newPaymentStatus },
       });
     }
 
-    if (newBookingStatus !== currentBooking.status) {
+    if (
+      newBookingStatus !== currentBooking.status &&
+      currentBooking.status === "pending"
+    ) {
       const updatedBooking = await prisma.booking.update({
         where: { id: payment.bookingId },
         data: { status: newBookingStatus },
