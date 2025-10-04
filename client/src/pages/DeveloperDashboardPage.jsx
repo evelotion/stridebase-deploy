@@ -10,6 +10,7 @@ import {
   uploadImage,
   getSecurityLogs,
 } from "../services/apiService";
+import API_BASE_URL from "../apiConfig"; // Import API_BASE_URL
 
 const googleFonts = [
   "Roboto",
@@ -224,6 +225,8 @@ const ThemePreview = ({ config }) => {
 };
 
 const DeveloperDashboardPage = ({ showMessage }) => {
+  const [currentTheme, setCurrentTheme] = useState("classic");
+  const [loadingTheme, setLoadingTheme] = useState(true);
   const [config, setConfig] = useState(null);
   const [initialConfig, setInitialConfig] = useState(null);
   const [approvalRequests, setApprovalRequests] = useState([]);
@@ -232,27 +235,35 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
-  const [activeTab, setActiveTab] = useState("approvals");
+  const [activeTab, setActiveTab] = useState("theme"); // Ubah default tab ke 'theme'
   const [uploadingStatus, setUploadingStatus] = useState({});
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setLoadingTheme(true);
     try {
-      // Panggilan API kini mengambil 3 data sekaligus
-      const [configData, requestsData, logsData] = await Promise.all([
+      const [configData, requestsData, logsData, themeRes] = await Promise.all([
         getSuperUserConfig(),
         getApprovalRequests(),
-        getSecurityLogs(), // <-- PANGGILAN API BARU
+        getSecurityLogs(),
+        fetch(`${API_BASE_URL}/api/public/theme-config`),
       ]);
+
+      if (themeRes.ok) {
+        const themeData = await themeRes.json();
+        setCurrentTheme(themeData.homePageTheme || "classic");
+      }
+
       setConfig(configData);
       setInitialConfig(JSON.stringify(configData));
       setApprovalRequests(requestsData);
-      setSecurityLogs(logsData); // <-- MENYIMPAN HASIL KE STATE
+      setSecurityLogs(logsData);
     } catch (err) {
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
     } finally {
       setLoading(false);
+      setLoadingTheme(false);
     }
   }, [showMessage]);
 
@@ -260,7 +271,33 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     fetchData();
   }, [fetchData]);
 
-  // ... (Sisa fungsi-fungsi handler seperti handleConfigChange, handleConfigSave, dll. tidak berubah)
+  const handleThemeChange = async (newTheme) => {
+    setCurrentTheme(newTheme); // Update state secara optimis
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/superuser/settings/homepage-theme`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ theme: newTheme }),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+      showMessage("Tema homepage berhasil diubah!");
+    } catch (err) {
+      showMessage(err.message, "Error");
+      // Kembalikan ke tema sebelumnya jika gagal
+      fetchData();
+    }
+  };
+
   const handleConfigChange = (e, path) => {
     const { name, value, type, checked } = e.target;
     const keys = path.split(".");
@@ -435,9 +472,46 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       </ul>
 
       {activeTab === "theme" && (
-        // Kode untuk tab Konfigurasi Tema (tidak berubah)
         <div className="row g-4">
           <div className="col-lg-8">
+            {/* Kartu Pilihan Tema Baru */}
+            <div className="card card-account p-4 mb-4">
+              <h5 className="mb-3 fw-bold">Tema Homepage</h5>
+              {loadingTheme ? (
+                <p>Memuat pilihan tema...</p>
+              ) : (
+                <div className="d-flex gap-3">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="themeRadio"
+                      id="themeClassic"
+                      value="classic"
+                      checked={currentTheme === "classic"}
+                      onChange={() => handleThemeChange("classic")}
+                    />
+                    <label className="form-check-label" htmlFor="themeClassic">
+                      Classic
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="themeRadio"
+                      id="themeModern"
+                      value="modern"
+                      checked={currentTheme === "modern"}
+                      onChange={() => handleThemeChange("modern")}
+                    />
+                    <label className="form-check-label" htmlFor="themeModern">
+                      Modern
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="card card-account p-4">
               <div className="row">
                 <div className="col-md-6">

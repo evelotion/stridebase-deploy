@@ -1,4 +1,4 @@
-// File: server/prisma/seed.cjs (Versi Final dengan subscriptionFee)
+// File: server/prisma/seed.cjs (Dengan Perbaikan Urutan Hapus)
 
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
@@ -9,6 +9,9 @@ async function main() {
     "🚀 [SEED] Memulai proses seeding data trial dengan skema final..."
   );
   console.log("🔥 [SEED] Menghapus data transaksi dan toko lama...");
+  // Hapus data yang memiliki relasi ke User terlebih dahulu
+  await prisma.securityLog.deleteMany();
+  // <-- TAMBAHKAN BARIS INI DI SINI
   await prisma.review.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.platformEarning.deleteMany();
@@ -26,6 +29,8 @@ async function main() {
   await prisma.store.deleteMany();
   await prisma.address.deleteMany();
   await prisma.loyaltyPoint.deleteMany();
+
+  // Hapus pengguna non-developer/admin setelah semua relasi terhapus
   await prisma.user.deleteMany({
     where: { role: { in: ["customer", "mitra"] } },
   });
@@ -35,7 +40,11 @@ async function main() {
   const passwordHash = await bcrypt.hash("password123", 10);
   const dev = await prisma.user.upsert({
     where: { email: "developer@stridebase.com" },
-    update: { password: passwordHash, name: "Developer Stride", isEmailVerified: true },
+    update: {
+      password: passwordHash,
+      name: "Developer Stride",
+      isEmailVerified: true,
+    },
     create: {
       id: "user-dev-01",
       email: "developer@stridebase.com",
@@ -47,7 +56,11 @@ async function main() {
   });
   const admin = await prisma.user.upsert({
     where: { email: "admin@stridebase.com" },
-    update: { password: passwordHash, name: "Super Admin", isEmailVerified: true },
+    update: {
+      password: passwordHash,
+      name: "Super Admin",
+      isEmailVerified: true,
+    },
     create: {
       id: "user-admin-01",
       email: "admin@stridebase.com",
@@ -89,6 +102,16 @@ async function main() {
   });
   console.log(`✅ [SEED] Pengguna berhasil dibuat.`);
 
+  // Upsert untuk pilihan tema homepage
+  await prisma.globalSetting.upsert({
+    where: { key: "homePageTheme" },
+    update: {},
+    create: {
+      key: "homePageTheme",
+      value: "classic", // Nilai default
+      description: "Pilihan tema untuk Homepage: 'classic' atau 'modern'.",
+    },
+  });
   await prisma.address.create({
     data: {
       userId: cust1.id,
@@ -113,7 +136,7 @@ async function main() {
       ownerId: mitra1.id,
       storeStatus: "active",
       tier: "PRO",
-      subscriptionFee: 99000, // <-- Diperbarui
+      subscriptionFee: 99000,
       rating: 4.8,
       headerImageUrl:
         "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
@@ -132,7 +155,7 @@ async function main() {
       ownerId: mitra2.id,
       storeStatus: "active",
       tier: "BASIC",
-      commissionRate: 15, // <-- Diperbarui
+      commissionRate: 15,
       rating: 4.5,
       headerImageUrl:
         "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
@@ -157,6 +180,7 @@ async function main() {
       },
       {
         name: "Deep Clean Sneakers",
+
         description: "Pembersihan total.",
         price: 85000,
         shoeType: "sneakers",

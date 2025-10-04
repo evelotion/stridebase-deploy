@@ -1,0 +1,84 @@
+/* File: client/src/pages/HomePageModern.css */
+
+/* Hero Section */
+.hero-section-modern {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 6rem 0;
+  display: flex;
+  align-items: center;
+  min-height: 80vh;
+}
+
+.hero-content-modern h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.hero-content-modern .lead {
+  font-size: 1.25rem;
+  color: #576b81;
+}
+
+.hero-image-modern {
+  position: relative;
+  text-align: center;
+}
+
+.hero-image-modern .main-img {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: rotate(3deg);
+  transition: all 0.3s ease-in-out;
+}
+
+.hero-image-modern:hover .main-img {
+  transform: rotate(0deg) scale(1.05);
+}
+
+/* Service Categories */
+.service-categories-modern {
+  background-color: #ffffff;
+}
+
+.category-card-modern {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background-color: transparent;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid transparent;
+}
+
+.category-card-modern:hover {
+  transform: translateY(-5px);
+  background-color: #ffffff;
+  border-color: #e0e0e0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.category-icon-modern {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.category-card-modern h5 {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #34495e;
+}
+
+/* Featured Stores Section */
+.featured-stores-modern {
+  background-color: #f5f7fa;
+}
+
+.section-title-modern {
+  font-weight: 700;
+  color: #2c3e50;
+}

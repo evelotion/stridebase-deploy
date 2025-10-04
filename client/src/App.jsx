@@ -523,6 +523,7 @@ function AppContent() {
                 notifications={notifications}
                 unreadCount={unreadCount}
                 handleLogout={handleLogout}
+                homePageTheme={theme?.homePageTheme || "classic"}
               />
             }
           />

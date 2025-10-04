@@ -1,4 +1,5 @@
-// File: server/config/theme.js
+// File: server/config/theme.js (Lengkap)
+
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -8,35 +9,48 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const themeConfigPath = path.join(__dirname, "theme.json");
 
-export let currentThemeConfig = {};
+let currentThemeConfig = {};
 
 export async function loadThemeConfig() {
   try {
-    const themeSetting = await prisma.globalSetting.findUnique({
-      where: { key: "themeConfig" },
+    // Ambil semua setting yang relevan dalam satu panggilan
+    const settings = await prisma.globalSetting.findMany({
+      where: {
+        key: { in: ["themeConfig", "homePageTheme"] },
+      },
     });
 
-    if (themeSetting) {
-      console.log("🎨 Tema berhasil dimuat dari DATABASE.");
-      currentThemeConfig = themeSetting.value;
-    } else {
-      console.log("⚠️ Konfigurasi tema tidak ditemukan di database, kembali ke theme.json...");
-      if (fs.existsSync(themeConfigPath)) {
-        const fileConfig = JSON.parse(fs.readFileSync(themeConfigPath, "utf8"));
-        currentThemeConfig = fileConfig;
-        await prisma.globalSetting.create({
-          data: { key: "themeConfig", value: fileConfig },
-        });
-        console.log("🎨 Tema dari file telah disimpan ke database.");
-      } else {
-        console.error("❌ KRITIS: file theme.json tidak ditemukan.");
-        currentThemeConfig = {};
-      }
-    }
+    const mainThemeSetting = settings.find((s) => s.key === "themeConfig");
+    const homePageThemeSetting = settings.find(
+      (s) => s.key === "homePageTheme"
+    );
+
+    // Ambil data dari theme.json sebagai fallback jika 'themeConfig' belum ada di DB
+    const fileConfig = fs.existsSync(themeConfigPath)
+      ? JSON.parse(fs.readFileSync(themeConfigPath, "utf8"))
+      : {};
+
+    const mainTheme = mainThemeSetting ? mainThemeSetting.value : fileConfig;
+    const homePageTheme = homePageThemeSetting
+      ? homePageThemeSetting.value
+      : "classic";
+
+    // Gabungkan keduanya menjadi satu objek konfigurasi
+    currentThemeConfig = {
+      ...mainTheme,
+      homePageTheme: homePageTheme,
+    };
+
+    console.log("🎨 Tema berhasil dimuat dan digabungkan.");
   } catch (error) {
     console.error("❌ Gagal memuat konfigurasi tema:", error);
+    // Fallback jika database error, gunakan file lokal
     currentThemeConfig = fs.existsSync(themeConfigPath)
       ? JSON.parse(fs.readFileSync(themeConfigPath, "utf8"))
       : {};
+    currentThemeConfig.homePageTheme = "classic"; // Pastikan ada nilai default
   }
 }
+
+// Fungsi baru untuk mendapatkan tema yang sudah dimuat
+export const getTheme = () => currentThemeConfig;
