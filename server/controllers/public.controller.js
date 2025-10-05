@@ -1,11 +1,11 @@
 // File: server/controllers/public.controller.js
 import prisma from "../config/prisma.js";
-import { currentThemeConfig } from "../config/theme.js";
+import { getTheme } from "../config/theme.js"; // Ganti import di sini
 
 // @desc    Get the current theme configuration
 // @route   GET /api/public/theme-config
 export const getThemeConfig = (req, res) => {
-    res.json(currentThemeConfig);
+    res.json(getTheme()); // Panggil fungsi getTheme() di sini
 };
 
 // @desc    Get all active banners
