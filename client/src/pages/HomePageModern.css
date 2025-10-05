@@ -1,84 +1,142 @@
-/* File: client/src/pages/HomePageModern.css */
+/* File: client/src/pages/HomePageModern.css (Desain Baru) */
 
-/* Hero Section */
-.hero-section-modern {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 6rem 0;
-  display: flex;
-  align-items: center;
-  min-height: 80vh;
+/* Gaya dasar untuk tema modern */
+.home-modern {
+  background-color: #f8f9fa;
+  color: #343a40;
 }
 
-.hero-content-modern h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: #2c3e50;
-  line-height: 1.2;
-}
+/* ==============================================
+  STYLE DESKTOP BARU (Layar > 992px)
+==============================================
+*/
+@media (min-width: 992px) {
+  /* --- Hero Section --- */
+  .home-modern .hero-section {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding-top: 6rem;
+    padding-bottom: 8rem;
+    background: none;
+    overflow: hidden;
+    position: relative;
+  }
 
-.hero-content-modern .lead {
-  font-size: 1.25rem;
-  color: #576b81;
-}
+  .home-modern .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    width: 100%;
+    height: 150%;
+    background: linear-gradient(45deg, var(--primary-color), #ffffff);
+    opacity: 0.1;
+    transform: rotate(15deg);
+    z-index: 0;
+  }
 
-.hero-image-modern {
-  position: relative;
-  text-align: center;
-}
+  .home-modern .hero-content {
+    flex: 1 1 55%;
+    padding-right: 2rem;
+    z-index: 1;
+  }
 
-.hero-image-modern .main-img {
-  width: 100%;
-  max-width: 450px;
-  border-radius: 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  transform: rotate(3deg);
-  transition: all 0.3s ease-in-out;
-}
+  .home-modern .hero-image {
+    flex: 1 1 45%;
+    display: block;
+    text-align: center;
+    z-index: 1;
+  }
 
-.hero-image-modern:hover .main-img {
-  transform: rotate(0deg) scale(1.05);
-}
+  .home-modern .hero-image img {
+    max-width: 100%;
+    border-radius: 1rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    transform: rotate(3deg);
+    transition: all 0.3s ease-in-out;
+  }
 
-/* Service Categories */
-.service-categories-modern {
-  background-color: #ffffff;
-}
+  .home-modern .hero-image img:hover {
+    transform: rotate(0deg) scale(1.05);
+  }
 
-.category-card-modern {
-  text-align: center;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  background-color: transparent;
-  transition: all 0.3s ease-in-out;
-  border: 1px solid transparent;
-}
+  .home-modern .hero-section h1 {
+    font-size: var(--font-size-display, 3.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
 
-.category-card-modern:hover {
-  transform: translateY(-5px);
-  background-color: #ffffff;
-  border-color: #e0e0e0;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-}
+  .home-modern .hero-section .lead {
+    font-size: var(--font-size-lead, 1.3rem);
+    margin: 1.5rem 0;
+  }
 
-.category-icon-modern {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-  display: inline-block;
-}
+  /* --- Search Section --- */
+  .home-modern .search-section {
+    margin-top: -4rem; /* Efek tumpang tindih */
+    position: relative;
+    z-index: 10;
+  }
 
-.category-card-modern h5 {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #34495e;
-}
+  .home-modern .search-section .card-body {
+    padding: 2.5rem;
+    border-radius: 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
 
-/* Featured Stores Section */
-.featured-stores-modern {
-  background-color: #f5f7fa;
-}
+  .home-modern .search-section .form-control-lg {
+    padding: 0.9rem 1.2rem;
+  }
 
-.section-title-modern {
-  font-weight: 700;
-  color: #2c3e50;
+  /* --- Feature Section --- */
+  .home-modern .feature-section {
+    padding: 6rem 0;
+  }
+
+  .home-modern .feature-card {
+    background: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  .home-modern .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .home-modern .feature-card .icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.8rem;
+  }
+
+  /* --- Store List Section --- */
+  .home-modern .store-list-section {
+    padding-bottom: 6rem;
+  }
+
+  /* --- CTA Section --- */
+  .home-modern .cta-section {
+    padding: 5rem 0;
+    background-color: #343a40;
+    color: white;
+    border-radius: 1rem;
+    margin-bottom: 5rem;
+  }
+
+  .home-modern .cta-section h2 {
+    font-weight: 600;
+  }
 }
