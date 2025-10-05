@@ -2,12 +2,12 @@
 
 import prisma from "../config/prisma.js";
 import { exec } from "child_process";
-import { loadThemeConfig, getTheme } from "../config/theme.js"; // Ganti 'currentThemeConfig' menjadi 'getTheme'
+import { loadThemeConfig, getTheme } from "../config/theme.js";
 import {
   broadcastThemeUpdate,
   createNotificationForUser,
-  getIo,
-} from "../socket.js"; // Impor getIo
+  io, // <-- Ganti 'getIo' menjadi 'io' di sini
+} from "../socket.js";
 
 // @desc    Get all global configurations
 // @route   GET /api/superuser/config
@@ -16,7 +16,7 @@ export const getGlobalConfig = async (req, res, next) => {
     const settings = await prisma.globalSetting.findUnique({
       where: { key: "themeConfig" },
     });
-    res.json(settings ? settings.value : getTheme()); // Gunakan getTheme()
+    res.json(settings ? settings.value : getTheme());
   } catch (error) {
     next(error);
   }
@@ -34,7 +34,7 @@ export const updateGlobalConfig = async (req, res, next) => {
     });
 
     await loadThemeConfig();
-    broadcastThemeUpdate(getTheme()); // Gunakan getTheme()
+    broadcastThemeUpdate(getTheme());
 
     res.json(updatedSetting.value);
   } catch (error) {
@@ -157,7 +157,6 @@ export const getSecurityLogs = async (req, res, next) => {
   }
 };
 
-// <-- FUNGSI BARU DITAMBAHKAN DI SINI -->
 // @desc    Update homepage theme
 // @route   PUT /api/superuser/settings/homepage-theme
 export const updateHomePageTheme = async (req, res, next) => {
@@ -174,8 +173,8 @@ export const updateHomePageTheme = async (req, res, next) => {
       },
     });
 
-    const newThemeConfig = await loadThemeConfig();
-    getIo().emit("themeUpdated", newThemeConfig);
+    await loadThemeConfig();      // Muat ulang konfigurasi
+    broadcastThemeUpdate(getTheme()); // Siarkan konfigurasi yang sudah dimuat ulang
 
     res.status(200).json({
       message: "Tema homepage berhasil diperbarui.",
