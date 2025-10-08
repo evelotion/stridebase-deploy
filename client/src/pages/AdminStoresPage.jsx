@@ -5,7 +5,7 @@ import {
   updateStoreDetails,
   createStoreInvoiceByAdmin,
   previewStoreInvoiceByAdmin,
-  requestDeleteStore,
+  requestStoreDeletion,
   getAllUsers,
 } from "../services/apiService";
 
