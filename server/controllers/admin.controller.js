@@ -483,7 +483,7 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
         phone: true,
         images: true,
         headerImageUrl: true,
-        schedules: true, // <-- TAMBAHKAN BARIS INI UNTUK MENGAMBIL DATA JADWAL
+        schedules: true, // <-- TAMBAHKAN BARIS INI
         photoLimit: true,
         tier: true,
         commissionRate: true,
