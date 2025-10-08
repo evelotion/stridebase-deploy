@@ -122,10 +122,10 @@ export const getPartnerReports = (params) =>
 export const getAdminStats = () => apiRequest("/api/admin/stats");
 export const getAllUsers = () => apiRequest("/api/admin/users");
 export const createUserByAdmin = (userData) => apiRequest("/api/admin/users", "POST", userData);
-export const changeUserRole = (userId, newRole) =>
-  apiRequest(`/api/admin/users/${userId}/role`, "PATCH", { newRole });
-export const changeUserStatus = (userId, newStatus) =>
-  apiRequest(`/api/admin/users/${userId}/status`, "PATCH", { newStatus });
+export const changeUserRole = (userId, data) =>
+  apiRequest(`/api/admin/users/${userId}/role`, "PATCH", data);
+export const changeUserStatus = (userId, data) =>
+  apiRequest(`/api/admin/users/${userId}/status`, "PATCH", data);
 export const getAllStoresForAdmin = () => apiRequest("/api/admin/stores");
 export const updateStoreStatus = (storeId, newStatus) =>
   apiRequest(`/api/admin/stores/${storeId}/status`, "PATCH", { newStatus });
