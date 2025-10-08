@@ -625,6 +625,98 @@ export const deleteBanner = async (req, res, next) => {
   }
 };
 
+// @desc    Get all promos for admin
+// @route   GET /api/admin/promos
+export const getAllPromos = async (req, res, next) => {
+    try {
+        const promos = await prisma.promo.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+        res.json(promos);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Create a new promo by admin
+// @route   POST /api/admin/promos
+export const createPromo = async (req, res, next) => {
+    const { code, description, discountType, value, startDate, endDate, usageLimit, minTransaction, forNewUser } = req.body;
+    try {
+        const newPromo = await prisma.promo.create({
+            data: {
+                code,
+                description,
+                discountType,
+                value,
+                startDate: startDate ? new Date(startDate) : null,
+                endDate: endDate ? new Date(endDate) : null,
+                usageLimit,
+                minTransaction,
+                forNewUser,
+                status: 'active'
+            },
+        });
+        res.status(201).json(newPromo);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Update a promo by admin
+// @route   PUT /api/admin/promos/:id
+export const updatePromo = async (req, res, next) => {
+    const { id } = req.params;
+    const { code, description, discountType, value, startDate, endDate, usageLimit, minTransaction, forNewUser } = req.body;
+    try {
+        const updatedPromo = await prisma.promo.update({
+            where: { id },
+            data: {
+                code,
+                description,
+                discountType,
+                value,
+                startDate: startDate ? new Date(startDate) : null,
+                endDate: endDate ? new Date(endDate) : null,
+                usageLimit,
+                minTransaction,
+                forNewUser,
+            },
+        });
+        res.json(updatedPromo);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Change promo status by admin
+// @route   PATCH /api/admin/promos/:id/status
+export const changePromoStatus = async (req, res, next) => {
+    const { id } = req.params;
+    const { newStatus } = req.body;
+    try {
+        const updatedPromo = await prisma.promo.update({
+            where: { id },
+            data: { status: newStatus },
+        });
+        res.json(updatedPromo);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Delete a promo by admin
+// @route   DELETE /api/admin/promos/:id
+export const deletePromo = async (req, res, next) => {
+    const { id } = req.params;
+    try {
+        await prisma.promo.delete({ where: { id } });
+        res.json({ message: 'Promo berhasil dihapus secara permanen.' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // @desc    Create a new store by admin
 // @route   POST /api/admin/stores/new
 export const createStoreByAdmin = async (req, res, next) => {

@@ -36,7 +36,12 @@ import {
   getInvoiceByIdForAdmin,
   validatePromoCode,
   requestDeleteStore,
-  createUserByAdmin
+  createUserByAdmin,
+  getAllPromos,
+  createPromo,
+  updatePromo,
+  changePromoStatus,
+  deletePromo
 } from "../controllers/admin.controller.js";
 import multer from "multer";
 
@@ -97,8 +102,14 @@ router.post("/banners", createBanner);
 router.put("/banners/:id", updateBanner);
 router.delete("/banners/:id", deleteBanner);
 
+// Manajemen Promo
+router.get("/promos", getAllPromos);
+router.post("/promos", createPromo);
+router.put("/promos/:id", updatePromo);
+router.patch("/promos/:id/status", changePromoStatus);
+router.delete("/promos/:id", deletePromo);
+
 // RUTE BARU DITAMBAHKAN DI SINI UNTUK VALIDASI PROMO
 router.post("/promos/validate", validatePromoCode);
-
 
 export default router;
