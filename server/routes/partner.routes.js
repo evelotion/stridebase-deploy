@@ -20,6 +20,9 @@ import {
   getPartnerReviews,
   replyToReview,
   getPartnerPromos, // <-- 1. IMPOR FUNGSI BARU DI SINI
+   createPartnerPromo, // <-- Impor fungsi baru
+    updatePartnerPromo, // <-- Impor fungsi baru
+    deletePartnerPromo, // <-- Impor fungsi baru
   getWalletData,
   requestPayout,
   getPartnerReports,
@@ -59,7 +62,10 @@ router.post("/reviews/:reviewId/reply", replyToReview);
 
 // --- 2. TAMBAHKAN RUTE BARU DI SINI ---
 // Promos
-router.get("/promos", getPartnerPromos);
+router.get('/promos', getPartnerPromos);
+router.post('/promos', createPartnerPromo);
+router.put('/promos/:promoId', updatePartnerPromo);
+router.delete('/promos/:promoId', deletePartnerPromo);
 // ------------------------------------
 
 // Wallet & Payouts

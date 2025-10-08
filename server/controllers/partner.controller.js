@@ -343,6 +343,104 @@ export const getPartnerPromos = async (req, res, next) => {
   }
 };
 
+// @desc    Create a new promo for the partner's store
+// @route   POST /api/partner/promos
+export const createPartnerPromo = async (req, res, next) => {
+  const { code, description, discountType, value, status } = req.body;
+  const storeId = req.store.id;
+
+  try {
+    // Validasi batasan promo untuk tier BASIC
+    if (req.store.tier === 'BASIC') {
+      const promoCount = await prisma.storePromo.count({ where: { storeId } });
+      if (promoCount >= 3) {
+        return res.status(403).json({ message: "Toko tier BASIC hanya dapat memiliki maksimal 3 promo." });
+      }
+    }
+
+    const newPromo = await prisma.promo.create({
+      data: {
+        code,
+        description,
+        discountType,
+        value: parseFloat(value),
+        status,
+        scope: 'STORE_SPECIFIC', // Promo yang dibuat mitra selalu spesifik untuk tokonya
+        stores: {
+          create: [{ storeId: storeId }],
+        },
+      },
+    });
+    res.status(201).json(newPromo);
+  } catch (error) {
+    if (error.code === 'P2002' && error.meta?.target?.includes('code')) {
+        return res.status(400).json({ message: 'Kode promo sudah ada. Silakan gunakan kode lain.' });
+    }
+    next(error);
+  }
+};
+
+// @desc    Update a promo for the partner's store
+// @route   PUT /api/partner/promos/:promoId
+export const updatePartnerPromo = async (req, res, next) => {
+  const { promoId } = req.params;
+  const { code, description, discountType, value, status } = req.body;
+  const storeId = req.store.id;
+
+  try {
+    // Pastikan promo ini milik toko yang sedang login
+    const storePromo = await prisma.storePromo.findUnique({
+      where: { storeId_promoId: { storeId, promoId } },
+    });
+    if (!storePromo) {
+      return res.status(404).json({ message: "Promo tidak ditemukan atau bukan milik Anda." });
+    }
+
+    const updatedPromo = await prisma.promo.update({
+      where: { id: promoId },
+      data: {
+        code,
+        description,
+        discountType,
+        value: parseFloat(value),
+        status,
+      },
+    });
+    res.json(updatedPromo);
+  } catch (error) {
+     if (error.code === 'P2002' && error.meta?.target?.includes('code')) {
+        return res.status(400).json({ message: 'Kode promo sudah ada. Silakan gunakan kode lain.' });
+    }
+    next(error);
+  }
+};
+
+// @desc    Delete a promo for the partner's store
+// @route   DELETE /api/partner/promos/:promoId
+export const deletePartnerPromo = async (req, res, next) => {
+  const { promoId } = req.params;
+  const storeId = req.store.id;
+  try {
+     const storePromo = await prisma.storePromo.findUnique({
+      where: { storeId_promoId: { storeId, promoId } },
+    });
+    if (!storePromo) {
+      return res.status(404).json({ message: "Promo tidak ditemukan atau bukan milik Anda." });
+    }
+    
+    // Hapus relasi dan promo itu sendiri dalam satu transaksi
+    await prisma.$transaction([
+        prisma.storePromo.deleteMany({ where: { promoId } }),
+        prisma.promo.delete({ where: { id: promoId } })
+    ]);
+    
+    res.json({ message: "Promo berhasil dihapus." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 // @desc    Get partner's wallet data
 // @route   GET /api/partner/wallet
 export const getWalletData = async (req, res, next) => {
