@@ -320,6 +320,29 @@ export const replyToReview = async (req, res, next) => {
   }
 };
 
+// @desc    Get promos for the partner's store
+// @route   GET /api/partner/promos
+export const getPartnerPromos = async (req, res, next) => {
+  try {
+    const storePromos = await prisma.storePromo.findMany({
+      where: { storeId: req.store.id },
+      include: {
+        promo: true,
+      },
+      orderBy: {
+        promo: { createdAt: "desc" },
+      },
+    });
+
+    // Ubah format data agar hanya berisi detail promo
+    const promos = storePromos.map((sp) => sp.promo);
+
+    res.json(promos);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get partner's wallet data
 // @route   GET /api/partner/wallet
 export const getWalletData = async (req, res, next) => {
