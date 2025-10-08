@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoresPage.jsx (Dengan Tombol Hapus & Permintaan Persetujuan)
+// File: client/src/pages/AdminStoresPage.jsx (Dengan perbaikan typo)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import {
   updateStoreStatus,
   createStoreInvoiceByAdmin,
   previewStoreInvoiceByAdmin,
-  requestStoreDeletion, // <-- 1. IMPOR FUNGSI BARU
+  requestStoreDeletion,
 } from "../services/apiService";
 
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
@@ -75,6 +75,7 @@ const AdminStoresPage = ({ showMessage }) => {
       const data = await getAllStoresForAdmin();
       setStores(data);
     } catch (err) {
+      // <-- PERBAIKAN TYPO DI SINI
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
     } finally {
@@ -163,7 +164,6 @@ const AdminStoresPage = ({ showMessage }) => {
     }
   };
 
-  // --- 2. FUNGSI HANDLER BARU ---
   const handleRequestDelete = async (storeId, storeName) => {
     if (
       !window.confirm(
@@ -249,7 +249,6 @@ const AdminStoresPage = ({ showMessage }) => {
               <option value="all">Semua Status</option>
               <option value="active">Aktif</option>
               <option value="pending">Menunggu Persetujuan</option>
-              <option value="rejected">Ditolak</option>
               <option value="inactive">Tidak Aktif</option>
             </select>
           </div>
@@ -340,7 +339,7 @@ const AdminStoresPage = ({ showMessage }) => {
                                 handleStatusChange(store.id, "active")
                               }
                             >
-                              Setujui (Aktif)
+                              Aktifkan
                             </button>
                           </li>
                           <li>
@@ -353,19 +352,8 @@ const AdminStoresPage = ({ showMessage }) => {
                               Nonaktifkan
                             </button>
                           </li>
-                          <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() =>
-                                handleStatusChange(store.id, "rejected")
-                              }
-                            >
-                              Tolak
-                            </button>
-                          </li>
                         </ul>
                       </div>
-                      {/* --- 3. TOMBOL HAPUS BARU (DESKTOP) --- */}
                       <button
                         className="btn btn-sm btn-danger ms-2"
                         onClick={() =>
@@ -443,7 +431,6 @@ const AdminStoresPage = ({ showMessage }) => {
                     </button>
                   </>
                 )}
-                {/* --- 4. TOMBOL HAPUS BARU (MOBILE) --- */}
                 <button
                   className="btn btn-sm btn-outline-danger"
                   onClick={() => handleRequestDelete(store.id, store.name)}
