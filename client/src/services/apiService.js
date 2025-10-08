@@ -176,6 +176,8 @@ export const requestStoreDeletion = (storeId) =>
   apiRequest(`/api/admin/stores/${storeId}/request-deletion`, "POST");
 export const requestUserDeletion = (userId) =>
   apiRequest(`/api/admin/users/${userId}/request-deletion`, "POST");
+export const updateStoreDetails = (storeId, data) =>
+  apiRequest(`/api/admin/stores/${storeId}/details`, "PATCH", data)
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest("/api/superuser/config");

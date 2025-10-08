@@ -1,13 +1,12 @@
-// File: client/src/pages/AdminStoresPage.jsx (Dengan perbaikan typo)
-
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   getAllStoresForAdmin,
-  updateStoreStatus,
+  updateStoreDetails,
   createStoreInvoiceByAdmin,
   previewStoreInvoiceByAdmin,
-  requestStoreDeletion,
+  requestDeleteStore,
+  getAllUsers,
 } from "../services/apiService";
 
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
@@ -50,16 +49,146 @@ const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   );
 };
 
+// Komponen Modal Baru untuk Edit Toko
+const EditStoreModal = ({
+  show,
+  handleClose,
+  store,
+  mitraList,
+  handleSubmit,
+  showMessage,
+}) => {
+  const [status, setStatus] = useState(store?.storeStatus || "inactive");
+  const [ownerId, setOwnerId] = useState(store?.ownerId || "");
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (store) {
+      setStatus(store.storeStatus);
+      const currentOwner = mitraList.find((m) => m.id === store.ownerId);
+      setOwnerId(currentOwner ? currentOwner.id : "");
+    }
+  }, [store, mitraList]);
+
+  const onFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!ownerId) {
+      showMessage("Anda harus memilih pemilik toko.", "Error");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await handleSubmit(store.id, { status, ownerId });
+      showMessage("Detail toko berhasil diperbarui.", "Success");
+      handleClose();
+    } catch (error) {
+      showMessage(error.message, "Error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (!show || !store) return null;
+
+  return (
+    <>
+      <div
+        className="modal fade show"
+        style={{ display: "block" }}
+        tabIndex="-1"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <form onSubmit={onFormSubmit}>
+              <div className="modal-header">
+                <h5 className="modal-title">Kelola Toko: {store.name}</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleClose}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label htmlFor="ownerIdSelect" className="form-label">
+                    Pemilik Toko
+                  </label>
+                  <select
+                    className="form-select"
+                    id="ownerIdSelect"
+                    value={ownerId}
+                    onChange={(e) => setOwnerId(e.target.value)}
+                    required
+                  >
+                    <option value="" disabled>
+                      Pilih Pemilik Baru
+                    </option>
+                    {mitraList.map((mitra) => (
+                      <option key={mitra.id} value={mitra.id}>
+                        {mitra.name} ({mitra.email})
+                      </option>
+                    ))}
+                  </select>
+                  <small className="form-text text-muted">
+                    Hanya pengguna dengan peran "mitra" yang muncul di sini.
+                  </small>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Status Toko</label>
+                  <div className="form-check form-switch">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      role="switch"
+                      id="storeStatusSwitch"
+                      checked={status === "active"}
+                      onChange={(e) =>
+                        setStatus(e.target.checked ? "active" : "inactive")
+                      }
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor="storeStatusSwitch"
+                    >
+                      {status === "active" ? "Aktif" : "Tidak Aktif"}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleClose}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isSaving}
+                >
+                  {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div className="modal-backdrop fade show"></div>
+    </>
+  );
+};
+
 const AdminStoresPage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
+  const [mitraUsers, setMitraUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-
   const [currentPage, setCurrentPage] = useState(1);
   const STORES_PER_PAGE = 5;
-
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [currentStore, setCurrentStore] = useState(null);
   const [invoiceDetails, setInvoiceDetails] = useState({
@@ -68,14 +197,19 @@ const AdminStoresPage = ({ showMessage }) => {
   });
   const [isSubmittingInvoice, setIsSubmittingInvoice] = useState(false);
   const navigate = useNavigate();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedStore, setSelectedStore] = useState(null);
 
-  const fetchStores = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getAllStoresForAdmin();
-      setStores(data);
+      const [storesData, usersData] = await Promise.all([
+        getAllStoresForAdmin(),
+        getAllUsers(),
+      ]);
+      setStores(storesData);
+      setMitraUsers(usersData.filter((user) => user.role === "mitra"));
     } catch (err) {
-      // <-- PERBAIKAN TYPO DI SINI
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
     } finally {
@@ -84,25 +218,26 @@ const AdminStoresPage = ({ showMessage }) => {
   }, [showMessage]);
 
   useEffect(() => {
-    fetchStores();
-  }, [fetchStores]);
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterStatus]);
 
-  const handleStatusChange = async (storeId, newStatus) => {
-    try {
-      await updateStoreStatus(storeId, newStatus);
-      setStores((prevStores) =>
-        prevStores.map((store) =>
-          store.id === storeId ? { ...store, storeStatus: newStatus } : store
-        )
-      );
-      if (showMessage) showMessage("Status toko berhasil diubah.");
-    } catch (err) {
-      if (showMessage) showMessage(err.message, "Error");
-    }
+  const handleOpenEditModal = (store) => {
+    setSelectedStore(store);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setSelectedStore(null);
+    setShowEditModal(false);
+  };
+
+  const handleUpdateStore = async (storeId, data) => {
+    await updateStoreDetails(storeId, data);
+    await fetchData();
   };
 
   const handleOpenInvoiceModal = (store) => {
@@ -174,7 +309,7 @@ const AdminStoresPage = ({ showMessage }) => {
     }
 
     try {
-      const result = await requestStoreDeletion(storeId);
+      const result = await requestDeleteStore(storeId);
       showMessage(result.message, "Success");
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
@@ -219,247 +354,231 @@ const AdminStoresPage = ({ showMessage }) => {
     return <div className="p-4 text-danger">Error: {error}</div>;
 
   return (
-    <div className="container-fluid p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="fs-2 mb-0">Manajemen Toko</h2>
-        <div className="d-flex gap-2">
-          <Link to="/admin/stores/new" className="btn btn-primary">
-            <i className="fas fa-plus me-2"></i>Tambah Toko Baru
-          </Link>
-        </div>
-      </div>
-
-      <div className="card card-account p-3 mb-4">
-        <div className="row g-2 align-items-center">
-          <div className="col-md-8">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Cari toko berdasarkan nama atau pemilik..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-4">
-            <select
-              className="form-select"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-            >
-              <option value="all">Semua Status</option>
-              <option value="active">Aktif</option>
-              <option value="pending">Menunggu Persetujuan</option>
-              <option value="inactive">Tidak Aktif</option>
-            </select>
+    <>
+      <div className="container-fluid p-4">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="fs-2 mb-0">Manajemen Toko</h2>
+          <div className="d-flex gap-2">
+            <Link to="/admin/stores/new" className="btn btn-primary">
+              <i className="fas fa-plus me-2"></i>Tambah Toko Baru
+            </Link>
           </div>
         </div>
-      </div>
 
-      <div className="table-card p-3 shadow-sm">
-        <div className="table-responsive d-none d-lg-block">
-          <table className="table table-hover align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>Nama Toko</th>
-                <th>Pemilik</th>
-                <th>Status</th>
-                <th>Tier</th>
-                <th>Rating</th>
-                <th className="text-end">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStores.length > 0 ? (
-                filteredStores.map((store) => (
-                  <tr key={store.id}>
-                    <td>
-                      <span className="fw-bold">{store.name}</span>
-                    </td>
-                    <td>{store.owner?.name || store.owner}</td>
-                    <td>
-                      <span
-                        className={`badge ${getStatusBadge(store.storeStatus)}`}
-                      >
-                        {store.storeStatus}
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          store.tier === "PRO"
-                            ? "bg-warning text-dark"
-                            : "bg-info text-dark"
-                        }`}
-                      >
-                        {store.tier}
-                      </span>
-                    </td>
-                    <td>
-                      <i className="fas fa-star text-warning me-1"></i>{" "}
-                      {store.rating || "N/A"}
-                    </td>
-                    <td className="text-end">
-                      {store.tier === "PRO" && (
-                        <>
-                          <Link
-                            to={`/admin/stores/${store.id}/invoices`}
-                            className="btn btn-sm btn-outline-secondary me-2"
-                            title="Lihat Riwayat Invoice"
-                          >
-                            <i className="fas fa-history"></i>
-                          </Link>
-                          <button
-                            className="btn btn-sm btn-info me-2"
-                            onClick={() => handleOpenInvoiceModal(store)}
-                          >
-                            Tagih PRO
-                          </button>
-                        </>
-                      )}
-                      <Link
-                        to={`/admin/stores/${store.id}/settings`}
-                        className="btn btn-sm btn-primary me-2"
-                      >
-                        Kelola
-                      </Link>
-                      <div className="dropdown d-inline-block">
-                        <button
-                          className="btn btn-sm btn-outline-dark dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
+        <div className="card card-account p-3 mb-4">
+          <div className="row g-2 align-items-center">
+            <div className="col-md-8">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Cari toko berdasarkan nama atau pemilik..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="col-md-4">
+              <select
+                className="form-select"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
+                <option value="all">Semua Status</option>
+                <option value="active">Aktif</option>
+                <option value="pending">Menunggu Persetujuan</option>
+                <option value="inactive">Tidak Aktif</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="table-card p-3 shadow-sm">
+          <div className="table-responsive d-none d-lg-block">
+            <table className="table table-hover align-middle">
+              <thead className="table-light">
+                <tr>
+                  <th>Nama Toko</th>
+                  <th>Pemilik</th>
+                  <th>Status</th>
+                  <th>Tier</th>
+                  <th>Rating</th>
+                  <th className="text-end">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentStoresOnPage.length > 0 ? (
+                  currentStoresOnPage.map((store) => (
+                    <tr key={store.id}>
+                      <td>
+                        <span className="fw-bold">{store.name}</span>
+                      </td>
+                      <td>{store.owner?.name || store.owner}</td>
+                      <td>
+                        <span
+                          className={`badge ${getStatusBadge(
+                            store.storeStatus
+                          )}`}
                         >
-                          Ubah Status
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-end">
-                          <li>
+                          {store.storeStatus}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            store.tier === "PRO"
+                              ? "bg-warning text-dark"
+                              : "bg-info text-dark"
+                          }`}
+                        >
+                          {store.tier}
+                        </span>
+                      </td>
+                      <td>
+                        <i className="fas fa-star text-warning me-1"></i>{" "}
+                        {store.rating || "N/A"}
+                      </td>
+                      <td className="text-end">
+                        <div className="btn-group">
+                          <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => handleOpenEditModal(store)}
+                            title="Kelola Toko"
+                          >
+                            <i className="fas fa-cog"></i>
+                          </button>
+                          <Link
+                            to={`/admin/stores/${store.id}/settings`}
+                            className="btn btn-sm btn-outline-info"
+                            title="Pengaturan Lanjutan"
+                          >
+                            <i className="fas fa-briefcase"></i>
+                          </Link>
+                          {store.tier === "PRO" && (
                             <button
-                              className="dropdown-item"
-                              onClick={() =>
-                                handleStatusChange(store.id, "active")
-                              }
+                              className="btn btn-sm btn-outline-success"
+                              onClick={() => handleOpenInvoiceModal(store)}
+                              title="Buat Tagihan PRO"
                             >
-                              Aktifkan
+                              <i className="fas fa-file-invoice-dollar"></i>
                             </button>
-                          </li>
-                          <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() =>
-                                handleStatusChange(store.id, "inactive")
-                              }
-                            >
-                              Nonaktifkan
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                      <button
-                        className="btn btn-sm btn-danger ms-2"
-                        onClick={() =>
-                          handleRequestDelete(store.id, store.name)
-                        }
-                        title="Minta Hapus Toko"
-                      >
-                        Hapus
-                      </button>
+                          )}
+                          <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() =>
+                              handleRequestDelete(store.id, store.name)
+                            }
+                            title="Minta Hapus Toko"
+                          >
+                            <i className="fas fa-trash-alt"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-4">
+                      <p className="text-muted mb-0">
+                        Tidak ada toko yang cocok dengan kriteria.
+                      </p>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="text-center py-4">
-                    <p className="text-muted mb-0">
-                      Tidak ada toko yang cocok dengan kriteria.
-                    </p>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="mobile-card-list d-lg-none">
-          {currentStoresOnPage.map((store) => (
-            <div className="mobile-card" key={store.id}>
-              <div className="mobile-card-header">
-                <span className="fw-bold text-truncate">{store.name}</span>
-                <span className={`badge ${getStatusBadge(store.storeStatus)}`}>
-                  {store.storeStatus}
-                </span>
-              </div>
-              <div className="mobile-card-body">
-                <div className="mobile-card-row">
-                  <small>Pemilik</small>
-                  <span>{store.owner?.name || store.owner}</span>
-                </div>
-                <div className="mobile-card-row">
-                  <small>Tier</small>
-                  <span
-                    className={`badge ${
-                      store.tier === "PRO"
-                        ? "bg-warning text-dark"
-                        : "bg-info text-dark"
-                    }`}
-                  >
-                    {store.tier}
-                  </span>
-                </div>
-                <div className="mobile-card-row">
-                  <small>Rating</small>
-                  <span>
-                    <i className="fas fa-star text-warning me-1"></i>{" "}
-                    {store.rating || "N/A"}
-                  </span>
-                </div>
-              </div>
-              <div className="mobile-card-footer d-flex justify-content-end gap-2">
-                {store.tier === "PRO" && (
-                  <>
-                    <Link
-                      to={`/admin/stores/${store.id}/invoices`}
-                      className="btn btn-sm btn-outline-secondary"
-                      title="Lihat Riwayat Invoice"
-                    >
-                      <i className="fas fa-history"></i>
-                    </Link>
-                    <button
-                      className="btn btn-sm btn-info"
-                      onClick={() => handleOpenInvoiceModal(store)}
-                    >
-                      Tagih
-                    </button>
-                  </>
                 )}
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => handleRequestDelete(store.id, store.name)}
-                  title="Minta Hapus Toko"
-                >
-                  <i className="fas fa-trash-alt"></i>
-                </button>
-                <Link
-                  to={`/admin/stores/${store.id}/settings`}
-                  className="btn btn-sm btn-primary"
-                >
-                  Kelola
-                </Link>
-              </div>
-            </div>
-          ))}
-          <Pagination
-            currentPage={currentPage}
-            pageCount={pageCount}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-
-        {filteredStores.length === 0 && !loading && (
-          <div className="text-center p-4 text-muted">
-            Data toko tidak ditemukan.
+              </tbody>
+            </table>
+            <Pagination
+              currentPage={currentPage}
+              pageCount={pageCount}
+              onPageChange={setCurrentPage}
+            />
           </div>
-        )}
+
+          <div className="mobile-card-list d-lg-none">
+            {currentStoresOnPage.map((store) => (
+              <div className="mobile-card" key={store.id}>
+                <div className="mobile-card-header">
+                  <span className="fw-bold text-truncate">{store.name}</span>
+                  <span
+                    className={`badge ${getStatusBadge(store.storeStatus)}`}
+                  >
+                    {store.storeStatus}
+                  </span>
+                </div>
+                <div className="mobile-card-body">
+                  <div className="mobile-card-row">
+                    <small>Pemilik</small>
+                    <span>{store.owner?.name || store.owner}</span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Tier</small>
+                    <span
+                      className={`badge ${
+                        store.tier === "PRO"
+                          ? "bg-warning text-dark"
+                          : "bg-info text-dark"
+                      }`}
+                    >
+                      {store.tier}
+                    </span>
+                  </div>
+                  <div className="mobile-card-row">
+                    <small>Rating</small>
+                    <span>
+                      <i className="fas fa-star text-warning me-1"></i>{" "}
+                      {store.rating || "N/A"}
+                    </span>
+                  </div>
+                </div>
+                <div className="mobile-card-footer d-flex justify-content-end gap-2">
+                  <button
+                    className="btn btn-sm btn-secondary"
+                    onClick={() => handleOpenEditModal(store)}
+                    title="Kelola Toko"
+                  >
+                    <i className="fas fa-cog"></i>
+                  </button>
+                  <Link
+                    to={`/admin/stores/${store.id}/settings`}
+                    className="btn btn-sm btn-info"
+                    title="Pengaturan Lanjutan"
+                  >
+                    <i className="fas fa-briefcase"></i>
+                  </Link>
+                  {store.tier === "PRO" && (
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={() => handleOpenInvoiceModal(store)}
+                      title="Buat Tagihan PRO"
+                    >
+                      <i className="fas fa-file-invoice-dollar"></i>
+                    </button>
+                  )}
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleRequestDelete(store.id, store.name)}
+                    title="Minta Hapus Toko"
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </div>
+            ))}
+            <Pagination
+              currentPage={currentPage}
+              pageCount={pageCount}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </div>
       </div>
+
+      <EditStoreModal
+        show={showEditModal}
+        handleClose={handleCloseEditModal}
+        store={selectedStore}
+        mitraList={mitraUsers}
+        handleSubmit={handleUpdateStore}
+        showMessage={showMessage}
+      />
 
       {showInvoiceModal && currentStore && (
         <>
@@ -483,13 +602,13 @@ const AdminStoresPage = ({ showMessage }) => {
                   </div>
                   <div className="modal-body">
                     <div className="mb-3">
-                      <label htmlFor="period" className="form-label">
-                        Periode Tagihan (YYYY-MM)
+                      <label htmlFor="invoicePeriod" className="form-label">
+                        Periode Tagihan
                       </label>
                       <input
                         type="month"
                         className="form-control"
-                        id="period"
+                        id="invoicePeriod"
                         value={invoiceDetails.period}
                         onChange={(e) =>
                           setInvoiceDetails({
@@ -501,12 +620,12 @@ const AdminStoresPage = ({ showMessage }) => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="notes" className="form-label">
+                      <label htmlFor="invoiceNotes" className="form-label">
                         Catatan (Opsional)
                       </label>
                       <textarea
                         className="form-control"
-                        id="notes"
+                        id="invoiceNotes"
                         rows="3"
                         value={invoiceDetails.notes}
                         onChange={(e) =>
@@ -549,7 +668,7 @@ const AdminStoresPage = ({ showMessage }) => {
           <div className="modal-backdrop fade show"></div>
         </>
       )}
-    </div>
+    </>
   );
 };
 

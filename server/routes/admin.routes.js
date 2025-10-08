@@ -42,7 +42,8 @@ import {
   updatePromo,
   changePromoStatus,
   deletePromo,
-  requestUserDeletion, // Pastikan ini diimpor
+  requestUserDeletion,
+  updateStoreDetailsByAdmin,
 } from "../controllers/admin.controller.js";
 import multer from "multer";
 
@@ -68,6 +69,7 @@ router.post("/users/:id/request-deletion", requestUserDeletion);
 router.get("/stores", getAllStores);
 router.post("/stores/new", createStoreByAdmin);
 router.patch("/stores/:id/status", updateStoreStatus);
+router.patch("/stores/:id/details", updateStoreDetailsByAdmin);
 router.get("/stores/:storeId/settings", getStoreSettingsForAdmin);
 router.put("/stores/:storeId/settings", updateStoreSettingsByAdmin);
 router.post("/stores/upload-photo", upload.single("photo"), uploadAdminPhoto);
