@@ -1019,7 +1019,7 @@ export const createUserByAdmin = async (req, res, next) => {
           location: "Harap lengkapi alamat Anda", // Lokasi default
           description: "Harap lengkapi deskripsi toko Anda.",
           ownerId: newUser.id,
-          storeStatus: "pending", // Tetap perlu approval
+          storeStatus: "active",
           tier: "BASIC",
           commissionRate: 10,
           images: [],
