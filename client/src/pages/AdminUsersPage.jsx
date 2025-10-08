@@ -1,11 +1,12 @@
-// File: client/src/pages/AdminUsersPage.jsx (Dengan Modal Tambah & Toggle Switch)
+// File: client/src/pages/AdminUsersPage.jsx (Dengan Logika Hapus Bertahap)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   getAllUsers,
   changeUserRole,
   changeUserStatus,
-  createUserByAdmin, // Impor fungsi baru
+  createUserByAdmin,
+  requestUserDeletion, // 1. Impor fungsi baru
 } from "../services/apiService";
 
 // Komponen Modal Baru
@@ -144,7 +145,7 @@ const AdminUsersPage = ({ showMessage }) => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
-  const [showAddModal, setShowAddModal] = useState(false); // State untuk modal
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -196,10 +197,35 @@ const AdminUsersPage = ({ showMessage }) => {
       const result = await createUserByAdmin(userData);
       showMessage(result.message, "Success");
       setShowAddModal(false);
-      fetchUsers(); // Muat ulang daftar pengguna
+      fetchUsers();
     } catch (err) {
       showMessage(err.message, "Error");
-      throw err; // Lempar error agar modal tahu proses gagal
+      throw err;
+    }
+  };
+
+  const handleDeleteUser = async (user) => {
+    if (user.role === "admin" || user.role === "mitra") {
+      showMessage(
+        `Ubah peran "${user.name}" menjadi 'customer' terlebih dahulu sebelum meminta penghapusan.`,
+        "Peringatan"
+      );
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Anda yakin ingin MENGIRIM PERMINTAAN untuk menghapus pengguna "${user.name}"? Pengguna akan dihapus permanen setelah disetujui oleh Developer.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const result = await requestUserDeletion(user.id);
+      showMessage(result.message, "Sukses");
+    } catch (err) {
+      showMessage(err.message, "Error");
     }
   };
 
@@ -274,7 +300,6 @@ const AdminUsersPage = ({ showMessage }) => {
         </div>
 
         <div className="table-card p-3 shadow-sm">
-          {/* Tampilan Desktop */}
           <div className="table-responsive d-none d-lg-block">
             <table className="table table-hover align-middle">
               <thead className="table-light">
@@ -306,75 +331,88 @@ const AdminUsersPage = ({ showMessage }) => {
                     </td>
                     <td>{user.transactionCount || 0}</td>
                     <td className="text-end">
-                      <div className="dropdown">
-                        <button
-                          className="btn btn-sm btn-outline-dark dropdown-toggle"
-                          type="button"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                        >
-                          Kelola
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-end p-2">
-                          <li className="dropdown-header">Ubah Peran</li>
-                          <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() =>
-                                handleRoleChange(user.id, "customer")
-                              }
-                            >
-                              Set as Customer
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() => handleRoleChange(user.id, "mitra")}
-                            >
-                              Set as Mitra
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              className="dropdown-item"
-                              onClick={() => handleRoleChange(user.id, "admin")}
-                            >
-                              Set as Admin
-                            </button>
-                          </li>
-                          <li>
-                            <hr className="dropdown-divider" />
-                          </li>
-
-                          {/* --- AWAL PERUBAHAN TOGGLE SWITCH --- */}
-                          <li className="px-2">
-                            <div className="form-check form-switch">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                role="switch"
-                                id={`status-switch-${user.id}`}
-                                checked={user.status === "active"}
-                                onChange={(e) =>
-                                  handleStatusChange(
-                                    user.id,
-                                    e.target.checked ? "active" : "blocked"
-                                  )
+                      <div className="btn-group">
+                        <div className="dropdown">
+                          <button
+                            className="btn btn-sm btn-outline-secondary"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            title="Kelola"
+                          >
+                            <i className="fas fa-cog"></i>
+                          </button>
+                          <ul className="dropdown-menu dropdown-menu-end p-2">
+                            <li className="dropdown-header">Ubah Peran</li>
+                            <li>
+                              <button
+                                className="dropdown-item"
+                                onClick={() =>
+                                  handleRoleChange(user.id, "customer")
                                 }
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor={`status-switch-${user.id}`}
                               >
-                                {user.status === "active"
-                                  ? "Aktif"
-                                  : "Diblokir"}
-                              </label>
-                            </div>
-                          </li>
-                          {/* --- AKHIR PERUBAHAN TOGGLE SWITCH --- */}
-                        </ul>
+                                Set as Customer
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                className="dropdown-item"
+                                onClick={() =>
+                                  handleRoleChange(user.id, "mitra")
+                                }
+                              >
+                                Set as Mitra
+                              </button>
+                            </li>
+                            <li>
+                              <button
+                                className="dropdown-item"
+                                onClick={() =>
+                                  handleRoleChange(user.id, "admin")
+                                }
+                              >
+                                Set as Admin
+                              </button>
+                            </li>
+                            <li>
+                              <hr className="dropdown-divider" />
+                            </li>
+                            <li className="px-2">
+                              <div className="form-check form-switch">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  role="switch"
+                                  id={`status-switch-${user.id}`}
+                                  checked={user.status === "active"}
+                                  onChange={(e) =>
+                                    handleStatusChange(
+                                      user.id,
+                                      e.target.checked ? "active" : "blocked"
+                                    )
+                                  }
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor={`status-switch-${user.id}`}
+                                >
+                                  {user.status === "active"
+                                    ? "Aktif"
+                                    : "Diblokir"}
+                                </label>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                        {user.role !== "developer" && (
+                          <button
+                            className="btn btn-sm btn-outline-danger ms-2"
+                            title="Minta Hapus Pengguna"
+                            onClick={() => handleDeleteUser(user)}
+                          >
+                            <i className="fas fa-trash-alt"></i>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -383,7 +421,6 @@ const AdminUsersPage = ({ showMessage }) => {
             </table>
           </div>
 
-          {/* Tampilan Mobile */}
           <div className="mobile-card-list d-lg-none">
             {filteredUsers.map((user) => (
               <div className="mobile-card" key={user.id}>
@@ -405,69 +442,84 @@ const AdminUsersPage = ({ showMessage }) => {
                     </span>
                   </div>
                 </div>
-                <div className="mobile-card-footer">
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-sm btn-dark dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      Kelola Pengguna
-                    </button>
-                    <ul className="dropdown-menu dropdown-menu-end p-2">
-                      <li className="dropdown-header">Ubah Peran</li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => handleRoleChange(user.id, "customer")}
-                        >
-                          Set as Customer
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => handleRoleChange(user.id, "mitra")}
-                        >
-                          Set as Mitra
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => handleRoleChange(user.id, "admin")}
-                        >
-                          Set as Admin
-                        </button>
-                      </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
-                      <li className="px-2">
-                        <div className="form-check form-switch">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            id={`status-switch-mobile-${user.id}`}
-                            checked={user.status === "active"}
-                            onChange={(e) =>
-                              handleStatusChange(
-                                user.id,
-                                e.target.checked ? "active" : "blocked"
-                              )
+                <div className="mobile-card-footer d-flex justify-content-end">
+                  <div className="btn-group">
+                    <div className="dropdown">
+                      <button
+                        className="btn btn-sm btn-outline-secondary"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        title="Kelola"
+                      >
+                        <i className="fas fa-cog"></i>
+                      </button>
+                      <ul className="dropdown-menu dropdown-menu-end p-2">
+                        {/* Opsi dropdown mobile di sini */}
+                        <li className="dropdown-header">Ubah Peran</li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={() =>
+                              handleRoleChange(user.id, "customer")
                             }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor={`status-switch-mobile-${user.id}`}
                           >
-                            {user.status === "active" ? "Aktif" : "Diblokir"}
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
+                            Set as Customer
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => handleRoleChange(user.id, "mitra")}
+                          >
+                            Set as Mitra
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="dropdown-item"
+                            onClick={() => handleRoleChange(user.id, "admin")}
+                          >
+                            Set as Admin
+                          </button>
+                        </li>
+                        <li>
+                          <hr className="dropdown-divider" />
+                        </li>
+                        <li className="px-2">
+                          <div className="form-check form-switch">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              role="switch"
+                              id={`status-switch-mobile-${user.id}`}
+                              checked={user.status === "active"}
+                              onChange={(e) =>
+                                handleStatusChange(
+                                  user.id,
+                                  e.target.checked ? "active" : "blocked"
+                                )
+                              }
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor={`status-switch-mobile-${user.id}`}
+                            >
+                              {user.status === "active" ? "Aktif" : "Diblokir"}
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                    {user.role !== "developer" && (
+                      <button
+                        className="btn btn-sm btn-outline-danger ms-2"
+                        title="Minta Hapus Pengguna"
+                        onClick={() => handleDeleteUser(user)}
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -1130,3 +1130,62 @@ export const createUserByAdmin = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Request to delete a user by admin
+// @route   POST /api/admin/users/:id/request-deletion
+export const requestUserDeletion = async (req, res, next) => {
+  const { id: userIdToDelete } = req.params;
+  const adminUserId = req.user.id;
+
+  try {
+    const userToDelete = await prisma.user.findUnique({
+      where: { id: userIdToDelete },
+    });
+
+    if (!userToDelete) {
+      return res.status(404).json({ message: "Pengguna tidak ditemukan." });
+    }
+
+    if (userToDelete.role !== "customer") {
+      return res.status(400).json({
+        message:
+          "Hanya pengguna dengan peran 'customer' yang bisa dihapus. Ubah peran pengguna ini terlebih dahulu.",
+      });
+    }
+
+    const existingRequest = await prisma.approvalRequest.findFirst({
+      where: {
+        "details.userId": userIdToDelete,
+        requestType: "USER_DELETION",
+        status: "PENDING",
+      },
+    });
+
+    if (existingRequest) {
+      return res.status(409).json({
+        message:
+          "Permintaan penghapusan untuk pengguna ini sudah ada dan sedang menunggu persetujuan.",
+      });
+    }
+
+    await prisma.approvalRequest.create({
+      data: {
+        requestType: "USER_DELETION",
+        details: {
+          message: `Admin (${req.user.name}) meminta untuk menghapus pengguna "${userToDelete.name}".`,
+          userId: userToDelete.id,
+          userName: userToDelete.name,
+          userEmail: userToDelete.email,
+        },
+        status: "PENDING",
+        requestedById: adminUserId,
+      },
+    });
+
+    res.status(200).json({
+      message: `Permintaan untuk menghapus pengguna "${userToDelete.name}" telah dikirim ke developer untuk persetujuan.`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

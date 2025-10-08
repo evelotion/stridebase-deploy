@@ -1,4 +1,4 @@
-// File: server/controllers/superuser.controller.js (Lengkap dengan Logika Hapus Toko)
+// File: server/controllers/superuser.controller.js (Lengkap dengan Logika Hapus Toko & Pengguna)
 
 import prisma from "../config/prisma.js";
 import { exec } from "child_process";
@@ -81,6 +81,29 @@ export const resolveApprovalRequest = async (req, res, next) => {
         .json({ message: "Permintaan ini sudah diproses sebelumnya." });
     }
 
+    // --- AWAL LOGIKA PENGHAPUSAN PENGGUNA ---
+    if (request.requestType === "USER_DELETION" && resolution === "APPROVED") {
+      const userIdToDelete = request.details.userId;
+
+      if (userIdToDelete) {
+        // Menggunakan transaksi untuk memastikan semua data terkait terhapus
+        await prisma.$transaction([
+          prisma.review.deleteMany({ where: { userId: userIdToDelete } }),
+          prisma.payment.deleteMany({
+            where: { booking: { userId: userIdToDelete } },
+          }),
+          prisma.notification.deleteMany({ where: { userId: userIdToDelete } }),
+          prisma.booking.deleteMany({ where: { userId: userIdToDelete } }),
+          prisma.address.deleteMany({ where: { userId: userIdToDelete } }),
+          prisma.securityLog.deleteMany({ where: { userId: userIdToDelete } }),
+          prisma.loyaltyPoint.deleteMany({ where: { userId: userIdToDelete } }),
+          // Terakhir, hapus pengguna itu sendiri
+          prisma.user.delete({ where: { id: userIdToDelete } }),
+        ]);
+      }
+    }
+    // --- AKHIR LOGIKA PENGHAPUSAN PENGGUNA ---
+
     // Logika untuk menyetujui perubahan model bisnis
     if (
       request.requestType === "BUSINESS_MODEL_CHANGE" &&
@@ -139,13 +162,27 @@ export const resolveApprovalRequest = async (req, res, next) => {
       },
     });
 
-    const storeName = request.details?.storeName || `(ID: ${request.storeId})`;
+    const targetName =
+      request.details?.userName ||
+      request.details?.storeName ||
+      `(ID: ${request.storeId})`;
+    let notificationMessage = `Permintaan Anda (${
+      request.requestType
+    }) untuk "${targetName}" telah di-${resolution.toLowerCase()} oleh developer.`;
+
+    // Pesan notifikasi khusus jika penghapusan disetujui
+    if (resolution === "APPROVED") {
+      if (request.requestType === "USER_DELETION") {
+        notificationMessage = `Pengguna "${targetName}" telah berhasil dihapus secara permanen.`;
+      } else if (request.requestType === "STORE_DELETION") {
+        notificationMessage = `Toko "${targetName}" telah berhasil dihapus secara permanen.`;
+      }
+    }
+
     await createNotificationForUser(
       request.requestedById,
-      `Permintaan Anda (${
-        request.requestType
-      }) untuk toko "${storeName}" telah di-${resolution.toLowerCase()} oleh developer.`,
-      `/admin/stores`
+      notificationMessage,
+      `/admin/stores` // Default redirect ke stores, bisa disesuaikan
     );
 
     res.json(updatedRequest);

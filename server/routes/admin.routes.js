@@ -41,7 +41,8 @@ import {
   createPromo,
   updatePromo,
   changePromoStatus,
-  deletePromo
+  deletePromo,
+  requestUserDeletion, // Pastikan ini diimpor
 } from "../controllers/admin.controller.js";
 import multer from "multer";
 
@@ -60,6 +61,8 @@ router.post("/users", createUserByAdmin);
 router.get("/users", getAllUsers);
 router.patch("/users/:id/role", changeUserRole);
 router.patch("/users/:id/status", changeUserStatus);
+// --- RUTE BARU DITAMBAHKAN DI SINI ---
+router.post("/users/:id/request-deletion", requestUserDeletion);
 
 // Manajemen Toko
 router.get("/stores", getAllStores);

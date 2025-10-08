@@ -1,4 +1,4 @@
-// File: client/src/pages/DeveloperDashboardPage.jsx (Dengan Perbaikan Tampilan V2)
+// File: client/src/pages/DeveloperDashboardPage.jsx (Final dengan Logika Tampilan Hapus Pengguna)
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -10,7 +10,7 @@ import {
   uploadImage,
   getSecurityLogs,
 } from "../services/apiService";
-import API_BASE_URL from "../apiConfig"; // Import API_BASE_URL
+import API_BASE_URL from "../apiConfig";
 
 const googleFonts = [
   "Roboto",
@@ -121,6 +121,35 @@ const LogDetails = ({ details }) => {
   if (!details || typeof details !== "object") {
     return <small>{String(details)}</small>;
   }
+
+  // --- INI BAGIAN YANG PERLU ANDA TAMBAHKAN ---
+  // Tampilan khusus untuk User Deletion Request
+  if (details.userId && details.userName) {
+    return (
+      <div
+        style={{
+          fontSize: "0.8rem",
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }}
+      >
+        <p className="mb-1 fst-italic">"{details.message}"</p>
+        <div className="mt-2">
+          <strong className="d-block">Target Pengguna:</strong>
+          <ul className="list-unstyled ps-2 mb-0">
+            <li>
+              <strong>Nama:</strong> {details.userName}
+            </li>
+            <li>
+              <strong>Email:</strong> {details.userEmail}
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
+  // --- AKHIR DARI BAGIAN YANG HILANG ---
+
   const formatKey = (key) => {
     const result = key.replace(/([A-Z])/g, " $1");
     return result.charAt(0).toUpperCase() + result.slice(1);
