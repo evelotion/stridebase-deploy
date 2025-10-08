@@ -1,10 +1,10 @@
-// File: server/controllers/admin.controller.js (Versi Final Lengkap & Bersih)
+// File: server/controllers/admin.controller.js (Dengan Perbaikan Logika Aktivasi)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser, broadcastThemeUpdate } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
 import { loadThemeConfig } from "../config/theme.js";
-
+import bcrypt from "bcryptjs";
 
 // @desc    Get dashboard stats for admin
 // @route   GET /api/admin/stats
@@ -72,9 +72,18 @@ export const changeUserRole = async (req, res, next) => {
 // @route   PATCH /api/admin/users/:id/status
 export const changeUserStatus = async (req, res, next) => {
   try {
+    const { newStatus } = req.body;
+    const dataToUpdate = { status: newStatus };
+
+    // --- PERUBAHAN LOGIKA DI SINI ---
+    // Jika admin mengaktifkan akun, anggap emailnya juga terverifikasi
+    if (newStatus === "active") {
+      dataToUpdate.isEmailVerified = true;
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: req.params.id },
-      data: { status: req.body.newStatus },
+      data: dataToUpdate,
     });
     res.json(updatedUser);
   } catch (error) {
@@ -564,106 +573,53 @@ export const uploadAdminPhoto = async (req, res, next) => {
 // @desc    Get all banners for admin
 // @route   GET /api/admin/banners
 export const getAllBannersForAdmin = async (req, res, next) => {
-    try {
-        const banners = await prisma.banner.findMany({
-            orderBy: { createdAt: "desc" },
-        });
-        res.json(banners);
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const banners = await prisma.banner.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(banners);
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Create a new banner
 // @route   POST /api/admin/banners
 export const createBanner = async (req, res, next) => {
-    const { title, description, imageUrl, linkUrl, status } = req.body;
-    try {
-        const newBanner = await prisma.banner.create({
-            data: { title, description, imageUrl, linkUrl, status },
-        });
-        res.status(201).json(newBanner);
-    } catch (error) {
-        next(error);
-    }
+  const { title, description, imageUrl, linkUrl, status } = req.body;
+  try {
+    const newBanner = await prisma.banner.create({
+      data: { title, description, imageUrl, linkUrl, status },
+    });
+    res.status(201).json(newBanner);
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Update a banner
 // @route   PUT /api/admin/banners/:id
 export const updateBanner = async (req, res, next) => {
-    const { id } = req.params;
-    const { title, description, imageUrl, linkUrl, status } = req.body;
-    try {
-        const updatedBanner = await prisma.banner.update({
-            where: { id },
-            data: { title, description, imageUrl, linkUrl, status },
-        });
-        res.json(updatedBanner);
-    } catch (error) {
-        next(error);
-    }
+  const { id } = req.params;
+  const { title, description, imageUrl, linkUrl, status } = req.body;
+  try {
+    const updatedBanner = await prisma.banner.update({
+      where: { id },
+      data: { title, description, imageUrl, linkUrl, status },
+    });
+    res.json(updatedBanner);
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Delete a banner
 // @route   DELETE /api/admin/banners/:id
 export const deleteBanner = async (req, res, next) => {
-    const { id } = req.params;
-    try {
-        await prisma.banner.delete({ where: { id } });
-        res.status(200).json({ message: "Banner berhasil dihapus." });
-    } catch (error) {
-        next(error);
-    }
-};
-
-// @desc    Request to delete a store by admin
-// @route   POST /api/admin/stores/:storeId/request-deletion
-export const requestDeleteStore = async (req, res, next) => {
-  const { storeId } = req.params;
-  const adminUserId = req.user.id;
-
+  const { id } = req.params;
   try {
-    const store = await prisma.store.findUnique({
-      where: { id: storeId },
-    });
-
-    if (!store) {
-      return res.status(404).json({ message: "Toko tidak ditemukan." });
-    }
-
-    // Periksa apakah sudah ada permintaan penghapusan yang pending
-    const existingRequest = await prisma.approvalRequest.findFirst({
-      where: {
-        storeId: storeId,
-        requestType: "STORE_DELETION",
-        status: "PENDING",
-      },
-    });
-
-    if (existingRequest) {
-      return res.status(400).json({
-        message: "Permintaan penghapusan untuk toko ini sudah ada dan sedang menunggu persetujuan.",
-      });
-    }
-
-    // Buat permintaan persetujuan
-    await prisma.approvalRequest.create({
-      data: {
-        storeId: storeId,
-        requestType: "STORE_DELETION",
-        details: {
-          message: `Admin (${req.user.name}) meminta untuk menghapus toko "${store.name}".`,
-          storeName: store.name,
-          storeId: store.id,
-        },
-        status: "PENDING",
-        requestedById: adminUserId,
-      },
-    });
-
-    res.status(200).json({
-      message: `Permintaan untuk menghapus toko "${store.name}" telah dikirim ke developer untuk persetujuan.`,
-    });
+    await prisma.banner.delete({ where: { id } });
+    res.status(200).json({ message: "Banner berhasil dihapus." });
   } catch (error) {
     next(error);
   }
@@ -794,14 +750,14 @@ const generateInvoiceData = async (storeId, period, adminUser) => {
 // @desc    Preview an invoice before sending
 // @route   POST /api/admin/stores/:storeId/invoices/preview
 export const previewStoreInvoice = async (req, res, next) => {
-    const { storeId } = req.params;
-    const { period } = req.body;
-    try {
-        const previewData = await generateInvoiceData(storeId, period, req.user);
-        res.json(previewData);
-    } catch (error) {
-        next(error);
-    }
+  const { storeId } = req.params;
+  const { period } = req.body;
+  try {
+    const previewData = await generateInvoiceData(storeId, period, req.user);
+    res.json(previewData);
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Create and send an invoice to a store based on its tier
@@ -927,46 +883,101 @@ export const checkExistingInvoice = async (req, res, next) => {
   }
 };
 
-
-// --- FUNGSI BARU DITAMBAHKAN DI SINI ---
 // @desc    Validate a promo code for a user
 // @route   POST /api/admin/promos/validate
 export const validatePromoCode = async (req, res, next) => {
-    const { code } = req.body;
-    const userId = req.user.id; // Didapat dari token
+  const { code } = req.body;
+  const userId = req.user.id; // Didapat dari token
 
-    if (!code) {
-        return res.status(400).json({ message: "Kode promo dibutuhkan." });
+  if (!code) {
+    return res.status(400).json({ message: "Kode promo dibutuhkan." });
+  }
+
+  try {
+    const promo = await prisma.promo.findUnique({ where: { code } });
+
+    // 1. Cek Promo Ada & Aktif
+    if (!promo || promo.status !== "active") {
+      return res
+        .status(404)
+        .json({ message: "Kode promo tidak valid atau tidak aktif." });
     }
 
-    try {
-        const promo = await prisma.promo.findUnique({ where: { code } });
-
-        // 1. Cek Promo Ada & Aktif
-        if (!promo || promo.status !== 'active') {
-            return res.status(404).json({ message: "Kode promo tidak valid atau tidak aktif." });
-        }
-
-        // 2. Cek Batas Penggunaan
-        if (promo.usageLimit && promo.usageCount >= promo.usageLimit) {
-            return res.status(400).json({ message: "Kuota untuk promo ini sudah habis." });
-        }
-
-        // 3. Cek Tanggal Kedaluwarsa
-        const now = new Date();
-        if (promo.endDate && new Date(promo.endDate) < now) {
-            return res.status(400).json({ message: "Promo ini sudah kedaluwarsa." });
-        }
-         if (promo.startDate && new Date(promo.startDate) > now) {
-            return res.status(400).json({ message: "Promo ini belum berlaku." });
-        }
-
-
-        // Jika semua validasi lolos
-        res.json(promo);
-    } catch (error) {
-        next(error);
+    // 2. Cek Batas Penggunaan
+    if (promo.usageLimit && promo.usageCount >= promo.usageLimit) {
+      return res
+        .status(400)
+        .json({ message: "Kuota untuk promo ini sudah habis." });
     }
+
+    // 3. Cek Tanggal Kedaluwarsa
+    const now = new Date();
+    if (promo.endDate && new Date(promo.endDate) < now) {
+      return res.status(400).json({ message: "Promo ini sudah kedaluwarsa." });
+    }
+    if (promo.startDate && new Date(promo.startDate) > now) {
+      return res.status(400).json({ message: "Promo ini belum berlaku." });
+    }
+
+    // Jika semua validasi lolos
+    res.json(promo);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Request to delete a store by admin
+// @route   POST /api/admin/stores/:storeId/request-deletion
+export const requestDeleteStore = async (req, res, next) => {
+  const { storeId } = req.params;
+  const adminUserId = req.user.id;
+
+  try {
+    const store = await prisma.store.findUnique({
+      where: { id: storeId },
+    });
+
+    if (!store) {
+      return res.status(404).json({ message: "Toko tidak ditemukan." });
+    }
+
+    // Periksa apakah sudah ada permintaan penghapusan yang pending
+    const existingRequest = await prisma.approvalRequest.findFirst({
+      where: {
+        storeId: storeId,
+        requestType: "STORE_DELETION",
+        status: "PENDING",
+      },
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({
+        message:
+          "Permintaan penghapusan untuk toko ini sudah ada dan sedang menunggu persetujuan.",
+      });
+    }
+
+    // Buat permintaan persetujuan
+    await prisma.approvalRequest.create({
+      data: {
+        storeId: storeId,
+        requestType: "STORE_DELETION",
+        details: {
+          message: `Admin (${req.user.name}) meminta untuk menghapus toko "${store.name}".`,
+          storeName: store.name,
+          storeId: store.id,
+        },
+        status: "PENDING",
+        requestedById: adminUserId,
+      },
+    });
+
+    res.status(200).json({
+      message: `Permintaan untuk menghapus toko "${store.name}" telah dikirim ke developer untuk persetujuan.`,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Create a new user by an admin
@@ -975,7 +986,9 @@ export const createUserByAdmin = async (req, res, next) => {
   const { name, email, password, role } = req.body;
 
   if (!name || !email || !password || !role) {
-    return res.status(400).json({ message: "Nama, email, password, dan peran wajib diisi." });
+    return res
+      .status(400)
+      .json({ message: "Nama, email, password, dan peran wajib diisi." });
   }
 
   try {
@@ -994,26 +1007,26 @@ export const createUserByAdmin = async (req, res, next) => {
         password: hashedPassword,
         role,
         isEmailVerified: true, // Langsung diverifikasi karena dibuat oleh admin
-        status: 'active',
+        status: "active",
       },
     });
 
-    // Buat wallet jika role-nya adalah mitra
-    if (newUser.role === 'mitra') {
+    // Buat entitas terkait jika role-nya adalah mitra
+    if (newUser.role === "mitra") {
       await prisma.store.create({
         data: {
           name: `Toko Baru ${newUser.name}`, // Nama default
           location: "Harap lengkapi alamat Anda", // Lokasi default
           description: "Harap lengkapi deskripsi toko Anda.",
           ownerId: newUser.id,
-          storeStatus: "pending", // Tetap perlu approval developer/admin
+          storeStatus: "pending", // Tetap perlu approval
           tier: "BASIC",
           commissionRate: 10,
           images: [],
           wallet: {
-            create: {}
-          }
-        }
+            create: {},
+          },
+        },
       });
     }
 
