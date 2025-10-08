@@ -121,6 +121,7 @@ export const getPartnerReports = (params) =>
 // --- Admin Endpoints ---
 export const getAdminStats = () => apiRequest("/api/admin/stats");
 export const getAllUsers = () => apiRequest("/api/admin/users");
+export const createUserByAdmin = (userData) => apiRequest("/api/admin/users", "POST", userData);
 export const changeUserRole = (userId, newRole) =>
   apiRequest(`/api/admin/users/${userId}/role`, "PATCH", { newRole });
 export const changeUserStatus = (userId, newStatus) =>

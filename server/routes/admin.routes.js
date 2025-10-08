@@ -35,7 +35,8 @@ import {
   checkExistingInvoice,
   getInvoiceByIdForAdmin,
   validatePromoCode,
-  requestDeleteStore
+  requestDeleteStore,
+  createUserByAdmin
 } from "../controllers/admin.controller.js";
 import multer from "multer";
 
@@ -50,6 +51,7 @@ router.use(authenticateToken, checkRole(["admin", "developer"]));
 router.get("/stats", getAdminStats);
 
 // Manajemen Pengguna
+router.post("/users", createUserByAdmin);
 router.get("/users", getAllUsers);
 router.patch("/users/:id/role", changeUserRole);
 router.patch("/users/:id/status", changeUserStatus);

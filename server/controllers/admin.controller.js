@@ -968,3 +968,60 @@ export const validatePromoCode = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Create a new user by an admin
+// @route   POST /api/admin/users
+export const createUserByAdmin = async (req, res, next) => {
+  const { name, email, password, role } = req.body;
+
+  if (!name || !email || !password || !role) {
+    return res.status(400).json({ message: "Nama, email, password, dan peran wajib diisi." });
+  }
+
+  try {
+    // Cek apakah email sudah terdaftar
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email sudah terdaftar." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role,
+        isEmailVerified: true, // Langsung diverifikasi karena dibuat oleh admin
+        status: 'active',
+      },
+    });
+
+    // Buat wallet jika role-nya adalah mitra
+    if (newUser.role === 'mitra') {
+      await prisma.store.create({
+        data: {
+          name: `Toko Baru ${newUser.name}`, // Nama default
+          location: "Harap lengkapi alamat Anda", // Lokasi default
+          description: "Harap lengkapi deskripsi toko Anda.",
+          ownerId: newUser.id,
+          storeStatus: "pending", // Tetap perlu approval developer/admin
+          tier: "BASIC",
+          commissionRate: 10,
+          images: [],
+          wallet: {
+            create: {}
+          }
+        }
+      });
+    }
+
+    res.status(201).json({
+      message: `Pengguna '${newUser.name}' dengan peran '${newUser.role}' berhasil dibuat.`,
+      user: newUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
