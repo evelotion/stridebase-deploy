@@ -476,22 +476,21 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
     const store = await prisma.store.findUnique({
       where: { id: storeId },
       // --- PERBAIKAN DI SINI ---
-      // Hapus 'businessModel' karena tidak ada di skema
       select: {
-        name: true, // Ambil juga nama toko untuk ditampilkan
+        name: true,
         description: true,
         location: true,
         phone: true,
         images: true,
         headerImageUrl: true,
-        schedules: true,
+        schedules: true, // <-- TAMBAHKAN BARIS INI UNTUK MENGAMBIL DATA JADWAL
         photoLimit: true,
         tier: true,
         commissionRate: true,
         subscriptionFee: true,
       },
+      // --- AKHIR PERBAIKAN ---
     });
-    // --- AKHIR PERBAIKAN ---
 
     if (!store) {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
