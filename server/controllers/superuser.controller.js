@@ -1,4 +1,4 @@
-// File: server/controllers/superuser.controller.js (Lengkap dengan Logika Hapus Toko & Pengguna)
+// File: server/controllers/superuser.controller.js (Penyempurnaan Final)
 
 import prisma from "../config/prisma.js";
 import { exec } from "child_process";
@@ -9,8 +9,6 @@ import {
   io,
 } from "../socket.js";
 
-// @desc    Get all global configurations
-// @route   GET /api/superuser/config
 export const getGlobalConfig = async (req, res, next) => {
   try {
     const settings = await prisma.globalSetting.findUnique({
@@ -22,8 +20,6 @@ export const getGlobalConfig = async (req, res, next) => {
   }
 };
 
-// @desc    Update global configurations
-// @route   POST /api/superuser/config
 export const updateGlobalConfig = async (req, res, next) => {
   const newConfig = req.body;
   try {
@@ -32,18 +28,14 @@ export const updateGlobalConfig = async (req, res, next) => {
       update: { value: newConfig },
       create: { key: "themeConfig", value: newConfig },
     });
-
     await loadThemeConfig();
     broadcastThemeUpdate(getTheme());
-
     res.json(updatedSetting.value);
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Get all approval requests (not just pending)
-// @route   GET /api/superuser/approval-requests
 export const getApprovalRequests = async (req, res, next) => {
   try {
     const requests = await prisma.approvalRequest.findMany({
@@ -60,11 +52,9 @@ export const getApprovalRequests = async (req, res, next) => {
   }
 };
 
-// @desc    Resolve an approval request
-// @route   POST /api/superuser/approval-requests/:id/resolve
 export const resolveApprovalRequest = async (req, res, next) => {
   const { id } = req.params;
-  const { resolution } = req.body; // "APPROVED" or "REJECTED"
+  const { resolution } = req.body;
 
   if (!["APPROVED", "REJECTED"].includes(resolution)) {
     return res.status(400).json({ message: "Status resolusi tidak valid." });
@@ -78,33 +68,33 @@ export const resolveApprovalRequest = async (req, res, next) => {
     if (request.status !== "PENDING") {
       return res
         .status(400)
-        .json({ message: "Permintaan ini sudah diproses sebelumnya." });
+        .json({ message: "Permintaan ini sudah diproses." });
     }
 
-    // --- AWAL LOGIKA PENGHAPUSAN PENGGUNA ---
+    // --- LOGIKA PENGHAPUSAN PENGGUNA YANG DISEMPURNAKAN ---
     if (request.requestType === "USER_DELETION" && resolution === "APPROVED") {
       const userIdToDelete = request.details.userId;
-
       if (userIdToDelete) {
-        // Menggunakan transaksi untuk memastikan semua data terkait terhapus
         await prisma.$transaction([
+          prisma.notification.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.review.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.payment.deleteMany({
             where: { booking: { userId: userIdToDelete } },
           }),
-          prisma.notification.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.booking.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.address.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.securityLog.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.loyaltyPoint.deleteMany({ where: { userId: userIdToDelete } }),
-          // Terakhir, hapus pengguna itu sendiri
+          prisma.approvalRequest.deleteMany({
+            where: { requestedById: userIdToDelete },
+          }),
+          prisma.invoice.deleteMany({ where: { issuedById: userIdToDelete } }),
           prisma.user.delete({ where: { id: userIdToDelete } }),
         ]);
       }
     }
-    // --- AKHIR LOGIKA PENGHAPUSAN PENGGUNA ---
+    // --- AKHIR PENYEMPURNAAN ---
 
-    // Logika untuk menyetujui perubahan model bisnis
     if (
       request.requestType === "BUSINESS_MODEL_CHANGE" &&
       resolution === "APPROVED"
@@ -120,12 +110,8 @@ export const resolveApprovalRequest = async (req, res, next) => {
       });
     }
 
-    // LOGIKA BARU: Menangani persetujuan penghapusan toko
     if (request.requestType === "STORE_DELETION" && resolution === "APPROVED") {
       const { storeId } = request;
-
-      // Hapus semua data yang berelasi dengan toko dalam satu transaksi
-      // Urutan penghapusan penting untuk menghindari error constraint
       if (storeId) {
         await prisma.$transaction([
           prisma.review.deleteMany({ where: { storeId } }),
@@ -144,7 +130,6 @@ export const resolveApprovalRequest = async (req, res, next) => {
           prisma.storeWallet.deleteMany({ where: { storeId } }),
           prisma.store.delete({ where: { id: storeId } }),
         ]);
-        // Hapus notifikasi terkait setelah booking dihapus (jika ada relasi)
         await prisma.notification.deleteMany({
           where: {
             bookingId: null,
@@ -156,10 +141,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
 
     const updatedRequest = await prisma.approvalRequest.update({
       where: { id: id },
-      data: {
-        status: resolution,
-        reviewedById: req.user.id,
-      },
+      data: { status: resolution, reviewedById: req.user.id },
     });
 
     const targetName =
@@ -169,8 +151,6 @@ export const resolveApprovalRequest = async (req, res, next) => {
     let notificationMessage = `Permintaan Anda (${
       request.requestType
     }) untuk "${targetName}" telah di-${resolution.toLowerCase()} oleh developer.`;
-
-    // Pesan notifikasi khusus jika penghapusan disetujui
     if (resolution === "APPROVED") {
       if (request.requestType === "USER_DELETION") {
         notificationMessage = `Pengguna "${targetName}" telah berhasil dihapus secara permanen.`;
@@ -182,7 +162,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
     await createNotificationForUser(
       request.requestedById,
       notificationMessage,
-      `/admin/stores` // Default redirect ke stores, bisa disesuaikan
+      `/admin/stores`
     );
 
     res.json(updatedRequest);
@@ -191,8 +171,6 @@ export const resolveApprovalRequest = async (req, res, next) => {
   }
 };
 
-// @desc    Reseed the database
-// @route   POST /api/superuser/maintenance/reseed-database
 export const reseedDatabase = (req, res, next) => {
   exec("npx prisma db seed", (error, stdout, stderr) => {
     if (error) {
@@ -208,23 +186,12 @@ export const reseedDatabase = (req, res, next) => {
   });
 };
 
-// @desc    Get all security logs
-// @route   GET /api/superuser/security-logs
 export const getSecurityLogs = async (req, res, next) => {
   try {
     const logs = await prisma.securityLog.findMany({
       take: 100,
-      orderBy: {
-        timestamp: "desc",
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
+      orderBy: { timestamp: "desc" },
+      include: { user: { select: { name: true, email: true } } },
     });
     res.json(logs);
   } catch (error) {
@@ -232,24 +199,19 @@ export const getSecurityLogs = async (req, res, next) => {
   }
 };
 
-// @desc    Update homepage theme
-// @route   PUT /api/superuser/settings/homepage-theme
 export const updateHomePageTheme = async (req, res, next) => {
   const { theme } = req.body;
   if (!theme || !["classic", "modern"].includes(theme)) {
     return res.status(400).json({ message: "Tema tidak valid." });
   }
-
   try {
     await prisma.globalSetting.upsert({
       where: { key: "homePageTheme" },
       update: { value: theme },
       create: { key: "homePageTheme", value: theme },
     });
-
-    await loadThemeConfig(); // Muat ulang konfigurasi
-    broadcastThemeUpdate(getTheme()); // Siarkan konfigurasi yang sudah dimuat ulang
-
+    await loadThemeConfig();
+    broadcastThemeUpdate(getTheme());
     res.status(200).json({
       message: "Tema homepage berhasil diperbarui.",
       homePageTheme: theme,
