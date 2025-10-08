@@ -1,31 +1,28 @@
-// File: server/routes/auth.routes.js (Versi Diperbarui)
+// File: server/routes/auth.routes.js (Dengan Perbaikan Nama Impor)
 
-import express from 'express';
-import { body } from 'express-validator';
-import { registerUser, loginUser, verifyEmail, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
-import { loginLimiter } from '../middleware/rateLimiter.js';
-import { handleValidationErrors } from '../middleware/handleValidationErrors.js'; // <-- 1. IMPOR MIDDLEWARE BARU
+import express from "express";
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
+  getProfile,
+} from "../controllers/auth.controller.js";
+// --- PERBAIKAN DI SINI ---
+import { loginRateLimiter } from "../middleware/rateLimiter.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
 
 const router = express.Router();
 
-// Validasi pendaftaran yang lebih ketat
-const registerValidation = [
-  body('email', 'Format email tidak valid.').isEmail().normalizeEmail(),
-  body('name', 'Nama tidak boleh kosong.').notEmpty().trim().escape(),
-  body('password', 'Password minimal harus 8 karakter.').isLength({ min: 8 }),
-];
-
-// Definisi Routes
-router.post(
-    '/register', 
-    registerValidation,         // <-- 2. Aturan validasi
-    handleValidationErrors,     // <-- 3. Middleware untuk menangani error
-    registerUser                // <-- 4. Controller hanya akan berjalan jika tidak ada error
-);
-
-router.post('/login', loginLimiter, loginUser);
-router.get('/verify-email', verifyEmail);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+router.post("/register", registerUser);
+// Menggunakan loginRateLimiter sebelum loginUser
+router.post("/login", loginRateLimiter, loginUser);
+router.post("/logout", logoutUser);
+router.get("/verify-email/:token", verifyEmail);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
+router.get("/profile", authenticateToken, getProfile);
 
 export default router;
