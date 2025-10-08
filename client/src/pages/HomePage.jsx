@@ -1,11 +1,12 @@
+// File: client/src/pages/HomePage.jsx (Dengan Perbaikan Banner Mobile)
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
 import API_BASE_URL from "../apiConfig";
 import GlobalAnnouncement from "../components/GlobalAnnouncement";
-import "./HomePageModern.css"; // Impor CSS tema baru
+import "./HomePageModern.css";
 
-// Kategori Layanan (Data Dummy, bisa Anda kembangkan lebih lanjut)
 const serviceCategories = [
   { name: "Cuci Cepat", icon: "fa-rocket", link: "/store?services=Fast+Clean" },
   { name: "Perawatan Kulit", icon: "fa-gem", link: "/store?services=Leather" },
@@ -19,8 +20,7 @@ const HomePage = ({
   notifications,
   unreadCount,
   handleLogout,
-  // Tambahkan prop baru untuk tema
-  homePageTheme = "classic", // default ke 'classic'
+  homePageTheme = "classic",
 }) => {
   const [isAnnouncementVisible, setAnnouncementVisible] = useState(true);
   const [featuredStores, setFeaturedStores] = useState([]);
@@ -71,6 +71,7 @@ const HomePage = ({
   const renderClassicHomepage = () => (
     <>
       <section className="hero-section text-center text-lg-start">
+        {/* --- BANNER UNTUK DESKTOP (TIDAK BERUBAH) --- */}
         <div className="container d-none d-lg-block">
           <div className="row align-items-center">
             <div className="col-lg-6 hero-content">
@@ -118,7 +119,37 @@ const HomePage = ({
             </div>
           </div>
         </div>
+
+        {/* --- AWAL PERBAIKAN: BANNER UNTUK MOBILE --- */}
+        <div className="container d-lg-none mt-3">
+          {banners.length > 0 && (
+            <div
+              id="heroBannerCarouselMobile"
+              className="carousel slide shadow rounded-3"
+              data-bs-ride="carousel"
+            >
+              <div className="carousel-inner rounded-3">
+                {banners.map((banner, index) => (
+                  <div
+                    className={`carousel-item ${index === 0 ? "active" : ""}`}
+                    key={banner.id}
+                  >
+                    <Link to={banner.linkUrl}>
+                      <img
+                        src={`${banner.imageUrl}`}
+                        className="d-block w-100 hero-banner-img"
+                        alt={`Banner ${index + 1}`}
+                      />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        {/* --- AKHIR PERBAIKAN --- */}
       </section>
+
       <section className="service-categories-section container">
         <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
           <h2 className="section-title">Kategori Layanan</h2>
@@ -138,6 +169,7 @@ const HomePage = ({
           ))}
         </div>
       </section>
+
       <section className="featured-stores py-5 bg-light">
         <div className="container">
           <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
@@ -404,14 +436,12 @@ const HomePage = ({
         </div>
       </div>
 
-      {/* Tampilan Desktop (Kondisional) */}
       <div className="d-none d-lg-block">
         {homePageTheme === "modern"
           ? renderModernHomepage()
           : renderClassicHomepage()}
       </div>
 
-      {/* Tampilan Mobile (Selalu Sama) */}
       <div className="d-lg-none">{renderClassicHomepage()}</div>
     </div>
   );
