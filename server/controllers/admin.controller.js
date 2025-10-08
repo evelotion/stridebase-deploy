@@ -1,14 +1,13 @@
-// File: server/controllers/admin.controller.js (Lengkap dan Sudah Diperbaiki)
+// File: server/controllers/admin.controller.js (Perbaikan Final)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser, broadcastThemeUpdate } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
-import { loadThemeConfig, getTheme } from "../config/theme.js"; // Pastikan getTheme diimpor
+import { loadThemeConfig, getTheme } from "../config/theme.js";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 
-// @desc    Get stats for admin dashboard
-// @route   GET /api/admin/stats
+// ... (semua fungsi lain dari getAdminStats hingga getAllStores tetap sama) ...
 export const getAdminStats = async (req, res, next) => {
   try {
     const totalUsers = await prisma.user.count();
@@ -55,8 +54,6 @@ export const getAdminStats = async (req, res, next) => {
   }
 };
 
-// @desc    Get all users
-// @route   GET /api/admin/users
 export const getAllUsers = async (req, res, next) => {
   try {
     const users = await prisma.user.findMany({
@@ -70,8 +67,6 @@ export const getAllUsers = async (req, res, next) => {
   }
 };
 
-// @desc    Change user role
-// @route   PATCH /api/admin/users/:id/role
 export const changeUserRole = async (req, res, next) => {
   const { id } = req.params;
   const { role: newRole } = req.body;
@@ -89,7 +84,7 @@ export const changeUserRole = async (req, res, next) => {
       const activeStoresCount = await prisma.store.count({
         where: {
           ownerId: id,
-          storeStatus: "active", // Menggunakan storeStatus enum
+          storeStatus: "active",
         },
       });
 
@@ -110,25 +105,44 @@ export const changeUserRole = async (req, res, next) => {
   }
 };
 
+// --- FUNGSI YANG DIPERBAIKI ---
 // @desc    Change user status (active/blocked)
 // @route   PATCH /api/admin/users/:id/status
 export const changeUserStatus = async (req, res, next) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status: newStatus } = req.body;
 
   try {
+    const dataToUpdate = {
+      status: newStatus,
+    };
+
+    // Jika admin mengaktifkan pengguna, anggap email mereka juga terverifikasi.
+    // Ini adalah logika bisnis yang penting untuk aktivasi manual.
+    if (newStatus === "active") {
+      dataToUpdate.isEmailVerified = true;
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: { status },
+      data: dataToUpdate,
     });
+
+    // Kirim notifikasi kepada pengguna bahwa akun mereka telah diaktifkan
+    if (newStatus === "active") {
+      await createNotificationForUser(
+        updatedUser.id,
+        "Selamat! Akun Anda telah diaktifkan oleh Admin dan siap digunakan.",
+        "/dashboard"
+      );
+    }
+
     res.json(updatedUser);
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Get all stores
-// @route   GET /api/admin/stores
 export const getAllStores = async (req, res, next) => {
   try {
     const stores = await prisma.store.findMany({
@@ -155,8 +169,7 @@ export const getAllStores = async (req, res, next) => {
   }
 };
 
-// @desc    Update store status
-// @route   PATCH /api/admin/stores/:id/status
+// ... (semua fungsi lainnya dari updateStoreStatus hingga akhir file tetap sama) ...
 export const updateStoreStatus = async (req, res, next) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -164,7 +177,7 @@ export const updateStoreStatus = async (req, res, next) => {
   try {
     const updatedStore = await prisma.store.update({
       where: { id },
-      data: { storeStatus: status }, // Menggunakan storeStatus enum
+      data: { storeStatus: status },
       include: { owner: true },
     });
     await createNotificationForUser(
@@ -178,8 +191,6 @@ export const updateStoreStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Update store details (status and owner) by admin
-// @route   PATCH /api/admin/stores/:id/details
 export const updateStoreDetailsByAdmin = async (req, res, next) => {
   const { id: storeId } = req.params;
   const { status, ownerId } = req.body;
@@ -194,7 +205,7 @@ export const updateStoreDetailsByAdmin = async (req, res, next) => {
     }
 
     const dataToUpdate = {
-      storeStatus: status, // Menggunakan storeStatus enum
+      storeStatus: status,
       ownerId,
     };
 
@@ -233,8 +244,6 @@ export const updateStoreDetailsByAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Get all payout requests
-// @route   GET /api/admin/payout-requests
 export const getPayoutRequests = async (req, res, next) => {
   try {
     const requests = await prisma.payoutRequest.findMany({
@@ -260,8 +269,6 @@ export const getPayoutRequests = async (req, res, next) => {
   }
 };
 
-// @desc    Resolve a payout request
-// @route   PATCH /api/admin/payout-requests/:id/resolve
 export const resolvePayoutRequest = async (req, res, next) => {
   const { id } = req.params;
   const { status, adminNotes } = req.body;
@@ -311,8 +318,6 @@ export const resolvePayoutRequest = async (req, res, next) => {
   }
 };
 
-// @desc    Get all bookings
-// @route   GET /api/admin/bookings
 export const getAllBookings = async (req, res, next) => {
   try {
     const bookings = await prisma.booking.findMany({
@@ -331,8 +336,6 @@ export const getAllBookings = async (req, res, next) => {
   }
 };
 
-// @desc    Update a booking status
-// @route   PATCH /api/admin/bookings/:id/status
 export const updateBookingStatus = async (req, res, next) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -356,8 +359,6 @@ export const updateBookingStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Get all reviews
-// @route   GET /api/admin/reviews
 export const getAllReviews = async (req, res, next) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -375,8 +376,6 @@ export const getAllReviews = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a review
-// @route   DELETE /api/admin/reviews/:id
 export const deleteReview = async (req, res, next) => {
   const { id } = req.params;
 
@@ -396,7 +395,7 @@ export const deleteReview = async (req, res, next) => {
     await prisma.store.update({
       where: { id: review.storeId },
       data: {
-        rating: storeRatings._avg.rating || 0, // Menggunakan 'rating' sesuai skema
+        rating: storeRatings._avg.rating || 0,
       },
     });
 
@@ -406,8 +405,6 @@ export const deleteReview = async (req, res, next) => {
   }
 };
 
-// @desc    Get report data
-// @route   GET /api/admin/reports
 export const getReportData = async (req, res, next) => {
   try {
     res.json({ message: "Report data endpoint" });
@@ -416,8 +413,6 @@ export const getReportData = async (req, res, next) => {
   }
 };
 
-// @desc    Get operational settings
-// @route   GET /api/admin/settings
 export const getOperationalSettings = async (req, res, next) => {
   try {
     const settings = await prisma.globalSetting.findMany();
@@ -431,8 +426,6 @@ export const getOperationalSettings = async (req, res, next) => {
   }
 };
 
-// @desc    Update operational settings
-// @route   POST /api/admin/settings
 export const updateOperationalSettings = async (req, res, next) => {
   const settingsToUpdate = req.body;
   try {
@@ -457,9 +450,6 @@ export const updateOperationalSettings = async (req, res, next) => {
   }
 };
 
-// --- FUNGSI YANG DIPERBAIKI #1 ---
-// @desc    Get store settings for admin
-// @route   GET /api/admin/stores/:storeId/settings
 export const getStoreSettingsForAdmin = async (req, res, next) => {
   const { storeId } = req.params;
   try {
@@ -479,9 +469,6 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
   }
 };
 
-// --- FUNGSI YANG DIPERBAIKI #2 ---
-// @desc    Update store settings by admin
-// @route   PUT /api/admin/stores/:storeId/settings
 export const updateStoreSettingsByAdmin = async (req, res, next) => {
   const { storeId } = req.params;
   const {
@@ -568,8 +555,6 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Upload photo for store by admin
-// @route   POST /api/admin/stores/upload-photo
 export const uploadAdminPhoto = (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Tidak ada file yang diunggah." });
@@ -590,8 +575,6 @@ export const uploadAdminPhoto = (req, res) => {
     });
 };
 
-// @desc    Create a new store by admin
-// @route   POST /api/admin/stores/new
 export const createStoreByAdmin = async (req, res, next) => {
   const {
     name,
@@ -610,7 +593,7 @@ export const createStoreByAdmin = async (req, res, next) => {
         description,
         location,
         owner: { connect: { id: ownerId } },
-        storeStatus: "active", // Toko yang dibuat admin langsung aktif
+        storeStatus: "active",
         tier,
         commissionRate: tier === "BASIC" ? parseFloat(commissionRate) : null,
         subscriptionFee: tier === "PRO" ? parseFloat(subscriptionFee) : null,
@@ -635,8 +618,6 @@ export const createStoreByAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Get all banners for admin
-// @route   GET /api/admin/banners
 export const getAllBannersForAdmin = async (req, res, next) => {
   try {
     const banners = await prisma.banner.findMany({
@@ -648,8 +629,6 @@ export const getAllBannersForAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Create a new banner
-// @route   POST /api/admin/banners
 export const createBanner = async (req, res, next) => {
   const { title, imageUrl, linkUrl, status, description } = req.body;
   try {
@@ -662,8 +641,6 @@ export const createBanner = async (req, res, next) => {
   }
 };
 
-// @desc    Update a banner
-// @route   PUT /api/admin/banners/:id
 export const updateBanner = async (req, res, next) => {
   const { id } = req.params;
   const { title, imageUrl, linkUrl, status, description } = req.body;
@@ -678,8 +655,6 @@ export const updateBanner = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a banner
-// @route   DELETE /api/admin/banners/:id
 export const deleteBanner = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -690,8 +665,6 @@ export const deleteBanner = async (req, res, next) => {
   }
 };
 
-// @desc    Preview a store invoice
-// @route   POST /api/admin/stores/:storeId/invoices/preview
 export const previewStoreInvoice = async (req, res, next) => {
   const { storeId } = req.params;
   const { period, notes } = req.body;
@@ -743,8 +716,6 @@ export const previewStoreInvoice = async (req, res, next) => {
   }
 };
 
-// @desc    Create a store invoice
-// @route   POST /api/admin/stores/:storeId/invoices
 export const createStoreInvoice = async (req, res, next) => {
   const { storeId } = req.params;
   const { period, notes } = req.body;
@@ -818,8 +789,6 @@ export const createStoreInvoice = async (req, res, next) => {
   }
 };
 
-// @desc    Get all invoices for a store
-// @route   GET /api/admin/stores/:storeId/invoices
 export const getStoreInvoices = async (req, res, next) => {
   const { storeId } = req.params;
   try {
@@ -833,8 +802,6 @@ export const getStoreInvoices = async (req, res, next) => {
   }
 };
 
-// @desc    Check if an invoice for a specific month/year already exists
-// @route   POST /api/admin/stores/:storeId/invoices/check
 export const checkExistingInvoice = async (req, res, next) => {
   const { storeId } = req.params;
   const { period } = req.body;
@@ -849,8 +816,6 @@ export const checkExistingInvoice = async (req, res, next) => {
   }
 };
 
-// @desc    Get an invoice by ID
-// @route   GET /api/admin/invoices/:invoiceId
 export const getInvoiceByIdForAdmin = async (req, res, next) => {
   const { invoiceId } = req.params;
   try {
@@ -871,8 +836,6 @@ export const getInvoiceByIdForAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Validate a promo code
-// @route   POST /api/admin/promos/validate
 export const validatePromoCode = async (req, res, next) => {
   const { code } = req.body;
   if (!code) {
@@ -895,8 +858,6 @@ export const validatePromoCode = async (req, res, next) => {
   }
 };
 
-// @desc    Request to delete a store
-// @route   POST /api/admin/stores/:storeId/request-deletion
 export const requestDeleteStore = async (req, res, next) => {
   const { storeId } = req.params;
   const adminUserId = req.user.id;
@@ -945,8 +906,6 @@ export const requestDeleteStore = async (req, res, next) => {
   }
 };
 
-// @desc    Create a new user by an admin
-// @route   POST /api/admin/users
 export const createUserByAdmin = async (req, res, next) => {
   const { name, email, password, role } = req.body;
   try {
@@ -984,8 +943,6 @@ export const createUserByAdmin = async (req, res, next) => {
   }
 };
 
-// @desc    Request to delete a user by admin
-// @route   POST /api/admin/users/:id/request-deletion
 export const requestUserDeletion = async (req, res, next) => {
   const { id: userIdToDelete } = req.params;
   const adminUserId = req.user.id;
@@ -1006,7 +963,6 @@ export const requestUserDeletion = async (req, res, next) => {
       });
     }
 
-    // --- AWAL PERBAIKAN KODE ---
     const existingRequest = await prisma.approvalRequest.findFirst({
       where: {
         requestType: "USER_DELETION",
@@ -1017,7 +973,6 @@ export const requestUserDeletion = async (req, res, next) => {
         },
       },
     });
-    // --- AKHIR PERBAIKAN KODE ---
 
     if (existingRequest) {
       return res.status(409).json({
@@ -1048,10 +1003,6 @@ export const requestUserDeletion = async (req, res, next) => {
   }
 };
 
-// PROMO MANAGEMENT
-
-// @desc    Get all promos
-// @route   GET /api/admin/promos
 export const getAllPromos = async (req, res, next) => {
   try {
     const promos = await prisma.promo.findMany({
@@ -1065,14 +1016,12 @@ export const getAllPromos = async (req, res, next) => {
   }
 };
 
-// @desc    Create a new promo
-// @route   POST /api/admin/promos
 export const createPromo = async (req, res, next) => {
   const {
     code,
     description,
     discountType,
-    value, // Nama field di skema
+    value,
     startDate,
     endDate,
     usageLimit,
@@ -1085,7 +1034,7 @@ export const createPromo = async (req, res, next) => {
         code,
         description,
         discountType,
-        value, // Menggunakan 'value'
+        value,
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         usageLimit,
@@ -1104,8 +1053,6 @@ export const createPromo = async (req, res, next) => {
   }
 };
 
-// @desc    Update a promo
-// @route   PUT /api/admin/promos/:id
 export const updatePromo = async (req, res, next) => {
   const { id } = req.params;
   const {
@@ -1147,11 +1094,9 @@ export const updatePromo = async (req, res, next) => {
   }
 };
 
-// @desc    Change promo status (activate/deactivate)
-// @route   PATCH /api/admin/promos/:id/status
 export const changePromoStatus = async (req, res, next) => {
   const { id } = req.params;
-  const { newStatus } = req.body; // Menggunakan newStatus agar lebih jelas
+  const { newStatus } = req.body;
   try {
     const promo = await prisma.promo.update({
       where: { id },
@@ -1163,8 +1108,6 @@ export const changePromoStatus = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a promo
-// @route   DELETE /api/admin/promos/:id
 export const deletePromo = async (req, res, next) => {
   const { id } = req.params;
   try {
