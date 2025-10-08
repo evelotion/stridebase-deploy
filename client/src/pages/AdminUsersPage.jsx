@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminUsersPage.jsx (Dengan Logika Hapus Bertahap)
+// File: client/src/pages/AdminUsersPage.jsx (Lengkap dengan Perbaikan Final)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
@@ -6,7 +6,7 @@ import {
   changeUserRole,
   changeUserStatus,
   createUserByAdmin,
-  requestUserDeletion, // 1. Impor fungsi baru
+  requestUserDeletion,
 } from "../services/apiService";
 
 // Komponen Modal Baru
@@ -166,7 +166,7 @@ const AdminUsersPage = ({ showMessage }) => {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      await changeUserRole(userId, newRole);
+      await changeUserRole(userId, { role: newRole }); // Perbaikan: Kirim objek
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId ? { ...user, role: newRole } : user
@@ -178,9 +178,16 @@ const AdminUsersPage = ({ showMessage }) => {
     }
   };
 
-  const handleStatusChange = async (userId, newStatus) => {
+  const handleStatusChange = async (userId, currentStatus) => {
+    let newStatus;
+    if (currentStatus === "pending" || currentStatus === "blocked") {
+      newStatus = "active";
+    } else {
+      newStatus = "blocked";
+    }
+
     try {
-      await changeUserStatus(userId, newStatus);
+      await changeUserStatus(userId, { status: newStatus }); // Perbaikan: Kirim objek
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId ? { ...user, status: newStatus } : user
@@ -205,7 +212,7 @@ const AdminUsersPage = ({ showMessage }) => {
   };
 
   const handleDeleteUser = async (user) => {
-    if (user.role === "admin" || user.role === "mitra") {
+    if (user.role !== "customer") {
       showMessage(
         `Ubah peran "${user.name}" menjadi 'customer' terlebih dahulu sebelum meminta penghapusan.`,
         "Peringatan"
@@ -243,7 +250,14 @@ const AdminUsersPage = ({ showMessage }) => {
   };
 
   const getStatusBadge = (status) => {
-    return status === "active" ? "bg-success" : "bg-warning text-dark";
+    switch (status) {
+      case "active":
+        return "bg-success";
+      case "pending":
+        return "bg-warning text-dark";
+      default:
+        return "bg-secondary";
+    }
   };
 
   const filteredUsers = useMemo(() => {
@@ -385,11 +399,8 @@ const AdminUsersPage = ({ showMessage }) => {
                                   role="switch"
                                   id={`status-switch-${user.id}`}
                                   checked={user.status === "active"}
-                                  onChange={(e) =>
-                                    handleStatusChange(
-                                      user.id,
-                                      e.target.checked ? "active" : "blocked"
-                                    )
+                                  onChange={() =>
+                                    handleStatusChange(user.id, user.status)
                                   }
                                 />
                                 <label
@@ -398,7 +409,7 @@ const AdminUsersPage = ({ showMessage }) => {
                                 >
                                   {user.status === "active"
                                     ? "Aktif"
-                                    : "Diblokir"}
+                                    : "Tidak Aktif"}
                                 </label>
                               </div>
                             </li>
@@ -455,7 +466,6 @@ const AdminUsersPage = ({ showMessage }) => {
                         <i className="fas fa-cog"></i>
                       </button>
                       <ul className="dropdown-menu dropdown-menu-end p-2">
-                        {/* Opsi dropdown mobile di sini */}
                         <li className="dropdown-header">Ubah Peran</li>
                         <li>
                           <button
@@ -494,18 +504,17 @@ const AdminUsersPage = ({ showMessage }) => {
                               role="switch"
                               id={`status-switch-mobile-${user.id}`}
                               checked={user.status === "active"}
-                              onChange={(e) =>
-                                handleStatusChange(
-                                  user.id,
-                                  e.target.checked ? "active" : "blocked"
-                                )
+                              onChange={() =>
+                                handleStatusChange(user.id, user.status)
                               }
                             />
                             <label
                               className="form-check-label"
                               htmlFor={`status-switch-mobile-${user.id}`}
                             >
-                              {user.status === "active" ? "Aktif" : "Diblokir"}
+                              {user.status === "active"
+                                ? "Aktif"
+                                : "Tidak Aktif"}
                             </label>
                           </div>
                         </li>
