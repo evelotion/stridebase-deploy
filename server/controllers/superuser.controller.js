@@ -1,4 +1,4 @@
-// File: server/controllers/superuser.controller.js (Lengkap)
+// File: server/controllers/superuser.controller.js (Lengkap dengan Logika Hapus Toko)
 
 import prisma from "../config/prisma.js";
 import { exec } from "child_process";
@@ -6,7 +6,7 @@ import { loadThemeConfig, getTheme } from "../config/theme.js";
 import {
   broadcastThemeUpdate,
   createNotificationForUser,
-  io, // <-- Ganti 'getIo' menjadi 'io' di sini
+  io,
 } from "../socket.js";
 
 // @desc    Get all global configurations
@@ -81,6 +81,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
         .json({ message: "Permintaan ini sudah diproses sebelumnya." });
     }
 
+    // Logika untuk menyetujui perubahan model bisnis
     if (
       request.requestType === "BUSINESS_MODEL_CHANGE" &&
       resolution === "APPROVED"
@@ -96,6 +97,40 @@ export const resolveApprovalRequest = async (req, res, next) => {
       });
     }
 
+    // LOGIKA BARU: Menangani persetujuan penghapusan toko
+    if (request.requestType === "STORE_DELETION" && resolution === "APPROVED") {
+      const { storeId } = request;
+
+      // Hapus semua data yang berelasi dengan toko dalam satu transaksi
+      // Urutan penghapusan penting untuk menghindari error constraint
+      if (storeId) {
+        await prisma.$transaction([
+          prisma.review.deleteMany({ where: { storeId } }),
+          prisma.platformEarning.deleteMany({ where: { storeId } }),
+          prisma.walletTransaction.deleteMany({
+            where: { wallet: { storeId } },
+          }),
+          prisma.payoutRequest.deleteMany({ where: { storeId } }),
+          prisma.payment.deleteMany({ where: { booking: { storeId } } }),
+          prisma.invoice.deleteMany({ where: { storeId } }),
+          prisma.booking.deleteMany({ where: { storeId } }),
+          prisma.service.deleteMany({ where: { storeId } }),
+          prisma.storeSchedule.deleteMany({ where: { storeId } }),
+          prisma.storePromo.deleteMany({ where: { storeId } }),
+          prisma.approvalRequest.deleteMany({ where: { storeId } }),
+          prisma.storeWallet.deleteMany({ where: { storeId } }),
+          prisma.store.delete({ where: { id: storeId } }),
+        ]);
+        // Hapus notifikasi terkait setelah booking dihapus (jika ada relasi)
+        await prisma.notification.deleteMany({
+          where: {
+            bookingId: null,
+            message: { contains: `toko ${request.details.storeName}` },
+          },
+        });
+      }
+    }
+
     const updatedRequest = await prisma.approvalRequest.update({
       where: { id: id },
       data: {
@@ -104,10 +139,13 @@ export const resolveApprovalRequest = async (req, res, next) => {
       },
     });
 
+    const storeName = request.details?.storeName || `(ID: ${request.storeId})`;
     await createNotificationForUser(
       request.requestedById,
-      `Permintaan Anda untuk mengubah model bisnis toko telah di-${resolution.toLowerCase()} oleh developer.`,
-      `/admin/stores/${request.storeId}/settings`
+      `Permintaan Anda (${
+        request.requestType
+      }) untuk toko "${storeName}" telah di-${resolution.toLowerCase()} oleh developer.`,
+      `/admin/stores`
     );
 
     res.json(updatedRequest);
@@ -166,14 +204,13 @@ export const updateHomePageTheme = async (req, res, next) => {
   }
 
   try {
-    await prisma.globalSetting.update({
+    await prisma.globalSetting.upsert({
       where: { key: "homePageTheme" },
-      data: {
-        value: theme,
-      },
+      update: { value: theme },
+      create: { key: "homePageTheme", value: theme },
     });
 
-    await loadThemeConfig();      // Muat ulang konfigurasi
+    await loadThemeConfig(); // Muat ulang konfigurasi
     broadcastThemeUpdate(getTheme()); // Siarkan konfigurasi yang sudah dimuat ulang
 
     res.status(200).json({

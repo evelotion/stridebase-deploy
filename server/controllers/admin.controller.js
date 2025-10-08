@@ -616,6 +616,59 @@ export const deleteBanner = async (req, res, next) => {
     }
 };
 
+// @desc    Request to delete a store by admin
+// @route   POST /api/admin/stores/:storeId/request-deletion
+export const requestDeleteStore = async (req, res, next) => {
+  const { storeId } = req.params;
+  const adminUserId = req.user.id;
+
+  try {
+    const store = await prisma.store.findUnique({
+      where: { id: storeId },
+    });
+
+    if (!store) {
+      return res.status(404).json({ message: "Toko tidak ditemukan." });
+    }
+
+    // Periksa apakah sudah ada permintaan penghapusan yang pending
+    const existingRequest = await prisma.approvalRequest.findFirst({
+      where: {
+        storeId: storeId,
+        requestType: "STORE_DELETION",
+        status: "PENDING",
+      },
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({
+        message: "Permintaan penghapusan untuk toko ini sudah ada dan sedang menunggu persetujuan.",
+      });
+    }
+
+    // Buat permintaan persetujuan
+    await prisma.approvalRequest.create({
+      data: {
+        storeId: storeId,
+        requestType: "STORE_DELETION",
+        details: {
+          message: `Admin (${req.user.name}) meminta untuk menghapus toko "${store.name}".`,
+          storeName: store.name,
+          storeId: store.id,
+        },
+        status: "PENDING",
+        requestedById: adminUserId,
+      },
+    });
+
+    res.status(200).json({
+      message: `Permintaan untuk menghapus toko "${store.name}" telah dikirim ke developer untuk persetujuan.`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Create a new store by admin
 // @route   POST /api/admin/stores/new
 export const createStoreByAdmin = async (req, res, next) => {

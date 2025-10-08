@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoresPage.jsx (Dengan Tombol Riwayat Invoice Kondisional)
+// File: client/src/pages/AdminStoresPage.jsx (Dengan Tombol Hapus & Permintaan Persetujuan)
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import {
   updateStoreStatus,
   createStoreInvoiceByAdmin,
   previewStoreInvoiceByAdmin,
+  requestStoreDeletion, // <-- 1. IMPOR FUNGSI BARU
 } from "../services/apiService";
 
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
@@ -162,6 +163,24 @@ const AdminStoresPage = ({ showMessage }) => {
     }
   };
 
+  // --- 2. FUNGSI HANDLER BARU ---
+  const handleRequestDelete = async (storeId, storeName) => {
+    if (
+      !window.confirm(
+        `Anda yakin ingin mengirim permintaan untuk menghapus toko "${storeName}"? Toko akan dihapus permanen setelah disetujui oleh Developer.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const result = await requestStoreDeletion(storeId);
+      showMessage(result.message, "Success");
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
+    }
+  };
+
   const getStatusBadge = (status) => {
     switch (status) {
       case "active":
@@ -281,7 +300,6 @@ const AdminStoresPage = ({ showMessage }) => {
                       {store.rating || "N/A"}
                     </td>
                     <td className="text-end">
-                      {/* --- AWAL PERUBAHAN TAMPILAN DESKTOP --- */}
                       {store.tier === "PRO" && (
                         <>
                           <Link
@@ -299,7 +317,6 @@ const AdminStoresPage = ({ showMessage }) => {
                           </button>
                         </>
                       )}
-                      {/* --- AKHIR PERUBAHAN TAMPILAN DESKTOP --- */}
                       <Link
                         to={`/admin/stores/${store.id}/settings`}
                         className="btn btn-sm btn-primary me-2"
@@ -348,6 +365,16 @@ const AdminStoresPage = ({ showMessage }) => {
                           </li>
                         </ul>
                       </div>
+                      {/* --- 3. TOMBOL HAPUS BARU (DESKTOP) --- */}
+                      <button
+                        className="btn btn-sm btn-danger ms-2"
+                        onClick={() =>
+                          handleRequestDelete(store.id, store.name)
+                        }
+                        title="Minta Hapus Toko"
+                      >
+                        Hapus
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -399,7 +426,6 @@ const AdminStoresPage = ({ showMessage }) => {
                 </div>
               </div>
               <div className="mobile-card-footer d-flex justify-content-end gap-2">
-                {/* --- AWAL PERUBAHAN TAMPILAN MOBILE --- */}
                 {store.tier === "PRO" && (
                   <>
                     <Link
@@ -417,7 +443,14 @@ const AdminStoresPage = ({ showMessage }) => {
                     </button>
                   </>
                 )}
-                {/* --- AKHIR PERUBAHAN TAMPILAN MOBILE --- */}
+                {/* --- 4. TOMBOL HAPUS BARU (MOBILE) --- */}
+                <button
+                  className="btn btn-sm btn-outline-danger"
+                  onClick={() => handleRequestDelete(store.id, store.name)}
+                  title="Minta Hapus Toko"
+                >
+                  <i className="fas fa-trash-alt"></i>
+                </button>
                 <Link
                   to={`/admin/stores/${store.id}/settings`}
                   className="btn btn-sm btn-primary"

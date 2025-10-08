@@ -171,6 +171,8 @@ export const checkExistingInvoiceByAdmin = (storeId, periodData) =>
   apiRequest(`/api/admin/stores/${storeId}/invoices/check`, "POST", periodData);
 export const getInvoiceByIdForAdmin = (invoiceId) =>
   apiRequest(`/api/admin/invoices/${invoiceId}`);
+export const requestStoreDeletion = (storeId) =>
+  apiRequest(`/api/admin/stores/${storeId}/request-deletion`, "POST");
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest("/api/superuser/config");

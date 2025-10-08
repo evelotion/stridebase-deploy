@@ -34,7 +34,8 @@ import {
   getStoreInvoices,
   checkExistingInvoice,
   getInvoiceByIdForAdmin,
-  validatePromoCode // <-- FUNGSI BARU DIIMPOR
+  validatePromoCode,
+  requestDeleteStore
 } from "../controllers/admin.controller.js";
 import multer from "multer";
 
@@ -60,6 +61,7 @@ router.patch("/stores/:id/status", updateStoreStatus);
 router.get("/stores/:storeId/settings", getStoreSettingsForAdmin);
 router.put("/stores/:storeId/settings", updateStoreSettingsByAdmin);
 router.post("/stores/upload-photo", upload.single("photo"), uploadAdminPhoto);
+router.post("/stores/:storeId/request-deletion", requestDeleteStore);
 
 // Manajemen Invoice (Tagihan)
 router.get("/stores/:storeId/invoices", getStoreInvoices);
