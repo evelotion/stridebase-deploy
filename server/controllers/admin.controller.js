@@ -19,12 +19,14 @@ export const getAdminStats = async (req, res, next) => {
         amount: true,
       },
       where: {
-        status: "PAID",
+        // PERBAIKAN: Menggunakan 'paid' (huruf kecil) sesuai enum
+        status: "paid",
       },
     });
     const totalPlatformEarnings = await prisma.platformEarning.aggregate({
+      // --- PERBAIKAN UTAMA DI SINI ---
       _sum: {
-        amount: true,
+        earnedAmount: true,
       },
     });
     const recentBookings = await prisma.booking.findMany({
@@ -46,7 +48,7 @@ export const getAdminStats = async (req, res, next) => {
       totalStores,
       totalBookings,
       totalRevenue: totalRevenue._sum.amount || 0,
-      totalPlatformEarnings: totalPlatformEarnings._sum.amount || 0,
+      totalPlatformEarnings: totalPlatformEarnings._sum.earnedAmount || 0, // Perbaikan nama field
       recentBookings,
       pendingPayouts,
     });
