@@ -1,9 +1,9 @@
-// File: server/controllers/admin.controller.js (Lengkap dengan Validasi Peran Mitra)
+// File: server/controllers/admin.controller.js (Lengkap dan Sudah Diperbaiki)
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser, broadcastThemeUpdate } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
-import { loadThemeConfig } from "../config/theme.js";
+import { loadThemeConfig, getTheme } from "../config/theme.js"; // Pastikan getTheme diimpor
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 
@@ -19,12 +19,10 @@ export const getAdminStats = async (req, res, next) => {
         amount: true,
       },
       where: {
-        // PERBAIKAN: Menggunakan 'paid' (huruf kecil) sesuai enum
         status: "paid",
       },
     });
     const totalPlatformEarnings = await prisma.platformEarning.aggregate({
-      // --- PERBAIKAN UTAMA DI SINI ---
       _sum: {
         earnedAmount: true,
       },
@@ -48,7 +46,7 @@ export const getAdminStats = async (req, res, next) => {
       totalStores,
       totalBookings,
       totalRevenue: totalRevenue._sum.amount || 0,
-      totalPlatformEarnings: totalPlatformEarnings._sum.earnedAmount || 0, // Perbaikan nama field
+      totalPlatformEarnings: totalPlatformEarnings._sum.earnedAmount || 0,
       recentBookings,
       pendingPayouts,
     });
@@ -65,7 +63,6 @@ export const getAllUsers = async (req, res, next) => {
       orderBy: {
         createdAt: "desc",
       },
-      // Mungkin Anda ingin menambahkan informasi lain di sini, seperti jumlah transaksi
     });
     res.json(users);
   } catch (error) {
@@ -88,13 +85,11 @@ export const changeUserRole = async (req, res, next) => {
       return res.status(404).json({ message: "Pengguna tidak ditemukan." });
     }
 
-    // --- BLOK VALIDASI BARU ---
-    // Jika mencoba mengubah MITRA menjadi CUSTOMER
     if (user.role === "mitra" && newRole === "customer") {
       const activeStoresCount = await prisma.store.count({
         where: {
           ownerId: id,
-          status: "ACTIVE", // Hanya cek toko yang aktif
+          storeStatus: "active", // Menggunakan storeStatus enum
         },
       });
 
@@ -104,7 +99,6 @@ export const changeUserRole = async (req, res, next) => {
         });
       }
     }
-    // --- AKHIR DARI BLOK VALIDASI BARU ---
 
     const updatedUser = await prisma.user.update({
       where: { id },
@@ -170,7 +164,7 @@ export const updateStoreStatus = async (req, res, next) => {
   try {
     const updatedStore = await prisma.store.update({
       where: { id },
-      data: { status },
+      data: { storeStatus: status }, // Menggunakan storeStatus enum
       include: { owner: true },
     });
     await createNotificationForUser(
@@ -200,7 +194,7 @@ export const updateStoreDetailsByAdmin = async (req, res, next) => {
     }
 
     const dataToUpdate = {
-      status,
+      storeStatus: status, // Menggunakan storeStatus enum
       ownerId,
     };
 
@@ -208,29 +202,26 @@ export const updateStoreDetailsByAdmin = async (req, res, next) => {
       where: { id: storeId },
       data: dataToUpdate,
       include: {
-        owner: { select: { name: true } } // Untuk notifikasi
-      }
+        owner: { select: { name: true } },
+      },
     });
 
-    // Kirim notifikasi ke pemilik lama (jika berubah)
     if (storeToUpdate.ownerId !== ownerId) {
       await createNotificationForUser(
         storeToUpdate.ownerId,
         `Kepemilikan toko "${storeToUpdate.name}" telah dipindahkan ke pengguna lain oleh admin.`,
         `/partner/dashboard`
       );
-      // Notifikasi ke pemilik baru
-       await createNotificationForUser(
+      await createNotificationForUser(
         ownerId,
         `Anda telah ditunjuk sebagai pemilik baru untuk toko "${storeToUpdate.name}" oleh admin.`,
         `/partner/dashboard`
       );
     }
-    
-    // Kirim notifikasi jika status berubah
-    if (storeToUpdate.status !== status) {
-       await createNotificationForUser(
-        ownerId, // Kirim ke pemilik yang sekarang
+
+    if (storeToUpdate.storeStatus !== status) {
+      await createNotificationForUser(
+        ownerId,
         `Status toko Anda "${storeToUpdate.name}" telah diubah menjadi ${status} oleh admin.`,
         "/partner/dashboard"
       );
@@ -273,7 +264,7 @@ export const getPayoutRequests = async (req, res, next) => {
 // @route   PATCH /api/admin/payout-requests/:id/resolve
 export const resolvePayoutRequest = async (req, res, next) => {
   const { id } = req.params;
-  const { status, adminNotes } = req.body; // 'COMPLETED' or 'REJECTED'
+  const { status, adminNotes } = req.body;
 
   try {
     const request = await prisma.payoutRequest.findUnique({
@@ -287,7 +278,6 @@ export const resolvePayoutRequest = async (req, res, next) => {
     }
 
     if (status === "REJECTED") {
-      // Kembalikan dana ke wallet jika ditolak
       await prisma.storeWallet.update({
         where: { storeId: request.storeId },
         data: {
@@ -355,7 +345,9 @@ export const updateBookingStatus = async (req, res, next) => {
     });
     await createNotificationForUser(
       updatedBooking.userId,
-      `Status pesanan Anda #${updatedBooking.id} di toko "${updatedBooking.store.name}" telah diubah menjadi ${status}.`,
+      `Status pesanan Anda #${updatedBooking.id.substring(0, 8)} di toko "${
+        updatedBooking.store.name
+      }" telah diubah menjadi ${status}.`,
       `/track-order/${updatedBooking.id}`
     );
     res.json(updatedBooking);
@@ -396,7 +388,6 @@ export const deleteReview = async (req, res, next) => {
 
     await prisma.review.delete({ where: { id } });
 
-    // Update rating toko setelah ulasan dihapus
     const storeRatings = await prisma.review.aggregate({
       _avg: { rating: true },
       where: { storeId: review.storeId },
@@ -405,7 +396,7 @@ export const deleteReview = async (req, res, next) => {
     await prisma.store.update({
       where: { id: review.storeId },
       data: {
-        averageRating: storeRatings._avg.rating || 0,
+        rating: storeRatings._avg.rating || 0, // Menggunakan 'rating' sesuai skema
       },
     });
 
@@ -419,7 +410,6 @@ export const deleteReview = async (req, res, next) => {
 // @route   GET /api/admin/reports
 export const getReportData = async (req, res, next) => {
   try {
-    // Implementasi logika laporan di sini
     res.json({ message: "Report data endpoint" });
   } catch (error) {
     next(error);
@@ -456,7 +446,6 @@ export const updateOperationalSettings = async (req, res, next) => {
     );
     await Promise.all(updatePromises);
 
-    // Jika tema berubah, broadcast pembaruan
     if (settingsToUpdate.homePageTheme) {
       await loadThemeConfig();
       broadcastThemeUpdate(getTheme());
@@ -468,6 +457,7 @@ export const updateOperationalSettings = async (req, res, next) => {
   }
 };
 
+// --- FUNGSI YANG DIPERBAIKI #1 ---
 // @desc    Get store settings for admin
 // @route   GET /api/admin/stores/:storeId/settings
 export const getStoreSettingsForAdmin = async (req, res, next) => {
@@ -475,21 +465,9 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
   try {
     const store = await prisma.store.findUnique({
       where: { id: storeId },
-      // --- PERBAIKAN DI SINI ---
-      select: {
-        name: true,
-        description: true,
-        location: true,
-        phone: true,
-        images: true,
-        headerImageUrl: true,
-        schedules: true, // <-- TAMBAHKAN BARIS INI
-        photoLimit: true,
-        tier: true,
-        commissionRate: true,
-        subscriptionFee: true,
+      include: {
+        schedules: true,
       },
-      // --- AKHIR PERBAIKAN ---
     });
 
     if (!store) {
@@ -501,12 +479,21 @@ export const getStoreSettingsForAdmin = async (req, res, next) => {
   }
 };
 
+// --- FUNGSI YANG DIPERBAIKI #2 ---
 // @desc    Update store settings by admin
 // @route   PUT /api/admin/stores/:storeId/settings
 export const updateStoreSettingsByAdmin = async (req, res, next) => {
   const { storeId } = req.params;
-  const { tier, commissionRate, subscriptionFee, businessModel } = req.body;
-  const adminUserId = req.user.id;
+  const {
+    name,
+    description,
+    images,
+    headerImageUrl,
+    schedule,
+    tier,
+    commissionRate,
+    subscriptionFee,
+  } = req.body;
 
   try {
     const currentStore = await prisma.store.findUnique({
@@ -516,37 +503,65 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    const changes = {
-      from: {
-        tier: currentStore.tier,
-        commissionRate: currentStore.commissionRate,
-        subscriptionFee: currentStore.subscriptionFee,
-        businessModel: currentStore.businessModel,
-      },
-      to: {
-        tier,
-        commissionRate,
-        subscriptionFee,
-        businessModel,
-      },
-    };
-
-    await prisma.approvalRequest.create({
-      data: {
-        requestType: "BUSINESS_MODEL_CHANGE",
-        details: {
-          message: `Admin (${req.user.name}) meminta perubahan model bisnis untuk toko "${currentStore.name}".`,
-          ...changes,
+    if (tier && tier !== currentStore.tier) {
+      await prisma.approvalRequest.create({
+        data: {
+          requestType: "BUSINESS_MODEL_CHANGE",
+          details: {
+            message: `Admin (${req.user.name}) meminta perubahan model bisnis untuk toko "${currentStore.name}".`,
+            from: {
+              tier: currentStore.tier,
+              commissionRate: currentStore.commissionRate,
+              subscriptionFee: currentStore.subscriptionFee,
+            },
+            to: { tier, commissionRate, subscriptionFee },
+          },
+          status: "PENDING",
+          requestedById: req.user.id,
+          storeId: storeId,
         },
-        status: "PENDING",
-        requestedById: adminUserId,
-        storeId: storeId,
+      });
+    }
+
+    if (schedule) {
+      for (const day of Object.keys(schedule)) {
+        const dayData = schedule[day];
+        await prisma.storeSchedule.upsert({
+          where: {
+            storeId_dayOfWeek: {
+              storeId: storeId,
+              dayOfWeek: dayData.dayOfWeek,
+            },
+          },
+          update: {
+            openTime: dayData.opens,
+            closeTime: dayData.closes,
+            isClosed: dayData.isClosed,
+          },
+          create: {
+            storeId: storeId,
+            dayOfWeek: dayData.dayOfWeek,
+            openTime: dayData.opens,
+            closeTime: dayData.closes,
+            isClosed: dayData.isClosed,
+          },
+        });
+      }
+    }
+
+    await prisma.store.update({
+      where: { id: storeId },
+      data: {
+        name,
+        description,
+        images,
+        headerImageUrl,
       },
     });
 
-    res.status(200).json({
+    res.json({
       message:
-        "Permintaan perubahan telah dikirim ke developer untuk persetujuan.",
+        "Pengaturan toko berhasil disimpan. Perubahan tier memerlukan persetujuan Developer.",
     });
   } catch (error) {
     next(error);
@@ -562,7 +577,6 @@ export const uploadAdminPhoto = (req, res) => {
   const fileStr = req.file.buffer.toString("base64");
   const uploadOptions = {
     folder: "stridebase/store-photos",
-    // transformation: [{ width: 800, height: 600, crop: "limit" }],
   };
   cloudinary.uploader
     .upload(`data:${req.file.mimetype};base64,${fileStr}`, uploadOptions)
@@ -579,38 +593,42 @@ export const uploadAdminPhoto = (req, res) => {
 // @desc    Create a new store by admin
 // @route   POST /api/admin/stores/new
 export const createStoreByAdmin = async (req, res, next) => {
-  const { name, description, address, city, phone, ownerId, category, images } =
-    req.body;
+  const {
+    name,
+    description,
+    location,
+    ownerId,
+    tier,
+    commissionRate,
+    subscriptionFee,
+  } = req.body;
+
   try {
     const store = await prisma.store.create({
       data: {
         name,
         description,
-        address,
-        city,
-        phone,
+        location,
         owner: { connect: { id: ownerId } },
-        category,
-        images,
-        status: "ACTIVE",
-        tier: "BASIC",
-        commissionRate: 0.1,
-        subscriptionFee: 0,
-        businessModel: "COMMISSION",
+        storeStatus: "active", // Toko yang dibuat admin langsung aktif
+        tier,
+        commissionRate: tier === "BASIC" ? parseFloat(commissionRate) : null,
+        subscriptionFee: tier === "PRO" ? parseFloat(subscriptionFee) : null,
       },
     });
-    // Create a wallet for the new store
+
     await prisma.storeWallet.create({
       data: {
         storeId: store.id,
         balance: 0,
       },
     });
-    // Change user role to mitra if they are not already
+
     await prisma.user.update({
       where: { id: ownerId },
       data: { role: "mitra" },
     });
+
     res.status(201).json(store);
   } catch (error) {
     next(error);
@@ -622,7 +640,7 @@ export const createStoreByAdmin = async (req, res, next) => {
 export const getAllBannersForAdmin = async (req, res, next) => {
   try {
     const banners = await prisma.banner.findMany({
-      orderBy: { order: "asc" },
+      orderBy: { createdAt: "desc" },
     });
     res.json(banners);
   } catch (error) {
@@ -633,16 +651,10 @@ export const getAllBannersForAdmin = async (req, res, next) => {
 // @desc    Create a new banner
 // @route   POST /api/admin/banners
 export const createBanner = async (req, res, next) => {
-  const { title, imageUrl, linkUrl, isActive, order } = req.body;
+  const { title, imageUrl, linkUrl, status, description } = req.body;
   try {
     const banner = await prisma.banner.create({
-      data: {
-        title,
-        imageUrl,
-        linkUrl,
-        isActive,
-        order: Number(order),
-      },
+      data: { title, imageUrl, linkUrl, status, description },
     });
     res.status(201).json(banner);
   } catch (error) {
@@ -654,17 +666,11 @@ export const createBanner = async (req, res, next) => {
 // @route   PUT /api/admin/banners/:id
 export const updateBanner = async (req, res, next) => {
   const { id } = req.params;
-  const { title, imageUrl, linkUrl, isActive, order } = req.body;
+  const { title, imageUrl, linkUrl, status, description } = req.body;
   try {
     const banner = await prisma.banner.update({
       where: { id },
-      data: {
-        title,
-        imageUrl,
-        linkUrl,
-        isActive,
-        order: Number(order),
-      },
+      data: { title, imageUrl, linkUrl, status, description },
     });
     res.json(banner);
   } catch (error) {
@@ -688,33 +694,47 @@ export const deleteBanner = async (req, res, next) => {
 // @route   POST /api/admin/stores/:storeId/invoices/preview
 export const previewStoreInvoice = async (req, res, next) => {
   const { storeId } = req.params;
-  const { month, year, items } = req.body;
+  const { period, notes } = req.body;
+
   try {
-    const store = await prisma.store.findUnique({ where: { id: storeId } });
+    const [year, month] = period.split("-").map(Number);
+
+    const store = await prisma.store.findUnique({
+      where: { id: storeId },
+      include: { owner: true },
+    });
     if (!store) {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    let totalAmount = 0;
-    const invoiceItems = items.map((item) => {
-      totalAmount += item.amount;
-      return {
-        description: item.description,
-        amount: item.amount,
-      };
-    });
+    const invoiceItems = [
+      {
+        description: `Biaya langganan PRO untuk periode ${new Date(
+          year,
+          month - 1
+        ).toLocaleString("id-ID", { month: "long", year: "numeric" })}`,
+        quantity: 1,
+        unitPrice: store.subscriptionFee,
+        total: store.subscriptionFee,
+      },
+    ];
 
+    const totalAmount = store.subscriptionFee;
+    const issueDate = new Date();
     const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 14); // Due in 14 days
+    dueDate.setDate(issueDate.getDate() + 14);
 
     const previewData = {
-      store,
-      month,
-      year,
+      id: `PREVIEW-${Date.now()}`,
+      invoiceNumber: `INV/${year}/${month}/PREVIEW`,
+      store: store,
+      issuer: req.user,
       items: invoiceItems,
       totalAmount,
+      issueDate,
       dueDate,
-      status: "DRAFT",
+      notes,
+      status: "PREVIEW",
     };
 
     res.json(previewData);
@@ -727,21 +747,31 @@ export const previewStoreInvoice = async (req, res, next) => {
 // @route   POST /api/admin/stores/:storeId/invoices
 export const createStoreInvoice = async (req, res, next) => {
   const { storeId } = req.params;
-  const { month, year, items } = req.body;
-  const adminUserId = req.user.id;
+  const { period, notes } = req.body;
 
   try {
-    let totalAmount = 0;
-    const invoiceItems = items.map((item) => {
-      totalAmount += item.amount;
-      return {
-        description: item.description,
-        amount: item.amount,
-      };
-    });
+    const [year, month] = period.split("-").map(Number);
 
+    const existingInvoice = await prisma.invoice.findFirst({
+      where: { storeId, month, year },
+    });
+    if (existingInvoice) {
+      return res
+        .status(409)
+        .json({ message: `Invoice untuk periode ini sudah ada.` });
+    }
+
+    const store = await prisma.store.findUnique({ where: { id: storeId } });
+    if (!store || store.tier !== "PRO") {
+      return res
+        .status(400)
+        .json({ message: "Toko tidak ditemukan atau bukan tier PRO." });
+    }
+
+    const totalAmount = store.subscriptionFee;
+    const issueDate = new Date();
     const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 14);
+    dueDate.setDate(issueDate.getDate() + 14);
 
     const invoice = await prisma.invoice.create({
       data: {
@@ -749,28 +779,40 @@ export const createStoreInvoice = async (req, res, next) => {
         month,
         year,
         totalAmount,
+        issueDate,
         dueDate,
-        status: "UNPAID",
+        status: "SENT",
+        notes,
+        issuedById: req.user.id,
+        invoiceNumber: `INV/${year}${month
+          .toString()
+          .padStart(2, "0")}/${store.name.substring(0, 3).toUpperCase()}`,
         items: {
-          create: invoiceItems,
+          create: [
+            {
+              description: `Biaya langganan PRO - ${new Date(
+                year,
+                month - 1
+              ).toLocaleString("id-ID", { month: "long", year: "numeric" })}`,
+              quantity: 1,
+              unitPrice: totalAmount,
+              total: totalAmount,
+            },
+          ],
         },
-        issuedById: adminUserId,
       },
-      include: {
-        items: true,
-        store: { select: { name: true, ownerId: true } },
-      },
+      include: { store: { select: { ownerId: true, name: true } } },
     });
 
     await createNotificationForUser(
       invoice.store.ownerId,
-      `Tagihan baru telah diterbitkan untuk toko Anda "${
-        invoice.store.name
-      }" sebesar Rp ${totalAmount.toLocaleString("id-ID")}.`,
+      `Tagihan baru sebesar Rp ${totalAmount.toLocaleString(
+        "id-ID"
+      )} telah diterbitkan untuk toko Anda.`,
       `/partner/invoices/${invoice.id}`
     );
 
-    res.status(201).json(invoice);
+    res.status(201).json({ message: "Invoice berhasil dibuat dan dikirim." });
   } catch (error) {
     next(error);
   }
@@ -784,7 +826,6 @@ export const getStoreInvoices = async (req, res, next) => {
     const invoices = await prisma.invoice.findMany({
       where: { storeId },
       orderBy: { createdAt: "desc" },
-      include: { items: true },
     });
     res.json(invoices);
   } catch (error) {
@@ -796,14 +837,11 @@ export const getStoreInvoices = async (req, res, next) => {
 // @route   POST /api/admin/stores/:storeId/invoices/check
 export const checkExistingInvoice = async (req, res, next) => {
   const { storeId } = req.params;
-  const { month, year } = req.body;
+  const { period } = req.body;
+  const [year, month] = period.split("-").map(Number);
   try {
     const existingInvoice = await prisma.invoice.findFirst({
-      where: {
-        storeId,
-        month,
-        year,
-      },
+      where: { storeId, month, year },
     });
     res.json({ exists: !!existingInvoice });
   } catch (error) {
@@ -846,13 +884,12 @@ export const validatePromoCode = async (req, res, next) => {
     });
     if (
       !promo ||
-      !promo.isActive ||
-      promo.status !== "ACTIVE" ||
-      new Date() > new Date(promo.endDate)
+      promo.status !== "active" ||
+      (promo.endDate && new Date() > new Date(promo.endDate))
     ) {
       return res.status(404).json({ message: "Kode promo tidak valid." });
     }
-    res.json({ message: "Kode promo valid.", promo });
+    res.json(promo);
   } catch (error) {
     next(error);
   }
@@ -926,8 +963,8 @@ export const createUserByAdmin = async (req, res, next) => {
         email,
         password: hashedPassword,
         role,
-        status: "active", // Dibuat oleh admin, langsung aktif
-        isEmailVerified: true, // Dibuat oleh admin, anggap email terverifikasi
+        status: "active",
+        isEmailVerified: true,
       },
     });
 
@@ -1030,12 +1067,12 @@ export const createPromo = async (req, res, next) => {
     code,
     description,
     discountType,
-    discountValue,
-    maxDiscount,
-    minPurchase,
+    value, // Nama field di skema
     startDate,
     endDate,
     usageLimit,
+    minTransaction,
+    forNewUser,
   } = req.body;
   try {
     const newPromo = await prisma.promo.create({
@@ -1043,12 +1080,12 @@ export const createPromo = async (req, res, next) => {
         code,
         description,
         discountType,
-        discountValue,
-        maxDiscount,
-        minPurchase,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        value, // Menggunakan 'value'
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
         usageLimit,
+        minTransaction,
+        forNewUser,
       },
     });
     res.status(201).json(newPromo);
@@ -1070,12 +1107,12 @@ export const updatePromo = async (req, res, next) => {
     code,
     description,
     discountType,
-    discountValue,
-    maxDiscount,
-    minPurchase,
+    value,
     startDate,
     endDate,
     usageLimit,
+    minTransaction,
+    forNewUser,
     status,
   } = req.body;
   try {
@@ -1085,12 +1122,12 @@ export const updatePromo = async (req, res, next) => {
         code,
         description,
         discountType,
-        discountValue,
-        maxDiscount,
-        minPurchase,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
+        value,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
         usageLimit,
+        minTransaction,
+        forNewUser,
         status,
       },
     });
@@ -1109,11 +1146,11 @@ export const updatePromo = async (req, res, next) => {
 // @route   PATCH /api/admin/promos/:id/status
 export const changePromoStatus = async (req, res, next) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { newStatus } = req.body; // Menggunakan newStatus agar lebih jelas
   try {
     const promo = await prisma.promo.update({
       where: { id },
-      data: { status },
+      data: { status: newStatus },
     });
     res.json(promo);
   } catch (error) {
@@ -1127,7 +1164,7 @@ export const deletePromo = async (req, res, next) => {
   const { id } = req.params;
   try {
     await prisma.promo.delete({ where: { id } });
-    res.status(204).send();
+    res.json({ message: "Promo berhasil dihapus." });
   } catch (error) {
     next(error);
   }
