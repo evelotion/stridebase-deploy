@@ -1006,13 +1006,18 @@ export const requestUserDeletion = async (req, res, next) => {
       });
     }
 
+    // --- AWAL PERBAIKAN KODE ---
     const existingRequest = await prisma.approvalRequest.findFirst({
       where: {
-        "details.userId": userIdToDelete,
         requestType: "USER_DELETION",
         status: "PENDING",
+        details: {
+          path: ["userId"],
+          equals: userIdToDelete,
+        },
       },
     });
+    // --- AKHIR PERBAIKAN KODE ---
 
     if (existingRequest) {
       return res.status(409).json({
