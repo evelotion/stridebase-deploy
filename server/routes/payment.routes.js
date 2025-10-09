@@ -1,17 +1,27 @@
-// File: server/routes/payment.routes.js
-import express from 'express';
-import { authenticateToken } from '../middleware/authenticateToken.js';
-import { createPaymentTransaction, paymentNotificationHandler, confirmPaymentSimulation } from '../controllers/payment.controller.js';
+import express from "express";
+import {
+  createPaymentGatewayTransaction,
+  handleMidtransNotification,
+  getPaymentStatus,
+} from "../controllers/payment.controller.js";
+import {
+  authenticateToken,
+  optionalAuthenticateToken,
+} from "../middleware/authenticateToken.js";
 
 const router = express.Router();
 
-// Membuat transaksi (perlu login)
-router.post('/create-transaction', authenticateToken, createPaymentTransaction);
+// Membuat token transaksi Midtrans untuk sebuah booking
+router.post(
+  "/create-transaction",
+  authenticateToken,
+  createPaymentGatewayTransaction
+);
 
-// Menerima notifikasi dari payment gateway (tidak perlu login)
-router.post('/notification', paymentNotificationHandler);
+// Menerima notifikasi webhook dari Midtrans
+router.post("/midtrans-notification", handleMidtransNotification);
 
-// PERUBAHAN: Hapus 'authenticateToken' dari baris di bawah ini
-router.post('/confirm-simulation/:bookingId', confirmPaymentSimulation);
+// Mengecek status pembayaran sebuah booking
+router.get("/status/:bookingId", authenticateToken, getPaymentStatus);
 
 export default router;
