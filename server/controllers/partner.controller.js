@@ -183,20 +183,26 @@ export const createPartnerService = async (req, res, next) => {
 // @desc    Update an existing service
 // @route   PUT /api/partner/services/:serviceId
 export const updatePartnerService = async (req, res, next) => {
-  const { name, description, price, shoeType, duration } = req.body;
   try {
+    const { id } = req.params;
+    const { name, price, duration, description } = req.body;
+    
+    // Temukan dan perbarui layanan HANYA jika ID dan ID toko cocok
     const updatedService = await prisma.service.update({
-      where: { id: req.params.serviceId },
-      data: {
-        name,
-        description,
-        price: parseFloat(price),
-        shoeType,
-        duration: parseInt(duration),
+      where: {
+        id: parseInt(id),
+        storeId: req.store.id, // <-- PERBAIKAN KEAMANAN DI SINI
       },
+      data: { name, price, duration, description },
     });
+    
     res.json(updatedService);
   } catch (error) {
+    // Jika tidak ditemukan (karena ID atau storeId salah), Prisma akan error
+    // kita bisa tangani sebagai "tidak ditemukan"
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: "Layanan tidak ditemukan atau Anda tidak punya hak akses." });
+    }
     next(error);
   }
 };
@@ -205,9 +211,21 @@ export const updatePartnerService = async (req, res, next) => {
 // @route   DELETE /api/partner/services/:serviceId
 export const deletePartnerService = async (req, res, next) => {
   try {
-    await prisma.service.delete({ where: { id: req.params.serviceId } });
-    res.status(200).json({ message: "Layanan berhasil dihapus." });
+    const { id } = req.params;
+
+    // Hapus layanan HANYA jika ID dan ID toko cocok
+    await prisma.service.delete({
+      where: {
+        id: parseInt(id),
+        storeId: req.store.id, // <-- PERBAIKAN KEAMANAN DI SINI
+      },
+    });
+    
+    res.status(204).send();
   } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: "Layanan tidak ditemukan atau Anda tidak punya hak akses." });
+    }
     next(error);
   }
 };
