@@ -1,3 +1,5 @@
+// File: client/src/pages/PartnerSettingsPage.jsx (Dengan Perbaikan)
+
 import React, { useState, useEffect, useCallback } from "react";
 import {
   getPartnerSettings,
@@ -39,16 +41,24 @@ const PartnerSettingsPage = ({ showMessage }) => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("photo", file); // 'photo' harus sesuai dengan backend
+    formData.append("photo", file);
     setIsUploading(true);
     try {
       const result = await uploadPartnerPhoto(formData);
-      // Tambahkan foto baru ke galeri
-      setStore((prev) => ({
-        ...prev,
-        images: [...prev.images, result.filePath],
-      }));
-      if (showMessage) showMessage("Foto berhasil diunggah!");
+
+      // ---- PERBAIKAN UTAMA DI BARIS INI ----
+      // Menggunakan result.filePath sesuai dengan respons dari backend
+      const newImageUrl = result.filePath;
+
+      if (newImageUrl) {
+        setStore((prev) => ({
+          ...prev,
+          images: [...prev.images, newImageUrl],
+        }));
+        if (showMessage) showMessage("Foto berhasil diunggah!");
+      } else {
+        throw new Error("URL gambar tidak diterima dari server.");
+      }
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     } finally {
@@ -73,7 +83,6 @@ const PartnerSettingsPage = ({ showMessage }) => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      // Hanya kirim data yang relevan untuk diupdate
       const { name, description, images, headerImage, location, phone } = store;
       await updatePartnerSettings({
         name,
