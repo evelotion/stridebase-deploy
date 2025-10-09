@@ -150,10 +150,30 @@ model Store {
   wallet           StoreWallet?
   payoutRequests   PayoutRequest[]
   invoices         Invoice[]
+  ledgerEntries LedgerEntry[]
 
   @@index([ownerId])
   @@index([storeStatus])
   @@index([tier])
+}
+
+model LedgerEntry {
+  id          String   @id @default(cuid())
+  store       Store    @relation(fields: [storeId], references: [id])
+  storeId     String
+  booking     Booking? @relation(fields: [bookingId], references: [id])
+  bookingId   String?
+  payout      PayoutRequest? @relation(fields: [payoutId], references: [id])
+  payoutId    String?  @unique // <-- Perbaikan untuk error relasi PayoutRequest
+
+  amount      Float    
+  type        String   
+  description String
+  createdAt   DateTime @default(now())
+
+  @@index([storeId])
+  @@index([bookingId])
+  @@index([payoutId])
 }
 
 model Address {
@@ -229,6 +249,7 @@ model Booking {
   review          Review?
   walletTransaction WalletTransaction?
   expiresAt       DateTime? // <-- TAMBAHKAN BARIS INI DI SINI
+  ledgerEntries LedgerEntry[]
 
   @@index([userId])
   @@index([storeId])
@@ -428,6 +449,7 @@ model PayoutRequest {
   processedBy   User?              @relation("ProcessedPayouts", fields: [processedById], references: [id])
   processedById String?
   transaction   WalletTransaction?
+  ledgerEntry LedgerEntry?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
 }
