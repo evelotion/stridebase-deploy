@@ -4657,3 +4657,17 @@ body.has-global-announcement .filter-panel-top {
 .account-page-container > .row {
   flex-grow: 1; /* Memastikan baris di dalamnya juga ikut mengisi ruang */
 }
+
+/* =============================================== */
+/* === GAYA BARU: IKON PREVIEW PASSWORD === */
+/* =============================================== */
+
+.password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c757d; /* Warna text-muted */
+  z-index: 3; /* Pastikan ikon di atas label floating */
+}
