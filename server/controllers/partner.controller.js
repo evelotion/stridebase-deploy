@@ -215,7 +215,34 @@ export const deletePartnerService = async (req, res, next) => {
 // @desc    Get partner's store settings
 // @route   GET /api/partner/settings
 export const getPartnerSettings = async (req, res, next) => {
-  res.json(req.store);
+  try {
+    const storeWithDetails = await prisma.store.findUnique({
+      where: { id: req.store.id },
+      include: {
+        // Secara eksplisit ambil data pemilik untuk mendapatkan nomor telepon
+        owner: {
+          select: {
+            phone: true,
+          },
+        },
+        schedule: true,
+      },
+    });
+
+    if (!storeWithDetails) {
+      return res.status(404).json({ message: "Toko tidak ditemukan." });
+    }
+
+    // Gabungkan data toko dengan nomor telepon pemiliknya untuk dikirim ke frontend
+    const response = {
+      ...storeWithDetails,
+      phone: storeWithDetails.owner.phone || "", // Pastikan phone selalu ada
+    };
+
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
 };
 
 // @desc    Update partner's store settings
@@ -225,12 +252,31 @@ export const updatePartnerSettings = async (req, res, next) => {
     name,
     description,
     location,
-    phone,
+    phone, // Data telepon
     images,
-    headerImageUrl,
+    headerImage, // Frontend mengirim 'headerImage'
     schedule,
   } = req.body;
+
   try {
+    await prisma.$transaction([
+      prisma.store.update({
+        where: { id: req.store.id },
+        data: {
+          name,
+          description,
+          location,
+          images,
+          // Simpan ke database sebagai 'headerImageUrl'
+          headerImageUrl: headerImage,
+        },
+      }),
+      prisma.user.update({
+        where: { id: req.user.id },
+        data: { phone }, // Simpan telepon di tabel User
+      }),
+    ]);
+
     if (schedule) {
       for (const day of Object.keys(schedule)) {
         const dayData = schedule[day];
@@ -256,11 +302,6 @@ export const updatePartnerSettings = async (req, res, next) => {
         });
       }
     }
-
-    await prisma.store.update({
-      where: { id: req.store.id },
-      data: { name, description, location, phone, images, headerImageUrl },
-    });
 
     res.json({ message: "Pengaturan toko berhasil diperbarui." });
   } catch (error) {

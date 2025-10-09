@@ -99,6 +99,7 @@ model User {
   name                   String
   password               String
   role                   UserRole          @default(customer)
+   phone                  String?
   isEmailVerified        Boolean           @default(false)
   emailVerificationToken String?           @unique
   resetPasswordToken     String?           @unique

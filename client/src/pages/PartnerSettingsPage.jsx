@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerSettingsPage.jsx (Dengan Perbaikan)
+// File: client/src/pages/PartnerSettingsPage.jsx (Perbaikan Final)
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -18,6 +18,10 @@ const PartnerSettingsPage = ({ showMessage }) => {
     setLoading(true);
     try {
       const data = await getPartnerSettings();
+      // Pastikan 'images' adalah array untuk mencegah error
+      if (data && !Array.isArray(data.images)) {
+        data.images = [];
+      }
       setStore(data);
     } catch (err) {
       setError(err.message);
@@ -45,15 +49,13 @@ const PartnerSettingsPage = ({ showMessage }) => {
     setIsUploading(true);
     try {
       const result = await uploadPartnerPhoto(formData);
-
-      // ---- PERBAIKAN UTAMA DI BARIS INI ----
-      // Menggunakan result.filePath sesuai dengan respons dari backend
       const newImageUrl = result.filePath;
 
       if (newImageUrl) {
         setStore((prev) => ({
           ...prev,
-          images: [...prev.images, newImageUrl],
+          // Logika aman untuk menambahkan gambar baru
+          images: [...(prev.images || []), newImageUrl],
         }));
         if (showMessage) showMessage("Foto berhasil diunggah!");
       } else {
@@ -83,18 +85,24 @@ const PartnerSettingsPage = ({ showMessage }) => {
     e.preventDefault();
     setIsSaving(true);
     try {
+      // Pastikan 'store' tidak null sebelum mengirim
+      if (!store) throw new Error("Data toko tidak tersedia.");
+
       const { name, description, images, headerImage, location, phone } = store;
       await updatePartnerSettings({
         name,
         description,
         images,
-        headerImage,
+        headerImage, // Kirim 'headerImage', backend akan menanganinya
         location,
         phone,
       });
       if (showMessage) showMessage("Pengaturan toko berhasil disimpan!");
     } catch (err) {
-      if (showMessage) showMessage(err.message, "Error");
+      // Perbaikan Syntax Error: Tambahkan kurung kurawal {}
+      if (showMessage) {
+        showMessage(err.message, "Error");
+      }
     } finally {
       setIsSaving(false);
     }
@@ -170,12 +178,12 @@ const PartnerSettingsPage = ({ showMessage }) => {
             <div className="card card-account p-4">
               <h5 className="mb-4 fw-bold">Galeri Foto</h5>
               <div className="row g-2 mb-3">
-                {store.images.map((img, index) => (
-                  <div className="col-6 col-md-4 col-lg-6" key={index}>
+                {store.images.map((img) => (
+                  <div className="col-6 col-md-4 col-lg-6" key={img}>
                     <div className="gallery-thumbnail position-relative">
                       <img
                         src={img}
-                        alt={`Galeri ${index}`}
+                        alt={`Galeri`}
                         className="img-fluid rounded"
                       />
                       <div className="gallery-thumbnail-overlay">
@@ -246,7 +254,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
           <button
             type="submit"
             className="btn btn-dark btn-lg"
-            disabled={isSaving}
+            disabled={isSaving || isUploading}
           >
             {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
           </button>
