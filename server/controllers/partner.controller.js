@@ -233,11 +233,14 @@ export const getPartnerSettings = async (req, res, next) => {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    // Gabungkan data toko dengan nomor telepon pemiliknya untuk dikirim ke frontend
+    // --- PERBAIKAN UTAMA DI SINI ---
+    // Gabungkan data toko dengan nomor telepon pemiliknya secara aman
     const response = {
       ...storeWithDetails,
-      phone: storeWithDetails.owner.phone || "", // Pastikan phone selalu ada
+      // Cek apakah 'owner' ada sebelum mencoba mengakses 'phone'
+      phone: storeWithDetails.owner?.phone || "", // Gunakan optional chaining (?.)
     };
+    // --- AKHIR PERBAIKAN ---
 
     res.json(response);
   } catch (error) {
