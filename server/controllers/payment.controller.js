@@ -1,6 +1,5 @@
 import midtransClient from "midtrans-client";
-import { prisma } from "../config/prisma.js";
-// Baris yang menyebabkan error sudah dihapus dari sini
+import prisma from "../config/prisma.js"; // <-- INI PERBAIKANNYA
 
 // Inisialisasi Snap API dari Midtrans
 const snap = new midtransClient.Snap({
