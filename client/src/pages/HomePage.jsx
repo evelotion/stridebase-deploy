@@ -71,7 +71,7 @@ const HomePage = ({
   const renderClassicHomepage = () => (
     <>
       <section className="hero-section text-center text-lg-start">
-        {/* --- BANNER UNTUK DESKTOP (TIDAK BERUBAH) --- */}
+        {/* --- KONTEN HERO (TEKS & TOMBOL) HANYA UNTUK DESKTOP --- */}
         <div className="container d-none d-lg-block">
           <div className="row align-items-center">
             <div className="col-lg-6 hero-content">
@@ -90,6 +90,7 @@ const HomePage = ({
               </Link>
             </div>
             <div className="col-lg-6 mt-4 mt-lg-0">
+              {/* Carousel ini akan muncul di kolom kanan pada desktop */}
               {banners.length > 0 && (
                 <div
                   id="heroBannerCarousel"
@@ -120,7 +121,7 @@ const HomePage = ({
           </div>
         </div>
 
-        {/* --- AWAL PERBAIKAN: BANNER UNTUK MOBILE --- */}
+        {/* --- BANNER UNTUK MOBILE (DI LUAR GRID DESKTOP) --- */}
         <div className="container d-lg-none mt-3">
           {banners.length > 0 && (
             <div
@@ -147,7 +148,6 @@ const HomePage = ({
             </div>
           )}
         </div>
-        {/* --- AKHIR PERBAIKAN --- */}
       </section>
 
       <section className="service-categories-section container">
@@ -436,12 +436,14 @@ const HomePage = ({
         </div>
       </div>
 
+      {/* Konten Utama */}
       <div className="d-none d-lg-block">
         {homePageTheme === "modern"
           ? renderModernHomepage()
           : renderClassicHomepage()}
       </div>
 
+      {/* Konten Mobile (selalu classic) */}
       <div className="d-lg-none">{renderClassicHomepage()}</div>
     </div>
   );
