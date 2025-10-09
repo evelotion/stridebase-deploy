@@ -225,7 +225,7 @@ export const getPartnerSettings = async (req, res, next) => {
             phone: true,
           },
         },
-        schedule: true,
+        schedules: true, // Mengganti 'schedule' menjadi 'schedules' agar konsisten dengan skema
       },
     });
 
@@ -240,6 +240,8 @@ export const getPartnerSettings = async (req, res, next) => {
       // Cek apakah 'owner' ada sebelum mencoba mengakses 'phone'
       phone: storeWithDetails.owner?.phone || "", // Gunakan optional chaining (?.)
     };
+    // Hapus relasi 'owner' dari response akhir agar tidak redundan
+    delete response.owner;
     // --- AKHIR PERBAIKAN ---
 
     res.json(response);

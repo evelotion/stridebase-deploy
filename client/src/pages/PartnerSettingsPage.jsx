@@ -40,7 +40,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
     setStore((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageUpload = async (e) => {
+const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -52,12 +52,19 @@ const PartnerSettingsPage = ({ showMessage }) => {
       const newImageUrl = result.filePath;
 
       if (newImageUrl) {
-        setStore((prev) => ({
-          ...prev,
-          // Logika aman untuk menambahkan gambar baru
-          images: [...(prev.images || []), newImageUrl],
-        }));
-        if (showMessage) showMessage("Foto berhasil diunggah!");
+        // Buat state toko yang sudah diperbarui dengan gambar baru
+        const updatedStore = {
+          ...store,
+          images: [...(store.images || []), newImageUrl],
+        };
+        
+        // Langsung panggil fungsi untuk menyimpan data ini ke backend
+        await updatePartnerSettings(updatedStore);
+        
+        // Setelah berhasil disimpan, baru perbarui state di frontend
+        setStore(updatedStore);
+
+        if (showMessage) showMessage("Foto berhasil diunggah dan disimpan!");
       } else {
         throw new Error("URL gambar tidak diterima dari server.");
       }

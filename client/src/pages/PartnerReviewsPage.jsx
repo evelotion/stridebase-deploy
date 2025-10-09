@@ -26,7 +26,7 @@ const ReviewCard = ({ review, onReplyClick }) => (
       </div>
       <p className="card-text">{review.comment || "Tidak ada komentar."}</p>
       <p className="card-text text-muted small">
-        {new Date(review.date).toLocaleDateString("id-ID", {
+         {new Date(review.createdAt).toLocaleDateString("id-ID", {
           day: "numeric",
           month: "long",
           year: "numeric",
