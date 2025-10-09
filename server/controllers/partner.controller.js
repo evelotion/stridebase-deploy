@@ -275,11 +275,16 @@ export const uploadPartnerPhoto = async (req, res, next) => {
     return res.status(400).json({ message: "Tidak ada file yang diunggah." });
   }
   try {
+    // Mengubah buffer menjadi data URI yang bisa diunggah
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+    // Mengunggah ke Cloudinary
     const result = await cloudinary.uploader.upload(dataURI, {
-      folder: "stridebase_stores",
+      folder: "stridebase_stores", // Nama folder di Cloudinary
     });
+
+    // Mengembalikan URL gambar yang aman
     res.json({
       message: "Foto berhasil diunggah.",
       filePath: result.secure_url,

@@ -1,4 +1,4 @@
-// File: server/routes/partner.routes.js (Dengan Perbaikan)
+// File: server/routes/partner.routes.js (Dengan perbaikan multer)
 
 import express from "express";
 import {
@@ -19,10 +19,10 @@ import {
   uploadPartnerPhoto,
   getPartnerReviews,
   replyToReview,
-  getPartnerPromos, // <-- 1. IMPOR FUNGSI BARU DI SINI
-   createPartnerPromo, // <-- Impor fungsi baru
-    updatePartnerPromo, // <-- Impor fungsi baru
-    deletePartnerPromo, // <-- Impor fungsi baru
+  getPartnerPromos,
+  createPartnerPromo,
+  updatePartnerPromo,
+  deletePartnerPromo,
   getWalletData,
   requestPayout,
   getPartnerReports,
@@ -36,7 +36,7 @@ const upload = multer({ storage: storage });
 
 // Middleware ini akan berlaku untuk semua rute di bawah
 router.use(authenticateToken, checkRole(["mitra"]));
-router.use(findMyStore); // Middleware ini akan mencari & melampirkan data toko ke request
+router.use(findMyStore);
 
 // Dashboard
 router.get("/dashboard", getPartnerDashboard);
@@ -54,19 +54,18 @@ router.delete("/services/:serviceId", deletePartnerService);
 // Settings
 router.get("/settings", getPartnerSettings);
 router.put("/settings", updatePartnerSettings);
+// PERBAIKAN: Tambahkan middleware upload.single('photo') di sini
 router.post("/upload-photo", upload.single("photo"), uploadPartnerPhoto);
 
 // Reviews
 router.get("/reviews", getPartnerReviews);
 router.post("/reviews/:reviewId/reply", replyToReview);
 
-// --- 2. TAMBAHKAN RUTE BARU DI SINI ---
 // Promos
-router.get('/promos', getPartnerPromos);
-router.post('/promos', createPartnerPromo);
-router.put('/promos/:promoId', updatePartnerPromo);
-router.delete('/promos/:promoId', deletePartnerPromo);
-// ------------------------------------
+router.get("/promos", getPartnerPromos);
+router.post("/promos", createPartnerPromo);
+router.put("/promos/:promoId", updatePartnerPromo);
+router.delete("/promos/:promoId", deletePartnerPromo);
 
 // Wallet & Payouts
 router.get("/wallet", getWalletData);
