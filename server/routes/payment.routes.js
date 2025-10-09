@@ -4,10 +4,7 @@ import {
   handleMidtransNotification,
   getPaymentStatus,
 } from "../controllers/payment.controller.js";
-import {
-  authenticateToken,
-  optionalAuthenticateToken,
-} from "../middleware/authenticateToken.js";
+import { authenticateToken } from "../middleware/authenticateToken.js"; // <-- PERBAIKAN DI SINI
 
 const router = express.Router();
 
