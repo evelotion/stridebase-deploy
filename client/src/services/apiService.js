@@ -1,4 +1,4 @@
-// File: client/src/services/apiService.js (Perbaikan Final)
+// File: client/src/services/apiService.js (Perbaikan Final untuk Unggah File)
 
 import API_BASE_URL from "../apiConfig";
 
@@ -8,11 +8,18 @@ const apiRequest = async (
   body = null,
   isFormData = false
 ) => {
-  const headers = new Headers();
+  // --- AWAL PERBAIKAN ---
+  const headers = {}; // Gunakan objek biasa, bukan new Headers()
   const token = localStorage.getItem("token");
   if (token) {
-    headers.append("Authorization", `Bearer ${token}`);
+    headers["Authorization"] = `Bearer ${token}`;
   }
+
+  // Hanya atur Content-Type jika BUKAN FormData
+  if (!isFormData && body) {
+    headers["Content-Type"] = "application/json";
+  }
+  // --- AKHIR PERBAIKAN ---
 
   const config = {
     method,
@@ -20,12 +27,8 @@ const apiRequest = async (
   };
 
   if (body) {
-    if (isFormData) {
-      config.body = body;
-    } else {
-      headers.append("Content-Type", "application/json");
-      config.body = JSON.stringify(body);
-    }
+    // Untuk FormData, body dikirim langsung. Untuk JSON, di-stringify.
+    config.body = isFormData ? body : JSON.stringify(body);
   }
 
   try {
@@ -36,7 +39,9 @@ const apiRequest = async (
         .catch(() => ({ message: response.statusText }));
       throw new Error(errorData.message || "Terjadi kesalahan pada server");
     }
-    return response.status === 204 ? null : await response.json();
+    // Handle respons kosong (misal: status 204 No Content)
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
   } catch (error) {
     console.error(`API Error on ${method} ${endpoint}:`, error);
     throw error;
@@ -48,10 +53,8 @@ export const getStores = (params) =>
   apiRequest(`/api/stores?${params.toString()}`);
 export const getStoreDetails = (storeId) =>
   apiRequest(`/api/stores/${storeId}`);
-// --- BARIS YANG HILANG DITAMBAHKAN DI SINI ---
 export const getStoreServices = (storeId) =>
   apiRequest(`/api/stores/${storeId}/services`);
-// --- AKHIR PENAMBAHAN ---
 export const getStoreReviews = (storeId) =>
   apiRequest(`/api/stores/${storeId}/reviews`);
 export const getPublicBanners = () => apiRequest("/api/public/banners");
@@ -117,11 +120,19 @@ export const requestPartnerPayout = (amount) =>
   apiRequest("/api/partner/payout-requests", "POST", { amount });
 export const getPartnerReports = (params) =>
   apiRequest(`/api/partner/reports?${params.toString()}`);
+export const getPartnerPromos = () => apiRequest("/api/partner/promos");
+export const createPartnerPromo = (promoData) =>
+  apiRequest("/api/partner/promos", "POST", promoData);
+export const updatePartnerPromo = (promoId, promoData) =>
+  apiRequest(`/api/partner/promos/${promoId}`, "PUT", promoData);
+export const deletePartnerPromo = (promoId) =>
+  apiRequest(`/api/partner/promos/${promoId}`, "DELETE");
 
 // --- Admin Endpoints ---
 export const getAdminStats = () => apiRequest("/api/admin/stats");
 export const getAllUsers = () => apiRequest("/api/admin/users");
-export const createUserByAdmin = (userData) => apiRequest("/api/admin/users", "POST", userData);
+export const createUserByAdmin = (userData) =>
+  apiRequest("/api/admin/users", "POST", userData);
 export const changeUserRole = (userId, data) =>
   apiRequest(`/api/admin/users/${userId}/role`, "PATCH", data);
 export const changeUserStatus = (userId, data) =>
@@ -177,7 +188,7 @@ export const requestStoreDeletion = (storeId) =>
 export const requestUserDeletion = (userId) =>
   apiRequest(`/api/admin/users/${userId}/request-deletion`, "POST");
 export const updateStoreDetails = (storeId, data) =>
-  apiRequest(`/api/admin/stores/${storeId}/details`, "PATCH", data)
+  apiRequest(`/api/admin/stores/${storeId}/details`, "PATCH", data);
 
 // --- SuperUser Endpoints ---
 export const getSuperUserConfig = () => apiRequest("/api/superuser/config");
