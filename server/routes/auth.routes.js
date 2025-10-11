@@ -2,8 +2,8 @@
 
 import express from "express";
 import {
-  register,
-  loginUser, // DIUBAH: Mengganti 'login' menjadi 'loginUser'
+  registerUser, // DIUBAH: Mengganti 'register' menjadi 'registerUser'
+  loginUser,
   verifyEmail,
   forgotPassword,
   resetPassword,
@@ -18,8 +18,8 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 
 // Rute Otentikasi
-router.post("/register", register);
-router.post("/login", loginUser); // DIUBAH: Menggunakan 'loginUser' yang sudah benar
+router.post("/register", registerUser); // DIUBAH: Menggunakan 'registerUser' yang sudah benar
+router.post("/login", loginUser);
 router.get("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
