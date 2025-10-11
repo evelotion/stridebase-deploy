@@ -11,7 +11,9 @@ import {
     getLoyaltyData,
     redeemLoyaltyPoints,
     getRedeemedPromos,
-    getRecommendations
+    getRecommendations,
+     getNotifications,
+  markNotificationsAsRead,
 } from '../controllers/user.controller.js';
 import { getUserBookings } from '../controllers/booking.controller.js'; // Impor dari controller booking
 
@@ -42,5 +44,8 @@ router.get('/redeemed-promos', getRedeemedPromos);
 
 // Recommendations
 router.get('/recommendations', getRecommendations);
+
+router.get('/notifications', authenticateToken, getNotifications);
+router.post('/notifications/mark-read', authenticateToken, markNotificationsAsRead);
 
 export default router;
