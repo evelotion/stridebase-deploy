@@ -11,14 +11,13 @@ import { initializeSocket } from "./socket.js";
 import { startCronJobs } from "./cron/jobs.js";
 import "./config/passport.js";
 
-// Middleware & Config Imports
-import maintenanceMiddleware from "./middleware/maintenance.js";
-import errorHandler from "./middleware/errorHandler.js";
-import rateLimiter from './middleware/rateLimiter.js';
-// PERBAIKAN FINAL DI BARIS INI
-import { corsOptions } from './config/cors.js'; // Menggunakan kurung kurawal {}
+// Impor Middleware & Konfigurasi (Menggunakan Ekspor Bernama -> Wajib pakai {})
+import { errorHandler } from "./middleware/errorHandler.js";
+import { checkMaintenanceMode } from "./middleware/maintenance.js";
+import { corsOptions } from './config/cors.js';
+// Catatan: rateLimiter akan kita panggil di dalam rute spesifik, bukan di sini secara global.
 
-// Routes Imports (Ini semua sudah benar)
+// Impor Routes (Menggunakan Ekspor Standar -> Tanpa {})
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import storeRoutes from './routes/store.routes.js';
@@ -41,16 +40,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
-app.use(cors(corsOptions)); // Ini sekarang akan berfungsi dengan benar
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(passport.initialize());
-app.use(rateLimiter);
 
 // Serve static files from the "uploads" directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Maintenance Mode Middleware
-app.use(maintenanceMiddleware);
+app.use(checkMaintenanceMode);
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -65,7 +63,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/superuser', superuserRoutes);
 
-// Error Handling Middleware
+// Error Handling Middleware (wajib di paling bawah)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
