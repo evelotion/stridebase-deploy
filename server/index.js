@@ -9,11 +9,11 @@ import { fileURLToPath } from "url";
 import passport from "passport";
 
 // Import Konfigurasi dan Middleware
-import corsOptions from "./config/cors.js";
+import { corsOptions } from "./config/cors.js"; // <-- PERBAIKAN DI SINI
 import "./config/passport.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { maintenanceMiddleware } from "./middleware/maintenance.js";
-import { startCronJobs } from "./cron/jobs.js"; // <-- DIUBAH: Mengimpor fungsi startCronJobs
+import { startCronJobs } from "./cron/jobs.js";
 import { initializeSocket } from "./socket.js";
 
 // Import Rute
@@ -70,7 +70,7 @@ app.get("*", (req, res) => {
 app.use(errorHandler);
 
 // Menjalankan Cron Job
-startCronJobs(); // <-- DIUBAH: Memanggil fungsi untuk memulai cron job
+startCronJobs();
 
 // Menjalankan Server
 const PORT = process.env.PORT || 5000;
