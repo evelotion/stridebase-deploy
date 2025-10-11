@@ -1,11 +1,10 @@
-// File: server/socket.js (Perbaikan Final & Best Practice)
+// File: server/socket.js
 
 import { Server } from "socket.io";
 import prisma from "./config/prisma.js";
 
 let io;
 
-// Fungsi ini menginisialisasi dan mengatur server Socket.IO
 export const initializeSocket = (server) => {
   io = new Server(server, {
     cors: {
@@ -15,7 +14,13 @@ export const initializeSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("Socket.IO: User connected:", socket.id);
+    const userId = socket.handshake.query.userId;
+    if (userId) {
+      socket.join(userId);
+      console.log(`Socket.IO: User ${userId} connected and joined room.`);
+    } else {
+      console.log("Socket.IO: An anonymous user connected:", socket.id);
+    }
 
     socket.on("disconnect", () => {
       console.log("Socket.IO: User disconnected:", socket.id);
@@ -26,24 +31,30 @@ export const initializeSocket = (server) => {
   return io;
 };
 
-// Fungsi ini digunakan di bagian lain aplikasi untuk membuat notifikasi
 export const createNotificationForUser = async (userId, message, link) => {
-  if (io) {
+  if (io && userId) {
     try {
       const notification = await prisma.notification.create({
         data: {
           userId,
           message,
-          link,
+          linkUrl: link, // Pastikan nama field sesuai dengan schema.prisma
         },
       });
-      // Mengirim notifikasi ke user tertentu melalui socket
-      io.emit("notification", { userId, ...notification });
+      // Mengirim notifikasi ke room spesifik milik user
+      io.to(userId).emit("new_notification", notification);
     } catch (error) {
       console.error("Failed to create notification:", error);
     }
   }
 };
 
-// Ekspor instance 'io' agar bisa diimpor di tempat lain
+// TAMBAHKAN FUNGSI BARU DI SINI
+export const broadcastThemeUpdate = (newTheme) => {
+  if (io) {
+    io.emit("themeUpdated", newTheme);
+    console.log("Broadcasting theme update to all clients.");
+  }
+};
+
 export { io };
