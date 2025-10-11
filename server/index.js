@@ -11,13 +11,14 @@ import { initializeSocket } from "./socket.js";
 import { startCronJobs } from "./cron/jobs.js";
 import "./config/passport.js";
 
-// PERBAIKAN IMPOR SEMUA MODUL DENGAN EXPORT DEFAULT
+// Middleware & Config Imports
 import maintenanceMiddleware from "./middleware/maintenance.js";
 import errorHandler from "./middleware/errorHandler.js";
 import rateLimiter from './middleware/rateLimiter.js';
-import corsOptions from './config/cors.js';
+// PERBAIKAN FINAL DI BARIS INI
+import { corsOptions } from './config/cors.js'; // Menggunakan kurung kurawal {}
 
-// Impor Routes (Ini sudah benar karena menggunakan export default di file-filenya)
+// Routes Imports (Ini semua sudah benar)
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import storeRoutes from './routes/store.routes.js';
@@ -40,7 +41,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Ini sekarang akan berfungsi dengan benar
 app.use(express.json());
 app.use(passport.initialize());
 app.use(rateLimiter);
@@ -64,7 +65,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/superuser', superuserRoutes);
 
-// Error Handling Middleware (pastikan ini di paling bawah)
+// Error Handling Middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
