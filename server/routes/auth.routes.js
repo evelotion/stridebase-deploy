@@ -1,4 +1,4 @@
-// File: server/routes/auth.routes.js (Perbaikan)
+// File: server/routes/auth.routes.js (Perbaikan Final)
 
 import express from "express";
 import {
@@ -9,7 +9,7 @@ import {
   resetPassword,
   getProfile,
   updateProfile,
-  loginSuperuser, // DIUBAH: Mengganti 'superuserLogin' menjadi 'loginSuperuser'
+  superuserLogin, // DIKEMBALIKAN: Menggunakan nama yang benar 'superuserLogin'
 } from "../controllers/auth.controller.js";
 import { authenticateToken } from "../middleware/authenticateToken.js";
 import passport from "passport";
@@ -23,7 +23,7 @@ router.post("/login", loginUser);
 router.get("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
-router.post("/superuser-login", loginSuperuser); // DIUBAH: Menggunakan 'loginSuperuser'
+router.post("/superuser-login", superuserLogin); // DIKEMBALIKAN: Menggunakan 'superuserLogin'
 
 // Rute Profil Pengguna (membutuhkan token)
 router.get("/profile", authenticateToken, getProfile);
