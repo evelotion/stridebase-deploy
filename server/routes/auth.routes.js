@@ -2,14 +2,14 @@
 
 import express from "express";
 import {
-  registerUser, // DIUBAH: Mengganti 'register' menjadi 'registerUser'
+  registerUser,
   loginUser,
   verifyEmail,
   forgotPassword,
   resetPassword,
   getProfile,
   updateProfile,
-  superuserLogin,
+  loginSuperuser, // DIUBAH: Mengganti 'superuserLogin' menjadi 'loginSuperuser'
 } from "../controllers/auth.controller.js";
 import { authenticateToken } from "../middleware/authenticateToken.js";
 import passport from "passport";
@@ -18,12 +18,12 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 
 // Rute Otentikasi
-router.post("/register", registerUser); // DIUBAH: Menggunakan 'registerUser' yang sudah benar
+router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
-router.post("/superuser-login", superuserLogin);
+router.post("/superuser-login", loginSuperuser); // DIUBAH: Menggunakan 'loginSuperuser'
 
 // Rute Profil Pengguna (membutuhkan token)
 router.get("/profile", authenticateToken, getProfile);
