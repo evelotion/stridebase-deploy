@@ -38,10 +38,9 @@ export const createNotificationForUser = async (userId, message, link) => {
         data: {
           userId,
           message,
-          linkUrl: link, // Pastikan nama field sesuai dengan schema.prisma
+          linkUrl: link,
         },
       });
-      // Mengirim notifikasi ke room spesifik milik user
       io.to(userId).emit("new_notification", notification);
     } catch (error) {
       console.error("Failed to create notification:", error);
@@ -49,7 +48,7 @@ export const createNotificationForUser = async (userId, message, link) => {
   }
 };
 
-// TAMBAHKAN FUNGSI BARU DI SINI
+// FUNGSI BARU DITAMBAHKAN DI SINI
 export const broadcastThemeUpdate = (newTheme) => {
   if (io) {
     io.emit("themeUpdated", newTheme);
