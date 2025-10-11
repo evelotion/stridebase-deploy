@@ -1,4 +1,4 @@
-// File: client/src/App.jsx (Dengan Perbaikan Final pada Fungsi applyTheme)
+// File: client/src/App.jsx (Sesuai file Anda + Rute LoginSuccessPage)
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
@@ -114,6 +114,9 @@ const PaymentSimulationPage = React.lazy(() =>
 const PaymentSuccessPage = React.lazy(() =>
   import("./pages/PaymentSuccessPage.jsx")
 );
+// --- Impor halaman baru untuk Google Login ---
+const LoginSuccessPage = React.lazy(() => import("./pages/LoginSuccessPage"));
+// --- Akhir ---
 
 let socket;
 
@@ -226,6 +229,7 @@ const PageStatusWrapper = ({ children, path, theme }) => {
   return <MaintenanceNoticePage />;
 };
 
+// Layout untuk halaman-halaman utama (dengan Navbar dan Footer)
 const UserLayout = ({
   theme,
   children,
@@ -267,6 +271,22 @@ const UserLayout = ({
       <main style={{ flex: 1 }}>{children}</main>
       <Footer />
     </div>
+  );
+};
+
+// Layout baru untuk halaman otentikasi (tanpa Navbar dan Footer)
+const AuthLayout = () => {
+  useEffect(() => {
+    document.body.classList.add("auth-layout");
+    return () => {
+      document.body.classList.remove("auth-layout");
+    };
+  }, []);
+
+  return (
+    <main>
+      <Outlet />
+    </main>
   );
 };
 
@@ -339,13 +359,12 @@ function AppContent() {
           setTheme(data);
           applyTheme(data);
         } else {
-          // Jika gagal (misal server error), set tema default agar tidak crash
           console.error("Gagal memuat tema, menggunakan fallback.");
-          applyTheme({}); // Panggil dengan objek kosong
+          applyTheme({});
         }
       } catch (error) {
         console.error("Gagal mengambil konfigurasi tema:", error);
-        applyTheme({}); // Panggil dengan objek kosong jika ada network error
+        applyTheme({});
       }
     };
     fetchThemeConfig();
@@ -415,6 +434,7 @@ function AppContent() {
     <Suspense fallback={<LoadingFallback />}>
       <Notification notification={notification} onClose={hideMessage} />
       <Routes>
+        {/* Rute untuk Admin, Partner, dan Developer */}
         <Route
           path="/developer/*"
           element={
@@ -428,7 +448,6 @@ function AppContent() {
             element={renderWithProps(DeveloperDashboardPage)}
           />
         </Route>
-
         <Route
           path="/partner/*"
           element={
@@ -457,7 +476,6 @@ function AppContent() {
           <Route path="wallet" element={renderWithProps(PartnerWalletPage)} />
           <Route path="reports" element={renderWithProps(PartnerReportsPage)} />
         </Route>
-
         <Route
           path="/admin/*"
           element={
@@ -498,6 +516,31 @@ function AppContent() {
           <Route path="invoice/print/preview" element={<InvoicePrintPage />} />
         </Route>
 
+        {/* Rute Baru: Halaman otentikasi dengan layout khusus */}
+        <Route element={<AuthLayout />}>
+          <Route
+            path="/login"
+            element={<LoginPage showMessage={showMessage} theme={theme} />}
+          />
+          <Route
+            path="/register"
+            element={<RegisterPage theme={theme} showMessage={showMessage} />}
+          />
+          {/* --- RUTE BARU DITAMBAHKAN DI SINI --- */}
+          <Route path="/login-success" element={<LoginSuccessPage />} />
+          {/* --- AKHIR PENAMBAHAN --- */}
+          <Route
+            path="/forgot-password"
+            element={renderWithProps(ForgotPasswordPage, { theme })}
+          />
+          <Route
+            path="/reset-password"
+            element={renderWithProps(ResetPasswordPage)}
+          />
+          <Route path="/email-verified" element={<EmailVerifiedPage />} />
+        </Route>
+
+        {/* Rute Lama: Halaman utama dan lainnya dengan layout standar */}
         <Route
           path="/*"
           element={
@@ -571,22 +614,6 @@ function AppContent() {
           />
           <Route path="booking-success" element={<BookingSuccessPage />} />
           <Route
-            path="login"
-            element={<LoginPage showMessage={showMessage} theme={theme} />}
-          />
-          <Route
-            path="forgot-password"
-            element={renderWithProps(ForgotPasswordPage, { theme })}
-          />
-          <Route
-            path="reset-password"
-            element={renderWithProps(ResetPasswordPage)}
-          />
-          <Route
-            path="register"
-            element={<RegisterPage theme={theme} showMessage={showMessage} />}
-          />
-          <Route
             path="dashboard"
             element={<DashboardPage showMessage={showMessage} />}
           />
@@ -605,7 +632,6 @@ function AppContent() {
           />
           <Route path="payment-finish" element={<PaymentFinishPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
-          <Route path="email-verified" element={<EmailVerifiedPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

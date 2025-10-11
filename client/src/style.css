@@ -4671,3 +4671,66 @@ body.has-global-announcement .filter-panel-top {
   color: #6c757d; /* Warna text-muted */
   z-index: 3; /* Pastikan ikon di atas label floating */
 }
+
+/* === Auth Page Styles === */
+.auth-layout .auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: #f8f9fa; /* Warna latar belakang halaman */
+}
+
+.auth-card {
+  display: flex;
+  width: 100%;
+  max-width: 900px; /* Lebar maksimum card */
+  min-height: 500px;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Agar sudut melengkung terlihat rapi */
+}
+
+.auth-sidebar {
+  color: #fff;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* Styling untuk background image */
+  background-size: cover;
+  background-position: center;
+}
+
+.auth-sidebar-logo {
+  max-width: 100px;
+  margin-bottom: 1.5rem;
+}
+
+.auth-sidebar h3 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.auth-sidebar p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.auth-form-container {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Penyesuaian untuk layar lebih besar */
+@media (min-width: 768px) {
+  .auth-form-container {
+    padding: 3rem;
+  }
+}

@@ -1,171 +1,122 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+// File: client/src/pages/RegisterPage.jsx
+
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import React, { useEffect, useState } from "react";
-import { registerUser } from "../services/apiService";
+import API_BASE_URL from "../apiConfig";
 
-const RegisterPage = ({ showMessage, theme }) => {
-  const navigate = useNavigate();
-  const { search } = useLocation();
-  const redirectInUrl = new URLSearchParams(search).get("redirect");
-  const redirect = redirectInUrl ? redirectInUrl : "/";
-
+const RegisterPage = ({ theme, showMessage }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const registerImageUrl =
-    theme?.branding?.registerImageUrl ||
-    "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2574&auto=format&fit=crop";
+  const brandName = theme?.branding?.brandName || "StrideBase";
+  const brandLogo = theme?.branding?.logoUrl;
+  const authPageTheme = theme?.authPageTheme || {};
 
-  const submitHandler = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      showMessage("Password dan Konfirmasi Password tidak cocok.", "Error");
-      return;
-    }
-    setLoading(true);
+    setIsLoading(true);
+
     try {
-      const data = await registerUser({ name, email, password });
-      showMessage(data.message, "Success");
-      navigate("/login");
-    } catch (err) {
-      showMessage(err.message, "Error");
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        showMessage("Registrasi berhasil! Silakan cek email Anda untuk verifikasi.", "Sukses");
+        navigate("/login");
+      } else {
+        showMessage(data.message || "Registrasi gagal.", "Error");
+      }
+    } catch (error) {
+      showMessage("Terjadi kesalahan pada server.", "Error");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate(redirect);
-    }
-  }, [navigate, redirect]);
+  
+  const sidebarStyle = {
+    backgroundColor: authPageTheme.sidebarColor || 'var(--primary-color)',
+    ...(authPageTheme.sidebarImageUrl && { backgroundImage: `url(${authPageTheme.sidebarImageUrl})` })
+  };
 
   return (
-    <div className="auth-container">
+    <>
       <Helmet>
-        <title>Buat Akun Baru | StrideBase</title>
+        <title>{`Daftar - ${brandName}`}</title>
       </Helmet>
-      <div className="row g-0 vh-100">
-        <div className="col-lg-5 d-flex align-items-center justify-content-center auth-form-panel">
-          <div className="auth-form-container p-4 p-md-5">
-            <div className="text-center mb-5">
-              <h3 className="fw-bold fs-2 text-dark">Buat Akun Baru</h3>
-              <p className="text-muted fs-6">
-                Daftar untuk mulai menemukan layanan cuci sepatu terbaik.
-              </p>
+      <div className="auth-container">
+        <div className="auth-card">
+          {/* Kolom Kiri: Branding */}
+          <div className="col-md-5 d-none d-md-flex auth-sidebar" style={sidebarStyle}>
+            {brandLogo && <img src={brandLogo} alt={`${brandName} Logo`} className="auth-sidebar-logo"/>}
+            <h3>{authPageTheme.title || `Bergabunglah dengan ${brandName}`}</h3>
+            <p>{authPageTheme.description || 'Daftarkan diri Anda dan mulailah mengelola bisnis dengan lebih efisien.'}</p>
+          </div>
+
+          {/* Kolom Kanan: Form Register */}
+          <div className="col-12 col-md-7 auth-form-container">
+            <div className="text-center text-md-start mb-4">
+              <h2>Buat Akun Baru</h2>
+              <p className="text-muted">Isi form di bawah ini untuk mendaftar.</p>
             </div>
-            <form onSubmit={submitHandler}>
-              <div className="form-floating mb-3">
+            
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">Nama Lengkap</label>
                 <input
                   type="text"
-                  className="form-control form-control-lg"
+                  className="form-control"
                   id="name"
-                  placeholder="Nama Lengkap"
-                  required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  required
                 />
-                <label htmlFor="name">Nama Lengkap</label>
               </div>
-              <div className="form-floating mb-3">
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">Alamat Email</label>
                 <input
                   type="email"
-                  className="form-control form-control-lg"
+                  className="form-control"
                   id="email"
-                  placeholder="name@example.com"
-                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                />
-                <label htmlFor="email">Alamat Email</label>
-              </div>
-              <div className="form-floating mb-3">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="form-control form-control-lg"
-                  id="password"
-                  placeholder="Password"
                   required
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                />
-                <label htmlFor="password">Password</label>
-                <span
-                  className="password-toggle-icon"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  <i
-                    className={`fas ${
-                      showPassword ? "fa-eye-slash" : "fa-eye"
-                    }`}
-                  ></i>
-                </span>
-              </div>
-              <div className="form-floating mb-4">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  className="form-control form-control-lg"
-                  id="confirmPassword"
-                  placeholder="Konfirmasi Password"
                   required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                <label htmlFor="confirmPassword">Konfirmasi Password</label>
-                <span
-                  className="password-toggle-icon"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  <i
-                    className={`fas ${
-                      showConfirmPassword ? "fa-eye-slash" : "fa-eye"
-                    }`}
-                  ></i>
-                </span>
               </div>
-              <div className="d-grid gap-2">
-                <button
-                  type="submit"
-                  className="btn btn-dark btn-lg fw-bold"
-                  disabled={loading}
-                >
-                  {loading ? "Memproses..." : "Daftar"}
+              <div className="d-grid">
+                <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                  {isLoading ? "Mendaftar..." : "Daftar"}
                 </button>
               </div>
-              <p className="text-center mt-4 fs-6">
-                Sudah punya akun?{" "}
-                <Link
-                  to={`/login?redirect=${redirect}`}
-                  className="text-decoration-none fw-bold"
-                >
-                  Masuk di sini
-                </Link>
-              </p>
             </form>
-          </div>
-        </div>
-        <div
-          className="col-lg-7 d-none d-lg-flex auth-image-panel register-image-side"
-          style={{ backgroundImage: `url(${registerImageUrl})` }}
-        >
-          <div className="auth-image-overlay">
-            <h1 className="display-4 fw-bold text-white">
-              Satu Akun, Ribuan Pilihan Perawatan.
-            </h1>
-            <p className="lead text-white-75">
-              Bergabunglah dengan komunitas pecinta sepatu bersih di seluruh
-              Indonesia.
-            </p>
+            
+            <div className="text-center mt-4">
+              <p className="text-muted">
+                Sudah punya akun? <Link to="/login">Login di sini</Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
