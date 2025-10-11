@@ -1,4 +1,4 @@
-// File: server/controllers/auth.controller.js (Dengan Perbaikan Logika Login)
+// File: server/controllers/auth.controller.js (Kode Lengkap Final)
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -13,116 +13,102 @@ import {
   COOLDOWN_PERIOD,
 } from "../middleware/rateLimiter.js";
 
-// ... (fungsi registerUser, verifyEmail, dll. tetap sama) ...
+/**
+ * @desc    Register a new user
+ * @route   POST /api/auth/register
+ * @access  Public
+ */
 export const registerUser = async (req, res, next) => {
-  const { name, email, password, role } = req.body;
-  const validatedRole = ["customer", "mitra"].includes(role)
-    ? role
-    : "customer";
-
+  const { name, email, password } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({ message: "Email sudah terdaftar." });
+      return res.status(400).json({ message: "Email sudah terdaftar." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await prisma.user.create({
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role: validatedRole,
-        status: "pending",
+        emailVerificationToken: verificationToken,
       },
     });
 
-    const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
-    await sendVerificationEmail(newUser, token);
-
-    if (validatedRole === "mitra") {
-      await prisma.store.create({
-        data: {
-          name: `Toko ${name}`,
-          location: "Harap lengkapi alamat Anda",
-          description: "Harap lengkapi deskripsi toko Anda.",
-          ownerId: newUser.id,
-          storeStatus: "pending",
-          tier: "BASIC",
-          commissionRate: 10.0,
-          images: [],
-          wallet: {
-            create: {},
-          },
-        },
-      });
-    }
+    await sendVerificationEmail(user.email, verificationToken);
 
     res.status(201).json({
       message:
-        "Registrasi berhasil. Silakan cek email Anda untuk verifikasi akun.",
+        "Registrasi berhasil. Silakan cek email Anda untuk verifikasi.",
     });
   } catch (error) {
     next(error);
   }
 };
 
+/**
+ * @desc    Authenticate user & get token
+ * @route   POST /api/auth/login
+ * @access  Public
+ */
 export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
+  const ip = req.ip;
 
-  const attempts = failedLoginAttempts.get(email) || 0;
-  if (attempts >= MAX_LOGIN_ATTEMPTS) {
-    return res
-      .status(429)
-      .json({
-        message: `Terlalu banyak percobaan login. Silakan coba lagi dalam ${
-          COOLDOWN_PERIOD / 60000
-        } menit.`,
+  if (
+    failedLoginAttempts[ip] &&
+    failedLoginAttempts[ip].count >= MAX_LOGIN_ATTEMPTS
+  ) {
+    const timeSinceLastAttempt = Date.now() - failedLoginAttempts[ip].lastAttempt;
+    if (timeSinceLastAttempt < COOLDOWN_PERIOD) {
+      return res.status(429).json({
+        message:
+          "Terlalu banyak percobaan login. Silakan coba lagi dalam beberapa saat.",
       });
+    } else {
+      delete failedLoginAttempts[ip];
+    }
   }
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user || user.status !== "active") {
-      failedLoginAttempts.set(email, attempts + 1);
-      setTimeout(() => failedLoginAttempts.delete(email), COOLDOWN_PERIOD);
-      return res
-        .status(401)
-        .json({ message: "Email atau password salah, atau akun belum aktif." });
+    if (!user) {
+        if (!failedLoginAttempts[ip]) failedLoginAttempts[ip] = { count: 0, lastAttempt: 0 };
+        failedLoginAttempts[ip].count++;
+        failedLoginAttempts[ip].lastAttempt = Date.now();
+        return res.status(401).json({ message: "Email atau password salah." });
+    }
+    
+    if (!user.isVerified) {
+        return res.status(401).json({ message: "Akun Anda belum diverifikasi. Silakan cek email Anda." });
+    }
+    
+    if (user.status !== 'active') {
+        return res.status(403).json({ message: `Status akun Anda saat ini: ${user.status}. Tidak dapat login.` });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      failedLoginAttempts.set(email, attempts + 1);
-      setTimeout(() => failedLoginAttempts.delete(email), COOLDOWN_PERIOD);
-      return res.status(401).json({ message: "Email atau password salah." });
+        if (!failedLoginAttempts[ip]) failedLoginAttempts[ip] = { count: 0, lastAttempt: 0 };
+        failedLoginAttempts[ip].count++;
+        failedLoginAttempts[ip].lastAttempt = Date.now();
+        return res.status(401).json({ message: "Email atau password salah." });
     }
-
-    failedLoginAttempts.delete(email);
-
-    // --- BLOK INI DIHAPUS ---
-    // if (!user.isEmailVerified) {
-    //     return res.status(403).json({
-    //         message: 'Akun Anda belum diverifikasi. Silakan periksa email Anda.',
-    //     });
-    // }
-    // --- AKHIR BLOK YANG DIHAPUS ---
+    
+    delete failedLoginAttempts[ip];
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "24h" }
     );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
 
     res.json({
       token,
@@ -138,86 +124,154 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-export const verifyEmail = async (req, res, next) => {
-  const { token } = req.params;
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-    });
-
-    if (!user) {
-      return res
-        .status(400)
-        .send("Token verifikasi tidak valid atau pengguna tidak ditemukan.");
-    }
-
-    if (user.isEmailVerified) {
-      return res.redirect(
-        "/login?message=Email sudah diverifikasi sebelumnya. Silakan login."
-      );
-    }
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { isEmailVerified: true, status: "active" },
-    });
-
-    res.redirect("/email-verified");
-  } catch (error) {
-    res.status(400).send("Link verifikasi tidak valid atau telah kedaluwarsa.");
-  }
-};
-
-export const logoutUser = (req, res) => {
-  res.cookie("token", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
-  res.status(200).json({ message: "Logout berhasil." });
-};
-
-export const forgotPassword = async (req, res, next) => {
-  const { email } = req.body;
+/**
+ * @desc    Login for Superuser (Admin/Developer)
+ * @route   POST /api/auth/superuser-login
+ * @access  Public
+ */
+export const superuserLogin = async (req, res, next) => {
+  const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
+
+    if (!user || (user.role !== "admin" && user.role !== "developer")) {
       return res
-        .status(404)
-        .json({ message: "User dengan email tersebut tidak ditemukan." });
+        .status(403)
+        .json({ message: "Akses ditolak. Akun bukan admin atau developer." });
     }
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Email atau password salah." });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" } // Sesi lebih pendek untuk superuser
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
-    await sendPasswordResetEmail(user, token);
-    res.json({ message: "Email untuk reset password telah dikirim." });
   } catch (error) {
     next(error);
   }
 };
 
-export const resetPassword = async (req, res, next) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
-
+/**
+ * @desc    Verify user email
+ * @route   GET /api/auth/verify-email
+ * @access  Public
+ */
+export const verifyEmail = async (req, res, next) => {
+  const { token } = req.query;
+  if (!token) {
+    return res.status(400).send("Token verifikasi tidak ditemukan.");
+  }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const user = await prisma.user.findUnique({ where: { email: decoded.email } });
+
+    if (!user) {
+      return res.status(400).send("Token tidak valid atau pengguna tidak ditemukan.");
+    }
+
+    if (user.isVerified) {
+      return res.status(200).send("Email sudah diverifikasi sebelumnya.");
+    }
+    
+    if (user.emailVerificationToken !== token) {
+        return res.status(400).send("Token tidak valid atau sudah kedaluwarsa.");
+    }
+
     await prisma.user.update({
-      where: { id: decoded.userId },
-      data: { password: hashedPassword },
+      where: { email: decoded.email },
+      data: { isVerified: true, emailVerificationToken: null },
     });
-    res.json({
-      message: "Password berhasil direset. Silakan login dengan password baru.",
-    });
+
+    res.redirect(`${process.env.CLIENT_URL}/email-verified`);
   } catch (error) {
-    res
-      .status(400)
-      .json({ message: "Token tidak valid atau telah kedaluwarsa." });
+    next(new Error("Token verifikasi tidak valid atau sudah kedaluwarsa."));
   }
 };
 
+/**
+ * @desc    Forgot password
+ * @route   POST /api/auth/forgot-password
+ * @access  Public
+ */
+export const forgotPassword = async (req, res, next) => {
+    const { email } = req.body;
+    try {
+        const user = await prisma.user.findUnique({ where: { email }});
+        if (!user) {
+            // Respon generik untuk keamanan
+            return res.status(200).json({ message: 'Jika email terdaftar, link reset password akan dikirim.' });
+        }
+
+        const resetToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        await prisma.user.update({
+            where: { email },
+            data: { passwordResetToken: resetToken }
+        });
+
+        await sendPasswordResetEmail(email, resetToken);
+        
+        res.status(200).json({ message: 'Jika email terdaftar, link reset password akan dikirim.' });
+
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @desc    Reset password
+ * @route   POST /api/auth/reset-password
+ * @access  Public
+ */
+export const resetPassword = async (req, res, next) => {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+        return res.status(400).json({ message: 'Token dan password baru dibutuhkan.' });
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+
+        if (!user || user.passwordResetToken !== token) {
+            return res.status(400).json({ message: 'Token tidak valid atau sudah kedaluwarsa.' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                passwordResetToken: null,
+            }
+        });
+
+        res.status(200).json({ message: 'Password berhasil direset.' });
+
+    } catch (error) {
+        next(new Error("Gagal mereset password. Token mungkin tidak valid."));
+    }
+};
+
+/**
+ * @desc    Get user profile
+ * @route   GET /api/auth/profile
+ * @access  Private
+ */
 export const getProfile = async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
@@ -227,16 +281,34 @@ export const getProfile = async (req, res, next) => {
         name: true,
         email: true,
         role: true,
+        isVerified: true,
         createdAt: true,
       },
     });
-
     if (!user) {
       return res.status(404).json({ message: "Pengguna tidak ditemukan." });
     }
-
     res.json(user);
   } catch (error) {
     next(error);
   }
+};
+
+/**
+ * @desc    Update user profile
+ * @route   PUT /api/auth/profile
+ * @access  Private
+ */
+export const updateProfile = async (req, res, next) => {
+    const { name } = req.body;
+    try {
+        const user = await prisma.user.update({
+            where: { id: req.user.id },
+            data: { name },
+            select: { id: true, name: true, email: true, role: true }
+        });
+        res.json({ message: 'Profil berhasil diperbarui.', user });
+    } catch (error) {
+        next(error);
+    }
 };

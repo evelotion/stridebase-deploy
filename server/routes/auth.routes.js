@@ -1,4 +1,4 @@
-// File: server/routes/auth.routes.js (Perbaikan Final)
+// File: server/routes/auth.routes.js (Kode Lengkap Final)
 
 import express from "express";
 import {
@@ -9,7 +9,7 @@ import {
   resetPassword,
   getProfile,
   updateProfile,
-  superuserLogin, // DIKEMBALIKAN: Menggunakan nama yang benar 'superuserLogin'
+  superuserLogin,
 } from "../controllers/auth.controller.js";
 import { authenticateToken } from "../middleware/authenticateToken.js";
 import passport from "passport";
@@ -23,7 +23,7 @@ router.post("/login", loginUser);
 router.get("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
-router.post("/superuser-login", superuserLogin); // DIKEMBALIKAN: Menggunakan 'superuserLogin'
+router.post("/superuser-login", superuserLogin);
 
 // Rute Profil Pengguna (membutuhkan token)
 router.get("/profile", authenticateToken, getProfile);
@@ -39,15 +39,18 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/login",
-    session: false,
+    session: false, // Pastikan tidak menggunakan sesi
   }),
   (req, res) => {
+    // Buat JWT token setelah login Google berhasil
     const user = req.user;
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
+
+    // Redirect ke client dengan token dan data user
     res.redirect(
       `${
         process.env.CLIENT_URL
