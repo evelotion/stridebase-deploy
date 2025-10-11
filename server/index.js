@@ -1,4 +1,4 @@
-// File: server/index.js (Perbaikan Final)
+// File: server/index.js (Perbaikan Final & Best Practice)
 
 import express from "express";
 import dotenv from "dotenv";
@@ -9,12 +9,12 @@ import { fileURLToPath } from "url";
 import passport from "passport";
 
 // Import Konfigurasi dan Middleware
-import { corsOptions } from "./config/cors.js"; // <-- PERBAIKAN DI SINI
+import { corsOptions } from "./config/cors.js";
 import "./config/passport.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { maintenanceMiddleware } from "./middleware/maintenance.js";
 import { startCronJobs } from "./cron/jobs.js";
-import { initializeSocket } from "./socket.js";
+import { initializeSocket } from "./socket.js"; // <-- DIUBAH: Nama sudah benar
 
 // Import Rute
 import authRoutes from "./routes/auth.routes.js";
@@ -37,7 +37,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 
-initializeSocket(server);
+// Inisialisasi Socket.IO
+initializeSocket(server); // <-- DIUBAH: Nama sudah benar
 
 // Middleware
 app.use(cors(corsOptions));
