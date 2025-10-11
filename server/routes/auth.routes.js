@@ -3,7 +3,7 @@
 import express from "express";
 import {
   register,
-  login,
+  loginUser, // DIUBAH: Mengganti 'login' menjadi 'loginUser'
   verifyEmail,
   forgotPassword,
   resetPassword,
@@ -19,7 +19,7 @@ const router = express.Router();
 
 // Rute Otentikasi
 router.post("/register", register);
-router.post("/login", login);
+router.post("/login", loginUser); // DIUBAH: Menggunakan 'loginUser' yang sudah benar
 router.get("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
