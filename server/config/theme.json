@@ -1,46 +1,55 @@
 {
+  "branding": {
+    "brandName": "StrideBase",
+    "logoUrl": "/uploads/asset-1752927610848.png",
+    "faviconUrl": "/uploads/asset-1752927610848.png"
+  },
+  "colors": {
+    "primary": "#0D6EFD",
+    "secondary": "#6C757D",
+    "accent": "#FFC107",
+    "button": {
+      "background": "#0D6EFD",
+      "text": "#FFFFFF",
+      "backgroundHover": "#0B5ED7",
+      "textHover": "#FFFFFF"
+    }
+  },
+  "typography": {
+    "fontFamily": "'Poppins', sans-serif",
+    "baseFontSize": "16px",
+    "h1FontSize": "2.5rem",
+    "buttonFontSize": "1rem",
+    "displayFontSize": "3.5rem",
+    "leadFontSize": "1.25rem",
+    "buttonLgFontSize": "1.25rem"
+  },
+  "background": {
+    "type": "color",
+    "value": "#f8f9fa",
+    "imageUrl": ""
+  },
+  "homePageTheme": "modern",
+  "globalAnnouncement": {
+    "message": "Diskon 20% untuk semua layanan! Gunakan kode: BARU2025",
+    "startDate": "2025-01-01T00:00:00Z",
+    "endDate": "2025-01-31T23:59:59Z"
+  },
   "featureFlags": {
     "enableGlobalAnnouncement": true,
-    "enableNewTheme": true,
-    "maintenanceMode": false,
-    "enableProTierUpgrade": false,
-    "enableTierSystem": true,
+    "enableStoreReviews": true,
+    "enablePartnerProgram": true,
     "pageStatus": {
       "/about": true,
       "/contact": true,
-      "/store": true,
-      "/faq": true
+      "/faq": true,
+      "/store": true
     }
   },
-  "globalAnnouncement": "Diskon 50% untuk semua layanan hingga akhir bulan!",
-  "serverVersion": "1.5.0",
-  "branding": {
-    "logoUrl": "https://res.cloudinary.com/divbjgs3g/image/upload/v1754140481/stridebase_assets/asset-1754140479109.png",
-    "faviconUrl": "https://res.cloudinary.com/divbjgs3g/image/upload/v1754130136/stridebase_assets/asset-1754130134094.png",
-    "loginImageUrl": "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=2670&auto=format&fit=crop",
-    "registerImageUrl": "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2574&auto=format&fit=crop"
-  },
-  "typography": {
-    "fontFamily": "'Public Sans', sans-serif",
-    "baseFontSize": "15px",
-    "h1FontSize": "2rem",
-    "buttonFontSize": "0.75rem",
-    "buttonLgFontSize": "0.9375rem",
-    "leadFontSize": "1.25rem",
-    "displayFontSize": "3.125rem"
-  },
-  "colors": {
-    "secondary": "#34b5d5",
-    "primary": "#1c40d4",
-    "accent": "#ffffff",
-    "button": {
-      "background": "#1c40d4",
-      "text": "#ffffff",
-      "backgroundHover": "#34b5d5",
-      "textHover": "#ffffff"
-    }
-  },
-  "background": {
-    "value": "#ffffff"
+  "authPageTheme": {
+    "title": "Selamat Datang di StrideBase",
+    "description": "Platform manajemen terpadu untuk membawa bisnis Anda ke level berikutnya.",
+    "sidebarColor": "#0D6EFD",
+    "sidebarImageUrl": "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
   }
 }
