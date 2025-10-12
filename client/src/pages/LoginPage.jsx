@@ -1,176 +1,183 @@
-// File: client/src/pages/LoginPage.jsx (Final dengan Tombol Google)
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, clearError } from "../store/slices/authSlice";
+import apiService from "../services/apiService";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
-import API_BASE_URL from "../apiConfig";
-
-const LoginPage = ({ showMessage, theme }) => {
+const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { loading, error, isAuthenticated, user } = useSelector(
+    (state) => state.auth
+  );
 
-  const brandName = theme?.branding?.brandName || "StrideBase";
-  const brandLogo = theme?.branding?.logoUrl;
-  const authPageTheme = theme?.authPageTheme || {};
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        showMessage("Login berhasil!", "Sukses");
-        if (data.user.role === "admin" || data.user.role === "developer") {
-          navigate("/admin/dashboard");
-        } else if (data.user.role === "mitra") {
-          navigate("/partner/dashboard");
-        } else {
-          navigate("/dashboard");
-        }
-        window.location.reload();
+  useEffect(() => {
+    dispatch(clearError());
+    const from = location.state?.from?.pathname || "/";
+    if (isAuthenticated) {
+      if (user?.role === "admin" || user?.role === "superadmin") {
+        navigate("/admin/dashboard");
+      } else if (user?.role === "partner") {
+        navigate("/partner/dashboard");
       } else {
-        showMessage(data.message || "Email atau password salah.", "Error");
+        navigate(from, { replace: true });
       }
-    } catch (error) {
-      showMessage("Terjadi kesalahan pada server. Coba lagi nanti.", "Error");
-    } finally {
-      setIsLoading(false);
     }
+  }, [isAuthenticated, navigate, user, dispatch, location.state]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    dispatch(loginUser({ email, password }));
   };
 
   const handleGoogleLogin = () => {
-    // Arahkan pengguna ke endpoint backend untuk memulai otentikasi Google
-    window.location.href = `${API_BASE_URL}/api/auth/google`;
-  };
-
-  const sidebarStyle = {
-    backgroundColor: authPageTheme.sidebarColor || "var(--primary-color)",
-    ...(authPageTheme.sidebarImageUrl && {
-      backgroundImage: `url(${authPageTheme.sidebarImageUrl})`,
-    }),
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
   };
 
   return (
-    <>
-      <Helmet>
-        <title>{`Login - ${brandName}`}</title>
-      </Helmet>
-      <div className="auth-container">
-        <div className="auth-card">
-          <div
-            className="col-md-5 d-none d-md-flex auth-sidebar"
-            style={sidebarStyle}
+    <div className="relative min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      {/* Tombol Kembali ke Beranda */}
+      <div className="absolute top-0 left-0 p-4 sm:p-6 lg:p-8">
+        <Link
+          to="/"
+          className="flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 group"
+        >
+          <ArrowLeftIcon className="h-5 w-5 mr-2 text-gray-400 group-hover:text-gray-600" />
+          Beranda
+        </Link>
+      </div>
+
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Masuk ke akun Anda
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Atau{" "}
+          <Link
+            to="/register"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
           >
-            {brandLogo && (
-              <img
-                src={brandLogo}
-                alt={`${brandName} Logo`}
-                className="auth-sidebar-logo"
-              />
+            buat akun baru
+          </Link>
+        </p>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <form className="space-y-6" onSubmit={handleLogin}>
+            {(error || message) && (
+              <div className="rounded-md bg-red-50 p-4">
+                <p className="text-sm font-medium text-red-800">
+                  {error || message}
+                </p>
+              </div>
             )}
-            <h3>
-              {authPageTheme.title || `Selamat Datang Kembali di ${brandName}`}
-            </h3>
-            <p>
-              {authPageTheme.description ||
-                "Platform manajemen terbaik untuk bisnis Anda. Masuk untuk melanjutkan."}
-            </p>
-          </div>
-          <div className="col-12 col-md-7 auth-form-container">
-            <div className="text-center text-md-start mb-4">
-              <h2>Login</h2>
-              <p className="text-muted">
-                Masuk untuk melanjutkan ke akun Anda.
-              </p>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Alamat Email
-                </label>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Alamat email
+              </label>
+              <div className="mt-1">
                 <input
-                  type="email"
-                  className="form-control"
                   id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="contoh@email.com"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <div className="mt-1">
                 <input
-                  type="password"
-                  className="form-control"
                   id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Masukkan password Anda"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
-              <div className="d-grid">
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Loading..." : "Login"}
-                </button>
-              </div>
-            </form>
-
-            {/* --- PEMISAH DAN TOMBOL GOOGLE --- */}
-            <div className="d-flex align-items-center my-3">
-              <hr className="flex-grow-1" />
-              <span className="mx-2 text-muted">atau</span>
-              <hr className="flex-grow-1" />
             </div>
 
-            <div className="d-grid">
-              <button
-                onClick={handleGoogleLogin}
-                className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  fill="currentColor"
-                  className="bi bi-google me-2"
-                  viewBox="0 0 16 16"
+            <div className="flex items-center justify-between">
+              <div className="text-sm">
+                <Link
+                  to="/forgot-password"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
                 >
-                  <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.25C2.898 7.426 2.5 8.95 2.5 10.5c0 1.55.398 3.074 1.008 4.25h.001c.632 1.841 2.405 3.25 4.492 3.25 1.745 0 3.218-.74 4.23-1.927h-.001l.001-.002z" />
-                </svg>
-                Lanjutkan dengan Google
+                  Lupa password?
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400"
+              >
+                {loading ? "Memproses..." : "Masuk"}
               </button>
             </div>
-            {/* --- AKHIR --- */}
+          </form>
 
-            <div className="text-center mt-4">
-              <p>
-                <Link to="/forgot-password">Lupa Password?</Link>
-              </p>
-              <p className="text-muted">
-                Belum punya akun? <Link to="/register">Daftar di sini</Link>
-              </p>
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Atau lanjutkan dengan
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+              >
+                <svg
+                  className="w-5 h-5"
+                  aria-hidden="true"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.378.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.338 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0020 10c0-5.523-4.477-10-10-10z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="sr-only">Sign in with Google</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
