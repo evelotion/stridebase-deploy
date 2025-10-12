@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, clearError } from "../store/slices/authSlice";
+import { loginUser, clearError } from '../store/slices/authSlice.js';
 import apiService from "../services/apiService";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 
