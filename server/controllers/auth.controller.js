@@ -86,10 +86,9 @@ export const loginUser = async (req, res, next) => {
         return res.status(401).json({ message: "Email atau password salah." });
     }
     
-    if (!user.isVerified) {
-        return res.status(401).json({ message: "Akun Anda belum diverifikasi. Silakan cek email Anda." });
-    }
-    
+ if (!user.isEmailVerified) { // INI PERBAIKANNYA
+    return res.status(401).json({ message: "Akun Anda belum diverifikasi. Silakan cek email Anda." });
+}
     if (user.status !== 'active') {
         return res.status(403).json({ message: `Status akun Anda saat ini: ${user.status}. Tidak dapat login.` });
     }
