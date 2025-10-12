@@ -1,4 +1,4 @@
-// File: client/src/pages/LoginPage.jsx (Dengan Preview Password)
+// File: client/src/pages/LoginPage.jsx (Versi Desain Baru)
 
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -14,10 +14,11 @@ const LoginPage = ({ showMessage, theme }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // State untuk ikon mata
+  const [showPassword, setShowPassword] = useState(false);
 
+  // Menggunakan gambar dari tema atau fallback
   const loginImageUrl =
-    theme?.branding?.loginImageUrl ||
+    theme?.authPageTheme?.sidebarImageUrl ||
     "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=2574&auto=format&fit=crop";
 
   const submitHandler = async (e) => {
@@ -25,10 +26,8 @@ const LoginPage = ({ showMessage, theme }) => {
     setLoading(true);
     try {
       const data = await loginUser({ email, password });
-
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-
       showMessage("Login berhasil!", "Success");
 
       switch (data.user.role) {
@@ -64,6 +63,7 @@ const LoginPage = ({ showMessage, theme }) => {
         <title>Masuk ke Akun Anda | StrideBase</title>
       </Helmet>
       <div className="row g-0 vh-100">
+        {/* Kolom Kiri: Gambar Branding */}
         <div
           className="col-lg-7 d-none d-lg-flex auth-image-panel login-image-side"
           style={{ backgroundImage: `url(${loginImageUrl})` }}
@@ -77,6 +77,8 @@ const LoginPage = ({ showMessage, theme }) => {
             </p>
           </div>
         </div>
+
+        {/* Kolom Kanan: Form Login */}
         <div className="col-lg-5 d-flex align-items-center justify-content-center auth-form-panel">
           <div className="auth-form-container">
             <div className="text-center mb-5">
@@ -86,6 +88,7 @@ const LoginPage = ({ showMessage, theme }) => {
               </p>
             </div>
             <form onSubmit={submitHandler}>
+              {/* Input Email */}
               <div className="form-floating mb-3">
                 <input
                   type="email"
@@ -98,6 +101,8 @@ const LoginPage = ({ showMessage, theme }) => {
                 />
                 <label htmlFor="email">Alamat Email</label>
               </div>
+
+              {/* Input Password dengan Ikon "Show/Hide" */}
               <div className="form-floating mb-3">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -120,6 +125,7 @@ const LoginPage = ({ showMessage, theme }) => {
                   ></i>
                 </span>
               </div>
+
               <div className="text-end mb-4">
                 <Link to="/forgot-password">Lupa Password?</Link>
               </div>
