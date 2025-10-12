@@ -1,121 +1,98 @@
-// File: client/src/pages/ForgotPasswordPage.jsx
+// File: client/src/pages/ForgotPasswordPage.jsx (Versi Desain Baru)
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import API_BASE_URL from "../apiConfig";
+import { forgotPasswordUser } from "../services/apiService"; // Gunakan apiService
 
 const ForgotPasswordPage = ({ showMessage, theme }) => {
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const brandName = theme?.branding?.brandName || "StrideBase";
-  const brandLogo = theme?.branding?.logoUrl;
-  const authPageTheme = theme?.authPageTheme || {};
+  const imageUrl =
+    theme?.authPageTheme?.sidebarImageUrl ||
+    "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop";
 
-  const handleSubmit = async (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        showMessage(
-          "Jika email terdaftar, kami telah mengirimkan link reset password.",
-          "Info"
-        );
-      } else {
-        showMessage(data.message || "Gagal mengirim email.", "Error");
-      }
-    } catch (error) {
-      showMessage("Terjadi kesalahan pada server.", "Error");
+      await forgotPasswordUser({ email });
+      showMessage(
+        "Jika email terdaftar, kami telah mengirimkan link untuk reset password.",
+        "Success"
+      );
+    } catch (err) {
+      showMessage(err.message, "Error");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const sidebarStyle = {
-    backgroundColor: authPageTheme.sidebarColor || "var(--primary-color)",
-    ...(authPageTheme.sidebarImageUrl && {
-      backgroundImage: `url(${authPageTheme.sidebarImageUrl})`,
-    }),
-  };
-
   return (
-    <>
+    <div className="auth-container">
       <Helmet>
-        <title>{`Lupa Password - ${brandName}`}</title>
+        <title>Lupa Password | StrideBase</title>
       </Helmet>
-      <div className="auth-container">
-        <div className="auth-card">
-          {/* Kolom Kiri: Branding */}
-          <div
-            className="col-md-5 d-none d-md-flex auth-sidebar"
-            style={sidebarStyle}
-          >
-            {brandLogo && (
-              <img
-                src={brandLogo}
-                alt={`${brandName} Logo`}
-                className="auth-sidebar-logo"
-              />
-            )}
-            <h3>
-              {authPageTheme.title || `Ada Kendala? ${brandName} Membantu`}
-            </h3>
-            <p>
-              {authPageTheme.description ||
-                "Masukkan email Anda untuk memulai proses reset password."}
+      <div className="row g-0 vh-100">
+        {/* Kolom Kiri: Gambar Branding */}
+        <div
+          className="col-lg-7 d-none d-lg-flex auth-image-panel"
+          style={{ backgroundImage: `url(${imageUrl})` }}
+        >
+          <div className="auth-image-overlay">
+            <h1 className="display-4 fw-bold text-white">Jangan Panik.</h1>
+            <p className="lead text-white-75">
+              Kami akan membantu Anda mendapatkan kembali akses ke akun Anda.
             </p>
           </div>
+        </div>
 
-          {/* Kolom Kanan: Form */}
-          <div className="col-12 col-md-7 auth-form-container">
-            <div className="text-center text-md-start mb-4">
-              <h2>Reset Password</h2>
+        {/* Kolom Kanan: Form */}
+        <div className="col-lg-5 d-flex align-items-center justify-content-center auth-form-panel">
+          <div className="auth-form-container">
+            <div className="text-center mb-5">
+              <h3 className="fw-bold">Lupa Password Anda?</h3>
               <p className="text-muted">
-                Masukkan email yang terhubung dengan akun Anda.
+                Masukkan email Anda, kami akan kirimkan tautan untuk mengatur
+                ulang password.
               </p>
             </div>
-
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Alamat Email
-                </label>
+            <form onSubmit={submitHandler}>
+              <div className="form-floating mb-3">
                 <input
                   type="email"
                   className="form-control"
                   id="email"
+                  placeholder="name@example.com"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                 />
+                <label htmlFor="email">Alamat Email</label>
               </div>
-              <div className="d-grid">
+
+              <div className="d-grid mt-4">
                 <button
                   type="submit"
-                  className="btn btn-primary"
-                  disabled={isLoading}
+                  className="btn btn-dark btn-lg"
+                  disabled={loading}
                 >
-                  {isLoading ? "Mengirim..." : "Kirim Link Reset"}
+                  {loading ? "Mengirim..." : "Kirim Tautan Reset"}
                 </button>
               </div>
-            </form>
-            <div className="text-center mt-4">
-              <p>
-                <Link to="/login">Kembali ke Login</Link>
+              <p className="text-center mt-4">
+                Ingat password Anda? <Link to="/login">Kembali ke Login</Link>
               </p>
-            </div>
+            </form>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
+
+// Tambahkan fungsi baru ini ke dalam apiService.js jika belum ada
+// export const forgotPasswordUser = (data) => apiRequest('/api/auth/forgot-password', 'POST', data);
 
 export default ForgotPasswordPage;

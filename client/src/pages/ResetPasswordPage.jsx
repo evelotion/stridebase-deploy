@@ -1,61 +1,77 @@
-import React, { useState } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import API_BASE_URL from "../apiConfig";
+// File: client/src/pages/ResetPasswordPage.jsx (Versi Desain Baru)
 
-const ResetPasswordPage = ({ showMessage }) => {
+import React, { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { resetPasswordUser } from "../services/apiService"; // Gunakan apiService
+
+const ResetPasswordPage = ({ showMessage, theme }) => {
   const [searchParams] = useSearchParams();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const token = searchParams.get("token");
 
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const imageUrl =
+    theme?.authPageTheme?.sidebarImageUrl ||
+    "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=2574&auto=format&fit=crop";
+
+  const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setError("Password tidak cocok.");
+      showMessage("Password dan konfirmasi tidak cocok.", "Error");
       return;
     }
     if (!token) {
-      setError("Token reset tidak ditemukan. Silakan coba lagi dari awal.");
+      showMessage("Token tidak valid atau tidak ditemukan.", "Error");
       return;
     }
-    setError("");
-    setIsSubmitting(true);
-
+    setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-
+      await resetPasswordUser({ token, newPassword: password });
       showMessage(
-        "Password berhasil direset! Silakan login dengan password baru Anda."
+        "Password berhasil direset! Silakan login dengan password baru Anda.",
+        "Success"
       );
       navigate("/login");
     } catch (err) {
-      setError(err.message || "Gagal mereset password.");
+      showMessage(err.message, "Error");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
-      <div className="row g-0 vh-100 align-items-center justify-content-center">
-        <div className="col-lg-5">
-          <div className="auth-form-container text-center">
-            <h3 className="fw-bold mb-4">Atur Password Baru</h3>
-            <form onSubmit={handleSubmit}>
-              {error && <div className="alert alert-danger">{error}</div>}
+      <Helmet>
+        <title>Atur Ulang Password | StrideBase</title>
+      </Helmet>
+      <div className="row g-0 vh-100">
+        {/* Kolom Kiri: Gambar Branding */}
+        <div
+          className="col-lg-7 d-none d-lg-flex auth-image-panel"
+          style={{ backgroundImage: `url(${imageUrl})` }}
+        >
+          <div className="auth-image-overlay">
+            <h1 className="display-4 fw-bold text-white">Satu Langkah Terakhir.</h1>
+            <p className="lead text-white-75">
+              Buat password baru yang kuat untuk mengamankan akun Anda.
+            </p>
+          </div>
+        </div>
 
+        {/* Kolom Kanan: Form */}
+        <div className="col-lg-5 d-flex align-items-center justify-content-center auth-form-panel">
+          <div className="auth-form-container">
+            <div className="text-center mb-5">
+              <h3 className="fw-bold">Atur Password Baru</h3>
+              <p className="text-muted">Masukkan password baru Anda di bawah ini.</p>
+            </div>
+            <form onSubmit={submitHandler}>
               <div className="form-floating mb-3">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -71,14 +87,10 @@ const ResetPasswordPage = ({ showMessage }) => {
                   className="password-toggle-icon"
                   onClick={() => setShowPassword(!showPassword)}
                 >
-                  <i
-                    className={`fas ${
-                      showPassword ? "fa-eye-slash" : "fa-eye"
-                    }`}
-                  ></i>
+                  <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
                 </span>
               </div>
-              <div className="form-floating mb-3">
+              <div className="form-floating mb-4">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
@@ -88,28 +100,22 @@ const ResetPasswordPage = ({ showMessage }) => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
-                <label htmlFor="confirmPassword">
-                  Konfirmasi Password Baru
-                </label>
+                <label htmlFor="confirmPassword">Konfirmasi Password Baru</label>
                 <span
                   className="password-toggle-icon"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  <i
-                    className={`fas ${
-                      showConfirmPassword ? "fa-eye-slash" : "fa-eye"
-                    }`}
-                  ></i>
+                  <i className={`fas ${showConfirmPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
                 </span>
               </div>
 
-              <div className="d-grid my-4">
+              <div className="d-grid">
                 <button
                   type="submit"
-                  className="btn btn-dark"
-                  disabled={isSubmitting}
+                  className="btn btn-dark btn-lg"
+                  disabled={loading}
                 >
-                  {isSubmitting ? "Menyimpan..." : "Reset Password"}
+                  {loading ? "Menyimpan..." : "Simpan Password Baru"}
                 </button>
               </div>
             </form>
@@ -119,5 +125,8 @@ const ResetPasswordPage = ({ showMessage }) => {
     </div>
   );
 };
+
+// Tambahkan fungsi baru ini ke dalam apiService.js jika belum ada
+// export const resetPasswordUser = (data) => apiRequest('/api/auth/reset-password', 'POST', data);
 
 export default ResetPasswordPage;
