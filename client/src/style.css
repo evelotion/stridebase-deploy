@@ -4672,15 +4672,16 @@ body.has-global-announcement .filter-panel-top {
   z-index: 3; /* Pastikan ikon di atas label floating */
 }
 
-/* =============================================== */
-/* === GAYA BARU HALAMAN AUTENTIKASI (PERBAIKAN) === */
-/* =============================================== */
+/* ======================================================= */
+/* === GAYA FINAL HALAMAN AUTENTIKASI (LOGIN & REGISTER) === */
+/* ======================================================= */
 
 /* Reset dasar untuk memastikan tidak ada style lain yang mengganggu */
 .auth-container, .auth-container * {
   box-sizing: border-box;
 }
 
+/* Mengatur layout utama agar full-screen */
 .auth-container .row {
   min-height: 100vh;
   width: 100vw;
@@ -4688,32 +4689,33 @@ body.has-global-announcement .filter-panel-top {
   padding: 0;
 }
 
-/* Kolom Gambar (Sisi Kiri) */
+/* Kolom Gambar (Sisi Kiri) untuk Login & Register */
 .auth-container .auth-image-panel {
-  display: flex;
+  display: flex !important; /* Tambahkan !important untuk menimpa gaya lain */
   align-items: center;
   justify-content: center;
   padding: 3rem;
   background-size: cover;
   background-position: center;
-  position: relative; /* Diperlukan untuk overlay */
+  position: relative;
 }
 
+/* Overlay gelap di atas gambar agar teks lebih terbaca */
 .auth-container .auth-image-overlay {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
   position: absolute;
-  inset: 0;
+  inset: 0; /* Mengisi seluruh parent */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Pusatkan konten overlay */
+  justify-content: center;
   align-items: center;
   text-align: center;
   padding: 2rem;
 }
 
-/* Kolom Form (Sisi Kanan) */
+/* Kolom Form (Sisi Kanan) untuk Login & Register */
 .auth-container .auth-form-panel {
-  display: flex;
+  display: flex !important; /* Tambahkan !important */
   align-items: center;
   justify-content: center;
   padding: 2rem;
@@ -4722,10 +4724,14 @@ body.has-global-announcement .filter-panel-top {
 
 .auth-container .auth-form-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 400px; /* Lebar maksimum form */
 }
 
-/* Penyesuaian agar ikon password tidak tertutup */
+/* --- Gaya Khusus untuk Halaman Register (jika ada perbedaan) --- */
+/* (Saat ini kita satukan gayanya dengan login, jadi tidak perlu tambahan) */
+
+
+/* --- Penyesuaian ikon password di halaman Login --- */
 .auth-container .form-floating {
   position: relative;
 }
