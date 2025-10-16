@@ -877,7 +877,7 @@ footer {
   min-height: calc(
     100vh - 44px
   ); /* MODIFIKASI: Tinggi disesuaikan dengan navbar */
-  padding-top: 44px;
+  padding-top: 0x;
 }
 
 .auth-form-panel {
@@ -2972,12 +2972,12 @@ PENINGKATAN UX PENCARIAN & FILTER
   width: 100vw;
   background-color: var(--bg-white);
   /* PERUBAHAN: Memberi padding atas setinggi navbar (misal: 56px) */
-  padding-top: 40px !important;
+  padding-top: 0px !important;
 }
 
 .auth-image-panel {
   /* Mengurangi tinggi panel gambar agar sesuai dengan container baru */
-  height: calc(100vh - 56px);
+  height: 100vh;
   background-size: cover;
   background-position: center;
   position: relative;
