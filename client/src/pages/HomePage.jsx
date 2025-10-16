@@ -1,11 +1,11 @@
-// File: client/src/pages/HomePage.jsx (Dengan Animasi Fade-in)
+// File: client/src/pages/HomePage.jsx (Dengan Perbaikan Layout & Animasi)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
 import API_BASE_URL from "../apiConfig";
 import GlobalAnnouncement from "../components/GlobalAnnouncement";
-import { Fade } from "react-awesome-reveal"; // <-- Impor komponen animasi
+import { Fade } from "react-awesome-reveal";
 import "./HomePageModern.css";
 
 const serviceCategories = [
@@ -72,29 +72,34 @@ const HomePage = ({
   const renderClassicHomepage = () => (
     <>
       <section className="hero-section text-center text-lg-start">
-        {/* --- KONTEN HERO (TEKS & TOMBOL) HANYA UNTUK DESKTOP --- */}
         <div className="container d-none d-lg-block">
           <div className="row align-items-center">
-            <Fade direction="left" triggerOnce> 
-              <div className="col-lg-6 hero-content">
-                <h1 className="display-4 fw-bold mb-4">
-                  Merawat lebih dari <br />
-                  <span className="hero-highlight">Sekedar Membersihkan.</span>
-                </h1>
-                <p className="lead text-muted mb-4">
-                  Karena setiap detail layak dirawat sepenuh hati.
-                </p>
-                <Link
-                  to="/store"
-                  className="btn btn-primary btn-lg px-4 shadow-sm"
-                >
-                  Cari Toko Sekarang <i className="fas fa-arrow-right ms-2"></i>
-                </Link>
-              </div>
-            </Fade>
+            {/* === INI DIV YANG DIPERBAIKI === */}
+            <div className="col-lg-6">
+              <Fade direction="left" triggerOnce>
+                <div className="hero-content">
+                  <h1 className="display-4 fw-bold mb-4">
+                    Merawat lebih dari <br />
+                    <span className="hero-highlight">
+                      Sekedar Membersihkan.
+                    </span>
+                  </h1>
+                  <p className="lead text-muted mb-4">
+                    Karena setiap detail layak dirawat sepenuh hati.
+                  </p>
+                  <Link
+                    to="/store"
+                    className="btn btn-primary btn-lg px-4 shadow-sm"
+                  >
+                    Cari Toko Sekarang{" "}
+                    <i className="fas fa-arrow-right ms-2"></i>
+                  </Link>
+                </div>
+              </Fade>
+            </div>
+            {/* === AKHIR DARI DIV PERBAIKAN === */}
             <div className="col-lg-6 mt-4 mt-lg-0">
-              {/* Carousel ini akan muncul di kolom kanan pada desktop */}
-              <Fade direction="right" triggerOnce> 
+              <Fade direction="right" triggerOnce>
                 {banners.length > 0 && (
                   <div
                     id="heroBannerCarousel"
@@ -156,7 +161,7 @@ const HomePage = ({
       </section>
 
       <section className="service-categories-section container">
-        <Fade direction="up" triggerOnce> 
+        <Fade direction="up" triggerOnce>
           <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
             <h2 className="section-title">Kategori Layanan</h2>
           </div>
@@ -179,7 +184,7 @@ const HomePage = ({
 
       <section className="featured-stores py-5 bg-light">
         <div className="container">
-          <Fade direction="up" triggerOnce> 
+          <Fade direction="up" triggerOnce>
             <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
               <h2 className="section-title">Toko Populer</h2>
             </div>
@@ -215,7 +220,7 @@ const HomePage = ({
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-6 hero-content-modern">
-              <Fade direction="left" triggerOnce> 
+              <Fade direction="left" triggerOnce>
                 <h1 className="mb-4">
                   Perawatan Sepatu Profesional di Ujung Jari Anda.
                 </h1>
@@ -229,7 +234,7 @@ const HomePage = ({
               </Fade>
             </div>
             <div className="col-lg-6">
-              <Fade direction="right" triggerOnce> 
+              <Fade direction="right" triggerOnce>
                 <div className="hero-image-modern">
                   <img
                     src="https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070&auto=format&fit=crop"
@@ -244,7 +249,7 @@ const HomePage = ({
       </section>
       <section className="service-categories-modern py-5">
         <div className="container">
-          <Fade direction="up" triggerOnce> 
+          <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
               <h2 className="section-title-modern">Layanan Komprehensif</h2>
               <p className="text-muted">
@@ -270,7 +275,7 @@ const HomePage = ({
       </section>
       <section className="featured-stores-modern py-5">
         <div className="container">
-          <Fade direction="up" triggerOnce> 
+          <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
               <h2 className="section-title-modern">Mitra Terpercaya Kami</h2>
               <p className="text-muted">
