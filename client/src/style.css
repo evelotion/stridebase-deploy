@@ -4745,3 +4745,10 @@ body.has-global-announcement .filter-panel-top {
   color: #6c757d;
   z-index: 3;
 }
+/* Perbaikan untuk padding di halaman register */
+.auth-form-panel {
+  height: 100vh;
+  overflow-y: auto; /* Tambahkan scroll jika kontennya panjang */
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
