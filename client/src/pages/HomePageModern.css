@@ -1,91 +1,123 @@
-/* File: client/src/pages/HomePageModern.css (Desain Baru "Premium Dark") */
+/* File: client/src/pages/HomePageModern.css (Desain Baru "Hero Background Carousel") */
 
 /* ==============================================
   DEFINISI WARNA (PALET GELAP)
 ============================================== */
 :root {
-  /* Anda bisa ganti --primary-color di style.css agar konsisten */
-  /* --primary-color: #0d6efd; */
-  --hm-bg: #121212; /* Latar belakang utama (Hitam pekat) */
-  --hm-surface: #1e1e1e; /* Warna permukaan (untuk card/section) */
-  --hm-text-primary: #ffffff; /* Teks putih */
-  --hm-text-secondary: #b3b3b3; /* Teks abu-abu */
-  --hm-border: #2a2a2a; /* Garis batas */
+  --hm-bg: #121212;
+  --hm-surface: #1e1e1e;
+  --hm-text-primary: #ffffff;
+  --hm-text-secondary: #b3b3b3;
+  --hm-border: #2a2a2a;
 }
 
 /* ==============================================
   STYLE DASAR (Hanya untuk layar > 992px)
 ============================================== */
-
-/* Pembungkus utama */
 .home-modern-wrapper {
   background-color: var(--hm-bg);
   color: var(--hm-text-primary);
-  /* Beri jarak dari navbar jika navbar Anda fixed/sticky */
-  /* padding-top: 70px;  */
 }
 
-/* Judul Section Umum */
 .hm-section-title {
   font-weight: 700;
   color: var(--hm-text-primary);
-  font-size: 2.5rem; /* 40px */
+  font-size: 2.5rem;
 }
 
 .hm-section-subtitle {
   color: var(--hm-text-secondary);
-  font-size: 1.1rem; /* 18px */
+  font-size: 1.1rem;
 }
 
 /* ==============================================
-  HERO SECTION
+  HERO SECTION (BACKGROUND CAROUSEL)
 ============================================== */
-.hm-hero {
-  padding: 6rem 0;
+
+/* 1. Kontainer Utama Hero */
+.hm-hero-bg-carousel {
   position: relative;
+  height: 80vh; /* Tinggi 80% dari viewport */
+  min-height: 500px;
+  width: 100%;
   overflow: hidden;
-  /* Gradien halus di latar belakang */
-  background: linear-gradient(
-    180deg,
-    rgba(30, 30, 30, 0) 0%,
-    var(--hm-surface) 100%
-  );
+  color: white;
 }
 
-.hm-hero-content {
+/* 2. Kontainer Carousel (Lapisan 1: Paling Bawah) */
+.hm-hero-carousel-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hm-hero-carousel-container .carousel-inner,
+.hm-hero-carousel-container .carousel-item {
+  height: 100%;
+}
+
+.hm-hero-carousel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Memastikan gambar menutupi area */
+  filter: blur(2px); /* Sedikit blur agar fokus ke teks */
+}
+
+/* Fallback jika tidak ada banner */
+.hm-hero-fallback-bg {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #222, #444);
+}
+
+/* 3. Overlay Gelap (Lapisan 2: Tengah) */
+.hm-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Overlay hitam 60% */
   z-index: 2;
 }
 
-.hm-hero-subheading {
-  font-size: 1rem;
-  font-weight: 600;
-  /* Gunakan variabel warna primer dari Bootstrap/style.css Anda */
-  color: var(--primary-color);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* 4. Konten Teks (Lapisan 3: Atas) */
+.hm-hero-content-container {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center; /* Vertically center */
+  justify-content: center; /* Horizontally center */
+  z-index: 3;
 }
 
 .hm-hero-heading {
   font-size: 3.5rem; /* 56px */
   font-weight: 800;
   line-height: 1.2;
-  margin-top: 0.5rem;
   margin-bottom: 1.5rem;
   color: var(--hm-text-primary);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Bayangan teks agar terbaca */
 }
 
 .hm-hero-text {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   color: var(--hm-text-secondary);
   margin-bottom: 2.5rem;
-  max-width: 500px; /* Batasi lebar teks agar mudah dibaca */
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
 }
 
 .hm-hero-btn {
   padding: 0.8rem 2rem;
   font-size: 1.1rem;
   font-weight: 600;
-  border-radius: 50px; /* Tombol "pill" */
+  border-radius: 50px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.2);
 }
@@ -95,30 +127,9 @@
   box-shadow: 0 10px 25px rgba(var(--bs-primary-rgb), 0.3);
 }
 
-.hm-hero-image-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hm-hero-image {
-  width: 100%;
-  max-width: 500px;
-  border-radius: 20px;
-  /* Efek 'glow' di belakang gambar, menggunakan warna primer */
-  filter: drop-shadow(0 0 45px rgba(var(--bs-primary-rgb), 0.25));
-  transform: rotate(5deg); /* Sedikit rotasi agar dinamis */
-  transition: all 0.4s ease-in-out;
-}
-
-.hm-hero-image-container:hover .hm-hero-image {
-  transform: rotate(0deg) scale(1.05); /* Luruskan dan besarkan saat hover */
-  filter: drop-shadow(0 0 65px rgba(var(--bs-primary-rgb), 0.35));
-}
-
 /* ==============================================
   SERVICE CATEGORIES
+  (CSS ini sama dengan 'Premium Dark' sebelumnya)
 ============================================== */
 .hm-services {
   background-color: var(--hm-surface);
@@ -128,15 +139,12 @@
 
 .hm-services-grid {
   display: grid;
-  /* 4 kolom di desktop, akan otomatis 1 kolom di mobile (karena kita tidak set mobile) */
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
 }
 
 .hm-service-card {
-  background-color: var(
-    --hm-bg
-  ); /* Lebih gelap dari latar section, sama dengan bg utama */
+  background-color: var(--hm-bg);
   padding: 2rem 1.5rem;
   border-radius: 16px;
   text-align: center;
@@ -171,21 +179,18 @@
 
 /* ==============================================
   FEATURED STORES
+  (CSS ini sama dengan 'Premium Dark' sebelumnya)
 ============================================== */
 .hm-featured-stores {
   padding-bottom: 6rem;
-  background-color: var(--hm-bg); /* Kembali ke background utama */
+  background-color: var(--hm-bg);
 }
-
-/* Penyesuaian untuk StoreCard Anda agar cocok dengan tema dark.
-   Asumsi StoreCard punya class .card (dari Bootstrap) */
 
 .hm-featured-stores .card {
   background-color: var(--hm-surface) !important;
   border: 1px solid var(--hm-border) !important;
   color: var(--hm-text-primary) !important;
   transition: all 0.3s ease;
-  /* Pastikan card Anda tidak punya box-shadow default yang terang */
   box-shadow: none !important;
 }
 
@@ -195,7 +200,6 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Menyesuaikan teks di dalam card */
 .hm-featured-stores .card .card-title,
 .hm-featured-stores .card .card-text,
 .hm-featured-stores .card .fw-bold {
@@ -204,11 +208,4 @@
 
 .hm-featured-stores .card .text-muted {
   color: var(--hm-text-secondary) !important;
-}
-
-/* Menyesuaikan badge (jika ada) */
-.hm-featured-stores .card .badge {
-  /* Pastikan badge kontras dengan background gelap */
-  background-color: var(--primary-color) !important;
-  color: white !important;
 }

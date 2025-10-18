@@ -217,49 +217,74 @@ const HomePage = ({
 const renderModernHomepage = () => (
     // Pembungkus utama untuk tema modern
     <div className="home-modern-wrapper">
-      {/* === BAGIAN HERO === */}
-      <section className="hm-hero d-none d-lg-block">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6">
-              <Fade direction="left" triggerOnce>
-                <div className="hm-hero-content">
-                  <span className="hm-hero-subheading">
-                    Selamat Datang di StrideBase
-                  </span>
-                  <h1 className="hm-hero-heading">
-                    Perawatan Sepatu Profesional, <br />
-                    Hasil Istimewa.
-                  </h1>
-                  <p className="hm-hero-text">
-                    Temukan, pesan, dan lacak layanan cuci sepatu terbaik di
-                    dekat Anda. Kualitas dan kemudahan di ujung jari Anda.
-                  </p>
-                  <Link
-                    to="/store"
-                    className="btn btn-primary btn-lg hm-hero-btn"
-                  >
-                    Temukan Layanan <i className="fas fa-arrow-right ms-2"></i>
-                  </Link>
-                </div>
-              </Fade>
-            </div>
-            <div className="col-lg-6">
-              <Fade direction="right" triggerOnce>
-                <div className="hm-hero-image-container">
+      {/* ==============================================
+        HERO SECTION DENGAN BACKGROUND CAROUSEL
+        ==============================================
+      */}
+      <section className="hm-hero-bg-carousel d-none d-lg-block">
+        {/* 1. CAROUSEL (LAPISAN PALING BAWAH) */}
+        <div
+          id="heroModernBannerCarousel"
+          className="carousel slide carousel-fade hm-hero-carousel-container"
+          data-bs-ride="carousel"
+        >
+          <div className="carousel-inner">
+            {banners.length > 0 ? (
+              banners.map((banner, index) => (
+                <div
+                  className={`carousel-item ${index === 0 ? "active" : ""}`}
+                  key={banner.id}
+                  data-bs-interval="4000" // Ganti gambar setiap 4 detik
+                >
                   <img
-                    src="https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070&auto=format&fit=crop"
-                    alt="Sepatu Sneaker Premium"
-                    className="hm-hero-image"
+                    src={banner.imageUrl}
+                    className="d-block w-100 hm-hero-carousel-img"
+                    alt={`Banner ${index + 1}`}
                   />
                 </div>
+              ))
+            ) : (
+              // Fallback jika tidak ada banner
+              <div className="carousel-item active">
+                <div className="hm-hero-carousel-img hm-hero-fallback-bg"></div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 2. OVERLAY (LAPISAN TENGAH) */}
+        <div className="hm-hero-overlay"></div>
+
+        {/* 3. KONTEN TULISAN (LAPISAN ATAS) */}
+        <div className="container hm-hero-content-container">
+          <div className="row">
+            <div className="col-lg-8 text-center mx-auto">
+              <Fade direction="down" triggerOnce>
+                <h1 className="hm-hero-heading">
+                  Perawatan Sepatu Profesional,
+                  <br />
+                  Hasil Istimewa.
+                </h1>
+                <p className="hm-hero-text">
+                  Temukan, pesan, dan lacak layanan cuci sepatu terbaik di
+                  dekat Anda. Kualitas dan kemudahan di ujung jari Anda.
+                </p>
+                <Link
+                  to="/store"
+                  className="btn btn-primary btn-lg hm-hero-btn"
+                >
+                  Temukan Layanan <i className="fas fa-arrow-right ms-2"></i>
+                </Link>
               </Fade>
             </div>
           </div>
         </div>
       </section>
 
-      {/* === BAGIAN KATEGORI LAYANAN === */}
+      {/* ==============================================
+        BAGIAN KATEGORI LAYANAN
+        ==============================================
+      */}
       <section className="hm-services py-5">
         <div className="container">
           <Fade direction="up" triggerOnce>
@@ -287,7 +312,10 @@ const renderModernHomepage = () => (
         </div>
       </section>
 
-      {/* === BAGIAN TOKO POPULER === */}
+      {/* ==============================================
+        BAGIAN TOKO POPULER
+        ==============================================
+      */}
       <section className="hm-featured-stores py-5">
         <div className="container">
           <Fade direction="up" triggerOnce>
@@ -318,7 +346,7 @@ const renderModernHomepage = () => (
       </section>
     </div>
   );
-
+  
   return (
     <div className="homepage-mobile-container">
       {/* Header Mobile (Tetap Sama) */}
