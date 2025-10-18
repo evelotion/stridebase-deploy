@@ -214,32 +214,43 @@ const HomePage = ({
     </>
   );
 
-  const renderModernHomepage = () => (
-    <>
-      <section className="hero-section-modern d-none d-lg-flex">
+const renderModernHomepage = () => (
+    // Pembungkus utama untuk tema modern
+    <div className="home-modern-wrapper">
+      {/* === BAGIAN HERO === */}
+      <section className="hm-hero d-none d-lg-block">
         <div className="container">
           <div className="row align-items-center">
-            <div className="col-lg-6 hero-content-modern">
+            <div className="col-lg-6">
               <Fade direction="left" triggerOnce>
-                <h1 className="mb-4">
-                  Perawatan Sepatu Profesional di Ujung Jari Anda.
-                </h1>
-                <p className="lead mb-4">
-                  Temukan, pesan, dan lacak layanan cuci sepatu terbaik di dekat
-                  Anda dengan mudah dan cepat.
-                </p>
-                <Link to="/store" className="btn btn-dark btn-lg px-5 py-3">
-                  Mulai Sekarang
-                </Link>
+                <div className="hm-hero-content">
+                  <span className="hm-hero-subheading">
+                    Selamat Datang di StrideBase
+                  </span>
+                  <h1 className="hm-hero-heading">
+                    Perawatan Sepatu Profesional, <br />
+                    Hasil Istimewa.
+                  </h1>
+                  <p className="hm-hero-text">
+                    Temukan, pesan, dan lacak layanan cuci sepatu terbaik di
+                    dekat Anda. Kualitas dan kemudahan di ujung jari Anda.
+                  </p>
+                  <Link
+                    to="/store"
+                    className="btn btn-primary btn-lg hm-hero-btn"
+                  >
+                    Temukan Layanan <i className="fas fa-arrow-right ms-2"></i>
+                  </Link>
+                </div>
               </Fade>
             </div>
             <div className="col-lg-6">
               <Fade direction="right" triggerOnce>
-                <div className="hero-image-modern">
+                <div className="hm-hero-image-container">
                   <img
                     src="https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070&auto=format&fit=crop"
-                    alt="Sepatu Sneaker"
-                    className="main-img"
+                    alt="Sepatu Sneaker Premium"
+                    className="hm-hero-image"
                   />
                 </div>
               </Fade>
@@ -247,38 +258,42 @@ const HomePage = ({
           </div>
         </div>
       </section>
-      <section className="service-categories-modern py-5">
+
+      {/* === BAGIAN KATEGORI LAYANAN === */}
+      <section className="hm-services py-5">
         <div className="container">
           <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
-              <h2 className="section-title-modern">Layanan Komprehensif</h2>
-              <p className="text-muted">
-                Dari pembersihan cepat hingga perbaikan mendetail.
+              <h2 className="hm-section-title">Layanan Komprehensif</h2>
+              <p className="hm-section-subtitle">
+                Dari pembersihan cepat hingga restorasi mendetail.
               </p>
             </div>
-            <div className="row g-4">
+            <div className="hm-services-grid">
               {serviceCategories.map((category) => (
-                <div className="col-lg-3 col-md-6" key={category.name}>
-                  <Link to={category.link} className="text-decoration-none">
-                    <div className="category-card-modern">
-                      <i
-                        className={`fas ${category.icon} category-icon-modern`}
-                      ></i>
-                      <h5>{category.name}</h5>
-                    </div>
-                  </Link>
-                </div>
+                <Link
+                  to={category.link}
+                  key={category.name}
+                  className="hm-service-card"
+                >
+                  <div className="hm-service-icon">
+                    <i className={`fas ${category.icon}`}></i>
+                  </div>
+                  <h5 className="hm-service-name">{category.name}</h5>
+                </Link>
               ))}
             </div>
           </Fade>
         </div>
       </section>
-      <section className="featured-stores-modern py-5">
+
+      {/* === BAGIAN TOKO POPULER === */}
+      <section className="hm-featured-stores py-5">
         <div className="container">
           <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
-              <h2 className="section-title-modern">Mitra Terpercaya Kami</h2>
-              <p className="text-muted">
+              <h2 className="hm-section-title">Mitra Terpercaya Kami</h2>
+              <p className="hm-section-subtitle">
                 Dipilih berdasarkan kualitas dan ulasan terbaik.
               </p>
             </div>
@@ -292,6 +307,7 @@ const HomePage = ({
               <div className="row g-4">
                 {featuredStores.map((store) => (
                   <div className="col-lg-4 col-md-6" key={store.id}>
+                    {/* Komponen StoreCard Anda akan digunakan di sini */}
                     <StoreCard store={store} />
                   </div>
                 ))}
@@ -300,7 +316,7 @@ const HomePage = ({
           </Fade>
         </div>
       </section>
-    </>
+    </div>
   );
 
   return (
