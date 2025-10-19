@@ -2981,7 +2981,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   background-size: cover;
   background-position: center;
   position: relative;
-  border-radius: 0 2rem 2rem 0; /* Membuat sudut melengkung */
+  border-radius: 0 ; /* Membuat sudut melengkung */
   overflow: hidden;
 }
 
