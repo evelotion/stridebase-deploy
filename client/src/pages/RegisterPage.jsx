@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { registerUser } from "../services/apiService"; // Menggunakan service yang sudah ada
 
+
 const RegisterPage = ({ showMessage, theme }) => {
   const navigate = useNavigate();
   const { search } = useLocation();
