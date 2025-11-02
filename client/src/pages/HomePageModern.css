@@ -285,28 +285,31 @@
 
 /* 1. Mengubah section utama */
 .hero-section.modern-hero {
-  /* Memastikan background putih dan padding atas/bawah */
   background-color: #ffffff !important;
-  background-image: none !important; /* Hapus gambar background */
-  padding: 6rem 0; /* Ini memberi jarak dari Navbar (bisa diubah: 5rem, 7rem) */
-  color: #1a1a1a; /* Mengubah warna teks default menjadi gelap */
+  background-image: none !important;
+  padding: 6rem 0;
+  color: #1a1a1a;
 }
 
-/* 2. Menyesuaikan warna teks */
+/* 2. Menyesuaikan warna teks (DINAMIS) */
 .modern-hero-title {
-  color: #1a1a1a; /* Warna H1 menjadi gelap */
-  font-size: 3.2rem;
+  /* Menggunakan variabel dari App.jsx */
+  font-family: var(--font-family, "Inter", sans-serif);
+  font-size: var(--font-size-h1, 3.2rem); 
+  color: #1a1a1a; /* Kita biarkan hitam pekat untuk kontras */
   font-weight: 700;
   line-height: 1.3;
 }
 
 .modern-hero-subtitle {
-  color: #555; /* Warna sub-judul menjadi abu-abu gelap */
-  font-size: 1.15rem;
-  margin-bottom: 2.5rem; /* Beri jarak lebih ke tombol */
+  /* Menggunakan variabel dari App.jsx */
+  font-family: var(--font-family, "Inter", sans-serif);
+  font-size: var(--font-size-lead, 1.15rem); /* 'lead' lebih pas dari 'base' */
+  color: #555;
+  margin-bottom: 2.5rem;
 }
 
-/* 3. Menghilangkan overlay */
+/* 3. Menghilangkan overlay (Tidak berubah) */
 .modern-hero-overlay {
   display: none;
 }
@@ -388,4 +391,55 @@
 
 .modern-hero-indicators button.active {
   background-color: #ffffff; /* Putih solid saat aktif */
+}
+
+/*
+==================================
+  BARU: Styling Tombol Hero Dinamis
+==================================
+*/
+
+/* Tombol Utama (Temukan Layanan) */
+.btn-modern-primary {
+  /* Menggunakan variabel warna tombol dari App.jsx */
+  background-color: var(--button-background-color, #0d6efd);
+  color: var(--button-text-color, #ffffff);
+  border-color: var(--button-background-color, #0d6efd);
+  
+  /* Style tambahan */
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-family, "Inter", sans-serif);
+  font-size: var(--font-size-button-lg, 1rem); /* Ukuran font tombol besar */
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-modern-primary:hover {
+  /* Menggunakan variabel warna hover dari App.jsx */
+  background-color: var(--button-background-hover-color, #0b5ed7);
+  color: var(--button-text-hover-color, #ffffff);
+  border-color: var(--button-background-hover-color, #0b5ed7);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Tombol Sekunder (Lacak Pesanan) */
+.btn-modern-secondary {
+  background-color: #f8f9fa;
+  color: #343a40;
+  border-color: #e9ecef;
+  
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-family, "Inter", sans-serif);
+  font-size: var(--font-size-button-lg, 1rem);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-modern-secondary:hover {
+  background-color: #e9ecef;
+  color: #1a1a1a;
+  border-color: #dee2e6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
