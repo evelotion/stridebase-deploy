@@ -251,12 +251,56 @@ const renderModernHomepage = () => (
           {/* Kolom Gambar (Kanan) */}
           <div className="col-lg-6 modern-hero-image-wrapper">
             <Fade direction="up" triggerOnce>
-              <img
-                // Mengambil gambar banner pertama dari array 'banners'
-                src={banners.length > 0 ? banners[0].imageUrl : "/images/default-hero.png"} 
-                alt="Perawatan Sepatu Profesional"
-                className="modern-hero-image"
-              />
+              
+              <div 
+                id="heroModernImageCarousel" 
+                className="carousel slide carousel-fade" // 'carousel-fade' adalah kuncinya
+                data-bs-ride="carousel" 
+                data-bs-interval="4000" // Ganti gambar setiap 4 detik
+              >
+                <div className="carousel-inner">
+                  {banners.length > 0 ? (
+                    banners.map((banner, index) => (
+                      <div 
+                        className={`carousel-item ${index === 0 ? 'active' : ''}`} 
+                        key={banner.id}
+                      >
+                        <img 
+                          src={banner.imageUrl} 
+                          className="modern-hero-image" // Pakai class yang sudah ada
+                          alt={`Banner ${index + 1}`} 
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    // Fallback jika tidak ada banner
+                    <div className="carousel-item active">
+                      <img 
+                        src="/images/default-hero.png" // Ganti dengan gambar fallback Anda
+                        className="modern-hero-image" 
+                        alt="Perawatan Sepatu Profesional"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Indikator (tombol bulat kecil di bawah) */}
+                <div className="carousel-indicators modern-hero-indicators">
+                  {banners.map((_, index) => (
+                    <button
+                      type="button"
+                      data-bs-target="#heroModernImageCarousel"
+                      data-bs-slide-to={index}
+                      className={index === 0 ? "active" : ""}
+                      aria-current={index === 0 ? "true" : "false"}
+                      aria-label={`Slide ${index + 1}`}
+                      key={`indicator-${index}`}
+                    ></button>
+                  ))}
+                </div>
+
+              </div>
+
             </Fade>
           </div>
 
