@@ -209,3 +209,70 @@
 .hm-featured-stores .card .text-muted {
   color: var(--hm-text-secondary) !important;
 }
+
+/*
+==================================
+  BARU: Brand Marquee Section Styles
+==================================
+*/
+.brand-marquee-section {
+  padding: 2.5rem 0;
+  background-color: #ffffff; /* Sesuai contoh (putih) */
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.marquee-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  /* Opsi: tambahkan fade di ujung jika mau */
+  /* -webkit-mask-image: linear-gradient(to right, 
+    transparent 0%, 
+    black 10%, 
+    black 90%, 
+    transparent 100%);
+  mask-image: linear-gradient(to right, 
+    transparent 0%, 
+    black 10%, 
+    black 90%, 
+    transparent 100%);
+  */
+}
+
+.marquee-content {
+  display: inline-block;
+  white-space: nowrap;
+  /* Durasi animasi: 25s.
+    Anda bisa mengubah '25s' menjadi lebih cepat (misal '15s') 
+    atau lebih lambat (misal '35s')
+  */
+  animation: scroll 25s linear infinite;
+}
+
+.brand-logo {
+  max-height: 35px; /* Ukuran yang tidak terlalu besar */
+  margin: 0 2.5rem; /* Jarak antar logo */
+  opacity: 0.6; /* Membuat logo terlihat lebih subtle */
+  filter: grayscale(80%); /* Membuat logo tampak seragam (abu-abu) */
+  transition: opacity 0.3s, filter 0.3s;
+  vertical-align: middle;
+}
+
+.brand-logo:hover {
+  opacity: 1;
+  filter: grayscale(0%); /* Menampilkan warna asli saat hover */
+}
+
+/* Animasi scrolling dari kanan ke kiri */
+@keyframes scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    /* Bergerak ke kiri sejauh 50% dari total lebar.
+      Ini berfungsi karena kita menduplikasi list logo.
+    */
+    transform: translateX(-50%);
+  }
+}

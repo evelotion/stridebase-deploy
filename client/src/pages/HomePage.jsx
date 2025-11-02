@@ -285,6 +285,31 @@ const renderModernHomepage = () => (
         BAGIAN KATEGORI LAYANAN
         ==============================================
       */}
+
+      <section className="brand-marquee-section">
+  <div className="marquee-wrapper" style={{ '--logo-count': 5 }}>
+    <div className="marquee-content">
+      {/* Kita perlu menduplikasi list logo agar animasinya terlihat seamless.
+        Ganti /path/to/logo-X.png dengan path logo Anda (misal: /images/logos/citrus.png)
+      */}
+      
+      {/* List Logo Asli */}
+      <img src="/images/logos/brand-1.png" alt="Brand 1" className="brand-logo" />
+      <img src="/images/logos/brand-2.png" alt="Brand 2" className="brand-logo" />
+      <img src="/images/logos/brand-3.png" alt="Brand 3" className="brand-logo" />
+      <img src="/images/logos/brand-4.png" alt="Brand 4" className="brand-logo" />
+      <img src="/images/logos/brand-5.png" alt="Brand 5" className="brand-logo" />
+
+      {/* List Logo Duplikat (untuk animasi) */}
+      <img src="/images/logos/brand-1.png" alt="Brand 1" className="brand-logo" />
+      <img src="/images/logos/brand-2.png" alt="Brand 2" className="brand-logo" />
+      <img src="/images/logos/brand-3.png" alt="Brand 3" className="brand-logo" />
+      <img src="/images/logos/brand-4.png" alt="Brand 4" className="brand-logo" />
+      <img src="/images/logos/brand-5.png" alt="Brand 5" className="brand-logo" />
+    </div>
+  </div>
+</section>
+
       <section className="hm-services py-5">
         <div className="container">
           <Fade direction="up" triggerOnce>
