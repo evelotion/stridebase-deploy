@@ -215,162 +215,148 @@ const HomePage = ({
   );
 
 const renderModernHomepage = () => (
-    // Pembungkus utama untuk tema modern
-    <div className="home-modern-wrapper">
-      {/* ==============================================
-        HERO SECTION DENGAN BACKGROUND CAROUSEL
+  // Pembungkus utama untuk tema modern
+  <div className="home-modern-wrapper">
+    {/* ==============================================
+        HERO SECTION - REVISI (Split Layout)
         ==============================================
-      */}
-      <section className="hm-hero-bg-carousel d-none d-lg-block">
-        {/* 1. CAROUSEL (LAPISAN PALING BAWAH) */}
-        <div
-          id="heroModernBannerCarousel"
-          className="carousel slide carousel-fade hm-hero-carousel-container"
-          data-bs-ride="carousel"
-        >
-          <div className="carousel-inner">
-            {banners.length > 0 ? (
-              banners.map((banner, index) => (
-                <div
-                  className={`carousel-item ${index === 0 ? "active" : ""}`}
-                  key={banner.id}
-                  data-bs-interval="4000" // Ganti gambar setiap 4 detik
-                >
-                  <img
-                    src={banner.imageUrl}
-                    className="d-block w-100 hm-hero-carousel-img"
-                    alt={`Banner ${index + 1}`}
-                  />
-                </div>
-              ))
-            ) : (
-              // Fallback jika tidak ada banner
-              <div className="carousel-item active">
-                <div className="hm-hero-carousel-img hm-hero-fallback-bg"></div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 2. OVERLAY (LAPISAN TENGAH) */}
-        <div className="hm-hero-overlay"></div>
-
-        {/* 3. KONTEN TULISAN (LAPISAN ATAS) */}
-        <div className="container hm-hero-content-container">
-          <div className="row">
-            <div className="col-lg-8 text-center mx-auto">
-              <Fade direction="down" triggerOnce>
-                <h1 className="hm-hero-heading">
-                  Perawatan Sepatu Profesional,
-                  <br />
-                  Hasil Istimewa.
-                </h1>
-                <p className="hm-hero-text">
-                  Temukan, pesan, dan lacak layanan cuci sepatu terbaik di
-                  dekat Anda. Kualitas dan kemudahan di ujung jari Anda.
-                </p>
-                <Link
-                  to="/store"
-                  className="btn btn-primary btn-lg hm-hero-btn"
-                >
-                  Temukan Layanan <i className="fas fa-arrow-right ms-2"></i>
+    */}
+    <section className="hero-section modern-hero">
+      <div className="container modern-hero-content">
+        <div className="row align-items-center">
+          
+          {/* Kolom Teks (Kiri) */}
+          <div className="col-lg-6 modern-hero-text-wrapper">
+            <Fade direction="down" triggerOnce>
+              <h1 className="modern-hero-title">
+                Perawatan Sepatu Profesional, <br />
+                Hasil Istimewa.
+              </h1>
+              <p className="modern-hero-subtitle">
+                Temukan, pesan, dan lacak layanan cuci sepatu terbaik di
+                dekat Anda. Kualitas dan kemudahan di ujung jari Anda.
+              </p>
+              <div className="modern-hero-buttons">
+                <Link to="/store" className="btn btn-modern-primary btn-lg">
+                  Temukan Layanan
                 </Link>
-              </Fade>
-            </div>
+                {/* Anda bisa mengaktifkan tombol lacak jika perlu */}
+                <Link to="/track" className="btn btn-modern-secondary btn-lg">
+                  Lacak Pesanan
+                </Link>
+              </div>
+            </Fade>
           </div>
-        </div>
-      </section>
 
-      {/* ==============================================
+          {/* Kolom Gambar (Kanan) */}
+          <div className="col-lg-6 modern-hero-image-wrapper">
+            <Fade direction="up" triggerOnce>
+              <img
+                // Mengambil gambar banner pertama dari array 'banners'
+                src={banners.length > 0 ? banners[0].imageUrl : "/images/default-hero.png"} 
+                alt="Perawatan Sepatu Profesional"
+                className="modern-hero-image"
+              />
+            </Fade>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    {/* ==============================================
+        BRAND MARQUEE (Dari Langkah 1)
+        ==============================================
+    */}
+    <section className="brand-marquee-section">
+      <div className="marquee-wrapper" style={{ '--logo-count': 5 }}>
+        <div className="marquee-content">
+          {/* Kita perlu menduplikasi list logo agar animasinya terlihat seamless.
+              Ganti /path/to/logo-X.png dengan path logo Anda (misal: /images/logos/citrus.png)
+            */}
+
+          {/* List Logo Asli */}
+          <img src="/images/logos/brand-1.png" alt="Brand 1" className="brand-logo" />
+          <img src="/images/logos/brand-2.png" alt="Brand 2" className="brand-logo" />
+          <img src="/images/logos/brand-3.png" alt="Brand 3" className="brand-logo" />
+          <img src="/images/logos/brand-4.png" alt="Brand 4" className="brand-logo" />
+          <img src="/images/logos/brand-5.png" alt="Brand 5" className="brand-logo" />
+
+          {/* List Logo Duplikat (untuk animasi) */}
+          <img src="/images/logos/brand-1.png" alt="Brand 1" className="brand-logo" />
+          <img src="/images/logos/brand-2.png" alt="Brand 2" className="brand-logo" />
+          <img src="/images/logos/brand-3.png" alt="Brand 3" className="brand-logo" />
+          <img src="/images/logos/brand-4.png" alt="Brand 4" className="brand-logo" />
+          <img src="/images/logos/brand-5.png" alt="Brand 5" className="brand-logo" />
+        </div>
+      </div>
+    </section>
+
+    {/* ==============================================
         BAGIAN KATEGORI LAYANAN
         ==============================================
-      */}
+    */}
+    <section className="hm-services py-5">
+      <div className="container">
+        <Fade direction="up" triggerOnce>
+          <div className="text-center mb-5">
+            <h2 className="hm-section-title">Layanan Komprehensif</h2>
+            <p className="hm-section-subtitle">
+              Dari pembersihan cepat hingga restorasi mendetail.
+            </p>
+          </div>
+          <div className="hm-services-grid">
+            {serviceCategories.map((category) => (
+              <Link
+                to={category.link}
+                key={category.name}
+                className="hm-service-card"
+              >
+                <div className="hm-service-icon">
+                  <i className={`fas ${category.icon}`}></i>
+                </div>
+                <h5 className="hm-service-name">{category.name}</h5>
+              </Link>
+            ))}
+          </div>
+        </Fade>
+      </div>
+    </section>
 
-      <section className="brand-marquee-section">
-  <div className="marquee-wrapper" style={{ '--logo-count': 5 }}>
-    <div className="marquee-content">
-      {/* Kita perlu menduplikasi list logo agar animasinya terlihat seamless.
-        Ganti /path/to/logo-X.png dengan path logo Anda (misal: /images/logos/citrus.png)
-      */}
-      
-      {/* List Logo Asli */}
-      <img src="/images/logos/brand-1.png" alt="Brand 1" className="brand-logo" />
-      <img src="/images/logos/brand-2.png" alt="Brand 2" className="brand-logo" />
-      <img src="/images/logos/brand-3.png" alt="Brand 3" className="brand-logo" />
-      <img src="/images/logos/brand-4.png" alt="Brand 4" className="brand-logo" />
-      <img src="/images/logos/brand-5.png" alt="Brand 5" className="brand-logo" />
-
-      {/* List Logo Duplikat (untuk animasi) */}
-      <img src="/images/logos/brand-1.png" alt="Brand 1" className="brand-logo" />
-      <img src="/images/logos/brand-2.png" alt="Brand 2" className="brand-logo" />
-      <img src="/images/logos/brand-3.png" alt="Brand 3" className="brand-logo" />
-      <img src="/images/logos/brand-4.png" alt="Brand 4" className="brand-logo" />
-      <img src="/images/logos/brand-5.png" alt="Brand 5" className="brand-logo" />
-    </div>
-  </div>
-</section>
-
-      <section className="hm-services py-5">
-        <div className="container">
-          <Fade direction="up" triggerOnce>
-            <div className="text-center mb-5">
-              <h2 className="hm-section-title">Layanan Komprehensif</h2>
-              <p className="hm-section-subtitle">
-                Dari pembersihan cepat hingga restorasi mendetail.
-              </p>
-            </div>
-            <div className="hm-services-grid">
-              {serviceCategories.map((category) => (
-                <Link
-                  to={category.link}
-                  key={category.name}
-                  className="hm-service-card"
-                >
-                  <div className="hm-service-icon">
-                    <i className={`fas ${category.icon}`}></i>
-                  </div>
-                  <h5 className="hm-service-name">{category.name}</h5>
-                </Link>
-              ))}
-            </div>
-          </Fade>
-        </div>
-      </section>
-
-      {/* ==============================================
+    {/* ==============================================
         BAGIAN TOKO POPULER
         ==============================================
-      */}
-      <section className="hm-featured-stores py-5">
-        <div className="container">
-          <Fade direction="up" triggerOnce>
-            <div className="text-center mb-5">
-              <h2 className="hm-section-title">Mitra Terpercaya Kami</h2>
-              <p className="hm-section-subtitle">
-                Dipilih berdasarkan kualitas dan ulasan terbaik.
-              </p>
+    */}
+    <section className="hm-featured-stores py-5">
+      <div className="container">
+        <Fade direction="up" triggerOnce>
+          <div className="text-center mb-5">
+            <h2 className="hm-section-title">Mitra Terpercaya Kami</h2>
+            <p className="hm-section-subtitle">
+              Dipilih berdasarkan kualitas dan ulasan terbaik.
+            </p>
+          </div>
+          {loading ? (
+            <div className="text-center">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
             </div>
-            {loading ? (
-              <div className="text-center">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
+          ) : (
+            <div className="row g-4">
+              {featuredStores.map((store) => (
+                <div className="col-lg-4 col-md-6" key={store.id}>
+                  {/* Komponen StoreCard Anda akan digunakan di sini */}
+                  <StoreCard store={store} />
                 </div>
-              </div>
-            ) : (
-              <div className="row g-4">
-                {featuredStores.map((store) => (
-                  <div className="col-lg-4 col-md-6" key={store.id}>
-                    {/* Komponen StoreCard Anda akan digunakan di sini */}
-                    <StoreCard store={store} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </Fade>
-        </div>
-      </section>
-    </div>
-  );
+              ))}
+            </div>
+          )}
+        </Fade>
+      </div>
+    </section>
+  </div>
+);
   
   return (
     <div className="homepage-mobile-container">

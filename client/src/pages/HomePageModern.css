@@ -276,3 +276,61 @@
     transform: translateX(-50%);
   }
 }
+
+/*
+==================================
+  REVISI: Hero Section Modern (Split Layout)
+==================================
+*/
+
+/* 1. Mengubah section utama */
+.hero-section.modern-hero {
+  /* Memastikan background putih dan padding atas/bawah */
+  background-color: #ffffff !important;
+  background-image: none !important; /* Hapus gambar background */
+  padding: 6rem 0; /* Ini memberi jarak dari Navbar (bisa diubah: 5rem, 7rem) */
+  color: #1a1a1a; /* Mengubah warna teks default menjadi gelap */
+}
+
+/* 2. Menyesuaikan warna teks */
+.modern-hero-title {
+  color: #1a1a1a; /* Warna H1 menjadi gelap */
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.modern-hero-subtitle {
+  color: #555; /* Warna sub-judul menjadi abu-abu gelap */
+  font-size: 1.15rem;
+  margin-bottom: 2.5rem; /* Beri jarak lebih ke tombol */
+}
+
+/* 3. Menghilangkan overlay */
+.modern-hero-overlay {
+  display: none;
+}
+
+/* 4. Styling untuk kolom gambar (kanan) */
+.modern-hero-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Tambahkan margin atas di mode mobile */
+  margin-top: 3rem;
+}
+
+@media (min-width: 992px) {
+  /* Hapus margin atas di mode desktop */
+  .modern-hero-image-wrapper {
+    margin-top: 0;
+    justify-content: flex-end; /* Ratakan ke kanan jika perlu */
+  }
+}
+
+.modern-hero-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px; /* Membuat sudut lebih halus */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08); /* Bayangan halus agar 'terangkat' */
+}
