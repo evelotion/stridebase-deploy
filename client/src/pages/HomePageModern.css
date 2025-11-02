@@ -334,3 +334,58 @@
   border-radius: 12px; /* Membuat sudut lebih halus */
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08); /* Bayangan halus agar 'terangkat' */
 }
+
+/*
+==================================
+  REVISI: Hero Image Carousel (Fade)
+==================================
+*/
+
+/* 1. Terapkan radius dan shadow ke carousel, bukan lagi ke 'img' */
+.modern-hero-image-wrapper .carousel {
+  border-radius: 12px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  overflow: hidden; /* Penting untuk menjaga border-radius */
+  position: relative; /* Agar indikator bisa menempel */
+}
+
+/* 2. Pastikan gambar di dalam carousel pas */
+.modern-hero-image-wrapper .carousel-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 3. Styling untuk Indikator (bulat-bulat di bawah) */
+.modern-hero-indicators {
+  /* Posisikan di bawah, di dalam gambar */
+  position: absolute;
+  bottom: 20px; /* Jarak dari bawah */
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  z-index: 2;
+  /* Override default bootstrap */
+  right: auto;
+  top: auto;
+}
+
+.modern-hero-indicators button {
+  /* Ubah strip default menjadi lingkaran */
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5); /* Putih transparan */
+  border: 0; /* Hapus border */
+  margin: 0 5px; /* Jarak antar tombol */
+  transition: background-color 0.3s ease;
+  padding: 0;
+  box-sizing: content-box;
+  text-indent: -999px; /* Sembunyikan teks label */
+}
+
+.modern-hero-indicators button.active {
+  background-color: #ffffff; /* Putih solid saat aktif */
+}
