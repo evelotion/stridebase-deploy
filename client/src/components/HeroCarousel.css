@@ -23,7 +23,7 @@
     display: block;
     width: 100%;
     /* Sesuaikan tinggi ini agar sesuai dengan inspirasi Anda */
-    height: 550px;
+ height: calc(100vh - 70px);
     background-color: #f0f0f0; /* Warna placeholder saat gambar loading */
   }
 
