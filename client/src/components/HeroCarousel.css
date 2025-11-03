@@ -1,0 +1,45 @@
+/* src/components/HeroCarousel.css */
+
+/* SECARA DEFAULT (MOBILE): SEMBUNYIKAN */
+.hero-carousel-container {
+  display: none;
+}
+
+/* SAAT DESKTOP (768px ke atas): TAMPILKAN */
+@media (min-width: 768px) {
+  .hero-carousel-container {
+    display: block;
+    width: 100%;
+    height: 550px; /* Sesuaikan tinggi ini */
+    background-color: #f0f0f0;
+  }
+
+  /* Style untuk state loading */
+  .hero-carousel-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-carousel-container .swiper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-carousel-container .carousel-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Styling untuk pagination dots (opsional, agar lebih cantik) */
+  .hero-carousel-container .swiper-pagination-bullet {
+    background-color: #fff;
+    opacity: 0.7;
+  }
+
+  .hero-carousel-container .swiper-pagination-bullet-active {
+    background-color: #fff;
+    opacity: 1;
+  }
+}
