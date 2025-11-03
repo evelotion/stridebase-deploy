@@ -1,45 +1,55 @@
 /* src/components/HeroCarousel.css */
 
-/* SECARA DEFAULT (MOBILE): SEMBUNYIKAN */
+/* * ===============================================
+ * LOGIKA KUNCI #1: MOBILE (Default)
+ * Secara default, sembunyikan seluruh carousel.
+ * Ini memastikan versi mobile tidak akan menampilkan
+ * carousel Swiper ini sama sekali.
+ * ===============================================
+ */
 .hero-carousel-container {
   display: none;
 }
 
-/* SAAT DESKTOP (768px ke atas): TAMPILKAN */
+/* * ===============================================
+ * LOGIKA KUNCI #2: DESKTOP (Breakpoint)
+ * Ganti '768px' dengan breakpoint 'lg' Anda 
+ * jika berbeda (misal: 992px).
+ * ===============================================
+ */
 @media (min-width: 768px) {
+  /* Tampilkan container carousel di desktop */
   .hero-carousel-container {
     display: block;
     width: 100%;
-    height: 550px; /* Sesuaikan tinggi ini */
-    background-color: #f0f0f0;
+    /* Sesuaikan tinggi ini agar sesuai dengan inspirasi Anda */
+    height: 550px;
+    background-color: #f0f0f0; /* Warna placeholder saat gambar loading */
   }
 
-  /* Style untuk state loading */
+  /* Style untuk state loading (jika data banner belum siap) */
   .hero-carousel-loading {
-    display: flex;
+    display: flex; /* Ubah ke flex agar spinner bisa di tengah */
     align-items: center;
     justify-content: center;
   }
 
-  .hero-carousel-container .swiper {
+  /* Pastikan gambar mengisi seluruh slide */
+  .carousel-image {
     width: 100%;
     height: 100%;
+    object-fit: cover; /* Ini penting agar gambar tidak penyok */
   }
 
-  .hero-carousel-container .carousel-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Styling untuk pagination dots (opsional, agar lebih cantik) */
+  /* Styling opsional untuk titik pagination Swiper */
   .hero-carousel-container .swiper-pagination-bullet {
-    background-color: #fff;
+    background-color: #ffffff;
     opacity: 0.7;
+    transition: opacity 0.2s ease;
   }
 
   .hero-carousel-container .swiper-pagination-bullet-active {
-    background-color: #fff;
     opacity: 1;
+    transform: scale(1.1);
   }
 }
