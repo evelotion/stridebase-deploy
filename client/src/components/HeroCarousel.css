@@ -22,6 +22,7 @@
   .hero-carousel-container {
     display: block;
     width: 100%;
+    margin-top: 70px;
     /* Sesuaikan tinggi ini agar sesuai dengan inspirasi Anda */
     height: 500px;
     background-color: #f0f0f0; /* Warna placeholder saat gambar loading */
