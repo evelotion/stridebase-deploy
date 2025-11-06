@@ -443,3 +443,41 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
+
+/* SEMBUNYIKAN CAROUSEL BARU SECARA DEFAULT (MOBILE-FIRST)
+  UNTUK TEMA MODERN
+*/
+.hero-carousel-container-modern-desktop {
+  display: none;
+}
+
+/* TAMPILKAN CAROUSEL HANYA DI LAYAR DESKTOP (LG breakpoint)
+  (Bootstrap 5 'lg' breakpoint biasanya 992px, tapi 769px juga umum)
+  Gunakan 992px agar konsisten dengan 'd-lg-none' di JSX Anda.
+*/
+@media (min-width: 992px) {
+  .hero-carousel-container-modern-desktop {
+    display: block;
+    margin-bottom: 2.5rem; /* Memberi jarak ke konten di bawahnya */
+    margin-top: -1.5rem;  /* Menyesuaikan jarak atas (opsional) */
+    
+    /* Style tambahan agar terlihat seperti di gambar (opsional) */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Jika 'modern-hero-section' Anda yang lama memiliki search bar,
+  Anda mungkin ingin menyembunyikannya di desktop agar tidak duplikat
+  dengan search bar di header.
+*/
+@media (min-width: 992px) {
+  .theme-modern .modern-hero-section {
+    /* Jika Anda ingin menyembunyikan hero section lama di desktop */
+    /* display: none; */ 
+    
+    /* Atau mungkin hanya mengecilkan margin atasnya */
+    margin-top: 1rem;
+  }
+}
