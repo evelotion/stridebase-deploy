@@ -81,45 +81,79 @@ const HomePage = ({
   // =================================================================
   // FUNGSI RENDER TEMA MODERN
   // =================================================================
-  const renderModernHomepage = () => (
+const renderModernHomepage = () => (
     <>
-      {/* ===== BAGIAN CAROUSEL BARU (LANGKAH 1) ===== */}
-      {/* Ini akan muncul di atas segalanya di tema modern */}
-      {/* Kita akan sembunyikan di mobile menggunakan CSS */}
+      {/* Selalu di atas */}
+      {isAnnouncementVisible && (
+        <GlobalAnnouncement onClose={handleAnnouncementClose} />
+      )}
+
+      {/* ===== 1. BAGIAN CAROUSEL (DARI LANGKAH 1) ===== */}
       <div className="hero-carousel-container-modern-desktop">
         <HeroCarousel banners={banners} />
       </div>
       {/* ============================================== */}
 
-      {isAnnouncementVisible && (
-        <GlobalAnnouncement onClose={handleAnnouncementClose} />
-      )}
-
-      {/* Konten modern yang sudah ada sebelumnya */}
-      <div className="modern-hero-section">
-        <h1>Temukan Perawatan Terbaik untuk Sepatumu</h1>
-        <p>
-          Dari cuci cepat hingga restorasi penuh, kami punya ahlinya untukmu.
-        </p>
-        <div className="modern-search-bar">
-          <i className="fas fa-search"></i>
-          <input
-            type="text"
-            placeholder="Cari layanan impianmu..."
-            onClick={() => navigate("/store")}
-          />
-          <button
-            onClick={() => navigate("/store")}
-            className="btn btn-primary"
-          >
-            Cari
-          </button>
+      {/* ===== 2. BAGIAN BRAND (DARI LANGKAH 2) ===== */}
+      <div className="modern-brands-container">
+        <h3 className="modern-section-title">Brand Ternama</h3>
+        <div className="brands-grid">
+          {/* Anda bisa mengganti ini dengan data dari API nanti */}
+          <div className="brand-item">
+            <img src="https://via.placeholder.com/150x80?text=Brand+1" alt="Brand Logo 1" />
+          </div>
+          <div className="brand-item">
+            <img src="https://via.placeholder.com/150x80?text=Brand+2" alt="Brand Logo 2" />
+          </div>
+          <div className="brand-item">
+            <img src="https://via.placeholder.com/150x80?text=Brand+3" alt="Brand Logo 3" />
+          </div>
+          <div className="brand-item">
+            <img src="https://via.placeholder.com/150x80?text=Brand+4" alt="Brand Logo 4" />
+          </div>
+          <div className="brand-item">
+            <img src="https://via.placeholder.com/150x80?text=Brand+5" alt="Brand Logo 5" />
+          </div>
+          <div className="brand-item">
+            <img src="https://via.placeholder.com/150x80?text=Brand+6" alt="Brand Logo 6" />
+          </div>
         </div>
       </div>
+      {/* ================================================= */}
 
+      {/* ===== 3. BAGIAN TOKO REKOMENDASI (DIPINDAH & DISTYLING) ===== */}
+      <Fade direction="up" triggerOnce>
+        <div className="recommended-stores-modern modern-store-section">
+          <h2 className="modern-section-title">Rekomendasi Pilihan</h2>
+          <p className="modern-section-subtitle">
+            Toko-toko terbaik pilihan editor kami minggu ini.
+          </p>
+          {loading ? (
+            renderLoading()
+          ) : error ? (
+            renderError()
+          ) : (
+            <div className="store-grid-modern">
+              {recommendedStores.length > 0 ? (
+                recommendedStores.map((store) => (
+                  <StoreCard key={store.id} store={store} theme={homePageTheme} />
+                ))
+              ) : (
+                <p>Belum ada toko rekomendasi.</p>
+              )}
+            </div>
+          )}
+        </div>
+      </Fade>
+      {/* =========================================================== */}
+
+
+      {/* ===== (BAGIAN HERO LAMA DIHAPUS DARI SINI) ===== */}
+      
+      {/* ===== 4. BAGIAN LAYANAN POPULER (TETAP ADA) ===== */}
       <Fade direction="up" triggerOnce>
         <div className="service-categories-modern">
-          <h2>Layanan Populer</h2>
+          <h2 className="modern-section-title">Layanan Populer</h2>
           <div className="categories-grid">
             {serviceCategories.map((category, index) => (
               <Link to={category.link} key={index} className="category-card">
@@ -130,38 +164,15 @@ const HomePage = ({
           </div>
         </div>
       </Fade>
+      {/* ================================================= */}
 
+      {/* ===== 5. BAGIAN TOKO UNGGULAN (TETAP ADA) ===== */}
       <Fade direction="up" triggerOnce>
-        <div className="recommended-stores-modern">
-          <h2>Rekomendasi Pilihan</h2>
-          <p>Toko-toko terbaik pilihan editor kami minggu ini.</p>
-          {loading ? (
-            renderLoading()
-          ) : error ? (
-            renderError()
-          ) : (
-            <div className="store-grid-modern">
-              {recommendedStores.length > 0 ? (
-                recommendedStores.map((store) => (
-                  <StoreCard
-                    key={store.id}
-                    store={store}
-                    theme={homePageTheme}
-                  />
-                ))
-              ) : (
-                <p>Belum ada toko rekomendasi.</p>
-              )}
-            </div>
-          )}
-        </div>
-      </Fade>
-
-      {/* Bagian 'Featured Stores' yang sudah ada */}
-      <Fade direction="up" triggerOnce>
-        <div className="featured-stores-modern">
-          <h2>Toko Unggulan</h2>
-          <p>Mitra terverifikasi dengan layanan dan rating terbaik.</p>
+        <div className="featured-stores-modern modern-store-section">
+          <h2 className="modern-section-title">Toko Unggulan</h2>
+          <p className="modern-section-subtitle">
+            Mitra terverifikasi dengan layanan dan rating terbaik.
+          </p>
           {loading ? (
             renderLoading()
           ) : error ? (
@@ -170,11 +181,7 @@ const HomePage = ({
             <div className="store-grid-modern">
               {featuredStores.length > 0 ? (
                 featuredStores.map((store) => (
-                  <StoreCard
-                    key={store.id}
-                    store={store}
-                    theme={homePageTheme}
-                  />
+                  <StoreCard key={store.id} store={store} theme={homePageTheme} />
                 ))
               ) : (
                 <p>Belum ada toko unggulan.</p>
@@ -183,6 +190,7 @@ const HomePage = ({
           )}
         </div>
       </Fade>
+      {/* ================================================ */}
     </>
   );
 

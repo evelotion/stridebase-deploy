@@ -1,483 +1,142 @@
-/* File: client/src/pages/HomePageModern.css (Desain Baru "Hero Background Carousel") */
+/* =============================================
+   FILE: HomePageModern.css (VERSI LENGKAP)
+   Ini HANYA berlaku di desktop (via d-lg-block di JSX)
+   ============================================= */
 
-/* ==============================================
-  DEFINISI WARNA (PALET GELAP)
-============================================== */
-:root {
-  --hm-bg: #121212;
-  --hm-surface: #1e1e1e;
-  --hm-text-primary: #ffffff;
-  --hm-text-secondary: #b3b3b3;
-  --hm-border: #2a2a2a;
-}
-
-/* ==============================================
-  STYLE DASAR (Hanya untuk layar > 992px)
-============================================== */
-.home-modern-wrapper {
-  background-color: var(--hm-bg);
-  color: var(--hm-text-primary);
-}
-
-.hm-section-title {
+/* Styling untuk JUDUL SECTION yang bisa dipakai ulang */
+.modern-section-title {
+  font-size: 1.85rem;
   font-weight: 700;
-  color: var(--hm-text-primary);
-  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #2a3d45;
 }
 
-.hm-section-subtitle {
-  color: var(--hm-text-secondary);
-  font-size: 1.1rem;
+.modern-section-subtitle {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 1.75rem;
 }
 
-/* ==============================================
-  HERO SECTION (BACKGROUND CAROUSEL)
-============================================== */
 
-/* 1. Kontainer Utama Hero */
-.hm-hero-bg-carousel {
-  position: relative;
-  height: 80vh; /* Tinggi 80% dari viewport */
-  min-height: 500px;
-  width: 100%;
-  overflow: hidden;
-  color: white;
-}
-
-/* 2. Kontainer Carousel (Lapisan 1: Paling Bawah) */
-.hm-hero-carousel-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.hm-hero-carousel-container .carousel-inner,
-.hm-hero-carousel-container .carousel-item {
-  height: 100%;
-}
-
-.hm-hero-carousel-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Memastikan gambar menutupi area */
-  filter: blur(2px); /* Sedikit blur agar fokus ke teks */
-}
-
-/* Fallback jika tidak ada banner */
-.hm-hero-fallback-bg {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, #222, #444);
-}
-
-/* 3. Overlay Gelap (Lapisan 2: Tengah) */
-.hm-hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Overlay hitam 60% */
-  z-index: 2;
-}
-
-/* 4. Konten Teks (Lapisan 3: Atas) */
-.hm-hero-content-container {
-  position: relative;
-  height: 100%;
-  display: flex;
-  align-items: center; /* Vertically center */
-  justify-content: center; /* Horizontally center */
-  z-index: 3;
-}
-
-.hm-hero-heading {
-  font-size: 3.5rem; /* 56px */
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
-  color: var(--hm-text-primary);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Bayangan teks agar terbaca */
-}
-
-.hm-hero-text {
-  font-size: 1.25rem;
-  color: var(--hm-text-secondary);
+/* ===== LANGKAH 1: STYLING CAROUSEL ===== */
+.hero-carousel-container-modern-desktop {
+  display: block;
   margin-bottom: 2.5rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+  border-radius: 16px; /* Sesuai gambar, lebih bulat */
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
 }
 
-.hm-hero-btn {
-  padding: 0.8rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 50px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.2);
+
+/* ===== LANGKAH 2: STYLING BRAND ===== */
+.modern-brands-container {
+  display: block;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-.hm-hero-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(var(--bs-primary-rgb), 0.3);
-}
-
-/* ==============================================
-  SERVICE CATEGORIES
-  (CSS ini sama dengan 'Premium Dark' sebelumnya)
-============================================== */
-.hm-services {
-  background-color: var(--hm-surface);
-  border-top: 1px solid var(--hm-border);
-  border-bottom: 1px solid var(--hm-border);
-}
-
-.hm-services-grid {
+.brands-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 1.5rem;
-}
-
-.hm-service-card {
-  background-color: var(--hm-bg);
-  padding: 2rem 1.5rem;
-  border-radius: 16px;
-  text-align: center;
-  text-decoration: none;
-  border: 1px solid var(--hm-border);
-  transition: all 0.3s ease;
-}
-
-.hm-service-card:hover {
-  transform: translateY(-10px);
-  background-color: var(--hm-bg);
-  border-color: var(--primary-color);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.hm-service-icon {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-  transition: transform 0.3s ease;
-}
-
-.hm-service-card:hover .hm-service-icon {
-  transform: scale(1.1);
-}
-
-.hm-service-name {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--hm-text-primary);
-}
-
-/* ==============================================
-  FEATURED STORES
-  (CSS ini sama dengan 'Premium Dark' sebelumnya)
-============================================== */
-.hm-featured-stores {
-  padding-bottom: 6rem;
-  background-color: var(--hm-bg);
-}
-
-.hm-featured-stores .card {
-  background-color: var(--hm-surface) !important;
-  border: 1px solid var(--hm-border) !important;
-  color: var(--hm-text-primary) !important;
-  transition: all 0.3s ease;
-  box-shadow: none !important;
-}
-
-.hm-featured-stores .card:hover {
-  border-color: var(--primary-color) !important;
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
-}
-
-.hm-featured-stores .card .card-title,
-.hm-featured-stores .card .card-text,
-.hm-featured-stores .card .fw-bold {
-  color: var(--hm-text-primary) !important;
-}
-
-.hm-featured-stores .card .text-muted {
-  color: var(--hm-text-secondary) !important;
-}
-
-/*
-==================================
-  BARU: Brand Marquee Section Styles
-==================================
-*/
-.brand-marquee-section {
-  padding: 2.5rem 0;
-  background-color: #ffffff; /* Sesuai contoh (putih) */
-  border-top: 1px solid #f0f0f0;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.marquee-wrapper {
-  overflow: hidden;
-  white-space: nowrap;
-  position: relative;
-  /* Opsi: tambahkan fade di ujung jika mau */
-  /* -webkit-mask-image: linear-gradient(to right, 
-    transparent 0%, 
-    black 10%, 
-    black 90%, 
-    transparent 100%);
-  mask-image: linear-gradient(to right, 
-    transparent 0%, 
-    black 10%, 
-    black 90%, 
-    transparent 100%);
-  */
-}
-
-.marquee-content {
-  display: inline-block;
-  white-space: nowrap;
-  /* Durasi animasi: 25s.
-    Anda bisa mengubah '25s' menjadi lebih cepat (misal '15s') 
-    atau lebih lambat (misal '35s')
-  */
-  animation: scroll 25s linear infinite;
-}
-
-.brand-logo {
-  max-height: 35px; /* Ukuran yang tidak terlalu besar */
-  margin: 0 2.5rem; /* Jarak antar logo */
-  opacity: 0.6; /* Membuat logo terlihat lebih subtle */
-  filter: grayscale(80%); /* Membuat logo tampak seragam (abu-abu) */
-  transition: opacity 0.3s, filter 0.3s;
-  vertical-align: middle;
-}
-
-.brand-logo:hover {
-  opacity: 1;
-  filter: grayscale(0%); /* Menampilkan warna asli saat hover */
-}
-
-/* Animasi scrolling dari kanan ke kiri */
-@keyframes scroll {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    /* Bergerak ke kiri sejauh 50% dari total lebar.
-      Ini berfungsi karena kita menduplikasi list logo.
-    */
-    transform: translateX(-50%);
-  }
-}
-
-/*
-==================================
-  REVISI: Hero Section Modern (Split Layout)
-==================================
-*/
-
-/* 1. Mengubah section utama */
-.hero-section.modern-hero {
-  background-color: #ffffff !important;
-  background-image: none !important;
-  padding: 6rem 0;
-  color: #1a1a1a;
-}
-
-/* 2. Menyesuaikan warna teks (DINAMIS) */
-.modern-hero-title {
-  /* Menggunakan variabel dari App.jsx */
-  font-family: var(--font-family, "Inter", sans-serif);
-  font-size: var(--font-size-h1, 3.2rem); 
-  color: #1a1a1a; /* Kita biarkan hitam pekat untuk kontras */
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.modern-hero-subtitle {
-  /* Menggunakan variabel dari App.jsx */
-  font-family: var(--font-family, "Inter", sans-serif);
-  font-size: var(--font-size-lead, 1.15rem); /* 'lead' lebih pas dari 'base' */
-  color: #555;
-  margin-bottom: 2.5rem;
-}
-
-/* 3. Menghilangkan overlay (Tidak berubah) */
-.modern-hero-overlay {
-  display: none;
-}
-
-/* 4. Styling untuk kolom gambar (kanan) */
-.modern-hero-image-wrapper {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  /* Tambahkan margin atas di mode mobile */
-  margin-top: 3rem;
 }
 
-@media (min-width: 992px) {
-  /* Hapus margin atas di mode desktop */
-  .modern-hero-image-wrapper {
-    margin-top: 0;
-    justify-content: flex-end; /* Ratakan ke kanan jika perlu */
-  }
+.brand-item {
+  text-align: center;
 }
 
-.modern-hero-image {
+.brand-item img {
   max-width: 100%;
   height: auto;
-  border-radius: 12px; /* Membuat sudut lebih halus */
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08); /* Bayangan halus agar 'terangkat' */
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: filter 0.3s ease, opacity 0.3s ease;
 }
 
-/*
-==================================
-  REVISI: Hero Image Carousel (Fade)
-==================================
-*/
+.brand-item img:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+}
 
-/* 1. Terapkan radius dan shadow ke carousel, bukan lagi ke 'img' */
-.modern-hero-image-wrapper .carousel {
+
+/* ===== LANGKAH 3: STYLING BAGIAN TOKO ===== */
+.modern-store-section {
+  background-color: #f8f9fa; /* Latar belakang sedikit abu-abu */
   border-radius: 12px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
-  overflow: hidden; /* Penting untuk menjaga border-radius */
-  position: relative; /* Agar indikator bisa menempel */
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-/* 2. Pastikan gambar di dalam carousel pas */
-.modern-hero-image-wrapper .carousel-item img {
-  width: 100%;
-  height: auto;
+/* Mengganti .store-grid-modern di dalam .modern-store-section */
+.modern-store-section .store-grid-modern {
+  /* Jika sebelumnya 2 kolom, kita bisa buat 3 atau 4 */
+  /* Ganti angka 2 ini sesuai layout StoreCard Anda */
+  grid-template-columns: repeat(3, 1fr); 
+}
+
+/* Mengubah style StoreCard KHUSUS di tema modern */
+.theme-modern .store-card {
+  /* Contoh override jika perlu */
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.theme-modern .store-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ===== STYLING BAGIAN LAMA YANG TERSISA ===== */
+
+/* (Hero lama sudah dihapus) */
+/* .modern-hero-section { ... } */
+
+/* Layanan Populer */
+.service-categories-modern {
+  padding: 1.5rem 0; /* Tidak perlu background jika mau transparan */
+  margin-bottom: 1.5rem;
+}
+
+.service-categories-modern .categories-grid {
+  /* Pastikan styling ini masih ada jika terhapus */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 1rem;
+}
+
+.service-categories-modern .category-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.service-categories-modern .category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  color: var(--bs-primary); /* Menggunakan variabel bootstrap Anda */
+}
+
+.service-categories-modern .category-card i {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
   display: block;
+  color: var(--bs-primary);
 }
 
-/* 3. Styling untuk Indikator (bulat-bulat di bawah) */
-.modern-hero-indicators {
-  /* Posisikan di bawah, di dalam gambar */
-  position: absolute;
-  bottom: 20px; /* Jarak dari bawah */
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  z-index: 2;
-  /* Override default bootstrap */
-  right: auto;
-  top: auto;
-}
-
-.modern-hero-indicators button {
-  /* Ubah strip default menjadi lingkaran */
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.5); /* Putih transparan */
-  border: 0; /* Hapus border */
-  margin: 0 5px; /* Jarak antar tombol */
-  transition: background-color 0.3s ease;
-  padding: 0;
-  box-sizing: content-box;
-  text-indent: -999px; /* Sembunyikan teks label */
-}
-
-.modern-hero-indicators button.active {
-  background-color: #ffffff; /* Putih solid saat aktif */
-}
-
-/*
-==================================
-  BARU: Styling Tombol Hero Dinamis
-==================================
-*/
-
-/* Tombol Utama (Temukan Layanan) */
-.btn-modern-primary {
-  /* Menggunakan variabel warna tombol dari App.jsx */
-  background-color: var(--button-background-color, #0d6efd);
-  color: var(--button-text-color, #ffffff);
-  border-color: var(--button-background-color, #0d6efd);
-  
-  /* Style tambahan */
-  padding: 0.75rem 1.5rem;
-  font-family: var(--font-family, "Inter", sans-serif);
-  font-size: var(--font-size-button-lg, 1rem); /* Ukuran font tombol besar */
+.service-categories-modern .category-card span {
   font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-modern-primary:hover {
-  /* Menggunakan variabel warna hover dari App.jsx */
-  background-color: var(--button-background-hover-color, #0b5ed7);
-  color: var(--button-text-hover-color, #ffffff);
-  border-color: var(--button-background-hover-color, #0b5ed7);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Tombol Sekunder (Lacak Pesanan) */
-.btn-modern-secondary {
-  background-color: #f8f9fa;
-  color: #343a40;
-  border-color: #e9ecef;
-  
-  padding: 0.75rem 1.5rem;
-  font-family: var(--font-family, "Inter", sans-serif);
-  font-size: var(--font-size-button-lg, 1rem);
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-modern-secondary:hover {
-  background-color: #e9ecef;
-  color: #1a1a1a;
-  border-color: #dee2e6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-/* SEMBUNYIKAN CAROUSEL BARU SECARA DEFAULT (MOBILE-FIRST)
-  UNTUK TEMA MODERN
-*/
-.hero-carousel-container-modern-desktop {
-  display: none;
-}
-
-/* TAMPILKAN CAROUSEL HANYA DI LAYAR DESKTOP (LG breakpoint)
-  (Bootstrap 5 'lg' breakpoint biasanya 992px, tapi 769px juga umum)
-  Gunakan 992px agar konsisten dengan 'd-lg-none' di JSX Anda.
-*/
-@media (min-width: 992px) {
-  .hero-carousel-container-modern-desktop {
-    display: block;
-    margin-bottom: 2.5rem; /* Memberi jarak ke konten di bawahnya */
-    margin-top: -1.5rem;  /* Menyesuaikan jarak atas (opsional) */
-    
-    /* Style tambahan agar terlihat seperti di gambar (opsional) */
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
-  }
-}
-
-/* Jika 'modern-hero-section' Anda yang lama memiliki search bar,
-  Anda mungkin ingin menyembunyikannya di desktop agar tidak duplikat
-  dengan search bar di header.
-*/
-@media (min-width: 992px) {
-  .theme-modern .modern-hero-section {
-    /* Jika Anda ingin menyembunyikan hero section lama di desktop */
-    /* display: none; */ 
-    
-    /* Atau mungkin hanya mengecilkan margin atasnya */
-    margin-top: 1rem;
-  }
+  font-size: 0.9rem;
 }
