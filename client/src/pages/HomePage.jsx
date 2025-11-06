@@ -14,44 +14,54 @@ const serviceCategories = [
   { name: "Perawatan Kulit", icon: "fa-gem", link: "/store?services=Leather" },
   { name: "Suede", icon: "fa-leaf", link: "/store?services=Suede" },
   { name: "Unyellowing", icon: "fa-sun", link: "/store?services=Unyellowing" },
-  { name: "Reparasi", icon: "fa-tools", link: "/store?services=Repair" },
-  { name: "Repaint", icon: "fa-paint-brush", link: "/store?services=Repaint" },
-  { name: "Tas", icon: "fa-shopping-bag", link: "/store?services=Bag" },
-  { name: "Topi", icon: "fa-hat-wizard", link: "/store?services=Cap" },
 ];
 
 const HomePage = ({
-  theme, // Ini sepertinya tema global (light/dark), bukan 'classic'/'modern'
+  theme,
   user,
   notifications,
   unreadCount,
   handleLogout,
-  homePageTheme = "classic", // Kita akan gunakan prop ini
+  homePageTheme = "classic",
 }) => {
   const [isAnnouncementVisible, setAnnouncementVisible] = useState(true);
   const [featuredStores, setFeaturedStores] = useState([]);
   const [banners, setBanners] = useState([]);
   const [recommendedStores, setRecommendedStores] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHomepageData = async () => {
       try {
-        setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/public/homepage`);
-        if (!response.ok) {
-          throw new Error("Gagal mengambil data homepage");
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        const [storesRes, bannersRes, recommendationsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/stores`),
+          fetch(`${API_BASE_URL}/api/public/banners`),
+          token
+            ? fetch(`${API_BASE_URL}/api/user/recommendations`, { headers })
+            : Promise.resolve(null),
+        ]);
+
+        if (!storesRes.ok || !bannersRes.ok) {
+          throw new Error("Gagal mengambil data untuk homepage.");
         }
-        const data = await response.json();
-        setFeaturedStores(data.featuredStores || []);
-        setBanners(data.banners || []);
-        setRecommendedStores(data.recommendedStores || []);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
+
+        const storesData = await storesRes.json();
+        const bannersData = await bannersRes.json();
+
+        const sortedStores = storesData.sort((a, b) => b.rating - a.rating);
+        setFeaturedStores(sortedStores.slice(0, 3));
+        setBanners(bannersData);
+
+        if (recommendationsRes && recommendationsRes.ok) {
+          const recommendationsData = await recommendationsRes.json();
+          setRecommendedStores(recommendationsData);
+        }
+      } catch (error) {
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -60,276 +70,409 @@ const HomePage = ({
     fetchHomepageData();
   }, []);
 
-  const handleAnnouncementClose = () => {
-    setAnnouncementVisible(false);
-  };
-
-  const renderLoading = () => (
-    <div className="text-center py-5">
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>
-  );
-
-  const renderError = () => (
-    <div className="alert alert-danger" role="alert">
-      {error}
-    </div>
-  );
-
-  // =================================================================
-  // FUNGSI RENDER TEMA MODERN
-  // =================================================================
-const renderModernHomepage = () => (
+  const renderClassicHomepage = () => (
     <>
-      {/* Selalu di atas */}
-      {isAnnouncementVisible && (
-        <GlobalAnnouncement onClose={handleAnnouncementClose} />
-      )}
-
-      {/* ===== 1. BAGIAN CAROUSEL (DARI LANGKAH 1) ===== */}
-      <div className="hero-carousel-container-modern-desktop">
-        <HeroCarousel banners={banners} />
-      </div>
-      {/* ============================================== */}
-
-      {/* ===== 2. BAGIAN BRAND (DARI LANGKAH 2) ===== */}
-      <div className="modern-brands-container">
-        <h3 className="modern-section-title">Brand Ternama</h3>
-        <div className="brands-grid">
-          {/* Anda bisa mengganti ini dengan data dari API nanti */}
-          <div className="brand-item">
-            <img src="https://via.placeholder.com/150x80?text=Brand+1" alt="Brand Logo 1" />
-          </div>
-          <div className="brand-item">
-            <img src="https://via.placeholder.com/150x80?text=Brand+2" alt="Brand Logo 2" />
-          </div>
-          <div className="brand-item">
-            <img src="https://via.placeholder.com/150x80?text=Brand+3" alt="Brand Logo 3" />
-          </div>
-          <div className="brand-item">
-            <img src="https://via.placeholder.com/150x80?text=Brand+4" alt="Brand Logo 4" />
-          </div>
-          <div className="brand-item">
-            <img src="https://via.placeholder.com/150x80?text=Brand+5" alt="Brand Logo 5" />
-          </div>
-          <div className="brand-item">
-            <img src="https://via.placeholder.com/150x80?text=Brand+6" alt="Brand Logo 6" />
+      <section className="hero-section text-center text-lg-start">
+        <div className="container d-none d-lg-block">
+          <div className="row align-items-center">
+            <div className="col-lg-6">
+              <Fade direction="left" triggerOnce>
+                <div className="hero-content">
+                  <h1 className="display-4 fw-bold mb-4">
+                    Merawat lebih dari <br />
+                    <span className="hero-highlight">
+                      Sekedar Membersihkan.
+                    </span>
+                  </h1>
+                  <p className="lead text-muted mb-4">
+                    Karena setiap detail layak dirawat sepenuh hati.
+                  </p>
+                  <Link
+                    to="/store"
+                    className="btn btn-primary btn-lg px-4 shadow-sm"
+                  >
+                    Cari Toko Sekarang{" "}
+                    <i className="fas fa-arrow-right ms-2"></i>
+                  </Link>
+                </div>
+              </Fade>
+            </div>
+            <div className="col-lg-6 mt-4 mt-lg-0">
+              <Fade direction="right" triggerOnce>
+                {banners.length > 0 && (
+                  <div
+                    id="heroBannerCarousel"
+                    className="carousel slide shadow-lg rounded-4"
+                    data-bs-ride="carousel"
+                  >
+                    <div className="carousel-inner rounded-4">
+                      {banners.map((banner, index) => (
+                        <div
+                          className={`carousel-item ${
+                            index === 0 ? "active" : ""
+                          }`}
+                          key={banner.id}
+                        >
+                          <Link to={banner.linkUrl}>
+                            <img
+                              src={`${banner.imageUrl}`}
+                              className="d-block w-100 hero-banner-img"
+                              alt={`Banner ${index + 1}`}
+                            />
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </Fade>
+            </div>
           </div>
         </div>
-      </div>
-      {/* ================================================= */}
 
-      {/* ===== 3. BAGIAN TOKO REKOMENDASI (DIPINDAH & DISTYLING) ===== */}
-      <Fade direction="up" triggerOnce>
-        <div className="recommended-stores-modern modern-store-section">
-          <h2 className="modern-section-title">Rekomendasi Pilihan</h2>
-          <p className="modern-section-subtitle">
-            Toko-toko terbaik pilihan editor kami minggu ini.
-          </p>
-          {loading ? (
-            renderLoading()
-          ) : error ? (
-            renderError()
-          ) : (
-            <div className="store-grid-modern">
-              {recommendedStores.length > 0 ? (
-                recommendedStores.map((store) => (
-                  <StoreCard key={store.id} store={store} theme={homePageTheme} />
-                ))
-              ) : (
-                <p>Belum ada toko rekomendasi.</p>
-              )}
+        {/* --- BANNER UNTUK MOBILE (DI LUAR GRID DESKTOP) --- */}
+        <div className="container d-lg-none mt-3">
+          {banners.length > 0 && (
+            <div
+              id="heroBannerCarouselMobile"
+              className="carousel slide shadow rounded-3"
+              data-bs-ride="carousel"
+            >
+              <div className="carousel-inner rounded-3">
+                {banners.map((banner, index) => (
+                  <div
+                    className={`carousel-item ${index === 0 ? "active" : ""}`}
+                    key={banner.id}
+                  >
+                    <Link to={banner.linkUrl}>
+                      <img
+                        src={`${banner.imageUrl}`}
+                        className="d-block w-100 hero-banner-img"
+                        alt={`Banner ${index + 1}`}
+                      />
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
-      </Fade>
-      {/* =========================================================== */}
+      </section>
 
-
-      {/* ===== (BAGIAN HERO LAMA DIHAPUS DARI SINI) ===== */}
-      
-      {/* ===== 4. BAGIAN LAYANAN POPULER (TETAP ADA) ===== */}
-      <Fade direction="up" triggerOnce>
-        <div className="service-categories-modern">
-          <h2 className="modern-section-title">Layanan Populer</h2>
-          <div className="categories-grid">
-            {serviceCategories.map((category, index) => (
-              <Link to={category.link} key={index} className="category-card">
-                <i className={`fas ${category.icon}`}></i>
+      <section className="service-categories-section container">
+        <Fade direction="up" triggerOnce>
+          <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
+            <h2 className="section-title">Kategori Layanan</h2>
+          </div>
+          <div className="category-grid">
+            {serviceCategories.map((category) => (
+              <Link
+                to={category.link}
+                key={category.name}
+                className="category-card"
+              >
+                <div className="category-icon">
+                  <i className={`fas ${category.icon}`}></i>
+                </div>
                 <span>{category.name}</span>
               </Link>
             ))}
           </div>
-        </div>
-      </Fade>
-      {/* ================================================= */}
+        </Fade>
+      </section>
 
-      {/* ===== 5. BAGIAN TOKO UNGGULAN (TETAP ADA) ===== */}
-      <Fade direction="up" triggerOnce>
-        <div className="featured-stores-modern modern-store-section">
-          <h2 className="modern-section-title">Toko Unggulan</h2>
-          <p className="modern-section-subtitle">
-            Mitra terverifikasi dengan layanan dan rating terbaik.
-          </p>
-          {loading ? (
-            renderLoading()
-          ) : error ? (
-            renderError()
-          ) : (
-            <div className="store-grid-modern">
-              {featuredStores.length > 0 ? (
-                featuredStores.map((store) => (
-                  <StoreCard key={store.id} store={store} theme={homePageTheme} />
-                ))
-              ) : (
-                <p>Belum ada toko unggulan.</p>
-              )}
+      <section className="featured-stores py-5 bg-light">
+        <div className="container">
+          <Fade direction="up" triggerOnce>
+            <div className="d-flex justify-content-between justify-content-lg-center align-items-center mb-3">
+              <h2 className="section-title">Toko Populer</h2>
             </div>
-          )}
-        </div>
-      </Fade>
-      {/* ================================================ */}
-    </>
-  );
-
-  // =================================================================
-  // FUNGSI RENDER TEMA CLASSIC
-  // =================================================================
-  const renderClassicHomepage = () => (
-    <>
-      {isAnnouncementVisible && (
-        <GlobalAnnouncement onClose={handleAnnouncementClose} />
-      )}
-
-      {/* Bagian Kategori Layanan */}
-      <div className="service-categories mb-4">
-        <div className="row g-2">
-          {serviceCategories.map((category, index) => (
-            <div
-              key={index}
-              className="col-3 col-md-3 text-center"
-              onClick={() => navigate(category.link)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card h-100 card-service-category">
-                <div className="card-body">
-                  <i className={`fas ${category.icon} fa-2x mb-2`}></i>
-                  <p className="mb-0">{category.name}</p>
+            {loading ? (
+              <div className="text-center">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
                 </div>
               </div>
+            ) : (
+              <div className="row g-4">
+                {featuredStores.map((store) => (
+                  <div className="col-lg-4 col-md-6" key={store.id}>
+                    <StoreCard store={store} />
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="text-center mt-5 d-none d-lg-block">
+              <Link to="/store" className="btn btn-outline-dark btn-lg">
+                Lihat Semua Toko
+              </Link>
             </div>
-          ))}
+          </Fade>
         </div>
-      </div>
-
-      {/* Carousel Banners (Hanya di Classic) */}
-      {banners.length > 0 && <HeroCarousel banners={banners} />}
-
-      {/* Toko Rekomendasi */}
-      <div className="mt-4">
-        <h2 className="h4">Rekomendasi Pilihan</h2>
-        <p className="text-muted">
-          Toko-toko terbaik pilihan editor kami minggu ini.
-        </p>
-        {loading ? (
-          renderLoading()
-        ) : error ? (
-          renderError()
-        ) : (
-          <div className="row g-3">
-            {recommendedStores.length > 0 ? (
-              recommendedStores.map((store) => (
-                <div key={store.id} className="col-12 col-md-6 col-lg-3">
-                  <StoreCard store={store} theme={homePageTheme} />
-                </div>
-              ))
-            ) : (
-              <p>Belum ada toko rekomendasi.</p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Toko Unggulan */}
-      <div className="mt-4">
-        <h2 className="h4">Toko Unggulan</h2>
-        <p className="text-muted">
-          Mitra terverifikasi dengan layanan dan rating terbaik.
-        </p>
-        {loading ? (
-          renderLoading()
-        ) : error ? (
-          renderError()
-        ) : (
-          <div className="row g-3">
-            {featuredStores.length > 0 ? (
-              featuredStores.map((store) => (
-                <div key={store.id} className="col-12 col-md-6 col-lg-3">
-                  <StoreCard store={store} theme={homePageTheme} />
-                </div>
-              ))
-            ) : (
-              <p>Belum ada toko unggulan.</p>
-            )}
-          </div>
-        )}
-      </div>
+      </section>
     </>
   );
 
-  // =================================================================
-  // JSX UTAMA YANG DI-RETURN
-  // =================================================================
+  const renderModernHomepage = () => (
+    // Pembungkus utama untuk tema modern
+    <div className="home-modern-wrapper">
+      {/* ==============================================
+        HERO SECTION - BARU (Full-width Swiper Carousel)
+        ==============================================
+        Logika perubahannya ada di sini.
+        Kita panggil komponen <HeroCarousel /> dan teruskan 'banners'
+        yang sudah di-fetch. Hero section lama (teks & carousel bootstrap)
+        telah dihapus dari render ini.
+      ============================================== */}
+
+      <HeroCarousel banners={banners} />
+
+      {/* ==============================================
+        BRAND MARQUEE
+        ============================================== */}
+      <section className="brand-marquee-section">
+        <div className="marquee-wrapper" style={{ "--logo-count": 5 }}>
+          <div className="marquee-content">
+            {/* List Logo Asli */}
+            <img
+              src="/images/logos/brand-1.png"
+              alt="Brand 1"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-2.png"
+              alt="Brand 2"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-3.png"
+              alt="Brand 3"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-4.png"
+              alt="Brand 4"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-5.png"
+              alt="Brand 5"
+              className="brand-logo"
+            />
+
+            {/* List Logo Duplikat (untuk animasi) */}
+            <img
+              src="/images/logos/brand-1.png"
+              alt="Brand 1"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-2.png"
+              alt="Brand 2"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-3.png"
+              alt="Brand 3"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-4.png"
+              alt="Brand 4"
+              className="brand-logo"
+            />
+            <img
+              src="/images/logos/brand-5.png"
+              alt="Brand 5"
+              className="brand-logo"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ==============================================
+        BAGIAN KATEGORI LAYANAN
+        ============================================== */}
+      <section className="hm-services py-5">
+        <div className="container">
+          <Fade direction="up" triggerOnce>
+            <div className="text-center mb-5">
+              <h2 className="hm-section-title">Layanan Komprehensif</h2>
+              <p className="hm-section-subtitle">
+                Dari pembersihan cepat hingga restorasi mendetail.
+              </p>
+            </div>
+            <div className="hm-services-grid">
+              {serviceCategories.map((category) => (
+                <Link
+                  to={category.link}
+                  key={category.name}
+                  className="hm-service-card"
+                >
+                  <div className="hm-service-icon">
+                    <i className={`fas ${category.icon}`}></i>
+                  </div>
+                  <h5 className="hm-service-name">{category.name}</h5>
+                </Link>
+              ))}
+            </div>
+          </Fade>
+        </div>
+      </section>
+
+      {/* ==============================================
+        BAGIAN TOKO POPULER
+        ============================================== */}
+      <section className="hm-featured-stores py-5">
+        <div className="container">
+          <Fade direction="up" triggerOnce>
+            <div className="text-center mb-5">
+              <h2 className="hm-section-title">Mitra Terpercaya Kami</h2>
+              <p className="hm-section-subtitle">
+                Dipilih berdasarkan kualitas dan ulasan terbaik.
+              </p>
+            </div>
+            {loading ? (
+              <div className="text-center">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : (
+              <div className="row g-4">
+                {featuredStores.map((store) => (
+                  <div className="col-lg-4 col-md-6" key={store.id}>
+                    <StoreCard store={store} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </Fade>
+        </div>
+      </section>
+    </div>
+  );
+
   return (
-    <div
-      className={`homepage-container ${
-        homePageTheme === "modern" ? "theme-modern" : "theme-classic"
-      }`}
-    >
-      {/* Top Bar (Logo, User, Search) - Tetap sama untuk kedua tema */}
-      <div className="homepage-header sticky-top">
+    <div className="homepage-mobile-container">
+      {/* Header Mobile (Tetap Sama) */}
+      <div className="mobile-home-header d-lg-none">
         <div className="top-bar">
-          <Link to="/">
-            <img src="/logo-dark.png" alt="StrideBase" className="logo" />
+          <Link to="/" className="mobile-logo">
+            {theme?.branding?.logoUrl ? (
+              <img src={theme.branding.logoUrl} alt="Logo" />
+            ) : (
+              <span>StrideBase</span>
+            )}
           </Link>
-          <div className="user-controls">
+          <div className="actions">
             {user ? (
               <>
-                <Link
-                  to="/notifications"
-                  className="btn btn-icon btn-sm me-2 position-relative"
-                >
-                  <i className="fas fa-bell"></i>
-                  {unreadCount > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                      {unreadCount}
-                      <span className="visually-hidden">unread messages</span>
-                    </span>
-                  )}
-                </Link>
                 <div className="dropdown">
                   <button
-                    className="btn btn-icon btn-sm"
+                    className="btn btn-icon"
                     type="button"
-                    id="userMenuButton"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    <i className="fas fa-user-circle"></i>
+                    <i className="fas fa-bell"></i>
+                    {unreadCount > 0 && (
+                      <span className="notification-badge">{unreadCount}</span>
+                    )}
                   </button>
                   <ul
-                    className="dropdown-menu dropdown-menu-end"
-                    aria-labelledby="userMenuButton"
+                    className="dropdown-menu dropdown-menu-end dropdown-menu-custom"
+                    style={{ width: "300px" }}
                   >
+                    <li className="p-2 border-bottom">
+                      <h6 className="mb-0">Notifikasi</h6>
+                    </li>
+                    <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                      {notifications && notifications.length > 0 ? (
+                        notifications.slice(0, 5).map((notif) => (
+                          <li key={notif.id}>
+                            <Link
+                              to={notif.linkUrl || "#"}
+                              className="dropdown-item text-wrap"
+                            >
+                              <small>{notif.message}</small>
+                              <div
+                                className="text-muted"
+                                style={{ fontSize: "0.75rem" }}
+                              >
+                                {new Date(notif.createdAt).toLocaleString(
+                                  "id-ID"
+                                )}
+                              </div>
+                            </Link>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="p-3 text-center text-muted small">
+                          Tidak ada notifikasi baru.
+                        </li>
+                      )}
+                    </div>
                     <li>
-                      <h6 className="dropdown-header">
-                        Halo, {user.name || "Pengguna"}
-                      </h6>
+                      <hr className="dropdown-divider my-1" />
                     </li>
                     <li>
-                      <Link className="dropdown-item" to="/dashboard">
+                      <Link
+                        to="/notifications"
+                        className="dropdown-item text-center small"
+                      >
+                        Lihat Semua Notifikasi
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="dropdown">
+                  <button
+                    className="btn btn-icon"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <img
+                      src="/user-avatar-placeholder.png" // Ganti dengan user.avatarUrl jika ada
+                      alt="User"
+                      className="user-avatar-sm"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://i.pravatar.cc/40"; // Fallback
+                      }}
+                    />
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                    {user.role === "developer" && (
+                      <li>
+                        <Link
+                          to="/developer/dashboard"
+                          className="dropdown-item"
+                        >
+                          <i className="fas fa-crown fa-fw me-2"></i>SuperUser
+                          Panel
+                        </Link>
+                      </li>
+                    )}
+                    {user.role === "admin" && (
+                      <li>
+                        <Link to="/admin/dashboard" className="dropdown-item">
+                          <i className="fas fa-user-shield fa-fw me-2"></i>Panel
+                          Admin
+                        </Link>
+                      </li>
+                    )}
+                    {user.role === "mitra" && (
+                      <li>
+                        <Link to="/partner/dashboard" className="dropdown-item">
+                          <i className="fas fa-store fa-fw me-2"></i>Panel Toko
+                          Saya
+                        </Link>
+                      </li>
+                    )}
+                    <li>
+                      <Link to="/dashboard" className="dropdown-item">
                         <i className="fas fa-tachometer-alt fa-fw me-2"></i>
                         Dashboard Pengguna
                       </Link>
@@ -365,18 +508,15 @@ const renderModernHomepage = () => (
         </div>
       </div>
 
-      {/* Konten Utama (dibungkus container) */}
-      <div className="container mx-auto px-4 py-8">
-        {/* Konten Desktop (Conditional) */}
-        <div className="d-none d-lg-block">
-          {homePageTheme === "modern"
-            ? renderModernHomepage()
-            : renderClassicHomepage()}
-        </div>
-
-        {/* Konten Mobile (selalu classic) */}
-        <div className="d-lg-none">{renderClassicHomepage()}</div>
+      {/* Konten Utama */}
+      <div className="d-none d-lg-block">
+        {homePageTheme === "modern"
+          ? renderModernHomepage()
+          : renderClassicHomepage()}
       </div>
+
+      {/* Konten Mobile (selalu classic) */}
+      <div className="d-lg-none">{renderClassicHomepage()}</div>
     </div>
   );
 };
