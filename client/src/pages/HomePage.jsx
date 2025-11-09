@@ -217,102 +217,151 @@ const HomePage = ({
     // Pembungkus utama untuk tema modern
     <div className="home-modern-wrapper">
       {/* ==============================================
-        HERO SECTION - BARU (Full-width Swiper Carousel)
-        ==============================================
-        Logika perubahannya ada di sini.
-        Kita panggil komponen <HeroCarousel /> dan teruskan 'banners'
-        yang sudah di-fetch. Hero section lama (teks & carousel bootstrap)
-        telah dihapus dari render ini.
-      ============================================== */}
-
-      <HeroCarousel banners={banners} />
-
-      {/* ==============================================
-        BRAND MARQUEE
+        HERO SECTION - REDESIGN (SPLIT LAYOUT)
         ============================================== */}
-      <section className="brand-marquee-section">
-        <div className="marquee-wrapper" style={{ "--logo-count": 5 }}>
-          <div className="marquee-content">
-            {/* List Logo Asli */}
-            <img
-              src="/images/logos/brand-1.png"
-              alt="Brand 1"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-2.png"
-              alt="Brand 2"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-3.png"
-              alt="Brand 3"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-4.png"
-              alt="Brand 4"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-5.png"
-              alt="Brand 5"
-              className="brand-logo"
-            />
-
-            {/* List Logo Duplikat (untuk animasi) */}
-            <img
-              src="/images/logos/brand-1.png"
-              alt="Brand 1"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-2.png"
-              alt="Brand 2"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-3.png"
-              alt="Brand 3"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-4.png"
-              alt="Brand 4"
-              className="brand-logo"
-            />
-            <img
-              src="/images/logos/brand-5.png"
-              alt="Brand 5"
-              className="brand-logo"
-            />
+      <section className="hero-section modern-hero">
+        <div className="container">
+          <div className="row align-items-center g-5">
+            {/* Kolom Kiri: Teks Informatif */}
+            <div className="col-lg-6">
+              <Fade direction="left" duration={800} triggerOnce>
+                <div className="modern-hero-content">
+                  <h1 className="modern-hero-title">
+                    Perawatan Sepatu Profesional,
+                    <br />
+                    <span style={{ color: "var(--primary-color)" }}>
+                      Langsung di Ujung Jari Anda.
+                    </span>
+                  </h1>
+                  <p className="modern-hero-subtitle">
+                    Temukan, pesan, dan lacak layanan cuci sepatu premium dari
+                    mitra terbaik di kota Anda. Cepat, mudah, dan terpercaya.
+                  </p>
+                  <div className="d-flex gap-2 flex-wrap">
+                    <Link to="/store" className="btn btn-modern-primary btn-lg">
+                      Temukan Layanan
+                    </Link>
+                    <Link
+                      to={user ? "/dashboard" : "/login"}
+                      className="btn btn-modern-secondary btn-lg"
+                    >
+                      Lacak Pesanan
+                    </Link>
+                  </div>
+                </div>
+              </Fade>
+            </div>
+            {/* Kolom Kanan: Carousel Gambar */}
+            <div className="col-lg-6">
+              <Fade direction="right" duration={800} triggerOnce>
+                <div className="modern-hero-image-wrapper">
+                  {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
+                  <div
+                    id="modernHeroCarousel"
+                    className="carousel slide carousel-fade"
+                    data-bs-ride="carousel"
+                  >
+                    <div className="carousel-indicators modern-hero-indicators">
+                      {banners.map((_, index) => (
+                        <button
+                          type="button"
+                          data-bs-target="#modernHeroCarousel"
+                          data-bs-slide-to={index}
+                          className={index === 0 ? "active" : ""}
+                          aria-current={index === 0 ? "true" : "false"}
+                          aria-label={`Slide ${index + 1}`}
+                          key={index}
+                        ></button>
+                      ))}
+                    </div>
+                    <div className="carousel-inner">
+                      {banners.length > 0 ? (
+                        banners.map((banner, index) => (
+                          <div
+                            className={`carousel-item ${
+                              index === 0 ? "active" : ""
+                            }`}
+                            key={banner.id}
+                          >
+                            <img
+                              src={banner.imageUrl}
+                              className="d-block w-100 modern-hero-image"
+                              alt={banner.title || "Hero Image"}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        // Fallback jika tidak ada banner
+                        <div className="carousel-item active">
+                          <img
+                            src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
+                            className="d-block w-100 modern-hero-image"
+                            alt="Sepatu"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Fade>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ==============================================
-        BAGIAN KATEGORI LAYANAN
+        BRAND MARQUEE (Interaktif & Animatif)
         ============================================== */}
-      <section className="hm-services py-5">
+      <section className="brand-marquee-section">
+        <div className="marquee-wrapper">
+          <div className="marquee-content">
+            {/* Anda bisa mengganti ini dengan logo-logo brand sepatu terkenal */}
+            <span className="brand-logo-text">Nike</span>
+            <span className="brand-logo-text">Adidas</span>
+            <span className="brand-logo-text">New Balance</span>
+            <span className="brand-logo-text">Puma</span>
+            <span className="brand-logo-text">Converse</span>
+            <span className="brand-logo-text">Vans</span>
+            {/* Duplikat untuk animasi seamless loop */}
+            <span className="brand-logo-text">Nike</span>
+            <span className="brand-logo-text">Adidas</span>
+            <span className="brand-logo-text">New Balance</span>
+            <span className="brand-logo-text">Puma</span>
+            <span className="brand-logo-text">Converse</span>
+            <span className="brand-logo-text">Vans</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ==============================================
+        BAGIAN KATEGORI LAYANAN (Clean)
+        ============================================== */}
+      <section
+        className="hm-services py-5"
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
         <div className="container">
           <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
-              <h2 className="hm-section-title">Layanan Komprehensif</h2>
-              <p className="hm-section-subtitle">
+              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
+                Layanan Komprehensif
+              </h2>
+              <p className="hm-section-subtitle" style={{ color: "#555" }}>
                 Dari pembersihan cepat hingga restorasi mendetail.
               </p>
             </div>
-            <div className="hm-services-grid">
+            {/* Menggunakan grid dari 'classic' theme karena lebih clean */}
+            <div className="category-grid">
               {serviceCategories.map((category) => (
                 <Link
                   to={category.link}
                   key={category.name}
-                  className="hm-service-card"
+                  className="category-card" // Menggunakan style dari style.css
                 >
-                  <div className="hm-service-icon">
+                  <div className="category-icon">
                     <i className={`fas ${category.icon}`}></i>
                   </div>
-                  <h5 className="hm-service-name">{category.name}</h5>
+                  <span>{category.name}</span>
                 </Link>
               ))}
             </div>
@@ -321,14 +370,19 @@ const HomePage = ({
       </section>
 
       {/* ==============================================
-        BAGIAN TOKO POPULER
+        BAGIAN TOKO POPULER (Clean)
         ============================================== */}
-      <section className="hm-featured-stores py-5">
+      <section
+        className="hm-featured-stores py-5"
+        style={{ backgroundColor: "#ffffff" }}
+      >
         <div className="container">
           <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
-              <h2 className="hm-section-title">Mitra Terpercaya Kami</h2>
-              <p className="hm-section-subtitle">
+              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
+                Mitra Terpercaya Kami
+              </h2>
+              <p className="hm-section-subtitle" style={{ color: "#555" }}>
                 Dipilih berdasarkan kualitas dan ulasan terbaik.
               </p>
             </div>
@@ -339,11 +393,10 @@ const HomePage = ({
                 </div>
               </div>
             ) : (
-              <div className="row g-4">
+              // Menggunakan .results-grid-redesigned dari style.css
+              <div className="results-grid-redesigned">
                 {featuredStores.map((store) => (
-                  <div className="col-lg-4 col-md-6" key={store.id}>
-                    <StoreCard store={store} />
-                  </div>
+                  <StoreCard store={store} key={store.id} />
                 ))}
               </div>
             )}
