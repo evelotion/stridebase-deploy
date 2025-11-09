@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (Revisi Final Sesuai Gambar) */
+/* File: client/src/pages/HomePageModern.css (Solusi Margin Negatif) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -20,15 +20,24 @@
 }
 
 /* ==============================================
-  HERO SECTION - SPLIT BANNERS (Sesuai Gambar)
+  HERO SECTION - SOLUSI MARGIN NEGATIF
 ============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
-  /* --- PERUBAHAN DI SINI (1) --- */
-  padding: 0.25rem 0; /* Padding atas/bawah dibuat HAMPIR NOL */
   color: #1a1a1a;
   overflow: hidden;
+  
+  /* --- INI ADALAH CARA BARU YANG KITA COBA --- */
+  
+  /* 1. Hapus padding atas internal section ini */
+  padding-top: 0; 
+  
+  /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
+  padding-bottom: 0.5rem; 
+  
+  /* 3. Paksa tarik section ini ke atas (sesuaikan -3rem jika kurang) */
+  margin-top: -3rem; 
 }
 
 .modern-main-carousel-wrapper {
@@ -37,8 +46,8 @@
   overflow: hidden;
   position: relative;
   height: 100%;
-  /* --- PERUBAHAN DI SINI (2) --- */
-  max-height: 220px; /* Batas tinggi MAKSIMUM (sesuai gambar Anda) */
+  /* 4. Kita buat ketinggiannya sangat pendek, sesuai gambar Anda */
+  max-height: 220px; 
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -92,8 +101,8 @@
   height: 100%;
   display: flex;
   align-items: flex-end;
-  /* --- PERUBAHAN DI SINI (2) --- */
-  max-height: 220px; /* Batas tinggi MAKSIMUM (sesuai gambar Anda) */
+  /* 4. Samakan ketinggiannya */
+  max-height: 220px;
 }
 
 .modern-side-banner-image {
@@ -131,8 +140,8 @@
 ==================================
 */
 .brand-marquee-section {
-  /* --- PERUBAHAN DI SINI (3) --- */
-  padding: 1rem 0; /* Padding atas/bawah dikurangi (sebelumnya 1.5rem) */
+  /* 5. Perkecil juga padding marquee agar lebih rapat */
+  padding: 1rem 0; 
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
@@ -217,7 +226,7 @@
 }
 
 /* ==================================
-  Layanan & Toko (Typo Diperbaiki)
+  Layanan & Toko (Tidak Berubah)
 ==================================
 */
 .hm-services {
@@ -226,7 +235,7 @@
 }
 
 .hm-featured-stores {
-  border-top: 1px solid #e9ecef; /* Typo sudah diperbaiki */
+  border-top: 1px solid #e9ecef; 
 }
 
 .btn-modern-secondary {
