@@ -136,7 +136,7 @@
 */
 .brand-marquee-section {
   /* Hapus padding-top dari aturan global */
-  padding-top: 1.5rem !important;
+  padding-top: 0rem !important;
 
   /* padding sectionnya brand marquee */
   padding-bottom: 1.5rem; 
