@@ -37,7 +37,7 @@
   padding-bottom: -6rem; 
   
   /* 3. Paksa tarik section ini ke atas (sesuaikan -3rem jika kurang) */
-  margin-top: -10rem; 
+  margin-top: -8rem; 
 }
 
 .modern-main-carousel-wrapper {
@@ -47,7 +47,7 @@
   position: relative;
   height: 100%;
   /* 4. Kita buat ketinggiannya sangat pendek, sesuai gambar Anda */
-  max-height: 220px; 
+  max-height: 380px; 
 }
 
 .modern-main-carousel-wrapper .carousel,
