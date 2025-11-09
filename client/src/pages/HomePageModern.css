@@ -38,7 +38,7 @@
   position: relative;
   height: 100%;
   /* --- PERUBAHAN DI SINI --- */
-  max-height: 380px; /* Menetapkan batas tinggi maksimum */
+  max-height: 180px; /* Menetapkan batas tinggi maksimum */
 }
 
 .modern-main-carousel-wrapper .carousel,
