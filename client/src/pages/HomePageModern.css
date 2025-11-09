@@ -47,7 +47,7 @@
   position: relative;
   height: 100%;
   /* 4. Kita buat ketinggiannya sangat pendek, sesuai gambar Anda */
-  max-height: 220px; 
+  max-height: 120px; 
 }
 
 .modern-main-carousel-wrapper .carousel,
