@@ -31,10 +31,10 @@
   /* --- INI ADALAH CARA BARU YANG KITA COBA --- */
   
   /* 1. Hapus padding atas internal section ini */
-  padding-top: 10rem; 
+  padding-top: 0rem; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
-  padding-bottom: -10rem; 
+  padding-bottom: -20rem; 
   
   /* Ini jarak carousel ke navbar, makin minus makin jauh dari navbar */
   margin-top: 1rem; 
