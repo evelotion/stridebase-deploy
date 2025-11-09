@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (Tahap 1 - Revisi 3: Split Banner Layout) */
+/* File: client/src/pages/HomePageModern.css (Tahap 2: Menambahkan Info Section) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -10,24 +10,24 @@
 
 .hm-section-title {
   font-weight: 700;
-  color: #1a1a1a; /* Teks gelap di latar belakang terang */
+  color: #1a1a1a;
   font-size: 2.5rem;
 }
 
 .hm-section-subtitle {
-  color: #555; /* Abu-abu gelap */
+  color: #555;
   font-size: 1.1rem;
 }
 
 /* ==============================================
-  BARU: Hero Section Modern (Split Banners)
+  HERO SECTION - SPLIT BANNERS (Tidak Berubah)
 ============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
-  padding: 3rem 0; /* Padding atas dan bawah */
+  padding: 3rem 0;
   color: #1a1a1a;
-  overflow: hidden; /* Mencegah horizontal scroll dari Fade */
+  overflow: hidden;
 }
 
 .modern-main-carousel-wrapper {
@@ -35,7 +35,7 @@
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
-  height: 100%; /* Agar carousel mengisi tinggi kolom */
+  height: 100%;
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -46,22 +46,21 @@
 
 .modern-main-carousel-wrapper .carousel-item img.modern-main-banner-image {
   width: 100%;
-  height: 100%; /* Memastikan gambar mengisi tinggi */
+  height: 100%;
   display: block;
-  object-fit: cover; /* Penting untuk menjaga rasio aspek dan mengisi area */
+  object-fit: cover;
 }
 
-/* Styling untuk Indikator Carousel Utama */
 .modern-carousel-indicators {
   position: absolute;
   bottom: 20px;
-  left: 30px; /* Geser ke kiri untuk membedakan */
-  transform: translateX(0); /* Jangan transform X */
+  left: 30px;
+  transform: translateX(0);
   margin: 0;
   padding: 0;
   list-style: none;
   z-index: 2;
-  right: auto; /* Pastikan tidak ada konflik dengan right */
+  right: auto;
   top: auto;
 }
 
@@ -82,15 +81,14 @@
   background-color: #ffffff;
 }
 
-/* Styling untuk Banner Samping (Kanan) */
 .modern-side-banner-wrapper {
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
-  height: 100%; /* Penting agar mengisi tinggi yang sama dengan carousel */
-  display: flex; /* Untuk memposisikan overlay dengan flexbox */
-  align-items: flex-end; /* Pindahkan konten overlay ke bawah */
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
 }
 
 .modern-side-banner-image {
@@ -106,25 +104,25 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%); /* Gradient gelap di bawah */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%);
   color: #ffffff;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Konten di bawah */
+  justify-content: flex-end;
   align-items: flex-start;
   text-align: left;
-  opacity: 0; /* Awalnya tersembunyi */
+  opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .modern-side-banner-wrapper:hover .modern-side-banner-overlay {
-  opacity: 1; /* Muncul saat hover */
+  opacity: 1;
 }
 
 /*
 ==================================
-  BRAND MARQUEE Section Styles (Tidak berubah)
+  BRAND MARQUEE (Tidak Berubah)
 ==================================
 */
 .brand-marquee-section {
@@ -170,22 +168,82 @@
   }
 }
 
+/*
+==================================
+  BARU: Info Section (Sesuai Gambar)
+==================================
+*/
+.hm-info-section {
+  padding: 6rem 0;
+  background-color: #f8f9fa; /* Warna dasar abu-abu muda */
+  
+  /* Ini adalah "background menarik" yang Anda minta (dotted pattern) */
+  background-image: radial-gradient(
+    rgba(0, 0, 0, 0.07) 1px, /* Warna titik */
+    transparent 1px
+  );
+  background-size: 20px 20px; /* Jarak antar titik */
+  position: relative;
+  overflow: hidden; /* Mencegah scroll horizontal dari animasi Fade */
+}
+
+.hm-info-image {
+  border-radius: 12px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 4 / 3; /* Menjaga rasio gambar */
+}
+
+.hm-info-title {
+  font-family: var(--font-family, "Inter", sans-serif);
+  font-size: var(--font-size-h1, 2.8rem); /* Sedikit lebih kecil dari hero */
+  color: #1a1a1a;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1.5rem;
+}
+
+.hm-info-text {
+  font-family: var(--font-family, "Inter", sans-serif);
+  font-size: var(--font-size-lead, 1.1rem);
+  color: #555;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+
 /* ==================================
-  REVISI: Bagian Layanan & Toko (Tidak banyak berubah, hanya penyesuaian margin/padding jika perlu)
+  REVISI: Bagian Layanan & Toko
 ==================================
 */
 .hm-services {
-  background-color: #f8f9fa;
+  /* background-color dihapus, diatur di JSX */
   border-top: 1px solid #e9ecef;
   border-bottom: 1px solid #e9ecef;
 }
 
 .hm-featured-stores {
-   background-color: #ffffff;
+   /* background-color dihapus, diatur di JSX */
+   border-top: 1px solid #e9ecef;
 }
 
-/* Catatan: 
-  Gaya untuk .category-grid, .category-card, dan .results-grid-redesigned 
-  sudah ada di style.css (global), jadi kita tidak perlu menambahkannya di sini.
-  File HomePage.jsx akan menggunakan kelas-kelas tersebut.
-*/
+/* Tombol dari Tahap 1, digunakan di Info Section */
+.btn-modern-secondary {
+  background-color: #f8f9fa;
+  color: #343a40;
+  border-color: #e9ecef;
+  
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-family, "Inter", sans-serif);
+  font-size: var(--font-size-button-lg, 1rem);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-modern-secondary:hover {
+  background-color: #e9ecef;
+  color: #1a1a1a;
+  border-color: #dee2e6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}

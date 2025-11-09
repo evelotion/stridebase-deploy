@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (Tahap 1 - Revisi 3: Split Banner Layout)
+// File: client/src/pages/HomePage.jsx (Tahap 2: Menambahkan Info Section)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -222,13 +222,9 @@ const HomePage = ({
         ============================================== */}
       <section className="hero-section modern-split-banners">
         <div className="container">
-          <div className="row g-4">
-            {" "}
-            {/* Menggunakan g-4 untuk gap antar kolom */}
+          <div className="row g-4"> {/* Menggunakan g-4 untuk gap antar kolom */}
             {/* Kolom Kiri: Banner Carousel Utama */}
-            <div className="col-lg-8">
-              {" "}
-              {/* Mengambil 8 dari 12 kolom */}
+            <div className="col-lg-8"> {/* Mengambil 8 dari 12 kolom */}
               <Fade direction="left" duration={800} triggerOnce>
                 <div className="modern-main-carousel-wrapper">
                   {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
@@ -265,11 +261,6 @@ const HomePage = ({
                                 className="d-block w-100 modern-main-banner-image"
                                 alt={banner.title || "Main Banner"}
                               />
-                              {/* Anda bisa menambahkan teks overlay di sini jika diperlukan */}
-                              {/* <div className="carousel-caption d-none d-md-block">
-                                <h5>{banner.title}</h5>
-                                <p>{banner.description}</p>
-                              </div> */}
                             </Link>
                           </div>
                         ))
@@ -288,29 +279,21 @@ const HomePage = ({
                 </div>
               </Fade>
             </div>
+
             {/* Kolom Kanan: Banner Statis Kecil */}
-            <div className="col-lg-4">
-              {" "}
-              {/* Mengambil 4 dari 12 kolom */}
+            <div className="col-lg-4"> {/* Mengambil 4 dari 12 kolom */}
               <Fade direction="right" duration={800} triggerOnce>
                 <div className="modern-side-banner-wrapper">
-                  <Link to="/promo/skincare-deals">
-                    {" "}
-                    {/* Ganti link sesuai kebutuhan */}
+                  <Link to="/promo/skincare-deals"> {/* Ganti link sesuai kebutuhan */}
                     <img
                       src="https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop" // Gambar placeholder
                       alt="Promo Skincare"
                       className="img-fluid modern-side-banner-image"
                     />
-                    {/* Anda bisa menambahkan teks overlay jika diperlukan */}
                     <div className="modern-side-banner-overlay">
                       <h4 className="text-white">Promo Spesial!</h4>
-                      <p className="text-white-50">
-                        Diskon hingga 30% untuk produk terpilih.
-                      </p>
-                      <button className="btn btn-sm btn-light mt-2">
-                        Lihat Sekarang
-                      </button>
+                      <p className="text-white-50">Diskon hingga 30%.</p>
+                      <button className="btn btn-sm btn-light mt-2">Lihat</button>
                     </div>
                   </Link>
                 </div>
@@ -326,14 +309,12 @@ const HomePage = ({
       <section className="brand-marquee-section">
         <div className="marquee-wrapper">
           <div className="marquee-content">
-            {/* Anda bisa mengganti ini dengan logo-logo brand sepatu terkenal */}
             <span className="brand-logo-text">Nike</span>
             <span className="brand-logo-text">Adidas</span>
             <span className="brand-logo-text">New Balance</span>
             <span className="brand-logo-text">Puma</span>
             <span className="brand-logo-text">Converse</span>
             <span className="brand-logo-text">Vans</span>
-            {/* Duplikat untuk animasi seamless loop */}
             <span className="brand-logo-text">Nike</span>
             <span className="brand-logo-text">Adidas</span>
             <span className="brand-logo-text">New Balance</span>
@@ -345,29 +326,66 @@ const HomePage = ({
       </section>
 
       {/* ==============================================
+        BARU: INFO SECTION (Sesuai Gambar)
+        ============================================== */}
+      <section className="hm-info-section">
+        <div className="container">
+          <div className="row g-5 align-items-center">
+            {/* Kolom Kiri: Gambar */}
+            <div className="col-lg-6">
+              <Fade direction="left" triggerOnce>
+                <img
+                  src="https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop" // Gambar placeholder
+                  alt="Perawatan Sepatu Profesional"
+                  className="img-fluid hm-info-image"
+                />
+              </Fade>
+            </div>
+            {/* Kolom Kanan: Teks */}
+            <div className="col-lg-6">
+              <Fade direction="right" triggerOnce>
+                <div className="hm-info-content">
+                  <h2 className="hm-info-title">
+                    Teknologi Canggih, <br />
+                    <span style={{ color: "var(--primary-color)" }}>
+                      Hasil Maksimal.
+                    </span>
+                  </h2>
+                  <p className="hm-info-text">
+                    Kami tidak hanya membersihkan, kami merawat. Dengan
+                    menggunakan peralatan modern dan formula pembersih
+                    premium yang aman, kami memastikan setiap pasang
+Ganti
+                    sepatu kembali dalam kondisi terbaiknya.
+                  </p>
+                  <Link to="/about" className="btn btn-modern-secondary btn-lg">
+                    Tentang Kami
+                  </Link>
+                </div>
+              </Fade>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* ==============================================
         BAGIAN KATEGORI LAYANAN (Clean)
         ============================================== */}
-      <section
-        className="hm-services py-5"
-        style={{ backgroundColor: "#f8f9fa" }}
-      >
+      <section className="hm-services py-5" style={{ backgroundColor: "#ffffff" }}>
         <div className="container">
           <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
-              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
-                Layanan Komprehensif
-              </h2>
+              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>Layanan Komprehensif</h2>
               <p className="hm-section-subtitle" style={{ color: "#555" }}>
                 Dari pembersihan cepat hingga restorasi mendetail.
               </p>
             </div>
-            {/* Menggunakan grid dari 'classic' theme karena lebih clean */}
-            <div className="category-grid">
+            <div className="category-grid"> 
               {serviceCategories.map((category) => (
                 <Link
                   to={category.link}
                   key={category.name}
-                  className="category-card" // Menggunakan style dari style.css
+                  className="category-card"
                 >
                   <div className="category-icon">
                     <i className={`fas ${category.icon}`}></i>
@@ -383,16 +401,11 @@ const HomePage = ({
       {/* ==============================================
         BAGIAN TOKO POPULER (Clean)
         ============================================== */}
-      <section
-        className="hm-featured-stores py-5"
-        style={{ backgroundColor: "#ffffff" }}
-      >
+      <section className="hm-featured-stores py-5" style={{ backgroundColor: "#f8f9fa" }}>
         <div className="container">
           <Fade direction="up" triggerOnce>
             <div className="text-center mb-5">
-              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
-                Mitra Terpercaya Kami
-              </h2>
+              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>Mitra Terpercaya Kami</h2>
               <p className="hm-section-subtitle" style={{ color: "#555" }}>
                 Dipilih berdasarkan kualitas dan ulasan terbaik.
               </p>
@@ -404,8 +417,7 @@ const HomePage = ({
                 </div>
               </div>
             ) : (
-              // Menggunakan .results-grid-redesigned dari style.css
-              <div className="results-grid-redesigned">
+              <div className="results-grid-redesigned"> 
                 {featuredStores.map((store) => (
                   <StoreCard store={store} key={store.id} />
                 ))}
@@ -500,11 +512,11 @@ const HomePage = ({
                     aria-expanded="false"
                   >
                     <img
-                      src="/user-avatar-placeholder.png" // Ganti dengan user.avatarUrl jika ada
+                      src="/user-avatar-placeholder.png"
                       alt="User"
                       className="user-avatar-sm"
                       onError={(e) => {
-                        e.currentTarget.src = "https://i.pravatar.cc/40"; // Fallback
+                        e.currentTarget.src = "https://i.pravatar.cc/40";
                       }}
                     />
                   </button>
