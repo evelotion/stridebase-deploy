@@ -31,7 +31,7 @@
   /* --- INI ADALAH CARA BARU YANG KITA COBA --- */
   
   /* 1. Hapus padding atas internal section ini */
-  padding-top: 0; 
+  padding-top: -10; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
   padding-bottom: -10rem; 
@@ -141,7 +141,7 @@
 */
 .brand-marquee-section {
   /* 5. Perkecil juga padding marquee agar lebih rapat */
-  padding: -10rem 0; 
+  padding: -1rem 0; 
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
