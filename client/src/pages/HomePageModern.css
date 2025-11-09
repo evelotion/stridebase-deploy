@@ -34,10 +34,10 @@
   padding-top: 0; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
-  padding-bottom: -2rem; 
+  padding-bottom: -1rem; 
   
   /* Ini jarak carousel ke navbar, makin minus makin jauh dari navbar */
-  margin-top: -8rem; 
+  margin-top: -10rem; 
 }
 
 .modern-main-carousel-wrapper {
