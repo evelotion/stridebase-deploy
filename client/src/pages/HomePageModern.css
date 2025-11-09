@@ -34,10 +34,10 @@
   padding-top: 0; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
-  padding-bottom: -6rem; 
+  padding-bottom: -3rem; 
   
   /* 3. Paksa tarik section ini ke atas (sesuaikan -3rem jika kurang) */
-  margin-top: -8rem; 
+  margin-top: -5rem; 
 }
 
 .modern-main-carousel-wrapper {
