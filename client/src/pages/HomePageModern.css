@@ -19,27 +19,20 @@
   font-size: 1.1rem;
 }
 
-/* ==============================================
-  HERO SECTION - SOLUSI MARGIN NEGATIF
-============================================== */
-/* ==============================================
-  HERO SECTION - SOLUSI MARGIN NEGATIF
-============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
   color: #1a1a1a;
   overflow: hidden;
+  
+  /* Hapus padding-top dari aturan global */
+  padding-top: 0rem; 
+  
+  /* HANYA INI YANG MENGATUR JARAKNYA.
+     Ganti 1.5rem (24px) ke 1rem (16px) atau 0.5rem (8px) jika ingin lebih dekat. */
+  padding-bottom: 1.5rem; 
+  
   margin-top: -1rem; 
-  
-  /* 1. Paksa padding-top jadi 0 */
-  padding-top: 0 !important;
-  
-  /* 2. JADIKAN INI SATU-SATUNYA PENGATUR JARAK.
-   * Atur jarak yang Anda inginkan di sini. Coba 1.5rem (24px).
-   * Jika kurang dekat, ganti jadi 1rem.
-   */
-  padding-bottom: 0rem !important; 
 }
 
 .modern-main-carousel-wrapper {
@@ -142,13 +135,11 @@
 ==================================
 */
 .brand-marquee-section {
-  /* 1. Paksa padding-top jadi 0 untuk membunuh jarak 4rem global */
-  padding-top: 0 !important; 
-  
-  /* 2. Atur padding-bottom-nya secara normal */
+  /* Hapus padding-top dari aturan global */
+  padding-top: 0rem; 
+
+  /* padding sectionnya brand marquee */
   padding-bottom: 1.5rem; 
-  
-  /* Sisanya biarkan seperti biasa */
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
