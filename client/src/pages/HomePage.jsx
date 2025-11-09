@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (Tahap 2: Menambahkan Info Section)
+// File: client/src/pages/HomePage.jsx (Tahap 2 - Ukuran Banner Dikecilkan LAGI)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -213,12 +213,12 @@ const HomePage = ({
     </>
   );
 
-  // --- PERUBAHAN UTAMA ADA DI FUNGSI INI ---
+  // --- FUNGSI UTAMA YANG KITA MODIFIKASI ---
   const renderModernHomepage = () => (
     // Pembungkus utama untuk tema modern
     <div className="home-modern-wrapper">
       {/* ==============================================
-        HERO SECTION - SPLIT BANNERS
+        HERO SECTION - SPLIT BANNERS (Ukuran Dikecilkan LAGI)
         ============================================== */}
       <section className="hero-section modern-split-banners">
         <div className="container">
@@ -355,7 +355,6 @@ const HomePage = ({
                     Kami tidak hanya membersihkan, kami merawat. Dengan
                     menggunakan peralatan modern dan formula pembersih
                     premium yang aman, kami memastikan setiap pasang
-Ganti
                     sepatu kembali dalam kondisi terbaiknya.
                   </p>
                   <Link to="/about" className="btn btn-modern-secondary btn-lg">

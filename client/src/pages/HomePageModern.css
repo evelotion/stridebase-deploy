@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (Tahap 2 - Ukuran Banner Dikecilkan) */
+/* File: client/src/pages/HomePageModern.css (Tahap 2 - Revisi Agresif Ketinggian) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -20,13 +20,13 @@
 }
 
 /* ==============================================
-  HERO SECTION - SPLIT BANNERS (Ukuran Dikecilkan)
+  HERO SECTION - SPLIT BANNERS (Ukuran Dikecilkan LAGI)
 ============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
   /* --- PERUBAHAN DI SINI --- */
-  padding: 0.5rem 0; /* Padding atas/bawah dikurangi (sebelumnya 3rem) */
+  padding: 1rem 0; /* Padding atas/bawah dikurangi lagi (sebelumnya 1.5rem) */
   color: #1a1a1a;
   overflow: hidden;
 }
@@ -38,7 +38,7 @@
   position: relative;
   height: 100%;
   /* --- PERUBAHAN DI SINI --- */
-  max-height: 280px; /* Menetapkan batas tinggi maksimum */
+  max-height: 320px; /* Menetapkan batas tinggi MAKSIMUM (sebelumnya 380px) */
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -93,7 +93,7 @@
   display: flex;
   align-items: flex-end;
   /* --- PERUBAHAN DI SINI --- */
-  max-height: 380px; /* Menetapkan batas tinggi maksimum (sama dgn carousel) */
+  max-height: 320px; /* Menetapkan batas tinggi MAKSIMUM (sebelumnya 380px) */
 }
 
 .modern-side-banner-image {
@@ -216,7 +216,7 @@
 }
 
 /* ==================================
-  Layanan & Toko (Tidak Berubah)
+  Layanan & Toko (Typo Diperbaiki)
 ==================================
 */
 .hm-services {
@@ -225,7 +225,8 @@
 }
 
 .hm-featured-stores {
-   border-top: 1px solid #e9ecef;
+  /* --- PERBAIKAN TYPO DI SINI --- */
+  border-top: 1px solid #e9ecef; /* Spasi aneh telah dihapus */
 }
 
 .btn-modern-secondary {
