@@ -34,7 +34,7 @@
   padding-top: 0rem; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
-  padding-bottom: 0.5rem !important;
+  padding-bottom: 2rem !important;
   
   /* Ini jarak carousel ke navbar, makin minus makin jauh dari navbar */
   margin-top: -1rem; 
