@@ -143,7 +143,7 @@
 */
 .brand-marquee-section {
   /* 1. Paksa padding-top jadi 0 untuk membunuh jarak 4rem global */
-  padding-top: 0 !important; 
+  padding-top: -8rem !important; 
   
   /* 2. Atur padding-bottom-nya secara normal */
   padding-bottom: 1.5rem; 
