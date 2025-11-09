@@ -140,8 +140,8 @@
 ==================================
 */
 .brand-marquee-section {
-  /* 5. Perkecil juga padding marquee agar lebih rapat */
-  padding: 10rem 0; 
+  /* padding sectionnya brand marquee */
+  padding: 1rem 0; 
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
