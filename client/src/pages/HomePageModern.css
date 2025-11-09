@@ -31,7 +31,7 @@
   /* --- INI ADALAH CARA BARU YANG KITA COBA --- */
   
   /* 1. Hapus padding atas internal section ini */
-  padding-top: -10; 
+  padding-top: 10rem; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
   padding-bottom: -10rem; 
