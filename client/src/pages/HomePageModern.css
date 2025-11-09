@@ -22,22 +22,24 @@
 /* ==============================================
   HERO SECTION - SOLUSI MARGIN NEGATIF
 ============================================== */
+/* ==============================================
+  HERO SECTION - SOLUSI MARGIN NEGATIF
+============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
   color: #1a1a1a;
   overflow: hidden;
-  
-  /* --- INI ADALAH CARA BARU YANG KITA COBA --- */
-  
-  /* 1. Hapus padding atas internal section ini */
-  padding-top: 0rem; 
-  
-  /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
-  padding-bottom: 2rem !important;
-  
-  /* Ini jarak carousel ke navbar, makin minus makin jauh dari navbar */
   margin-top: -1rem; 
+  
+  /* 1. Paksa padding-top jadi 0 */
+  padding-top: 0 !important;
+  
+  /* 2. JADIKAN INI SATU-SATUNYA PENGATUR JARAK.
+   * Atur jarak yang Anda inginkan di sini. Coba 1.5rem (24px).
+   * Jika kurang dekat, ganti jadi 1rem.
+   */
+  padding-bottom: 1.5rem !important; 
 }
 
 .modern-main-carousel-wrapper {
@@ -140,10 +142,13 @@
 ==================================
 */
 .brand-marquee-section {
-  /* padding sectionnya brand marquee */
-  padding-top: 0 !important;
-  padding-bottom: 1.5rem;
-  margin-top: 1.5rem;
+  /* 1. Paksa padding-top jadi 0 untuk membunuh jarak 4rem global */
+  padding-top: 0 !important; 
+  
+  /* 2. Atur padding-bottom-nya secara normal */
+  padding-bottom: 1.5rem; 
+  
+  /* Sisanya biarkan seperti biasa */
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
