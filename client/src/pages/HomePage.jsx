@@ -1,13 +1,14 @@
-// File: client/src/pages/HomePage.jsx
+// File: client/src/pages/HomePage.jsx (Tahap 1 - Revisi 2)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
 import API_BASE_URL from "../apiConfig";
-import GlobalAnnouncement from "../components/GlobalAnnouncement"; // Asumsi komponen ini ada
+import GlobalAnnouncement from "../components/GlobalAnnouncement";
 import { Fade } from "react-awesome-reveal";
 import "./HomePageModern.css";
-import HeroCarousel from "../components/HeroCarousel"; // Komponen BARU kita
+// HeroCarousel tidak lagi digunakan di tema modern, tapi kita biarkan impornya
+import HeroCarousel from "../components/HeroCarousel";
 
 const serviceCategories = [
   { name: "Cuci Cepat", icon: "fa-rocket", link: "/store?services=Fast+Clean" },
@@ -213,99 +214,69 @@ const HomePage = ({
     </>
   );
 
+  // --- PERUBAHAN UTAMA ADA DI FUNGSI INI ---
   const renderModernHomepage = () => (
     // Pembungkus utama untuk tema modern
     <div className="home-modern-wrapper">
       {/* ==============================================
-        HERO SECTION - REDESIGN (SPLIT LAYOUT)
+        HERO SECTION - REDESIGN (HANYA CAROUSEL)
         ============================================== */}
-      <section className="hero-section modern-hero">
+      <section className="hero-section modern-hero-carousel-only">
         <div className="container">
-          <div className="row align-items-center g-5">
-            {/* Kolom Kiri: Teks Informatif */}
-            <div className="col-lg-6">
-              <Fade direction="left" duration={800} triggerOnce>
-                <div className="modern-hero-content">
-                  <h1 className="modern-hero-title">
-                    Perawatan Sepatu Profesional,
-                    <br />
-                    <span style={{ color: "var(--primary-color)" }}>
-                      Langsung di Ujung Jari Anda.
-                    </span>
-                  </h1>
-                  <p className="modern-hero-subtitle">
-                    Temukan, pesan, dan lacak layanan cuci sepatu premium dari
-                    mitra terbaik di kota Anda. Cepat, mudah, dan terpercaya.
-                  </p>
-                  <div className="d-flex gap-2 flex-wrap">
-                    <Link to="/store" className="btn btn-modern-primary btn-lg">
-                      Temukan Layanan
-                    </Link>
-                    <Link
-                      to={user ? "/dashboard" : "/login"}
-                      className="btn btn-modern-secondary btn-lg"
-                    >
-                      Lacak Pesanan
-                    </Link>
-                  </div>
+          <Fade direction="down" duration={800} triggerOnce>
+            <div className="modern-hero-image-wrapper">
+              {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
+              <div
+                id="modernHeroCarousel"
+                className="carousel slide carousel-fade"
+                data-bs-ride="carousel"
+              >
+                <div className="carousel-indicators modern-hero-indicators">
+                  {banners.map((_, index) => (
+                    <button
+                      type="button"
+                      data-bs-target="#modernHeroCarousel"
+                      data-bs-slide-to={index}
+                      className={index === 0 ? "active" : ""}
+                      aria-current={index === 0 ? "true" : "false"}
+                      aria-label={`Slide ${index + 1}`}
+                      key={index}
+                    ></button>
+                  ))}
                 </div>
-              </Fade>
-            </div>
-            {/* Kolom Kanan: Carousel Gambar */}
-            <div className="col-lg-6">
-              <Fade direction="right" duration={800} triggerOnce>
-                <div className="modern-hero-image-wrapper">
-                  {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
-                  <div
-                    id="modernHeroCarousel"
-                    className="carousel slide carousel-fade"
-                    data-bs-ride="carousel"
-                  >
-                    <div className="carousel-indicators modern-hero-indicators">
-                      {banners.map((_, index) => (
-                        <button
-                          type="button"
-                          data-bs-target="#modernHeroCarousel"
-                          data-bs-slide-to={index}
-                          className={index === 0 ? "active" : ""}
-                          aria-current={index === 0 ? "true" : "false"}
-                          aria-label={`Slide ${index + 1}`}
-                          key={index}
-                        ></button>
-                      ))}
-                    </div>
-                    <div className="carousel-inner">
-                      {banners.length > 0 ? (
-                        banners.map((banner, index) => (
-                          <div
-                            className={`carousel-item ${
-                              index === 0 ? "active" : ""
-                            }`}
-                            key={banner.id}
-                          >
-                            <img
-                              src={banner.imageUrl}
-                              className="d-block w-100 modern-hero-image"
-                              alt={banner.title || "Hero Image"}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        // Fallback jika tidak ada banner
-                        <div className="carousel-item active">
+                <div className="carousel-inner">
+                  {banners.length > 0 ? (
+                    banners.map((banner, index) => (
+                      <div
+                        className={`carousel-item ${
+                          index === 0 ? "active" : ""
+                        }`}
+                        key={banner.id}
+                      >
+                        {/* Banner sekarang bisa diklik */}
+                        <Link to={banner.linkUrl || "#"}>
                           <img
-                            src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
+                            src={banner.imageUrl}
                             className="d-block w-100 modern-hero-image"
-                            alt="Sepatu"
+                            alt={banner.title || "Hero Image"}
                           />
-                        </div>
-                      )}
+                        </Link>
+                      </div>
+                    ))
+                  ) : (
+                    // Fallback jika tidak ada banner
+                    <div className="carousel-item active">
+                      <img
+                        src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
+                        className="d-block w-100 modern-hero-image"
+                        alt="Sepatu"
+                      />
                     </div>
-                  </div>
+                  )}
                 </div>
-              </Fade>
+              </div>
             </div>
-          </div>
+          </Fade>
         </div>
       </section>
 
@@ -405,6 +376,7 @@ const HomePage = ({
       </section>
     </div>
   );
+  // --- AKHIR DARI FUNGSI YANG BERUBAH ---
 
   return (
     <div className="homepage-mobile-container">
