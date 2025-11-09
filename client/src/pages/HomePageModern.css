@@ -37,7 +37,7 @@
   padding-bottom: 0.5rem; 
   
   /* Ini jarak carousel ke navbar, makin minus makin jauh dari navbar */
-  margin-top: 1rem; 
+  margin-top: -5rem; 
 }
 
 .modern-main-carousel-wrapper {
