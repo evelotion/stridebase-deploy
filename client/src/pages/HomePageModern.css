@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (Tahap 1 - Revisi 2) */
+/* File: client/src/pages/HomePageModern.css (Tahap 1 - Revisi 3: Split Banner Layout) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -20,57 +20,52 @@
 }
 
 /* ==============================================
-  REVISI: Hero Section Modern (Hanya Carousel)
+  BARU: Hero Section Modern (Split Banners)
 ============================================== */
-
-/* 1. Mengubah section utama */
-.hero-section.modern-hero-carousel-only {
+.hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
-  padding: 3rem 0; /* Padding atas dan bawah dikurangi */
+  padding: 3rem 0; /* Padding atas dan bawah */
   color: #1a1a1a;
   overflow: hidden; /* Mencegah horizontal scroll dari Fade */
 }
 
-/* 2. Styling untuk kolom gambar (kanan) */
-.modern-hero-image-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 3. REVISI: Hero Image Carousel (Fade) */
-.modern-hero-image-wrapper .carousel {
+.modern-main-carousel-wrapper {
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
-  width: 100%; /* Pastikan carousel mengambil lebar container */
+  height: 100%; /* Agar carousel mengisi tinggi kolom */
 }
 
-.modern-hero-image-wrapper .carousel-item img.modern-hero-image {
+.modern-main-carousel-wrapper .carousel,
+.modern-main-carousel-wrapper .carousel-inner,
+.modern-main-carousel-wrapper .carousel-item {
+  height: 100%;
+}
+
+.modern-main-carousel-wrapper .carousel-item img.modern-main-banner-image {
   width: 100%;
-  height: auto;
+  height: 100%; /* Memastikan gambar mengisi tinggi */
   display: block;
-  max-height: 450px; /* Ini kunci agar tidak terlalu besar */
-  object-fit: cover;
+  object-fit: cover; /* Penting untuk menjaga rasio aspek dan mengisi area */
 }
 
-/* 4. Styling untuk Indikator (bulat-bulat di bawah) */
-.modern-hero-indicators {
+/* Styling untuk Indikator Carousel Utama */
+.modern-carousel-indicators {
   position: absolute;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 30px; /* Geser ke kiri untuk membedakan */
+  transform: translateX(0); /* Jangan transform X */
   margin: 0;
   padding: 0;
   list-style: none;
   z-index: 2;
-  right: auto;
+  right: auto; /* Pastikan tidak ada konflik dengan right */
   top: auto;
 }
 
-.modern-hero-indicators button {
+.modern-carousel-indicators button {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -83,13 +78,53 @@
   text-indent: -999px;
 }
 
-.modern-hero-indicators button.active {
+.modern-carousel-indicators button.active {
   background-color: #ffffff;
+}
+
+/* Styling untuk Banner Samping (Kanan) */
+.modern-side-banner-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+  height: 100%; /* Penting agar mengisi tinggi yang sama dengan carousel */
+  display: flex; /* Untuk memposisikan overlay dengan flexbox */
+  align-items: flex-end; /* Pindahkan konten overlay ke bawah */
+}
+
+.modern-side-banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.modern-side-banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 50%); /* Gradient gelap di bawah */
+  color: #ffffff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Konten di bawah */
+  align-items: flex-start;
+  text-align: left;
+  opacity: 0; /* Awalnya tersembunyi */
+  transition: opacity 0.3s ease;
+}
+
+.modern-side-banner-wrapper:hover .modern-side-banner-overlay {
+  opacity: 1; /* Muncul saat hover */
 }
 
 /*
 ==================================
-  BARU: Brand Marquee Section Styles
+  BRAND MARQUEE Section Styles (Tidak berubah)
 ==================================
 */
 .brand-marquee-section {
@@ -108,14 +143,13 @@
 .marquee-content {
   display: inline-block;
   white-space: nowrap;
-  animation: scroll 30s linear infinite; /* Sedikit lebih lambat */
+  animation: scroll 30s linear infinite;
 }
 
-/* Mengganti logo gambar dengan teks agar tidak error */
 .brand-logo-text {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #adb5bd; /* Warna abu-abu */
+  color: #adb5bd;
   margin: 0 2.5rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -124,7 +158,7 @@
 }
 
 .brand-logo-text:hover {
-  color: var(--primary-color); /* Warna primer saat di-hover */
+  color: var(--primary-color);
 }
 
 @keyframes scroll {
@@ -132,22 +166,22 @@
     transform: translateX(0%);
   }
   100% {
-    transform: translateX(-50%); /* Bergerak sejauh 50% */
+    transform: translateX(-50%);
   }
 }
 
 /* ==================================
-  REVISI: Bagian Layanan & Toko
+  REVISI: Bagian Layanan & Toko (Tidak banyak berubah, hanya penyesuaian margin/padding jika perlu)
 ==================================
 */
 .hm-services {
-  background-color: #f8f9fa; /* Latar belakang abu-abu muda */
+  background-color: #f8f9fa;
   border-top: 1px solid #e9ecef;
   border-bottom: 1px solid #e9ecef;
 }
 
 .hm-featured-stores {
-   background-color: #ffffff; /* Latar belakang putih */
+   background-color: #ffffff;
 }
 
 /* Catatan: 

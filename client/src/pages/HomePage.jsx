@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (Tahap 1 - Revisi 2)
+// File: client/src/pages/HomePage.jsx (Tahap 1 - Revisi 3: Split Banner Layout)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,8 +7,7 @@ import API_BASE_URL from "../apiConfig";
 import GlobalAnnouncement from "../components/GlobalAnnouncement";
 import { Fade } from "react-awesome-reveal";
 import "./HomePageModern.css";
-// HeroCarousel tidak lagi digunakan di tema modern, tapi kita biarkan impornya
-import HeroCarousel from "../components/HeroCarousel";
+import HeroCarousel from "../components/HeroCarousel"; // Tidak digunakan di modern, tapi biarkan impornya
 
 const serviceCategories = [
   { name: "Cuci Cepat", icon: "fa-rocket", link: "/store?services=Fast+Clean" },
@@ -219,64 +218,105 @@ const HomePage = ({
     // Pembungkus utama untuk tema modern
     <div className="home-modern-wrapper">
       {/* ==============================================
-        HERO SECTION - REDESIGN (HANYA CAROUSEL)
+        HERO SECTION - SPLIT BANNERS
         ============================================== */}
-      <section className="hero-section modern-hero-carousel-only">
+      <section className="hero-section modern-split-banners">
         <div className="container">
-          <Fade direction="down" duration={800} triggerOnce>
-            <div className="modern-hero-image-wrapper">
-              {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
-              <div
-                id="modernHeroCarousel"
-                className="carousel slide carousel-fade"
-                data-bs-ride="carousel"
-              >
-                <div className="carousel-indicators modern-hero-indicators">
-                  {banners.map((_, index) => (
-                    <button
-                      type="button"
-                      data-bs-target="#modernHeroCarousel"
-                      data-bs-slide-to={index}
-                      className={index === 0 ? "active" : ""}
-                      aria-current={index === 0 ? "true" : "false"}
-                      aria-label={`Slide ${index + 1}`}
-                      key={index}
-                    ></button>
-                  ))}
-                </div>
-                <div className="carousel-inner">
-                  {banners.length > 0 ? (
-                    banners.map((banner, index) => (
-                      <div
-                        className={`carousel-item ${
-                          index === 0 ? "active" : ""
-                        }`}
-                        key={banner.id}
-                      >
-                        {/* Banner sekarang bisa diklik */}
-                        <Link to={banner.linkUrl || "#"}>
-                          <img
-                            src={banner.imageUrl}
-                            className="d-block w-100 modern-hero-image"
-                            alt={banner.title || "Hero Image"}
-                          />
-                        </Link>
-                      </div>
-                    ))
-                  ) : (
-                    // Fallback jika tidak ada banner
-                    <div className="carousel-item active">
-                      <img
-                        src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
-                        className="d-block w-100 modern-hero-image"
-                        alt="Sepatu"
-                      />
+          <div className="row g-4">
+            {" "}
+            {/* Menggunakan g-4 untuk gap antar kolom */}
+            {/* Kolom Kiri: Banner Carousel Utama */}
+            <div className="col-lg-8">
+              {" "}
+              {/* Mengambil 8 dari 12 kolom */}
+              <Fade direction="left" duration={800} triggerOnce>
+                <div className="modern-main-carousel-wrapper">
+                  {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
+                  <div
+                    id="modernMainBannerCarousel"
+                    className="carousel slide carousel-fade"
+                    data-bs-ride="carousel"
+                  >
+                    <div className="carousel-indicators modern-carousel-indicators">
+                      {banners.map((_, index) => (
+                        <button
+                          type="button"
+                          data-bs-target="#modernMainBannerCarousel"
+                          data-bs-slide-to={index}
+                          className={index === 0 ? "active" : ""}
+                          aria-current={index === 0 ? "true" : "false"}
+                          aria-label={`Slide ${index + 1}`}
+                          key={index}
+                        ></button>
+                      ))}
                     </div>
-                  )}
+                    <div className="carousel-inner">
+                      {banners.length > 0 ? (
+                        banners.map((banner, index) => (
+                          <div
+                            className={`carousel-item ${
+                              index === 0 ? "active" : ""
+                            }`}
+                            key={banner.id}
+                          >
+                            <Link to={banner.linkUrl || "#"}>
+                              <img
+                                src={banner.imageUrl}
+                                className="d-block w-100 modern-main-banner-image"
+                                alt={banner.title || "Main Banner"}
+                              />
+                              {/* Anda bisa menambahkan teks overlay di sini jika diperlukan */}
+                              {/* <div className="carousel-caption d-none d-md-block">
+                                <h5>{banner.title}</h5>
+                                <p>{banner.description}</p>
+                              </div> */}
+                            </Link>
+                          </div>
+                        ))
+                      ) : (
+                        // Fallback jika tidak ada banner
+                        <div className="carousel-item active">
+                          <img
+                            src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
+                            className="d-block w-100 modern-main-banner-image"
+                            alt="Sepatu Bersih"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </Fade>
             </div>
-          </Fade>
+            {/* Kolom Kanan: Banner Statis Kecil */}
+            <div className="col-lg-4">
+              {" "}
+              {/* Mengambil 4 dari 12 kolom */}
+              <Fade direction="right" duration={800} triggerOnce>
+                <div className="modern-side-banner-wrapper">
+                  <Link to="/promo/skincare-deals">
+                    {" "}
+                    {/* Ganti link sesuai kebutuhan */}
+                    <img
+                      src="https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop" // Gambar placeholder
+                      alt="Promo Skincare"
+                      className="img-fluid modern-side-banner-image"
+                    />
+                    {/* Anda bisa menambahkan teks overlay jika diperlukan */}
+                    <div className="modern-side-banner-overlay">
+                      <h4 className="text-white">Promo Spesial!</h4>
+                      <p className="text-white-50">
+                        Diskon hingga 30% untuk produk terpilih.
+                      </p>
+                      <button className="btn btn-sm btn-light mt-2">
+                        Lihat Sekarang
+                      </button>
+                    </div>
+                  </Link>
+                </div>
+              </Fade>
+            </div>
+          </div>
         </div>
       </section>
 
