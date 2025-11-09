@@ -39,7 +39,7 @@
    * Atur jarak yang Anda inginkan di sini. Coba 1.5rem (24px).
    * Jika kurang dekat, ganti jadi 1rem.
    */
-  padding-bottom: 0rem !important; 
+  padding-bottom: -5rem !important; 
 }
 
 .modern-main-carousel-wrapper {
