@@ -34,7 +34,7 @@
   padding-top: 0rem; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
-  padding-bottom: 0.5rem; 
+  padding-bottom: 0.5rem !important;
   
   /* Ini jarak carousel ke navbar, makin minus makin jauh dari navbar */
   margin-top: -1rem; 
@@ -141,7 +141,9 @@
 */
 .brand-marquee-section {
   /* padding sectionnya brand marquee */
-  padding: 1.5rem 0; 
+  padding-top: 0 !important;
+  padding-bottom: 1.5rem;
+  margin-top: 1.5rem;
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
