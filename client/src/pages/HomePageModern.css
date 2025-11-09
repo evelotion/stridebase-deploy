@@ -47,7 +47,7 @@
   position: relative;
   height: 100%;
   /* ini tinggi gambar banner bukan padding */
-  max-height: 410px; 
+  max-height: 400px; 
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -102,7 +102,7 @@
   display: flex;
   align-items: flex-end;
   /* 4. Samakan ketinggiannya */
-  max-height: 220px;
+  max-height: 400px;
 }
 
 .modern-side-banner-image {
@@ -141,7 +141,7 @@
 */
 .brand-marquee-section {
   /* 5. Perkecil juga padding marquee agar lebih rapat */
-  padding: -1rem 0; 
+  padding: -10rem 0; 
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
