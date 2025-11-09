@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (Tahap 2: Menambahkan Info Section) */
+/* File: client/src/pages/HomePageModern.css (Tahap 2 - Ukuran Banner Dikecilkan) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -20,12 +20,13 @@
 }
 
 /* ==============================================
-  HERO SECTION - SPLIT BANNERS (Tidak Berubah)
+  HERO SECTION - SPLIT BANNERS (Ukuran Dikecilkan)
 ============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
-  padding: 3rem 0;
+  /* --- PERUBAHAN DI SINI --- */
+  padding: 1.5rem 0; /* Padding atas/bawah dikurangi (sebelumnya 3rem) */
   color: #1a1a1a;
   overflow: hidden;
 }
@@ -36,6 +37,8 @@
   overflow: hidden;
   position: relative;
   height: 100%;
+  /* --- PERUBAHAN DI SINI --- */
+  max-height: 380px; /* Menetapkan batas tinggi maksimum */
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -89,6 +92,8 @@
   height: 100%;
   display: flex;
   align-items: flex-end;
+  /* --- PERUBAHAN DI SINI --- */
+  max-height: 380px; /* Menetapkan batas tinggi maksimum (sama dgn carousel) */
 }
 
 .modern-side-banner-image {
@@ -170,21 +175,19 @@
 
 /*
 ==================================
-  BARU: Info Section (Sesuai Gambar)
+  Info Section (Tidak Berubah)
 ==================================
 */
 .hm-info-section {
   padding: 6rem 0;
   background-color: #f8f9fa; /* Warna dasar abu-abu muda */
-  
-  /* Ini adalah "background menarik" yang Anda minta (dotted pattern) */
   background-image: radial-gradient(
     rgba(0, 0, 0, 0.07) 1px, /* Warna titik */
     transparent 1px
   );
   background-size: 20px 20px; /* Jarak antar titik */
   position: relative;
-  overflow: hidden; /* Mencegah scroll horizontal dari animasi Fade */
+  overflow: hidden;
 }
 
 .hm-info-image {
@@ -192,12 +195,12 @@
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
   width: 100%;
   object-fit: cover;
-  aspect-ratio: 4 / 3; /* Menjaga rasio gambar */
+  aspect-ratio: 4 / 3;
 }
 
 .hm-info-title {
   font-family: var(--font-family, "Inter", sans-serif);
-  font-size: var(--font-size-h1, 2.8rem); /* Sedikit lebih kecil dari hero */
+  font-size: var(--font-size-h1, 2.8rem);
   color: #1a1a1a;
   font-weight: 700;
   line-height: 1.3;
@@ -213,26 +216,22 @@
 }
 
 /* ==================================
-  REVISI: Bagian Layanan & Toko
+  Layanan & Toko (Tidak Berubah)
 ==================================
 */
 .hm-services {
-  /* background-color dihapus, diatur di JSX */
   border-top: 1px solid #e9ecef;
   border-bottom: 1px solid #e9ecef;
 }
 
 .hm-featured-stores {
-   /* background-color dihapus, diatur di JSX */
    border-top: 1px solid #e9ecef;
 }
 
-/* Tombol dari Tahap 1, digunakan di Info Section */
 .btn-modern-secondary {
   background-color: #f8f9fa;
   color: #343a40;
   border-color: #e9ecef;
-  
   padding: 0.75rem 1.5rem;
   font-family: var(--font-family, "Inter", sans-serif);
   font-size: var(--font-size-button-lg, 1rem);
