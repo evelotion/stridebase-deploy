@@ -30,9 +30,9 @@
   
   /* HANYA INI YANG MENGATUR JARAKNYA.
      Ganti 1.5rem (24px) ke 1rem (16px) atau 0.5rem (8px) jika ingin lebih dekat. */
-  padding-bottom: 0.5rem; 
+  padding-bottom: 0rem; 
   
-  margin-top: -1rem; 
+  margin-top: 0rem; 
 }
 
 .modern-main-carousel-wrapper {
