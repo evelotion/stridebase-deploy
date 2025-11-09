@@ -25,8 +25,8 @@
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
-  /* --- PERUBAHAN DI SINI (1) --- */
-  padding: 0.5rem 0; /* Padding atas/bawah SANGAT tipis (sebelumnya 1rem) */
+  /* --- PERUBAHAN SUPER AGRESIF (1) --- */
+  padding: 0.25rem 0 0.5rem 0; /* Padding atas sangat tipis, bawah tipis */
   color: #1a1a1a;
   overflow: hidden;
 }
@@ -37,8 +37,8 @@
   overflow: hidden;
   position: relative;
   height: 100%;
-  /* --- PERUBAHAN DI SINI (2) --- */
-  max-height: 290px; /* Batas tinggi MAKSIMUM (sebelumnya 320px) */
+  /* --- PERUBAHAN SUPER AGRESIF (2) --- */
+  max-height: 250px; /* Batas tinggi MAKSIMUM (sebelumnya 290px) */
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -92,8 +92,8 @@
   height: 100%;
   display: flex;
   align-items: flex-end;
-  /* --- PERUBAHAN DI SINI (2) --- */
-  max-height: 290px; /* Batas tinggi MAKSIMUM (sebelumnya 320px) */
+  /* --- PERUBAHAN SUPER AGRESIF (2) --- */
+  max-height: 250px; /* Batas tinggi MAKSIMUM (sebelumnya 290px) */
 }
 
 .modern-side-banner-image {
@@ -131,8 +131,8 @@
 ==================================
 */
 .brand-marquee-section {
-  /* --- PERUBAHAN DI SINI (3) --- */
-  padding: 1.5rem 0; /* Padding atas/bawah dikurangi (sebelumnya 2.5rem) */
+  /* --- PERUBAHAN SUPER AGRESIF (3) --- */
+  padding: 1rem 0; /* Padding atas/bawah dikurangi (sebelumnya 1.5rem) */
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
@@ -226,8 +226,7 @@
 }
 
 .hm-featured-stores {
-  /* --- PERBAIKAN TYPO DI SINI --- */
-  border-top: 1px solid #e9ecef; /* Spasi aneh telah dihapus */
+  border-top: 1px solid #e9ecef; /* Typo sudah diperbaiki */
 }
 
 .btn-modern-secondary {
