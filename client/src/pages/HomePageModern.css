@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (Revisi Paling Agresif) */
+/* File: client/src/pages/HomePageModern.css (Revisi Final Sesuai Gambar) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -20,13 +20,13 @@
 }
 
 /* ==============================================
-  HERO SECTION - SPLIT BANNERS (Dikecilkan Habis)
+  HERO SECTION - SPLIT BANNERS (Sesuai Gambar)
 ============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
-  /* --- PERUBAHAN SUPER AGRESIF (1) --- */
-  padding: 0.25rem 0 0.5rem 0; /* Padding atas sangat tipis, bawah tipis */
+  /* --- PERUBAHAN DI SINI (1) --- */
+  padding: 0.25rem 0; /* Padding atas/bawah dibuat HAMPIR NOL */
   color: #1a1a1a;
   overflow: hidden;
 }
@@ -37,8 +37,8 @@
   overflow: hidden;
   position: relative;
   height: 100%;
-  /* --- PERUBAHAN SUPER AGRESIF (2) --- */
-  max-height: 250px; /* Batas tinggi MAKSIMUM (sebelumnya 290px) */
+  /* --- PERUBAHAN DI SINI (2) --- */
+  max-height: 220px; /* Batas tinggi MAKSIMUM (sesuai gambar Anda) */
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -92,8 +92,8 @@
   height: 100%;
   display: flex;
   align-items: flex-end;
-  /* --- PERUBAHAN SUPER AGRESIF (2) --- */
-  max-height: 250px; /* Batas tinggi MAKSIMUM (sebelumnya 290px) */
+  /* --- PERUBAHAN DI SINI (2) --- */
+  max-height: 220px; /* Batas tinggi MAKSIMUM (sesuai gambar Anda) */
 }
 
 .modern-side-banner-image {
@@ -131,7 +131,7 @@
 ==================================
 */
 .brand-marquee-section {
-  /* --- PERUBAHAN SUPER AGRESIF (3) --- */
+  /* --- PERUBAHAN DI SINI (3) --- */
   padding: 1rem 0; /* Padding atas/bawah dikurangi (sebelumnya 1.5rem) */
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
