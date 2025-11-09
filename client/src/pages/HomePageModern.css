@@ -37,7 +37,7 @@
   padding-bottom: -1rem; 
   
   /* 3. Paksa tarik section ini ke atas (sesuaikan -3rem jika kurang) */
-  margin-top: -3rem; 
+  margin-top: -6rem; 
 }
 
 .modern-main-carousel-wrapper {
@@ -141,7 +141,7 @@
 */
 .brand-marquee-section {
   /* 5. Perkecil juga padding marquee agar lebih rapat */
-  padding: 1rem 0; 
+  padding: -1rem 0; 
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
