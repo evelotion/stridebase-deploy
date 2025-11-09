@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (Tahap 2 - Revisi Agresif Ketinggian) */
+/* File: client/src/pages/HomePageModern.css (Revisi Paling Agresif) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -20,14 +20,13 @@
 }
 
 /* ==============================================
-  HERO SECTION - SPLIT BANNERS (Ukuran Dikecilkan LAGI)
+  HERO SECTION - SPLIT BANNERS (Dikecilkan Habis)
 ============================================== */
 .hero-section.modern-split-banners {
   background-color: #ffffff !important;
   background-image: none !important;
-  /* --- PERUBAHAN DI SINI --- */
-  padding-top: 20px; /* Padding atas/bawah dikurangi lagi (sebelumnya 1.5rem) */
-  padding-bottom: 10px;
+  /* --- PERUBAHAN DI SINI (1) --- */
+  padding: 0.5rem 0; /* Padding atas/bawah SANGAT tipis (sebelumnya 1rem) */
   color: #1a1a1a;
   overflow: hidden;
 }
@@ -38,8 +37,8 @@
   overflow: hidden;
   position: relative;
   height: 100%;
-  /* --- PERUBAHAN DI SINI --- */
-  max-height: 320px; /* Menetapkan batas tinggi MAKSIMUM (sebelumnya 380px) */
+  /* --- PERUBAHAN DI SINI (2) --- */
+  max-height: 290px; /* Batas tinggi MAKSIMUM (sebelumnya 320px) */
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -93,8 +92,8 @@
   height: 100%;
   display: flex;
   align-items: flex-end;
-  /* --- PERUBAHAN DI SINI --- */
-  max-height: 320px; /* Menetapkan batas tinggi MAKSIMUM (sebelumnya 380px) */
+  /* --- PERUBAHAN DI SINI (2) --- */
+  max-height: 290px; /* Batas tinggi MAKSIMUM (sebelumnya 320px) */
 }
 
 .modern-side-banner-image {
@@ -128,11 +127,12 @@
 
 /*
 ==================================
-  BRAND MARQUEE (Tidak Berubah)
+  BRAND MARQUEE (Jarak Dipersempit)
 ==================================
 */
 .brand-marquee-section {
-  padding: 2.5rem 0;
+  /* --- PERUBAHAN DI SINI (3) --- */
+  padding: 1.5rem 0; /* Padding atas/bawah dikurangi (sebelumnya 2.5rem) */
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
