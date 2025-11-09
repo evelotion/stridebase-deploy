@@ -34,10 +34,10 @@
   padding-top: 0; 
   
   /* 2. Beri sedikit padding bawah agar tidak terlalu mepet ke marquee */
-  padding-bottom: -1rem; 
+  padding-bottom: -10rem; 
   
-  /* 3. Paksa tarik section ini ke atas (sesuaikan -3rem jika kurang) */
-  margin-top: -10rem; 
+  /* Ini jarak carousel ke navbar, makin minus makin jauh dari navbar */
+  margin-top: -8rem; 
 }
 
 .modern-main-carousel-wrapper {
@@ -47,7 +47,7 @@
   position: relative;
   height: 100%;
   /* ini tinggi gambar banner bukan padding */
-  max-height: 120px; 
+  max-height: 380px; 
 }
 
 .modern-main-carousel-wrapper .carousel,
