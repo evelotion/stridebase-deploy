@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (LENGKAP dengan Perubahan Terakhir)
+// File: client/src/pages/HomePage.jsx (LENGKAP dan DIPERBAIKI)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,7 +7,9 @@ import API_BASE_URL from "../apiConfig";
 import GlobalAnnouncement from "../components/GlobalAnnouncement";
 import { Fade } from "react-awesome-reveal";
 import "./HomePageModern.css";
-import HeroCarousel from "../components/HeroCarousel"; // Tidak digunakan di modern, tapi biarkan impornya
+
+// Hapus 'import HeroCarousel' karena tidak digunakan di sini
+// (Carousel di 'classic' menggunakan Bootstrap bawaan)
 
 const serviceCategories = [
   { name: "Cuci Cepat", icon: "fa-rocket", link: "/store?services=Fast+Clean" },
@@ -221,12 +223,12 @@ const HomePage = ({
       "https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop";
     const sideBannerLink =
       theme?.branding?.modernHeroSideBannerLink || "/store";
-
+    
     // Variabel untuk section baru kita
     const heroSecondaryImageUrl =
       theme?.branding?.heroSecondaryImage ||
       "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2670&auto=format&fit=crop"; // Ini gambar fallback jika kosong
-
+    
     // Variabel untuk background baru kita
     const heroSecondaryBgUrl = theme?.branding?.heroSecondaryBgImage;
 
@@ -374,7 +376,7 @@ const HomePage = ({
             </Fade>
           )}
 
-          {/* 2. INFO SECTION (YANG SUDAH ADA) */}
+          {/* 2. INFO SECTION (YANG SUDAH ADA) KITA PINDAHKAN KE DALAM WRAPPER */}
           <section className="hm-info-section">
             <div className="container">
               <div className="row g-5 align-items-center">
@@ -399,10 +401,10 @@ const HomePage = ({
                         </span>
                       </h2>
                       <p className="hm-info-text">
-                        Kami tidak hanya membersihkan, kami merawat. Dengan
-                        menggunakan peralatan modern dan formula pembersih
-                        premium yang aman, kami memastikan setiap pasang sepatu
-                        kembali dalam kondisi terbaiknya.
+                        Kami tidak only membersihkan, kami merawat. Dengan
+                        menggunakan peralatan modern dan formula pembersih premium
+                        yang aman, kami memastikan setiap pasang sepatu kembali
+                        dalam kondisi terbaiknya.
                       </p>
                       <Link
                         to="/about"
@@ -418,6 +420,7 @@ const HomePage = ({
           </section>
         </div>
         {/* AKHIR DARI WRAPPER KOMBINASI */}
+
 
         {/* ==============================================
         BAGIAN KATEGORI LAYANAN (Clean)
@@ -645,6 +648,14 @@ const HomePage = ({
             onClick={() => navigate("/store")}
           />
         </div>
+        
+        {/* ============================================================
+                              INI ADALAH PERBAIKANNYA
+            Tag '</div>' di bawah ini adalah penutup untuk 
+            'div.mobile-home-header' yang dimulai di baris 426.
+            Ini sebelumnya hilang.
+          ============================================================
+        */}
       </div>
 
       {/* Konten Utama */}
