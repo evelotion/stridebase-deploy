@@ -261,17 +261,17 @@
 ==================================
 */
 .hm-new-image-section {
-  padding: 2.5rem 0; /* Memberi jarak atas dan bawah */
-  background-color: #ffffff;
-  border-bottom: 1px solid #f0f0f0; /* Pemisah seperti marquee */
-  overflow: hidden; /* Mencegah bayangan terpotong */
+  /* Hapus padding, background, dan border agar gambar 'bleed' */
+  overflow: hidden;
+  /* Beri sedikit jarak dari section di atas, jika perlu */
+  /* margin-top: 2rem; */ 
 }
 
 .hm-new-image {
   width: 100%;
-  max-height: 250px; /* Atur ketinggian banner sesuai selera */
-  object-fit: cover; /* Pastikan gambar mengisi area */
-  border-radius: 12px; /* Cocokkan dengan tema modern */
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08); /* Cocokkan dengan banner */
-  display: block; /* Memastikan tidak ada spasi ekstra di bawah gambar */
+  max-height: 350px; /* Kita naikkan sedikit max-height agar lebih proporsional */
+  object-fit: cover; 
+  display: block; 
+  vertical-align: middle; /* Menghilangkan spasi ekstra di bawah gambar */
+  /* Radius dan Shadow dihapus untuk style full-width */
 }
