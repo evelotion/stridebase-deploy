@@ -225,7 +225,7 @@ const HomePage = ({
     const heroSecondaryImageUrl =
       theme?.branding?.heroSecondaryImage ||
       "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2670&auto=format&fit=crop"; // Ini gambar fallback jika kosong
-
+    const heroSecondaryBgUrl = theme?.branding?.heroSecondaryBgImage;
     return (
       // Pembungkus utama untuk tema modern
       <div className="home-modern-wrapper">
@@ -356,12 +356,25 @@ const HomePage = ({
               <div className="col-lg-6">
                 {heroSecondaryImageUrl && (
                   <Fade direction="up" triggerOnce>
-                    <section className="hm-new-image-section">
-                      <img
-                        src={heroSecondaryImageUrl}
-                        alt="Promo Sekunder"
-                        className="hm-new-image"
-                      />
+                    {/* Kita terapkan background ke <section>
+      Jika 'heroSecondaryBgUrl' ada, gunakan itu. Jika tidak, jangan tampilkan background.
+    */}
+                    <section
+                      className="hm-new-image-section"
+                      style={{
+                        backgroundImage: heroSecondaryBgUrl
+                          ? `url(${heroSecondaryBgUrl})`
+                          : "none",
+                      }}
+                    >
+                      {/* Kita kembalikan .container agar gambar utama berada di tengah */}
+                      <div className="container">
+                        <img
+                          src={heroSecondaryImageUrl}
+                          alt="Promo Sekunder"
+                          className="hm-new-image"
+                        />
+                      </div>
                     </section>
                   </Fade>
                 )}

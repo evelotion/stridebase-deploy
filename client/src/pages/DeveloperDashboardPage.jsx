@@ -397,7 +397,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
     try {
       const result = await uploadDeveloperAsset(formData); // Panggil apiService baru
-      
+
       // Buat config baru dengan URL gambar yang diperbarui
       const updatedConfig = JSON.parse(JSON.stringify(config));
       const keys = path.split(".");
@@ -416,10 +416,12 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
       if (showMessage)
         // Ubah pesannya untuk mengonfirmasi penyimpanan
-        showMessage("Gambar berhasil diunggah dan disimpan!", "Success"); 
-    } catch (err) { // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG BUKA)
+        showMessage("Gambar berhasil diunggah dan disimpan!", "Success");
+    } catch (err) {
+      // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG BUKA)
       if (showMessage) showMessage(err.message, "Error");
-    } finally { // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG TUTUP)
+    } finally {
+      // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG TUTUP)
       setUploadingStatus((prev) => ({ ...prev, [path]: false }));
     }
   };
@@ -636,7 +638,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         className="form-control"
                         id="modernHeroSideBannerUrl"
                         onChange={(e) =>
-                          handleDeveloperUpload(e, "branding.modernHeroSideBannerUrl")
+                          handleDeveloperUpload(
+                            e,
+                            "branding.modernHeroSideBannerUrl"
+                          )
                         }
                         accept="image/*"
                       />
@@ -669,12 +674,15 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       id="modernHeroSideBannerLink"
                       value={config.branding.modernHeroSideBannerLink || ""}
                       onChange={(e) =>
-                        handleConfigChange(e, "branding.modernHeroSideBannerLink")
+                        handleConfigChange(
+                          e,
+                          "branding.modernHeroSideBannerLink"
+                        )
                       }
                       placeholder="/store"
                     />
                   </div>
-                  
+
                   {/*
                   
                   ============================================================
@@ -684,10 +692,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   */}
                   <hr />
                   <div className="mb-3">
-                    <label
-                      htmlFor="heroSecondaryImage"
-                      className="form-label"
-                    >
+                    <label htmlFor="heroSecondaryImage" className="form-label">
                       Gambar Hero Sekunder (BARU)
                     </label>
                     <div className="input-group">
@@ -697,7 +702,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         id="heroSecondaryImage"
                         onChange={(e) =>
                           // Kita gunakan handler yang sama, tapi simpan di path/key yang baru
-                          handleDeveloperUpload(e, "branding.heroSecondaryImage")
+                          handleDeveloperUpload(
+                            e,
+                            "branding.heroSecondaryImage"
+                          )
                         }
                         accept="image/*"
                       />
@@ -708,7 +716,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       )}
                     </div>
                     <div className="form-text">
-                      Gambar ini untuk section baru di tema Modern (sesuai Langkah 1).
+                      Gambar ini untuk section baru di tema Modern (sesuai
+                      Langkah 1).
                     </div>
                     {/* Pastikan kita mengecek config.branding.heroSecondaryImage */}
                     {config.branding.heroSecondaryImage && (
@@ -726,7 +735,45 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   ============================================================
                   
                   */}
-
+                  <div className="mb-3">
+                    <label
+                      htmlFor="heroSecondaryBgImage"
+                      className="form-label"
+                    >
+                      Background Hero Sekunder (BARU)
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="file"
+                        className="form-control"
+                        id="heroSecondaryBgImage"
+                        onChange={(e) =>
+                          // Kita simpan di key yang baru: heroSecondaryBgImage
+                          handleDeveloperUpload(
+                            e,
+                            "branding.heroSecondaryBgImage"
+                          )
+                        }
+                        accept="image/*"
+                      />
+                      {uploadingStatus["branding.heroSecondaryBgImage"] && (
+                        <span className="input-group-text">
+                          <div className="spinner-border spinner-border-sm"></div>
+                        </span>
+                      )}
+                    </div>
+                    <div className="form-text">
+                      Background untuk section gambar hero sekunder.
+                    </div>
+                    {config.branding.heroSecondaryBgImage && (
+                      <img
+                        src={config.branding.heroSecondaryBgImage}
+                        alt="Hero Background Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxHeight: "50px" }}
+                      />
+                    )}
+                  </div>
                 </div>
                 <div className="col-md-6">
                   <h5 className="mb-4 fw-bold">Warna & Font</h5>
@@ -1190,7 +1237,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           <div className="alert alert-danger">
             <strong>Peringatan:</strong> Aksi ini akan menghapus semua data
             transaksi dan mengembalikannya ke kondisi awal. Lanjutkan dengan
-
             hati-hati.
           </div>
           <button

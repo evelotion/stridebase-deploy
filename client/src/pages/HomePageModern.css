@@ -261,17 +261,27 @@
 ==================================
 */
 .hm-new-image-section {
-  /* Hapus padding, background, dan border agar gambar 'bleed' */
+  padding: 4rem 0; /* Beri jarak atas-bawah agar background terlihat */
   overflow: hidden;
-  /* Beri sedikit jarak dari section di atas, jika perlu */
-  /* margin-top: 2rem; */ 
+  
+  /* Styling untuk background yang di-upload */
+  background-size: cover; /* 'cover' atau 'repeat' jika Anda pakai pola */
+  background-position: center;
+  background-repeat: no-repeat; /* 'repeat' jika Anda upload pola titik-titik */
+  
+  /* Beri batas pemisah tipis */
+  border-bottom: 1px solid #f0f0f0; 
 }
 
 .hm-new-image {
-  width: 100%;
-  max-height: 350px; /* Kita naikkan sedikit max-height agar lebih proporsional */
+  /* Gambar utama ini sekarang di dalam .container */
+  width: 100%; /* 100% dari .container */
+  max-height: 350px; /* Atur ketinggian sesuai selera */
   object-fit: cover; 
   display: block; 
-  vertical-align: middle; /* Menghilangkan spasi ekstra di bawah gambar */
-  /* Radius dan Shadow dihapus untuk style full-width */
+  vertical-align: middle;
+  
+  /* Kita kembalikan style agar konsisten dengan banner */
+  border-radius: 12px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
 }
