@@ -346,7 +346,16 @@ const HomePage = ({
           </div>
         </section>
 
-          {heroSecondaryImageUrl && (
+
+        {/* ==============================================
+        BARU: INFO SECTION (Sesuai Gambar)
+        ============================================== */}
+        <section className="hm-info-section">
+          <div className="container">
+            <div className="row g-5 align-items-center">
+              {/* Kolom Kiri: Gambar */}
+              <div className="col-lg-6">
+                {heroSecondaryImageUrl && (
       <Fade direction="up" triggerOnce>
         <section className="hm-new-image-section">
           <div className="container">
@@ -359,22 +368,6 @@ const HomePage = ({
         </section>
       </Fade>
     )}
-
-        {/* ==============================================
-        BARU: INFO SECTION (Sesuai Gambar)
-        ============================================== */}
-        <section className="hm-info-section">
-          <div className="container">
-            <div className="row g-5 align-items-center">
-              {/* Kolom Kiri: Gambar */}
-              <div className="col-lg-6">
-                <Fade direction="left" triggerOnce>
-                  <img
-                    src="https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop" // Gambar placeholder
-                    alt="Perawatan Sepatu Profesional"
-                    className="img-fluid hm-info-image"
-                  />
-                </Fade>
               </div>
               {/* Kolom Kanan: Teks */}
               <div className="col-lg-6">
