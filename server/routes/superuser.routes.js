@@ -12,10 +12,15 @@ import {
   getApprovalRequests,
   resolveApprovalRequest,
   getSecurityLogs,
-  updateHomePageTheme, // <-- Impor fungsi baru
+  updateHomePageTheme,
+  uploadDeveloperAsset,
 } from "../controllers/superuser.controller.js";
+import multer from "multer"; // <-- IMPOR MULTER
+
 
 const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // Middleware ini akan berlaku untuk semua rute di bawah
 router.use(authenticateToken, checkRole(["developer"]));
@@ -37,5 +42,7 @@ router.post("/maintenance/reseed-database", reseedDatabase);
 // <-- TAMBAHKAN ROUTE BARU DI SINI -->
 // Theme Management
 router.put("/settings/homepage-theme", updateHomePageTheme);
+
+router.post("/upload-asset", upload.single("asset"), uploadDeveloperAsset);
 
 export default router;

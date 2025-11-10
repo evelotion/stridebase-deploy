@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (Tahap 2 - Ukuran Banner Dikecilkan LAGI)
+// File: client/src/pages/HomePage.jsx (Dengan Perubahan Tema Modern Dinamis)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -214,219 +214,250 @@ const HomePage = ({
   );
 
   // --- FUNGSI UTAMA YANG KITA MODIFIKASI ---
-  const renderModernHomepage = () => (
-    // Pembungkus utama untuk tema modern
-    <div className="home-modern-wrapper">
-      {/* ==============================================
+  const renderModernHomepage = () => {
+    // --- TAMBAHKAN 2 BARIS INI ---
+    const sideBannerUrl =
+      theme?.branding?.modernHeroSideBannerUrl ||
+      "https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop";
+    const sideBannerLink =
+      theme?.branding?.modernHeroSideBannerLink || "/store";
+
+    return (
+      // Pembungkus utama untuk tema modern
+      <div className="home-modern-wrapper">
+        {/* ==============================================
         HERO SECTION - SPLIT BANNERS (Ukuran Dikecilkan LAGI)
         ============================================== */}
-      <section className="hero-section modern-split-banners">
-        <div className="container">
-          <div className="row g-4"> {/* Menggunakan g-4 untuk gap antar kolom */}
-            {/* Kolom Kiri: Banner Carousel Utama */}
-            <div className="col-lg-8"> {/* Mengambil 8 dari 12 kolom */}
-              <Fade direction="left" duration={800} triggerOnce>
-                <div className="modern-main-carousel-wrapper">
-                  {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
-                  <div
-                    id="modernMainBannerCarousel"
-                    className="carousel slide carousel-fade"
-                    data-bs-ride="carousel"
-                  >
-                    <div className="carousel-indicators modern-carousel-indicators">
-                      {banners.map((_, index) => (
-                        <button
-                          type="button"
-                          data-bs-target="#modernMainBannerCarousel"
-                          data-bs-slide-to={index}
-                          className={index === 0 ? "active" : ""}
-                          aria-current={index === 0 ? "true" : "false"}
-                          aria-label={`Slide ${index + 1}`}
-                          key={index}
-                        ></button>
-                      ))}
-                    </div>
-                    <div className="carousel-inner">
-                      {banners.length > 0 ? (
-                        banners.map((banner, index) => (
-                          <div
-                            className={`carousel-item ${
-                              index === 0 ? "active" : ""
-                            }`}
-                            key={banner.id}
-                          >
-                            <Link to={banner.linkUrl || "#"}>
-                              <img
-                                src={banner.imageUrl}
-                                className="d-block w-100 modern-main-banner-image"
-                                alt={banner.title || "Main Banner"}
-                              />
-                            </Link>
+        <section className="hero-section modern-split-banners">
+          <div className="container">
+            <div className="row g-4">
+              {" "}
+              {/* Menggunakan g-4 untuk gap antar kolom */}
+              {/* Kolom Kiri: Banner Carousel Utama */}
+              <div className="col-lg-8">
+                {" "}
+                {/* Mengambil 8 dari 12 kolom */}
+                <Fade direction="left" duration={800} triggerOnce>
+                  <div className="modern-main-carousel-wrapper">
+                    {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
+                    <div
+                      id="modernMainBannerCarousel"
+                      className="carousel slide carousel-fade"
+                      data-bs-ride="carousel"
+                    >
+                      <div className="carousel-indicators modern-carousel-indicators">
+                        {banners.map((_, index) => (
+                          <button
+                            type="button"
+                            data-bs-target="#modernMainBannerCarousel"
+                            data-bs-slide-to={index}
+                            className={index === 0 ? "active" : ""}
+                            aria-current={index === 0 ? "true" : "false"}
+                            aria-label={`Slide ${index + 1}`}
+                            key={index}
+                          ></button>
+                        ))}
+                      </div>
+                      <div className="carousel-inner">
+                        {banners.length > 0 ? (
+                          banners.map((banner, index) => (
+                            <div
+                              className={`carousel-item ${
+                                index === 0 ? "active" : ""
+                              }`}
+                              key={banner.id}
+                            >
+                              <Link to={banner.linkUrl || "#"}>
+                                <img
+                                  src={banner.imageUrl}
+                                  className="d-block w-100 modern-main-banner-image"
+                                  alt={banner.title || "Main Banner"}
+                                />
+                              </Link>
+                            </div>
+                          ))
+                        ) : (
+                          // Fallback jika tidak ada banner
+                          <div className="carousel-item active">
+                            <img
+                              src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
+                              className="d-block w-100 modern-main-banner-image"
+                              alt="Sepatu Bersih"
+                            />
                           </div>
-                        ))
-                      ) : (
-                        // Fallback jika tidak ada banner
-                        <div className="carousel-item active">
-                          <img
-                            src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
-                            className="d-block w-100 modern-main-banner-image"
-                            alt="Sepatu Bersih"
-                          />
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Fade>
-            </div>
-
-            {/* Kolom Kanan: Banner Statis Kecil */}
-            <div className="col-lg-4"> {/* Mengambil 4 dari 12 kolom */}
-              <Fade direction="right" duration={800} triggerOnce>
-                <div className="modern-side-banner-wrapper">
-                  <Link to="/promo/skincare-deals"> {/* Ganti link sesuai kebutuhan */}
-                    <img
-                      src="https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop" // Gambar placeholder
-                      alt="Promo Skincare"
-                      className="img-fluid modern-side-banner-image"
-                    />
-                    <div className="modern-side-banner-overlay">
-                      <h4 className="text-white">Promo Spesial!</h4>
-                      <p className="text-white-50">Diskon hingga 30%.</p>
-                      <button className="btn btn-sm btn-light mt-2">Lihat</button>
-                    </div>
-                  </Link>
-                </div>
-              </Fade>
+                </Fade>
+              </div>
+              {/* Kolom Kanan: Banner Statis Kecil */}
+              <div className="col-lg-4">
+                {" "}
+                {/* Mengambil 4 dari 12 kolom */}
+                <Fade direction="right" duration={800} triggerOnce>
+                  <div className="modern-side-banner-wrapper">
+                    {/* --- PERUBAHAN DI SINI --- */}
+                    <Link to={sideBannerLink}>
+                      <img
+                        src={sideBannerUrl}
+                        alt="Promo Banner"
+                        className="img-fluid modern-side-banner-image"
+                      />
+                      <div className="modern-side-banner-overlay">
+                        <h4 className="text-white">Promo Spesial!</h4>
+                        <p className="text-white-50">Diskon hingga 30%.</p>
+                        <button className="btn btn-sm btn-light mt-2">
+                          Lihat
+                        </button>
+                      </div>
+                    </Link>
+                    {/* --- AKHIR PERUBAHAN --- */}
+                  </div>
+                </Fade>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ==============================================
+        {/* ==============================================
         BRAND MARQUEE (Interaktif & Animatif)
         ============================================== */}
-      <section className="brand-marquee-section">
-        <div className="marquee-wrapper">
-          <div className="marquee-content">
-            <span className="brand-logo-text">Nike</span>
-            <span className="brand-logo-text">Adidas</span>
-            <span className="brand-logo-text">New Balance</span>
-            <span className="brand-logo-text">Puma</span>
-            <span className="brand-logo-text">Converse</span>
-            <span className="brand-logo-text">Vans</span>
-            <span className="brand-logo-text">Nike</span>
-            <span className="brand-logo-text">Adidas</span>
-            <span className="brand-logo-text">New Balance</span>
-            <span className="brand-logo-text">Puma</span>
-            <span className="brand-logo-text">Converse</span>
-            <span className="brand-logo-text">Vans</span>
+        <section className="brand-marquee-section">
+          <div className="marquee-wrapper">
+            <div className="marquee-content">
+              <span className="brand-logo-text">Nike</span>
+              <span className="brand-logo-text">Adidas</span>
+              <span className="brand-logo-text">New Balance</span>
+              <span className="brand-logo-text">Puma</span>
+              <span className="brand-logo-text">Converse</span>
+              <span className="brand-logo-text">Vans</span>
+              <span className="brand-logo-text">Nike</span>
+              <span className="brand-logo-text">Adidas</span>
+              <span className="brand-logo-text">New Balance</span>
+              <span className="brand-logo-text">Puma</span>
+              <span className="brand-logo-text">Converse</span>
+              <span className="brand-logo-text">Vans</span>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ==============================================
+        {/* ==============================================
         BARU: INFO SECTION (Sesuai Gambar)
         ============================================== */}
-      <section className="hm-info-section">
-        <div className="container">
-          <div className="row g-5 align-items-center">
-            {/* Kolom Kiri: Gambar */}
-            <div className="col-lg-6">
-              <Fade direction="left" triggerOnce>
-                <img
-                  src="https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop" // Gambar placeholder
-                  alt="Perawatan Sepatu Profesional"
-                  className="img-fluid hm-info-image"
-                />
-              </Fade>
-            </div>
-            {/* Kolom Kanan: Teks */}
-            <div className="col-lg-6">
-              <Fade direction="right" triggerOnce>
-                <div className="hm-info-content">
-                  <h2 className="hm-info-title">
-                    Teknologi Canggih, <br />
-                    <span style={{ color: "var(--primary-color)" }}>
-                      Hasil Maksimal.
-                    </span>
-                  </h2>
-                  <p className="hm-info-text">
-                    Kami tidak hanya membersihkan, kami merawat. Dengan
-                    menggunakan peralatan modern dan formula pembersih
-                    premium yang aman, kami memastikan setiap pasang
-                    sepatu kembali dalam kondisi terbaiknya.
-                  </p>
-                  <Link to="/about" className="btn btn-modern-secondary btn-lg">
-                    Tentang Kami
-                  </Link>
-                </div>
-              </Fade>
+        <section className="hm-info-section">
+          <div className="container">
+            <div className="row g-5 align-items-center">
+              {/* Kolom Kiri: Gambar */}
+              <div className="col-lg-6">
+                <Fade direction="left" triggerOnce>
+                  <img
+                    src="https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop" // Gambar placeholder
+                    alt="Perawatan Sepatu Profesional"
+                    className="img-fluid hm-info-image"
+                  />
+                </Fade>
+              </div>
+              {/* Kolom Kanan: Teks */}
+              <div className="col-lg-6">
+                <Fade direction="right" triggerOnce>
+                  <div className="hm-info-content">
+                    <h2 className="hm-info-title">
+                      Teknologi Canggih, <br />
+                      <span style={{ color: "var(--primary-color)" }}>
+                        Hasil Maksimal.
+                      </span>
+                    </h2>
+                    <p className="hm-info-text">
+                      Kami tidak hanya membersihkan, kami merawat. Dengan
+                      menggunakan peralatan modern dan formula pembersih premium
+                      yang aman, kami memastikan setiap pasang sepatu kembali
+                      dalam kondisi terbaiknya.
+                    </p>
+                    <Link
+                      to="/about"
+                      className="btn btn-modern-secondary btn-lg"
+                    >
+                      Tentang Kami
+                    </Link>
+                  </div>
+                </Fade>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* ==============================================
+        </section>
+
+        {/* ==============================================
         BAGIAN KATEGORI LAYANAN (Clean)
         ============================================== */}
-      <section className="hm-services py-5" style={{ backgroundColor: "#ffffff" }}>
-        <div className="container">
-          <Fade direction="up" triggerOnce>
-            <div className="text-center mb-5">
-              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>Layanan Komprehensif</h2>
-              <p className="hm-section-subtitle" style={{ color: "#555" }}>
-                Dari pembersihan cepat hingga restorasi mendetail.
-              </p>
-            </div>
-            <div className="category-grid"> 
-              {serviceCategories.map((category) => (
-                <Link
-                  to={category.link}
-                  key={category.name}
-                  className="category-card"
-                >
-                  <div className="category-icon">
-                    <i className={`fas ${category.icon}`}></i>
-                  </div>
-                  <span>{category.name}</span>
-                </Link>
-              ))}
-            </div>
-          </Fade>
-        </div>
-      </section>
-
-      {/* ==============================================
-        BAGIAN TOKO POPULER (Clean)
-        ============================================== */}
-      <section className="hm-featured-stores py-5" style={{ backgroundColor: "#f8f9fa" }}>
-        <div className="container">
-          <Fade direction="up" triggerOnce>
-            <div className="text-center mb-5">
-              <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>Mitra Terpercaya Kami</h2>
-              <p className="hm-section-subtitle" style={{ color: "#555" }}>
-                Dipilih berdasarkan kualitas dan ulasan terbaik.
-              </p>
-            </div>
-            {loading ? (
-              <div className="text-center">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
+        <section
+          className="hm-services py-5"
+          style={{ backgroundColor: "#ffffff" }}
+        >
+          <div className="container">
+            <Fade direction="up" triggerOnce>
+              <div className="text-center mb-5">
+                <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
+                  Layanan Komprehensif
+                </h2>
+                <p className="hm-section-subtitle" style={{ color: "#555" }}>
+                  Dari pembersihan cepat hingga restorasi mendetail.
+                </p>
               </div>
-            ) : (
-              <div className="results-grid-redesigned"> 
-                {featuredStores.map((store) => (
-                  <StoreCard store={store} key={store.id} />
+              <div className="category-grid">
+                {serviceCategories.map((category) => (
+                  <Link
+                    to={category.link}
+                    key={category.name}
+                    className="category-card"
+                  >
+                    <div className="category-icon">
+                      <i className={`fas ${category.icon}`}></i>
+                    </div>
+                    <span>{category.name}</span>
+                  </Link>
                 ))}
               </div>
-            )}
-          </Fade>
-        </div>
-      </section>
-    </div>
-  );
+            </Fade>
+          </div>
+        </section>
+
+        {/* ==============================================
+        BAGIAN TOKO POPULER (Clean)
+        ============================================== */}
+        <section
+          className="hm-featured-stores py-5"
+          style={{ backgroundColor: "#f8f9fa" }}
+        >
+          <div className="container">
+            <Fade direction="up" triggerOnce>
+              <div className_Name="text-center mb-5">
+                <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
+                  Mitra Terpercaya Kami
+                </h2>
+                <p className="hm-section-subtitle" style={{ color: "#555" }}>
+                  Dipilih berdasarkan kualitas dan ulasan terbaik.
+                </p>
+              </div>
+              {loading ? (
+                <div className="text-center">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="results-grid-redesigned">
+                  {featuredStores.map((store) => (
+                    <StoreCard store={store} key={store.id} />
+                  ))}
+                </div>
+              )}
+            </Fade>
+          </div>
+        </section>
+      </div>
+    );
+  };
   // --- AKHIR DARI FUNGSI YANG BERUBAH ---
 
   return (

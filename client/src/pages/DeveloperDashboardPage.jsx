@@ -9,6 +9,7 @@ import {
   reseedDatabase,
   uploadImage,
   getSecurityLogs,
+  uploadDeveloperAsset,
 } from "../services/apiService";
 import API_BASE_URL from "../apiConfig";
 
@@ -386,6 +387,38 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     }
   };
 
+  const handleDeveloperUpload = async (e, path) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingStatus((prev) => ({ ...prev, [path]: true }));
+    const formData = new FormData();
+    formData.append("asset", file); // 'asset' sesuai dengan nama di backend
+
+    try {
+      const result = await uploadDeveloperAsset(formData); // Panggil apiService baru
+      
+      // Update state config lokal
+      setConfig((prevConfig) => {
+        const newConfig = JSON.parse(JSON.stringify(prevConfig));
+        const keys = path.split(".");
+        let current = newConfig;
+        for (let i = 0; i < keys.length - 1; i++) {
+          current = current[keys[i]];
+        }
+        current[keys[keys.length - 1]] = result.imageUrl;
+        return newConfig;
+      });
+
+      if (showMessage)
+        showMessage("Gambar berhasil diunggah. Klik 'Simpan' untuk menerapkan.", "Success");
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
+    } finally {
+      setUploadingStatus((prev) => ({ ...prev, [path]: false }));
+    }
+  };
+
   const handleConfigSave = async () => {
     setIsSaving(true);
     try {
@@ -584,6 +617,58 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       )}
                     </div>
                   ))}
+
+                  <div className="mb-3">
+                    <label
+                      htmlFor="modernHeroSideBannerUrl"
+                      className="form-label"
+                    >
+                      Modern Hero Side Banner URL
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="file"
+                        className="form-control"
+                        id="modernHeroSideBannerUrl"
+                        onChange={(e) =>
+                          handleDeveloperUpload(e, "branding.modernHeroSideBannerUrl")
+                        }
+                        accept="image/*"
+                      />
+                      {uploadingStatus["branding.modernHeroSideBannerUrl"] && (
+                        <span className="input-group-text">
+                          <div className="spinner-border spinner-border-sm"></div>
+                        </span>
+                      )}
+                    </div>
+                    {config.branding.modernHeroSideBannerUrl && (
+                      <img
+                        src={config.branding.modernHeroSideBannerUrl}
+                        alt="Side Banner Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxHeight: "50px" }}
+                      />
+                    )}
+                  </div>
+
+                  <div className="mb-3">
+                    <label
+                      htmlFor="modernHeroSideBannerLink"
+                      className="form-label"
+                    >
+                      Modern Hero Side Banner Link
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="modernHeroSideBannerLink"
+                      value={config.branding.modernHeroSideBannerLink || ""}
+                      onChange={(e) =>
+                        handleConfigChange(e, "branding.modernHeroSideBannerLink")
+                      }
+                      placeholder="/store"
+                    />
+                  </div>
                 </div>
                 <div className="col-md-6">
                   <h5 className="mb-4 fw-bold">Warna & Font</h5>

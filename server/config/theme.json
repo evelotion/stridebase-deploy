@@ -1,8 +1,10 @@
 {
   "branding": {
-    "brandName": "StrideBase",
+   "brandName": "StrideBase",
     "logoUrl": "/uploads/asset-1752927610848.png",
-    "faviconUrl": "/uploads/asset-1752927610848.png"
+    "faviconUrl": "/uploads/asset-1752927610848.png",
+    "modernHeroSideBannerUrl": "https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop",
+    "modernHeroSideBannerLink": "/store"
   },
   "colors": {
     "primary": "#0D6EFD",

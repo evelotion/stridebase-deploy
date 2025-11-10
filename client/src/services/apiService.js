@@ -204,6 +204,8 @@ export const reseedDatabase = () =>
   apiRequest("/api/superuser/maintenance/reseed-database", "POST");
 export const getSecurityLogs = () => apiRequest("/api/superuser/security-logs");
 
+export const uploadDeveloperAsset = (formData) =>
+  apiRequest("/api/superuser/upload-asset", "POST", formData, true);
 
 export const forgotPasswordUser = (data) =>
   apiRequest("/api/auth/forgot-password", "POST", data);

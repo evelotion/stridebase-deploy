@@ -8,6 +8,7 @@ import {
   createNotificationForUser,
   io,
 } from "../socket.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const getGlobalConfig = async (req, res, next) => {
   try {
@@ -215,6 +216,28 @@ export const updateHomePageTheme = async (req, res, next) => {
     res.status(200).json({
       message: "Tema homepage berhasil diperbarui.",
       homePageTheme: theme,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const uploadDeveloperAsset = async (req, res, next) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "Tidak ada file yang diunggah." });
+  }
+  try {
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: "stridebase/developer-assets", // Folder khusus untuk developer
+      public_id: `dev-asset-${Date.now()}`,
+    });
+
+    res.status(200).json({
+      message: "Aset berhasil diunggah.",
+      imageUrl: result.secure_url,
     });
   } catch (error) {
     next(error);
