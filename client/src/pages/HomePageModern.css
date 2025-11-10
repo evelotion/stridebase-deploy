@@ -249,26 +249,9 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-/*
-==================================
-  BARU: Section Gambar Sekunder
-==================================
-*/
-.hm-new-image-section {
-  padding: 4rem 0; /* Tetap beri padding agar gambar tidak menempel */
-  overflow: hidden;
-  /* Semua properti background dan border dihapus */
-}
 
-.hm-composite-section {
-  overflow: hidden;
-  background-size: cover; /* Atur 'cover' atau 'repeat' */
-  background-position: center;
-  background-repeat: no-repeat; /* Ganti ke 'repeat' jika Anda upload pola */
 
-  /* Pindahkan border-bottom ke sini */
-  border-bottom: 1px solid #f0f0f0; 
-}
+
 
 .hm-new-image {
   /* Gambar utama ini sekarang di dalam .container */

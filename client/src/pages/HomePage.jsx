@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (LENGKAP dan DIPERBAIKI)
+// File: client/src/pages/HomePage.jsx (LENGKAP dan DIPERBAIKI TOTAL)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -224,32 +224,30 @@ const HomePage = ({
     const sideBannerLink =
       theme?.branding?.modernHeroSideBannerLink || "/store";
     
-    // Variabel untuk section baru kita
-    const heroSecondaryImageUrl =
-      theme?.branding?.heroSecondaryImage ||
-      "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2670&auto=format&fit=crop"; // Ini gambar fallback jika kosong
+    // Variabel untuk GAMBAR KIRI (yang kita tambahkan)
+    const heroSecondaryImageUrl = theme?.branding?.heroSecondaryImage;
     
-    // Variabel untuk background baru kita
+    // Variabel untuk BACKGROUND (yang kita tambahkan)
     const heroSecondaryBgUrl = theme?.branding?.heroSecondaryBgImage;
+
+    // Fallback untuk gambar kiri JIKA KOSONG (gambar placeholder lama)
+    const finalInfoImageUrl = 
+      heroSecondaryImageUrl || 
+      "https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop";
 
     return (
       // Pembungkus utama untuk tema modern
       <div className="home-modern-wrapper">
         {/* ==============================================
-        HERO SECTION - SPLIT BANNERS (Ukuran Dikecilkan LAGI)
+        HERO SECTION - SPLIT BANNERS
         ============================================== */}
         <section className="hero-section modern-split-banners">
           <div className="container">
             <div className="row g-4">
-              {" "}
-              {/* Menggunakan g-4 untuk gap antar kolom */}
               {/* Kolom Kiri: Banner Carousel Utama */}
               <div className="col-lg-8">
-                {" "}
-                {/* Mengambil 8 dari 12 kolom */}
                 <Fade direction="left" duration={800} triggerOnce>
                   <div className="modern-main-carousel-wrapper">
-                    {/* Menggunakan Bootstrap Carousel Bawaan untuk efek 'fade' */}
                     <div
                       id="modernMainBannerCarousel"
                       className="carousel slide carousel-fade"
@@ -303,8 +301,6 @@ const HomePage = ({
               </div>
               {/* Kolom Kanan: Banner Statis Kecil */}
               <div className="col-lg-4">
-                {" "}
-                {/* Mengambil 4 dari 12 kolom */}
                 <Fade direction="right" duration={800} triggerOnce>
                   <div className="modern-side-banner-wrapper">
                     <Link to={sideBannerLink}>
@@ -350,76 +346,78 @@ const HomePage = ({
           </div>
         </section>
 
+        {/* ============================================================
+        PERBAIKAN TOTAL DIMULAI DI SINI
+        ============================================================
+        
+        Kita HAPUS 'hm-composite-wrapper' dan 'hm-new-image-section' 
+        Kita modifikasi 'hm-info-section' yang sudah ada
+        
+        */}
+        
         {/* ==============================================
-        BARU: WRAPPER UNTUK SECTION KOMBINASI
+        MODIFIKASI: INFO SECTION (Sesuai Gambar)
         ============================================== */}
-        <div
-          className="hm-composite-section"
+        <section 
+          className="hm-info-section"
           style={{
+            // Terapkan background yang di-upload ke section ini
             backgroundImage: heroSecondaryBgUrl
               ? `url(${heroSecondaryBgUrl})`
               : "none",
+            // Jika ada background, buat warnanya transparan
+            // Jika tidak, biarkan CSS yang menentukan (fallback ke #fff)
+            backgroundColor: heroSecondaryBgUrl ? "transparent" : undefined
           }}
         >
-          {/* 1. SECTION GAMBAR BARU */}
-          {heroSecondaryImageUrl && (
-            <Fade direction="up" triggerOnce>
-              <section className="hm-new-image-section">
-                <div className="container">
+          <div className="container">
+            <div className="row g-5 align-items-center">
+              
+              {/* Kolom Kiri: Gambar (DINAMIS) */}
+              <div className="col-lg-6">
+                <Fade direction="left" triggerOnce>
                   <img
-                    src={heroSecondaryImageUrl}
-                    alt="Promo Sekunder"
-                    className="hm-new-image"
+                    // Gunakan URL yang di-upload (heroSecondaryImageUrl)
+                    // Jika kosong, baru gunakan placeholder (finalInfoImageUrl)
+                    src={finalInfoImageUrl}
+                    alt="Perawatan Sepatu Profesional"
+                    className="img-fluid hm-info-image"
                   />
-                </div>
-              </section>
-            </Fade>
-          )}
+                </Fade>
+              </div>
 
-          {/* 2. INFO SECTION (YANG SUDAH ADA) KITA PINDAHKAN KE DALAM WRAPPER */}
-          <section className="hm-info-section">
-            <div className="container">
-              <div className="row g-5 align-items-center">
-                {/* Kolom Kiri: Gambar */}
-                <div className="col-lg-6">
-                  <Fade direction="left" triggerOnce>
-                    <img
-                      src="https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop" // Gambar placeholder
-                      alt="Perawatan Sepatu Profesional"
-                      className="img-fluid hm-info-image"
-                    />
-                  </Fade>
-                </div>
-                {/* Kolom Kanan: Teks */}
-                <div className="col-lg-6">
-                  <Fade direction="right" triggerOnce>
-                    <div className="hm-info-content">
-                      <h2 className="hm-info-title">
-                        Teknologi Canggih, <br />
-                        <span style={{ color: "var(--primary-color)" }}>
-                          Hasil Maksimal.
-                        </span>
-                      </h2>
-                      <p className="hm-info-text">
-                        Kami tidak only membersihkan, kami merawat. Dengan
-                        menggunakan peralatan modern dan formula pembersih premium
-                        yang aman, kami memastikan setiap pasang sepatu kembali
-                        dalam kondisi terbaiknya.
-                      </p>
-                      <Link
-                        to="/about"
-                        className="btn btn-modern-secondary btn-lg"
-                      >
-                        Tentang Kami
-                      </Link>
-                    </div>
-                  </Fade>
-                </div>
+              {/* Kolom Kanan: Teks (TETAP SAMA) */}
+              <div className="col-lg-6">
+                <Fade direction="right" triggerOnce>
+                  <div className="hm-info-content">
+                    <h2 className="hm-info-title">
+                      Teknologi Canggih, <br />
+                      <span style={{ color: "var(--primary-color)" }}>
+                        Hasil Maksimal.
+                      </span>
+                    </h2>
+                    <p className="hm-info-text">
+                      Kami tidak hanya membersihkan, kami merawat. Dengan
+                      menggunakan peralatan modern dan formula pembersih premium
+                      yang aman, kami memastikan setiap pasang sepatu kembali
+                      dalam kondisi terbaiknya.
+                    </p>
+                    <Link
+                      to="/about"
+                      className="btn btn-modern-secondary btn-lg"
+                    >
+                      Tentang Kami
+                    </Link>
+                  </div>
+                </Fade>
               </div>
             </div>
-          </section>
-        </div>
-        {/* AKHIR DARI WRAPPER KOMBINASI */}
+          </div>
+        </section>
+
+        {/* ==============================================
+        AKHIR DARI PERBAIKAN
+        ============================================== */}
 
 
         {/* ==============================================
@@ -497,7 +495,7 @@ const HomePage = ({
 
   return (
     <div className="homepage-mobile-container">
-      {/* Header Mobile (Tetap Sama) */}
+      {/* Header Mobile (Sudah diperbaiki) */}
       <div className="mobile-home-header d-lg-none">
         <div className="top-bar">
           <Link to="/" className="mobile-logo">
@@ -648,15 +646,7 @@ const HomePage = ({
             onClick={() => navigate("/store")}
           />
         </div>
-        
-        {/* ============================================================
-                              INI ADALAH PERBAIKANNYA
-            Tag '</div>' di bawah ini adalah penutup untuk 
-            'div.mobile-home-header' yang dimulai di baris 426.
-            Ini sebelumnya hilang.
-          ============================================================
-        */}
-      </div>
+      </div> {/* <-- Tag penutup yang hilang di versi sebelumnya, sekarang ada */}
 
       {/* Konten Utama */}
       <div className="d-none d-lg-block">
