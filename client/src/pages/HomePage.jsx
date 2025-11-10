@@ -346,7 +346,6 @@ const HomePage = ({
           </div>
         </section>
 
-
         {/* ==============================================
         BARU: INFO SECTION (Sesuai Gambar)
         ============================================== */}
@@ -356,18 +355,16 @@ const HomePage = ({
               {/* Kolom Kiri: Gambar */}
               <div className="col-lg-6">
                 {heroSecondaryImageUrl && (
-      <Fade direction="up" triggerOnce>
-        <section className="hm-new-image-section">
-          <div className="container">
-            <img
-              src={heroSecondaryImageUrl}
-              alt="Promo Sekunder"
-              className="hm-new-image"
-            />
-          </div>
-        </section>
-      </Fade>
-    )}
+                  <Fade direction="up" triggerOnce>
+                    <section className="hm-new-image-section">
+                      <img
+                        src={heroSecondaryImageUrl}
+                        alt="Promo Sekunder"
+                        className="hm-new-image"
+                      />
+                    </section>
+                  </Fade>
+                )}
               </div>
               {/* Kolom Kanan: Teks */}
               <div className="col-lg-6">
