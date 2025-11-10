@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (Dengan Perubahan Tema Modern Dinamis)
+// File: client/src/pages/HomePage.jsx (LENGKAP dengan Perubahan Terakhir)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -215,17 +215,21 @@ const HomePage = ({
 
   // --- FUNGSI UTAMA YANG KITA MODIFIKASI ---
   const renderModernHomepage = () => {
-    // --- TAMBAHKAN 2 BARIS INI ---
+    // --- AMBIL SEMUA URL DINAMIS ---
     const sideBannerUrl =
       theme?.branding?.modernHeroSideBannerUrl ||
       "https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop";
     const sideBannerLink =
       theme?.branding?.modernHeroSideBannerLink || "/store";
 
+    // Variabel untuk section baru kita
     const heroSecondaryImageUrl =
       theme?.branding?.heroSecondaryImage ||
       "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2670&auto=format&fit=crop"; // Ini gambar fallback jika kosong
+
+    // Variabel untuk background baru kita
     const heroSecondaryBgUrl = theme?.branding?.heroSecondaryBgImage;
+
     return (
       // Pembungkus utama untuk tema modern
       <div className="home-modern-wrapper">
@@ -301,7 +305,6 @@ const HomePage = ({
                 {/* Mengambil 4 dari 12 kolom */}
                 <Fade direction="right" duration={800} triggerOnce>
                   <div className="modern-side-banner-wrapper">
-                    {/* --- PERUBAHAN DI SINI --- */}
                     <Link to={sideBannerLink}>
                       <img
                         src={sideBannerUrl}
@@ -316,7 +319,6 @@ const HomePage = ({
                         </button>
                       </div>
                     </Link>
-                    {/* --- AKHIR PERUBAHAN --- */}
                   </div>
                 </Fade>
               </div>
@@ -347,66 +349,75 @@ const HomePage = ({
         </section>
 
         {/* ==============================================
-        BARU: INFO SECTION (Sesuai Gambar)
+        BARU: WRAPPER UNTUK SECTION KOMBINASI
         ============================================== */}
-        <section className="hm-info-section">
-          <div className="container">
-            <div className="row g-5 align-items-center">
-              {/* Kolom Kiri: Gambar */}
-              <div className="col-lg-6">
-                {heroSecondaryImageUrl && (
-                  <Fade direction="up" triggerOnce>
-                    {/* Kita terapkan background ke <section>
-      Jika 'heroSecondaryBgUrl' ada, gunakan itu. Jika tidak, jangan tampilkan background.
-    */}
-                    <section
-                      className="hm-new-image-section"
-                      style={{
-                        backgroundImage: heroSecondaryBgUrl
-                          ? `url(${heroSecondaryBgUrl})`
-                          : "none",
-                      }}
-                    >
-                      {/* Kita kembalikan .container agar gambar utama berada di tengah */}
-                      <div className="container">
-                        <img
-                          src={heroSecondaryImageUrl}
-                          alt="Promo Sekunder"
-                          className="hm-new-image"
-                        />
-                      </div>
-                    </section>
+        <div
+          className="hm-composite-section"
+          style={{
+            backgroundImage: heroSecondaryBgUrl
+              ? `url(${heroSecondaryBgUrl})`
+              : "none",
+          }}
+        >
+          {/* 1. SECTION GAMBAR BARU */}
+          {heroSecondaryImageUrl && (
+            <Fade direction="up" triggerOnce>
+              <section className="hm-new-image-section">
+                <div className="container">
+                  <img
+                    src={heroSecondaryImageUrl}
+                    alt="Promo Sekunder"
+                    className="hm-new-image"
+                  />
+                </div>
+              </section>
+            </Fade>
+          )}
+
+          {/* 2. INFO SECTION (YANG SUDAH ADA) */}
+          <section className="hm-info-section">
+            <div className="container">
+              <div className="row g-5 align-items-center">
+                {/* Kolom Kiri: Gambar */}
+                <div className="col-lg-6">
+                  <Fade direction="left" triggerOnce>
+                    <img
+                      src="https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop" // Gambar placeholder
+                      alt="Perawatan Sepatu Profesional"
+                      className="img-fluid hm-info-image"
+                    />
                   </Fade>
-                )}
-              </div>
-              {/* Kolom Kanan: Teks */}
-              <div className="col-lg-6">
-                <Fade direction="right" triggerOnce>
-                  <div className="hm-info-content">
-                    <h2 className="hm-info-title">
-                      Teknologi Canggih, <br />
-                      <span style={{ color: "var(--primary-color)" }}>
-                        Hasil Maksimal.
-                      </span>
-                    </h2>
-                    <p className="hm-info-text">
-                      Kami tidak hanya membersihkan, kami merawat. Dengan
-                      menggunakan peralatan modern dan formula pembersih premium
-                      yang aman, kami memastikan setiap pasang sepatu kembali
-                      dalam kondisi terbaiknya.
-                    </p>
-                    <Link
-                      to="/about"
-                      className="btn btn-modern-secondary btn-lg"
-                    >
-                      Tentang Kami
-                    </Link>
-                  </div>
-                </Fade>
+                </div>
+                {/* Kolom Kanan: Teks */}
+                <div className="col-lg-6">
+                  <Fade direction="right" triggerOnce>
+                    <div className="hm-info-content">
+                      <h2 className="hm-info-title">
+                        Teknologi Canggih, <br />
+                        <span style={{ color: "var(--primary-color)" }}>
+                          Hasil Maksimal.
+                        </span>
+                      </h2>
+                      <p className="hm-info-text">
+                        Kami tidak hanya membersihkan, kami merawat. Dengan
+                        menggunakan peralatan modern dan formula pembersih
+                        premium yang aman, kami memastikan setiap pasang sepatu
+                        kembali dalam kondisi terbaiknya.
+                      </p>
+                      <Link
+                        to="/about"
+                        className="btn btn-modern-secondary btn-lg"
+                      >
+                        Tentang Kami
+                      </Link>
+                    </div>
+                  </Fade>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
+        {/* AKHIR DARI WRAPPER KOMBINASI */}
 
         {/* ==============================================
         BAGIAN KATEGORI LAYANAN (Clean)
@@ -452,7 +463,7 @@ const HomePage = ({
         >
           <div className="container">
             <Fade direction="up" triggerOnce>
-              <div className_Name="text-center mb-5">
+              <div className="text-center mb-5">
                 <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
                   Mitra Terpercaya Kami
                 </h2>

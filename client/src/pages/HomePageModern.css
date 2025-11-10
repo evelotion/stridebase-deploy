@@ -187,15 +187,9 @@
 ==================================
 */
 .hm-info-section {
-  padding: 6rem 0;
-  background-color: #f8f9fa; /* Warna dasar abu-abu muda */
-  background-image: radial-gradient(
-    rgba(0, 0, 0, 0.07) 1px, /* Warna titik */
-    transparent 1px
-  );
-  background-size: 20px 20px; /* Jarak antar titik */
-  position: relative;
-  overflow: hidden;
+  padding: 4.5rem 0;
+  background-color: transparent; /* <-- KUNCINYA ADA DI SINI */
+  border-bottom: none; /* Border sudah dipindah ke .hm-composite-section */
 }
 
 .hm-info-image {
@@ -261,15 +255,18 @@
 ==================================
 */
 .hm-new-image-section {
-  padding: 4rem 0; /* Beri jarak atas-bawah agar background terlihat */
+  padding: 4rem 0; /* Tetap beri padding agar gambar tidak menempel */
   overflow: hidden;
-  
-  /* Styling untuk background yang di-upload */
-  background-size: cover; /* 'cover' atau 'repeat' jika Anda pakai pola */
+  /* Semua properti background dan border dihapus */
+}
+
+.hm-composite-section {
+  overflow: hidden;
+  background-size: cover; /* Atur 'cover' atau 'repeat' */
   background-position: center;
-  background-repeat: no-repeat; /* 'repeat' jika Anda upload pola titik-titik */
-  
-  /* Beri batas pemisah tipis */
+  background-repeat: no-repeat; /* Ganti ke 'repeat' jika Anda upload pola */
+
+  /* Pindahkan border-bottom ke sini */
   border-bottom: 1px solid #f0f0f0; 
 }
 
