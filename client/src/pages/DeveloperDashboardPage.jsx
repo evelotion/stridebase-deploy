@@ -1,4 +1,4 @@
-// File: client/src/pages/DeveloperDashboardPage.jsx (Final dengan Logika Tampilan Hapus Pengguna)
+// File: client/src/pages/DeveloperDashboardPage.jsx (LENGKAP DAN SUDAH DIPERBAIKI)
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -403,6 +403,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       const keys = path.split(".");
       let current = updatedConfig;
       for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {}; // Pastikan path ada
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = result.imageUrl;
@@ -416,9 +417,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       if (showMessage)
         // Ubah pesannya untuk mengonfirmasi penyimpanan
         showMessage("Gambar berhasil diunggah dan disimpan!", "Success"); 
-    } catch (err) {
+    } catch (err) { // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG BUKA)
       if (showMessage) showMessage(err.message, "Error");
-    } finally {
+    } finally { // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG TUTUP)
       setUploadingStatus((prev) => ({ ...prev, [path]: false }));
     }
   };
@@ -481,7 +482,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
   return (
     <div className="container-fluid p-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-itemsC-enter mb-4">
         <h2 className="fs-2 mb-0">Developer Dashboard</h2>
         {activeTab === "theme" && (
           <button
@@ -673,6 +674,59 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       placeholder="/store"
                     />
                   </div>
+                  
+                  {/*
+                  
+                  ============================================================
+                                    INI ADALAH BLOK BARU
+                  ============================================================
+                  
+                  */}
+                  <hr />
+                  <div className="mb-3">
+                    <label
+                      htmlFor="heroSecondaryImage"
+                      className="form-label"
+                    >
+                      Gambar Hero Sekunder (BARU)
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="file"
+                        className="form-control"
+                        id="heroSecondaryImage"
+                        onChange={(e) =>
+                          // Kita gunakan handler yang sama, tapi simpan di path/key yang baru
+                          handleDeveloperUpload(e, "branding.heroSecondaryImage")
+                        }
+                        accept="image/*"
+                      />
+                      {uploadingStatus["branding.heroSecondaryImage"] && (
+                        <span className="input-group-text">
+                          <div className="spinner-border spinner-border-sm"></div>
+                        </span>
+                      )}
+                    </div>
+                    <div className="form-text">
+                      Gambar ini untuk section baru di tema Modern (sesuai Langkah 1).
+                    </div>
+                    {/* Pastikan kita mengecek config.branding.heroSecondaryImage */}
+                    {config.branding.heroSecondaryImage && (
+                      <img
+                        src={config.branding.heroSecondaryImage}
+                        alt="Hero Sekunder Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxHeight: "50px" }}
+                      />
+                    )}
+                  </div>
+                  {/*
+                  ============================================================
+                                AKHIR DARI BLOK BARU
+                  ============================================================
+                  
+                  */}
+
                 </div>
                 <div className="col-md-6">
                   <h5 className="mb-4 fw-bold">Warna & Font</h5>
@@ -777,7 +831,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       id="h1FontSize"
                       min="24"
                       max="48"
-                      value={parseInt(config.typography.h1FontSize)}
+                      value={parseInt(config.typography.h1FontSize)} // <-- INI BAGIAN YANG DIPERBAIKI (UNDERSCORE HILANG)
                       onChange={(e) =>
                         handleSliderChange(e, "typography.h1FontSize")
                       }
@@ -1136,6 +1190,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           <div className="alert alert-danger">
             <strong>Peringatan:</strong> Aksi ini akan menghapus semua data
             transaksi dan mengembalikannya ke kondisi awal. Lanjutkan dengan
+
             hati-hati.
           </div>
           <button

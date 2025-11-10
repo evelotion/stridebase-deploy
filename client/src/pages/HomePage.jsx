@@ -222,6 +222,10 @@ const HomePage = ({
     const sideBannerLink =
       theme?.branding?.modernHeroSideBannerLink || "/store";
 
+    const heroSecondaryImageUrl =
+      theme?.branding?.heroSecondaryImage ||
+      "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2670&auto=format&fit=crop"; // Ini gambar fallback jika kosong
+
     return (
       // Pembungkus utama untuk tema modern
       <div className="home-modern-wrapper">
@@ -341,6 +345,20 @@ const HomePage = ({
             </div>
           </div>
         </section>
+
+          {heroSecondaryImageUrl && (
+      <Fade direction="up" triggerOnce>
+        <section className="hm-new-image-section">
+          <div className="container">
+            <img
+              src={heroSecondaryImageUrl}
+              alt="Promo Sekunder"
+              className="hm-new-image"
+            />
+          </div>
+        </section>
+      </Fade>
+    )}
 
         {/* ==============================================
         BARU: INFO SECTION (Sesuai Gambar)
