@@ -398,20 +398,24 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     try {
       const result = await uploadDeveloperAsset(formData); // Panggil apiService baru
       
-      // Update state config lokal
-      setConfig((prevConfig) => {
-        const newConfig = JSON.parse(JSON.stringify(prevConfig));
-        const keys = path.split(".");
-        let current = newConfig;
-        for (let i = 0; i < keys.length - 1; i++) {
-          current = current[keys[i]];
-        }
-        current[keys[keys.length - 1]] = result.imageUrl;
-        return newConfig;
-      });
+      // Buat config baru dengan URL gambar yang diperbarui
+      const updatedConfig = JSON.parse(JSON.stringify(config));
+      const keys = path.split(".");
+      let current = updatedConfig;
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = result.imageUrl;
+
+      // --- TAMBAHAN BARIS UNTUK MENYIMPAN OTOMATIS ---
+      await updateSuperUserConfig(updatedConfig); // Kirim config baru ke server
+      setConfig(updatedConfig); // Perbarui state lokal
+      setInitialConfig(JSON.stringify(updatedConfig)); // Set config awal baru
+      // --- AKHIR TAMBAHAN ---
 
       if (showMessage)
-        showMessage("Gambar berhasil diunggah. Klik 'Simpan' untuk menerapkan.", "Success");
+        // Ubah pesannya untuk mengonfirmasi penyimpanan
+        showMessage("Gambar berhasil diunggah dan disimpan!", "Success"); 
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     } finally {
