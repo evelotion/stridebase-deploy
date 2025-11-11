@@ -1,7 +1,7 @@
-/* File: client/src/pages/HomePageModern.css (Solusi Margin Negatif) */
+/* File: client/src/pages/HomePageModern.css (VERSI BERSIH) */
 
 /* ==============================================
-  DEFINISI DASAR TEMA MODERN (CLEAN)
+  DEFINISI DASAR TEMA MODERN (CLEAN)
 ============================================== */
 .home-modern-wrapper {
   background-color: #ffffff;
@@ -250,9 +250,6 @@
 }
 
 
-
-
-
 .hm-new-image {
   /* Gambar utama ini sekarang di dalam .container */
   width: 100%; /* 100% dari .container */
@@ -264,4 +261,86 @@
   /* Kita kembalikan style agar konsisten dengan banner */
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* ==================================
+   PERBAIKAN: SECTION TEKNOLOGI CANGGIH
+   (Tambahan baru berdasarkan screenshot Anda)
+   ==================================
+*/
+
+/* PENTING: Ganti .hm-tech-section ini agar sesuai dengan
+  className yang Anda gunakan di file HomePage.jsx
+*/
+.hm-tech-section {
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 0; /* Beri padding yang cukup */
+  background-color: #f8f9fa; /* Warna background cadangan jika gambar gagal dimuat */
+
+  /* Definisikan 2 gambar background:
+    1. Gambar sepatu (lapisan atas)
+    2. Gambar abstrak (lapisan bawah)
+  */
+  background-image: url('/path/to/gambar-sepatu-hitam.png'),
+                    url('/path/to/gambar-background-abstrak.jpg');
+  
+  /* Pastikan tidak ada pengulangan */
+  background-repeat: no-repeat;
+}
+
+/* Konten teks (Judul, paragraf, tombol) */
+.hm-tech-content {
+  position: relative;
+  z-index: 2; /* Pastikan teks di atas gambar */
+}
+
+/* HANYA BERLAKU UNTUK DESKTOP (Sesuai permintaan Anda) 
+  Kita gunakan min-width: 1024px
+*/
+@media (min-width: 1024px) {
+  .hm-tech-section {
+    /* REVISI KUNCI 1: POSISI
+      - Sepatu: 'calc(5% + 1rem)' -> Posisikan 5% dari kiri + 1rem (16px) agar ada "nafas"
+                dan tidak menempel. 'center' berarti tengah vertikal.
+      - Background: 'center' (tengah-tengah).
+    */
+    background-position: calc(5% + 1rem) center, center;
+
+    /* REVISI KUNCI 2: UKURAN
+      - Sepatu: 'auto 60%' -> Lebar 'auto' (jaga rasio), Tinggi '60%' dari tinggi section.
+                Ini mencegah sepatu terpotong atau gepeng.
+      - Background: 'cover' (menutupi semua).
+    */
+    background-size: auto 60%, cover;
+  }
+
+  /* Di desktop, dorong konten ke kanan */
+  .hm-tech-content {
+    /* Dorong konten ke kanan agar tidak tertimpa sepatu.
+      Sesuaikan nilai '50%' dan '45%' ini agar pas dengan desain Anda.
+    */
+    width: 50%;
+    margin-left: 45%; 
+  }
+}
+
+/* ATURAN UNTUK MOBILE (Opsional, tapi disarankan)
+  (Jika Anda ingin tampilan mobile tetap rapi)
+*/
+@media (max-width: 1023px) {
+  .hm-tech-section {
+    /* Di mobile, kita sederhanakan. Mungkin hanya background abstrak */
+    background-image: url('/path/to/gambar-background-abstrak.jpg');
+    background-size: cover;
+    background-position: center center;
+    padding: 4rem 1.5rem;
+    text-align: center; /* Konten jadi di tengah */
+  }
+
+  /* Konten di mobile jadi lebar penuh */
+  .hm-tech-content {
+    width: 100%;
+    margin-left: 0;
+  }
 }
