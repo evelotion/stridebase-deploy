@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { formatRupiah } from "../utils/formatRupiah";
 
 const Navbar = ({ user, handleLogout, theme, notifications, unreadCount }) => {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
