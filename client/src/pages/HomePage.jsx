@@ -1,4 +1,4 @@
-// File: client/src/pages/HomePage.jsx (LENGKAP dan DIPERBAIKI TOTAL)
+// File: client/src/pages/HomePage.jsx (LENGKAP dengan MODIFIKASI KARTU PINK)
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -346,72 +346,72 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* ============================================================
-        PERBAIKAN TOTAL DIMULAI DI SINI
-        ============================================================
-        
-        Kita HAPUS 'hm-composite-wrapper' dan 'hm-new-image-section' 
-        Kita modifikasi 'hm-info-section' yang sudah ada
-        
-        */}
         
         {/* ==============================================
         MODIFIKASI: INFO SECTION (Sesuai Gambar)
         ============================================== */}
         <section 
           className="hm-info-section"
-          style={{
-            // Terapkan background yang di-upload ke section ini
-            backgroundImage: heroSecondaryBgUrl
-              ? `url(${heroSecondaryBgUrl})`
-              : "none",
-            // Jika ada background, buat warnanya transparan
-            // Jika tidak, biarkan CSS yang menentukan (fallback ke #fff)
-            backgroundColor: heroSecondaryBgUrl ? "transparent" : undefined
-          }}
+          // HAPUS SEMUA inline style dari <section>
+          // Biarkan CSS yang mengatur (default putih)
         >
           <div className="container">
-            <div className="row g-5 align-items-center">
-              
-              {/* Kolom Kiri: Gambar (DINAMIS) */}
-              <div className="col-lg-6">
-                <Fade direction="left" triggerOnce>
-                  <img
-                    // Gunakan URL yang di-upload (heroSecondaryImageUrl)
-                    // Jika kosong, baru gunakan placeholder (finalInfoImageUrl)
-                    src={finalInfoImageUrl}
-                    alt="Perawatan Sepatu Profesional"
-                    className="img-fluid hm-info-image"
-                  />
-                </Fade>
-              </div>
+            {/* KARTU PINK BARU (PEMBUNGKUS)
+              Kita pindahkan style background dari <section> ke <div> ini
+            */}
+            <div 
+              className="hm-info-card-pink" 
+              style={{
+                backgroundImage: heroSecondaryBgUrl
+                  ? `url(${heroSecondaryBgUrl})`
+                  : "none",
+              }}
+            >
+              <div className="row g-5 align-items-center">
+                
+                {/* Kolom Kiri: Gambar (Sepatu) */}
+                <div className="col-lg-6">
+                  <Fade direction="left" triggerOnce>
+                    <img
+                      // Gambar sepatu (sudah benar)
+                      src={finalInfoImageUrl}
+                      alt="Perawatan Sepatu Profesional"
+                      className="img-fluid hm-info-image" 
+                    />
+                  </Fade>
+                </div>
 
-              {/* Kolom Kanan: Teks (TETAP SAMA) */}
-              <div className="col-lg-6">
-                <Fade direction="right" triggerOnce>
-                  <div className="hm-info-content">
-                    <h2 className="hm-info-title">
-                      Teknologi Canggih, <br />
-                      <span style={{ color: "var(--primary-color)" }}>
+                {/* Kolom Kanan: Teks */}
+                <div className="col-lg-6">
+                  <Fade direction="right" triggerOnce>
+                    <div className="hm-info-content">
+                      
+                      {/* Ganti <h2 className="hm-info-title"> */}
+                      <h2 className="hm-info-title-white-glow">
+                        Teknologi Canggih, <br />
                         Hasil Maksimal.
-                      </span>
-                    </h2>
-                    <p className="hm-info-text">
-                      Kami tidak hanya membersihkan, kami merawat. Dengan
-                      menggunakan peralatan modern dan formula pembersih premium
-                      yang aman, kami memastikan setiap pasang sepatu kembali
-                      dalam kondisi terbaiknya.
-                    </p>
-                    <Link
-                      to="/about"
-                      className="btn btn-modern-secondary btn-lg"
-                    >
-                      Tentang Kami
-                    </Link>
-                  </div>
-                </Fade>
-              </div>
-            </div>
+                      </h2>
+                      
+                      {/* Ganti <p className="hm-info-text"> */}
+                      <p className="hm-info-text-white">
+                        Kami tidak hanya membersihkan, kami merawat. Dengan
+                        menggunakan peralatan modern dan formula pembersih premium
+                        yang aman, kami memastikan setiap pasang sepatu kembali
+                        dalam kondisi terbaiknya.
+                      </p>
+                      
+                      {/* Ganti <Link className="btn btn-modern-secondary..."> */}
+                      <Link
+                        to="/about"
+                        className="btn btn-modern-white-pink-text btn-lg"
+                      >
+                        Tentang Kami
+                      </Link>
+                    </div>
+                  </Fade>
+                </div>
+              </div> {/* Akhir .row */}
+            </div> {/* Akhir .hm-info-card-pink */}
           </div>
         </section>
 
