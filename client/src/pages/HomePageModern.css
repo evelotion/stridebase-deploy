@@ -169,7 +169,7 @@
 }
 
 .brand-logo-text:hover {
-  color: var(--primary-color);
+  color: var(#F4D35E);
 }
 
 @keyframes scroll {
@@ -223,7 +223,7 @@
 .hm-info-text {
   font-family: var(--font-family, "Inter", sans-serif);
   font-size: var(--font-size-lead, 1.1rem);
-  color: #555;
+  color: #FAF0CA;
   margin-bottom: 2.5rem;
   line-height: 1.7;
 }
