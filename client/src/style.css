@@ -4752,3 +4752,63 @@ body.has-global-announcement .filter-panel-top {
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
+
+/* ==================================
+   Varian Navbar Berdasarkan Scroll
+===================================== */
+
+/* 1. STATE AT TOP (Transparan) */
+.navbar-top {
+  background-color: transparent !important; /* Paksa transparan */
+  transition: background-color 0.3s ease-in-out;
+}
+/* Mengatur warna link di TOP (default Bootstrap sudah gelap) */
+.navbar-top .nav-link,
+.navbar-top .navbar-brand,
+.navbar-top .btn-icon {
+  color: #333; /* Warna gelap agar terlihat di background putih */
+}
+.navbar-top .nav-link:hover,
+.navbar-top .navbar-brand:hover,
+.navbar-top .btn-icon:hover {
+  color: var(--primary-color, #e5446a); /* Warna pink saat hover */
+}
+
+/* 2. STATE SCROLLED (Pink Solid) */
+.navbar-scrolled {
+  background-color: #e5446a !important; /* Warna pink solid */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* 3. Mengatur warna font & icon di STATE SCROLLED menjadi PUTIH */
+.navbar-scrolled .nav-link,
+.navbar-scrolled .navbar-brand,
+.navbar-scrolled .btn-icon {
+  color: #ffffff !important;
+}
+
+.navbar-scrolled .nav-link:hover,
+.navbar-scrolled .navbar-brand:hover,
+.navbar-scrolled .btn-icon:hover {
+  color: rgba(255, 255, 255, 0.8) !important; /* Putih sedikit redup */
+}
+
+/* Memberi border putih pada avatar saat di-scroll */
+.navbar-scrolled .user-avatar-sm {
+  border: 2px solid #ffffff;
+}
+
+/* Badge notifikasi agar tetap terlihat */
+.notification-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: var(--bs-danger, #dc3545);
+  color: white;
+  border-radius: 50%;
+  padding: 0.15em 0.4em;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border: 1px solid white; /* Border agar terpisah dari icon */
+}
