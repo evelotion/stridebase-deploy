@@ -253,7 +253,10 @@
 .hm-new-image {
   /* Gambar utama ini sekarang di dalam .container */
   width: 100%; /* 100% dari .container */
-  max-height: 350px; /* Atur ketinggian sesuai selera */
+  
+  /* HAPUS max-height: 350px; DAN GANTI DENGAN INI: */
+  aspect-ratio: 16 / 9; /* Menjaga rasio 16:9 (seperti video widescreen) */
+  
   object-fit: cover; 
   display: block; 
   vertical-align: middle;
