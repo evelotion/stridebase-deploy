@@ -169,7 +169,7 @@
 }
 
 .brand-logo-text:hover {
-  color: var(#F4D35E);
+  color: var(--primary-color);
 }
 
 @keyframes scroll {
