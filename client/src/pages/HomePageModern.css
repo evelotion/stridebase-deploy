@@ -249,19 +249,18 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-
 .hm-new-image {
-  /* Gambar utama ini sekarang di dalam .container */
-  width: 100%; /* 100% dari .container */
+  width: 100%;
   
-  /* HAPUS max-height: 350px; DAN GANTI DENGAN INI: */
-  aspect-ratio: 16 / 9; /* Menjaga rasio 16:9 (seperti video widescreen) */
+  /* GANTI INI: */
+  /* aspect-ratio: 16 / 9; */ /* Ini untuk gambar horizontal */
+  
+  /* MENJADI INI: (Rasio 3:4, cocok untuk gambar potret) */
+  aspect-ratio: 3 / 4;
   
   object-fit: cover; 
   display: block; 
   vertical-align: middle;
-  
-  /* Kita kembalikan style agar konsisten dengan banner */
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
 }
