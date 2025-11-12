@@ -188,8 +188,19 @@
 */
 .hm-info-section {
   padding: 4.5rem 0;
-  background-color: transparent; /* <-- KUNCINYA ADA DI SINI */
-  border-bottom: none; /* Border sudah dipindah ke .hm-composite-section */
+  background-color: transparent; 
+  border-bottom: none; 
+
+  /* --- TAMBAHKAN 3 BARIS DI BAWAH INI --- */
+  
+  /* 1. Membuat gambar menutupi seluruh area (ini yang Anda maksud "fit in") */
+  background-size: cover; 
+  
+  /* 2. Memposisikan gambar di tengah (horizontal & vertikal) */
+  background-position: center center;
+  
+  /* 3. Mencegah gambar berulang */
+  background-repeat: no-repeat;
 }
 
 .hm-info-image {
@@ -262,3 +273,4 @@
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
 }
+
