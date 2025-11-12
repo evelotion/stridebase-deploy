@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (VERSI FINAL LENGKAP) */
+/* File: client/src/pages/HomePageModern.css (Solusi Margin Negatif) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -24,10 +24,15 @@
   background-image: none !important;
   color: #1a1a1a;
   overflow: hidden;
-  padding-top: 0rem;
-  padding-bottom: 0rem;
+  
+  /* Hapus padding-top dari aturan global */
+  padding-top: 0rem; 
+  
+  /* HANYA INI YANG MENGATUR JARAKNYA.
+     Ganti 1.5rem (24px) ke 1rem (16px) atau 0.5rem (8px) jika ingin lebih dekat. */
+  padding-bottom: 0rem; 
   margin-bottom: -3.5rem;
-  margin-top: -1rem;
+  margin-top: -1rem; 
 }
 
 .modern-main-carousel-wrapper {
@@ -36,7 +41,8 @@
   overflow: hidden;
   position: relative;
   height: 100%;
-  max-height: 400px;
+  /* ini tinggi gambar banner bukan padding */
+  max-height: 400px; 
 }
 
 .modern-main-carousel-wrapper .carousel,
@@ -90,6 +96,7 @@
   height: 100%;
   display: flex;
   align-items: flex-end;
+  /* 4. Samakan ketinggiannya */
   max-height: 400px;
 }
 
@@ -128,8 +135,11 @@
 ==================================
 */
 .brand-marquee-section {
+  /* Hapus padding-top dari aturan global */
   padding-top: 0rem !important;
-  padding-bottom: 2.5rem;
+
+  /* padding sectionnya brand marquee */
+  padding-bottom: 2.5rem; 
   background-color: #ffffff;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
@@ -178,8 +188,8 @@
 */
 .hm-info-section {
   padding: 4.5rem 0;
-  background-color: transparent;
-  border-bottom: none;
+  background-color: transparent; /* <-- KUNCINYA ADA DI SINI */
+  border-bottom: none; /* Border sudah dipindah ke .hm-composite-section */
 }
 
 .hm-info-image {
@@ -217,7 +227,7 @@
 }
 
 .hm-featured-stores {
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid #e9ecef; 
 }
 
 .btn-modern-secondary {
@@ -239,92 +249,16 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* ==================================
-   PERBAIKAN: HERO SEKUNDER (BARU)
-   (Menggunakan aspect-ratio)
-   ==================================
-*/
+
 .hm-new-image {
-  width: 100%;
-  
-  /* REVISI: Menggunakan aspect-ratio agar proporsional.
-     Ganti ke 4 / 3 jika ingin lebih kotak, atau 3 / 4 jika
-     Anda HARUS menggunakan gambar vertikal.
-     PASTIKAN GAMBAR ANDA SESUAI RATIO INI. */
-  aspect-ratio: 16 / 9;
-  
-  object-fit: cover;
-  display: block;
+  /* Gambar utama ini sekarang di dalam .container */
+  width: 100%; /* 100% dari .container */
+  max-height: 350px; /* Atur ketinggian sesuai selera */
+  object-fit: cover; 
+  display: block; 
   vertical-align: middle;
+  
+  /* Kita kembalikan style agar konsisten dengan banner */
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
-}
-
-/* ==================================
-   PERBAIKAN REVISI: SECTION TEKNOLOGI CANGGIH
-   (Fokus pada min-height dan background-size)
-   ==================================
-*/
-
-/* PENTING: Ganti .hm-tech-section ini agar sesuai dengan
-  className yang Anda gunakan di file HomePage.jsx
-*/
-.hm-tech-section {
-  position: relative;
-  overflow: hidden;
-  padding: 6rem 0;
-  background-color: #f8f9fa;
-
-
-  /* Pastikan repeat diatur untuk KEDUA gambar */
-  background-repeat: no-repeat, no-repeat;
-}
-
-/* Konten teks (Judul, paragraf, tombol) */
-.hm-tech-content {
-  position: relative;
-  z-index: 2;
-}
-
-/* HANYA BERLAKU UNTUK DESKTOP (Sesuai permintaan Anda) */
-@media (min-width: 1024px) {
-  
-  .hm-tech-section {
-    
-    /* Tinggi minimal masih penting */
-    min-height: 550px;
-    
-    /* Ukuran: Sepatu (40% lebar), Background (Cover) */
-    background-size: 40% auto, cover;
-
-    /* === REVISI KUNCI === */
-    /* Posisi: 
-       Gbr 1 (Sepatu): 5% dari kiri, tengah vertikal
-       Gbr 2 (Background): DI KANAN, tengah vertikal */
-    background-position: 5% center, right center;
-  }
-
-  /* Di desktop, dorong konten ke kanan */
-  .hm-tech-content {
-    width: 50%;
-    margin-left: 45%;
-    padding: 3rem 0;
-  }
-}
-/* ATURAN UNTUK MOBILE (Penting untuk konsistensi) */
-@media (max-width: 1023px) {
-  
-  .hm-tech-section {
-    /* Di mobile, kita sederhanakan. */
-    background-image: url('/path/to/gambar-background-abstrak.jpg');
-    background-size: cover;
-    background-position: center center;
-    padding: 4rem 1.5rem;
-    text-align: center;
-  }
-
-  .hm-tech-content {
-    width: 100%;
-    margin-left: 0;
-  }
 }
