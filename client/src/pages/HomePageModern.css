@@ -231,7 +231,7 @@
   height: 30%; /* Ketinggian gradien fade */
   background: linear-gradient(
     to top, 
-    #ffffff 30%, /* Mulai dari PUTIH SOLID di bawah */
+    #ffffff 60%, /* Mulai dari PUTIH SOLID di bawah */
     transparent 100%  /* Memudar ke transparan di atas */
   );
   pointer-events: none; /* Abaikan klik */
