@@ -275,10 +275,7 @@
   padding: 6rem 0;
   background-color: #f8f9fa;
 
-  /* Path placeholder, ganti dengan path Anda */
-  background-image: url('/path/to/gambar-sepatu-hitam.png'),
-                    url('/path/to/gambar-background-abstrak.jpg');
-  
+
   /* Pastikan repeat diatur untuk KEDUA gambar */
   background-repeat: no-repeat, no-repeat;
 }
@@ -294,33 +291,26 @@
   
   .hm-tech-section {
     
-    /* === REVISI KUNCI 1: TINGGI MINIMAL === */
-    /* Kita paksa section agar punya tinggi minimal di desktop.
-       Sesuaikan 550px ini jika kurang tinggi/terlalu tinggi. */
+    /* Tinggi minimal masih penting */
     min-height: 550px;
     
-    /* === REVISI KUNCI 2: UKURAN GAMBAR === */
-    /* Gbr 1 (Sepatu): Lebar 40% dari section, tinggi otomatis.
-       Gbr 2 (Background): Tetap 'cover'. */
+    /* Ukuran: Sepatu (40% lebar), Background (Cover) */
     background-size: 40% auto, cover;
 
-    /* === REVISI KUNCI 3: POSISI GAMBAR === */
-    /* Gbr 1 (Sepatu): 5% dari kiri, tengah secara vertikal.
-       Gbr 2 (Background): Tengah-tengah. */
-    background-position: 5% center, center center;
+    /* === REVISI KUNCI === */
+    /* Posisi: 
+       Gbr 1 (Sepatu): 5% dari kiri, tengah vertikal
+       Gbr 2 (Background): DI KANAN, tengah vertikal */
+    background-position: 5% center, right center;
   }
 
   /* Di desktop, dorong konten ke kanan */
   .hm-tech-content {
     width: 50%;
     margin-left: 45%;
-    
-    /* Pastikan konten juga punya padding vertikal
-       agar selaras dengan min-height */
     padding: 3rem 0;
   }
 }
-
 /* ATURAN UNTUK MOBILE (Penting untuk konsistensi) */
 @media (max-width: 1023px) {
   
