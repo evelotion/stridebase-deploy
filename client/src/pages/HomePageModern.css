@@ -228,7 +228,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70%; /* Ketinggian gradien fade */
+  height: 90%; /* Ketinggian gradien fade */
   background: linear-gradient(
     to top, 
     #ffffff 5%, /* Mulai dari PUTIH SOLID di bawah */
