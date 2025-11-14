@@ -1,6 +1,6 @@
-// File: client/src/components/Navbar.jsx (Dengan Perbaikan Final untuk Logo)
+// File: client/src/components/Navbar.jsx (Dengan Efek Scroll Transparan)
 
-import React from "react";
+import React, { useState, useEffect } from "react"; // UBAH: Impor hooks
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 
@@ -68,6 +68,25 @@ const Navbar = ({
   const location = useLocation();
   const isHomePage = location.pathname === "/";
 
+  // --- BARU: LOGIKA UNTUK DETEKSI SCROLL ---
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Set 'true' jika scroll lebih dari 10px
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    // Tambahkan event listener saat komponen dimuat
+    window.addEventListener("scroll", handleScroll);
+
+    // Hapus event listener saat komponen akan di-unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []); // [] berarti efek ini hanya berjalan sekali (saat mount dan unmount)
+  // --- AKHIR DARI LOGIKA SCROLL ---
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -98,7 +117,6 @@ const Navbar = ({
     }
   };
 
-  // --- PERBAIKAN UTAMA ADA DI SINI ---
   const renderLogo = () => {
     if (theme?.branding?.logoUrl) {
       return (
@@ -109,7 +127,6 @@ const Navbar = ({
         />
       );
     }
-    // Tampilkan teks hanya jika URL logo tidak ada
     return <span className="fs-4">StrideBase</span>;
   };
 
@@ -119,14 +136,18 @@ const Navbar = ({
     }
     return <span>StrideBase</span>;
   };
-  // --- AKHIR PERBAIKAN ---
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg d-none d-lg-flex">
+      {/* UBAH: Tambahkan kelas CSS dinamis di sini */}
+      <nav
+        className={`navbar navbar-expand-lg d-none d-lg-flex navbar-fixed-theme ${
+          isHomePage && !isScrolled ? "navbar-transparent" : "navbar-scrolled"
+        }`}
+      >
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
-            {renderLogo()} {/* Panggil fungsi renderLogo di sini */}
+            {renderLogo()}
           </Link>
           <ul className="nav-menu-list list-unstyled d-flex mb-0 ms-auto">
             <li>
@@ -293,8 +314,7 @@ const Navbar = ({
         <div className="mobile-header d-lg-none">
           <div className="mobile-logo-container">
             <Link className="navbar-brand" to="/">
-              {renderMobileLogo()}{" "}
-              {/* Panggil fungsi renderMobileLogo di sini */}
+              {renderMobileLogo()}
             </Link>
           </div>
           <div className="mobile-user-container">
