@@ -6,10 +6,6 @@
 .home-modern-wrapper {
   background-color: #ffffff;
   color: #1a1a1a;
-  
-  /* TAMBAHKAN BARIS INI */
-  /* 70px adalah perkiraan. Sesuaikan dengan tinggi navbar Anda */
-  padding-top: 70px; 
 }
 
 .hm-section-title {
