@@ -1,10 +1,10 @@
-// File: client/src/components/Navbar.jsx (Dengan Efek Scroll Transparan)
+// File: client/src/components/Navbar.jsx (Versi FINAL dengan Efek Scroll)
 
-import React, { useState, useEffect } from "react"; // UBAH: Impor hooks
+import React, { useState, useEffect } from "react"; // <-- TAMBAHKAN useState, useEffect
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 
-// --- AWAL DARI LOGIKA AVATAR ---
+// --- AWAL DARI LOGIKA AVATAR (Kode Anda yang sudah ada) ---
 const getInitials = (name) => {
   if (!name) return "?";
   const names = name.split(" ");
@@ -45,7 +45,7 @@ const UserAvatar = ({ name, size = 32 }) => {
     color: "white",
     textTransform: "uppercase",
     fontSize: `${size / 2.2}px`,
-    marginRight: size > 32 ? "0px" : "8px", // Menghapus margin jika ukurannya besar (untuk mobile)
+    marginRight: size > 32 ? "0px" : "8px",
   };
 
   return (
@@ -62,30 +62,79 @@ const Navbar = ({
   unreadCount,
   setNotifications,
   setUnreadCount,
+  homePageTheme, // <-- TAMBAHKAN PROP INI (PENTING!)
 }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const location = useLocation();
-  const isHomePage = location.pathname === "/";
 
-  // --- BARU: LOGIKA UNTUK DETEKSI SCROLL ---
+  // --- LOGIKA BARU UNTUK SCROLL ---
   const [isScrolled, setIsScrolled] = useState(false);
+  const isModernHome =
+    location.pathname === "/" && homePageTheme === "modern";
 
   useEffect(() => {
     const handleScroll = () => {
-      // Set 'true' jika scroll lebih dari 10px
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 50);
     };
 
-    // Tambahkan event listener saat komponen dimuat
-    window.addEventListener("scroll", handleScroll);
+    if (isModernHome) {
+      // Hanya terapkan listener jika di homepage modern
+      handleScroll(); // Cek status awal
+      window.addEventListener("scroll", handleScroll);
+    } else {
+      // Halaman lain selalu dianggap "di-scroll" (solid)
+      setIsScrolled(true);
+    }
 
-    // Hapus event listener saat komponen akan di-unmount
     return () => {
+      // Hapus listener saat ganti halaman
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []); // [] berarti efek ini hanya berjalan sekali (saat mount dan unmount)
-  // --- AKHIR DARI LOGIKA SCROLL ---
+  }, [isModernHome, location.pathname]); // Jalankan ulang saat pindah halaman
+
+  // --- FUNGSI BARU (Ini yang Anda tanyakan) ---
+  const getNavClassName = () => {
+    if (isModernHome) {
+      // Dinamis untuk homepage modern:
+      // 'fixed-top' agar menempel
+      // 'navbar-dark' agar teks putih (kontras dgn bg gambar/pink)
+      return `navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-dark ${
+        isScrolled ? "shadow-sm" : ""
+      }`;
+    }
+    // Default untuk halaman lain (putih, solid)
+    return "navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-light bg-white shadow-sm";
+  };
+
+  // --- FUNGSI BARU (Ini yang Anda tanyakan) ---
+  const getNavStyle = () => {
+    if (isModernHome) {
+      if (isScrolled) {
+        // --- Saat di-scroll (Muncul) ---
+        return {
+          backgroundColor: "#e5446a",
+          background: "#e5446a",
+          borderColor: "transparent",
+          transition: "all 0.3s ease-in-out",
+        };
+      } else {
+        // --- Saat di atas (Menghilang) ---
+        return {
+          backgroundColor: "transparent !important",
+          background: "transparent !important", // Kunci: Hapus semua background
+          border: "none !important", // Kunci: Hapus semua border
+          transition: "all 0.3s ease-in-out",
+        };
+      }
+    }
+    // Halaman lain (non-modern-home) tidak perlu inline style
+    return {};
+  };
+  // --- AKHIR LOGIKA BARU ---
+
+  // Kode Anda yang sudah ada
+  const isHomePage = location.pathname === "/";
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -123,7 +172,7 @@ const Navbar = ({
         <img
           src={theme.branding.logoUrl}
           alt="StrideBase Logo"
-          style={{ maxHeight: "32px" }}
+          style={{ maxHeight: "32px" }} // <-- Ukuran logo Anda yang ada
         />
       );
     }
@@ -139,17 +188,14 @@ const Navbar = ({
 
   return (
     <>
-      {/* UBAH: Tambahkan kelas CSS dinamis di sini */}
-      <nav
-        className={`navbar navbar-expand-lg d-none d-lg-flex navbar-fixed-theme ${
-          isHomePage && !isScrolled ? "navbar-transparent" : "navbar-scrolled"
-        }`}
-      >
+      {/* --- INI BAGIAN YANG DIMODIFIKASI --- */}
+      <nav className={getNavClassName()} style={getNavStyle()}>
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
             {renderLogo()}
           </Link>
           <ul className="nav-menu-list list-unstyled d-flex mb-0 ms-auto">
+            {/* ... link Anda ... */}
             <li>
               <NavLink to="/" className="nav-link">
                 Home
@@ -177,6 +223,7 @@ const Navbar = ({
           >
             {user ? (
               <>
+                {/* ... (dropdown notifikasi & user Anda) ... */}
                 <div className="dropdown">
                   <button
                     className="btn btn-light rounded-circle"
@@ -202,6 +249,7 @@ const Navbar = ({
                     className="dropdown-menu dropdown-menu-end dropdown-menu-custom"
                     style={{ width: "350px" }}
                   >
+                    {/* ... (isi dropdown notif) ... */}
                     <li className="p-2 border-bottom">
                       <h6 className="mb-0">Notifikasi</h6>
                     </li>
@@ -255,6 +303,7 @@ const Navbar = ({
                     {user.name.split(" ")[0]}
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                    {/* ... (isi dropdown user) ... */}
                     {user.role === "developer" && (
                       <li>
                         <Link
@@ -310,6 +359,8 @@ const Navbar = ({
           </div>
         </div>
       </nav>
+
+      {/* --- KODE MOBILE ANDA (Tidak diubah) --- */}
       {!isHomePage && (
         <div className="mobile-header d-lg-none">
           <div className="mobile-logo-container">
@@ -329,6 +380,7 @@ const Navbar = ({
                   <UserAvatar name={user.name} size={40} />
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                  {/* ... (isi dropdown mobile) ... */}
                   {user.role === "developer" && (
                     <li>
                       <Link to="/developer/dashboard" className="dropdown-item">
