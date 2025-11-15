@@ -547,28 +547,31 @@
   pointer-events: none;
 }
 
-/* --- INSPIRASI 1: Rata Kiri dengan Aksen Garis --- */
+/* --- INSPIRASI 2: Judul "Eyebrow" di Tengah --- */
 
-/* Kita targetkan div pembungkusnya */
+/* Kita ubah pembungkusnya menjadi flexbox */
 .hm-services .text-center,
 .hm-featured-stores .text-center {
-  text-align: left; /* Ubah dari 'center' ke 'left' */
-  margin-bottom: 3rem; /* Sesuaikan margin */
+  display: flex;
+  flex-direction: column-reverse; /* <-- Kunci: Membalik urutan */
+  align-items: center;
+  margin-bottom: 3rem;
 }
 
 .hm-section-title {
-  font-size: 2.25rem; /* Sedikit lebih kecil agar rapi */
+  /* Judul utama (sekarang di bawah) */
+  font-size: 2.5rem;
   font-weight: 700;
   color: #1a1a1a;
-  padding-left: 1.25rem; /* Beri ruang untuk garis */
-  /* Ganti #e5446a dengan var(--primary-color) jika Anda mau */
-  border-left: 5px solid #e5446a; 
-  line-height: 1.2;
+  margin-top: 0.25rem; /* Jarak dari eyebrow */
 }
 
 .hm-section-subtitle {
-  font-size: 1.1rem;
-  color: #555;
-  padding-left: 1.25rem; /* Sejajarkan dengan judul */
-  margin-top: 0.5rem; /* Jarak dari judul */
+  /* "Eyebrow" (sekarang di atas) */
+  font-size: 0.9rem; /* Lebih kecil */
+  font-weight: 600;
+  color: #e5446a; /* Warna pink */
+  text-transform: uppercase; /* Kapital */
+  letter-spacing: 1px; /* Jarak antar huruf */
+  margin-bottom: 0;
 }
