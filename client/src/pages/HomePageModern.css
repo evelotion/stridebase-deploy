@@ -84,8 +84,8 @@
   
   /* Padding & margin sesuai diskusi kita */
   padding-top: 0rem;
-  padding-bottom: 2rem; /* Dikecilkan */
-  margin-bottom: -3rem;  /* Dibuat negatif untuk menarik marquee */
+  padding-bottom: 1rem; /* Dikecilkan */
+  margin-bottom: -4rem;  /* Dibuat negatif untuk menarik marquee */
 
   color: #1a1a1a;
   /* overflow: visible agar bayangan banner tidak terpotong */
