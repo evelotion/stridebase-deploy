@@ -257,7 +257,7 @@ const UserLayout = ({
         unreadCount={unreadCount}
         setNotifications={setNotifications}
         setUnreadCount={setUnreadCount}
-        homePageTheme={theme?.homePageTheme || "classic"}
+        homePageTheme="modern"
       />
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
