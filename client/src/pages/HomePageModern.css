@@ -61,7 +61,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 150px; /* Ketinggian luntur */
+  height: 250px; /* Ketinggian luntur */
   background: linear-gradient(
     to top, 
     #ffffff 10%,
@@ -83,7 +83,7 @@
   z-index: 2;
   
   /* Padding & margin sesuai diskusi kita */
-  padding-top: 4rem;
+  padding-top: 2rem;
   padding-bottom: 2rem; /* Dikecilkan */
   margin-bottom: -3rem;  /* Dibuat negatif untuk menarik marquee */
 
