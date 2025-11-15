@@ -48,14 +48,14 @@
   right: 0;
   
   /* Atur ketinggian gradien di sini */
-  height: 90px; 
+  height: 200px; 
 
   /* Kunci utamanya: 
      Gradien dari PUTIH (warna halaman) ke transparan 
   */
   background: linear-gradient(
     to top, 
-    #ffffff 5%,  /* Mulai dari putih solid di bawah */
+    #ffffff 60%,  /* Mulai dari putih solid di bawah */
     transparent 90%  /* Memudar ke transparan di atas */
   );
   
