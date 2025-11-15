@@ -8,7 +8,7 @@ import GlobalAnnouncement from "../components/GlobalAnnouncement";
 import { Fade } from "react-awesome-reveal";
 import "./HomePageModern.css";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay, Loop } from "swiper/modules";
+import { Navigation, Autoplay} from "swiper/modules";
 
 // Impor CSS Swiper
 import "swiper/css";
@@ -418,17 +418,17 @@ const HomePage = ({
               {/* Versi 1: SLIDER BARU (Hanya tampil di Desktop) */}
               <div className="hm-services-slider d-none d-lg-block">
                 <Swiper
-                  modules={[Navigation, Autoplay, Loop]}
-                  spaceBetween={30} // Jarak antar kartu
-                  slidesPerView={3.5} // Menampilkan 3 kartu penuh + 1/2 kartu
-                  navigation // Menampilkan panah navigasi
-                  loop={true}
-                  autoplay={{
-                    delay: 4000,
-                    disableOnInteraction: false,
-                  }}
-                  className="mySwiper"
-                >
+              modules={[Navigation, Autoplay]} // <-- SEPERTI INI
+              spaceBetween={30}
+              slidesPerView={3.5}
+              navigation
+              loop={true} // <-- Prop ini SUDAH BENAR
+              autoplay={{
+                delay: 4000, 
+                disableOnInteraction: false, 
+              }}
+              className="mySwiper"
+            >
                   {serviceCategories.map((category) => (
                     <SwiperSlide key={category.name}>
                       <Link to={category.link} className="hm-service-card">
