@@ -215,7 +215,7 @@ const HomePage = ({
     </>
   );
 
-  const renderModernHomepage = () => {
+const renderModernHomepage = () => {
     // --- PERBAIKAN ERROR: Definisikan 'branding' dengan aman ---
     // Memberikan fallback object kosong jika theme atau theme.branding undefined
     const branding = theme?.branding || {};
@@ -245,99 +245,112 @@ const HomePage = ({
       // Pembungkus utama untuk tema modern
       <div className="home-modern-wrapper">
         {/* ==============================================
-        HERO SECTION - SPLIT BANNERS
-        ============================================== */}
-        <section
-          className="hero-section modern-split-banners"
-          // --- PENAMBAHAN STYLE UNTUK BACKGROUND HERO ATAS ---
+          PERUBAHAN STRUKTUR DIMULAI DI SINI
+          ============================================== 
+        */}
+
+        {/* 1. Ini adalah WRAPPER BARU untuk Latar Belakang */}
+        <div
+          className="hm-hero-background-wrapper"
           style={{
+            // 2. Style (gambar) dipindahkan ke wrapper baru ini
             backgroundImage: modernHeroSectionBgUrl
               ? `url(${modernHeroSectionBgUrl})`
               : "none",
           }}
-          // --- AKHIR PENAMBAHAN STYLE ---
         >
-          <div className="container">
-            <div className="row g-4">
-              {/* Kolom Kiri: Banner Carousel Utama */}
-              <div className="col-lg-8">
-                <Fade direction="left" duration={800} triggerOnce>
-                  <div className="modern-main-carousel-wrapper">
-                    <div
-                      id="modernMainBannerCarousel"
-                      className="carousel slide carousel-fade"
-                      data-bs-ride="carousel"
-                    >
-                      <div className="carousel-indicators modern-carousel-indicators">
-                        {banners.map((_, index) => (
-                          <button
-                            type="button"
-                            data-bs-target="#modernMainBannerCarousel"
-                            data-bs-slide-to={index}
-                            className={index === 0 ? "active" : ""}
-                            aria-current={index === 0 ? "true" : "false"}
-                            aria-label={`Slide ${index + 1}`}
-                            key={index}
-                          ></button>
-                        ))}
-                      </div>
-                      <div className="carousel-inner">
-                        {banners.length > 0 ? (
-                          banners.map((banner, index) => (
-                            <div
-                              className={`carousel-item ${
-                                index === 0 ? "active" : ""
-                              }`}
-                              key={banner.id}
-                            >
-                              <Link to={banner.linkUrl || "#"}>
-                                <img
-                                  src={banner.imageUrl}
-                                  className="d-block w-100 modern-main-banner-image"
-                                  alt={banner.title || "Main Banner"}
-                                />
-                              </Link>
+          {/* 3. 'hero-section' sekarang ada di dalam wrapper 
+               dan TIDAK memiliki style 'backgroundImage' lagi 
+          */}
+          <section className="hero-section modern-split-banners">
+            <div className="container">
+              <div className="row g-4">
+                {/* Kolom Kiri: Banner Carousel Utama */}
+                <div className="col-lg-8">
+                  <Fade direction="left" duration={800} triggerOnce>
+                    <div className="modern-main-carousel-wrapper">
+                      <div
+                        id="modernMainBannerCarousel"
+                        className="carousel slide carousel-fade"
+                        data-bs-ride="carousel"
+                      >
+                        <div className="carousel-indicators modern-carousel-indicators">
+                          {banners.map((_, index) => (
+                            <button
+                              type="button"
+                              data-bs-target="#modernMainBannerCarousel"
+                              data-bs-slide-to={index}
+                              className={index === 0 ? "active" : ""}
+                              aria-current={index === 0 ? "true" : "false"}
+                              aria-label={`Slide ${index + 1}`}
+                              key={index}
+                            ></button>
+                          ))}
+                        </div>
+                        <div className="carousel-inner">
+                          {banners.length > 0 ? (
+                            banners.map((banner, index) => (
+                              <div
+                                className={`carousel-item ${
+                                  index === 0 ? "active" : ""
+                                }`}
+                                key={banner.id}
+                              >
+                                <Link to={banner.linkUrl || "#"}>
+                                  <img
+                                    src={banner.imageUrl}
+                                    className="d-block w-100 modern-main-banner-image"
+                                    alt={banner.title || "Main Banner"}
+                                  />
+                                </Link>
+                              </div>
+                            ))
+                          ) : (
+                            // Fallback jika tidak ada banner
+                            <div className="carousel-item active">
+                              <img
+                                src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
+                                className="d-block w-100 modern-main-banner-image"
+                                alt="Sepatu Bersih"
+                              />
                             </div>
-                          ))
-                        ) : (
-                          // Fallback jika tidak ada banner
-                          <div className="carousel-item active">
-                            <img
-                              src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
-                              className="d-block w-100 modern-main-banner-image"
-                              alt="Sepatu Bersih"
-                            />
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Fade>
-              </div>
-              {/* Kolom Kanan: Banner Statis Kecil */}
-              <div className="col-lg-4">
-                <Fade direction="right" duration={800} triggerOnce>
-                  <div className="modern-side-banner-wrapper">
-                    <Link to={sideBannerLink}>
-                      <img
-                        src={sideBannerUrl}
-                        alt="Promo Banner"
-                        className="img-fluid modern-side-banner-image"
-                      />
-                      <div className="modern-side-banner-overlay">
-                        <h4 className="text-white">Promo Spesial!</h4>
-                        <p className="text-white-50">Diskon hingga 30%.</p>
-                        <button className="btn btn-sm btn-light mt-2">
-                          Lihat
-                        </button>
-                      </div>
-                    </Link>
-                  </div>
-                </Fade>
+                  </Fade>
+                </div>
+                {/* Kolom Kanan: Banner Statis Kecil */}
+                <div className="col-lg-4">
+                  <Fade direction="right" duration={800} triggerOnce>
+                    <div className="modern-side-banner-wrapper">
+                      <Link to={sideBannerLink}>
+                        <img
+                          src={sideBannerUrl}
+                          alt="Promo Banner"
+                          className="img-fluid modern-side-banner-image"
+                        />
+                        <div className="modern-side-banner-overlay">
+                          <h4 className="text-white">Promo Spesial!</h4>
+                          <p className="text-white-50">Diskon hingga 30%.</p>
+                          <button className="btn btn-sm btn-light mt-2">
+                            Lihat
+                          </button>
+                        </div>
+                      </Link>
+                    </div>
+                  </Fade>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
+        {/* <-- Tag penutup untuk 'hm-hero-background-wrapper' */}
+
+        {/* ==============================================
+          AKHIR DARI PERUBAHAN STRUKTUR
+          ============================================== 
+        */}
 
         {/* ==============================================
         BRAND MARQUEE (Interaktif & Animatif)

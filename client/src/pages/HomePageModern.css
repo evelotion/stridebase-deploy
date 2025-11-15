@@ -1,4 +1,4 @@
-/* File: client/src/pages/HomePageModern.css (LENGKAP dengan MODIFIKASI KARTU PINK) */
+/* File: client/src/pages/HomePageModern.css (LENGKAP dengan SEMUA MODIFIKASI) */
 
 /* ==============================================
   DEFINISI DASAR TEMA MODERN (CLEAN)
@@ -19,50 +19,84 @@
   font-size: 1.1rem;
 }
 
-.hero-section.modern-split-banners {
- background-color: #f8f9fa; /* Fallback jika tdk ada gambar */
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
+/* ==============================================
+  PERUBAHAN STRUKTUR HERO SECTION
+============================================== */
 
-  /* INI KUNCINYA: Mendorong konten ke bawah navbar */
-  padding-top: 0rem; /* (Sesuaikan 120px-140px) */
-
-  /* Beri jarak ke section marquee di bawahnya */
-  padding-bottom: 0rem; 
-
-  margin-bottom: -3rem;
-
-  /* Kembalikan margin ke normal */
-  margin: 0;
-  /* --- AKHIR PERUBAHAN --- */
-
-  color: #1a1a1a;
-  overflow: hidden;
+/* Wrapper BARU untuk Latar Belakang Hero */
+.hm-hero-background-wrapper {
   position: relative;
+  overflow: hidden; /* Penting agar ::after tidak bocor */
+  
+  /* Style background yang dipindah dari .hero-section */
+  background-color: #f8f9fa; /* Fallback */
+  background-size: cover;
+  background-position: center top; /* Sesuai request Anda */
+  background-repeat: no-repeat;
 }
 
-.hero-section.modern-split-banners::after {
+/* EFEK GLOW PINK DI TENGAH (nempel ke wrapper) */
+.hm-hero-background-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  padding-bottom: 70%;
+  background: radial-gradient(
+    circle,
+    rgba(229, 68, 106, 0.15) 0%, /* Pink #e5446a 15% transparan */
+    transparent 70%
+  );
+  filter: blur(60px);
+  z-index: 1; /* Di belakang konten */
+  pointer-events: none;
+}
+
+/* EFEK LUNTUR PUTIH DI BAWAH (nempel ke wrapper) */
+.hm-hero-background-wrapper::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  
-  /* Atur ketinggian gradien di sini */
-  height: 150px; 
-
-  /* Kunci utamanya: 
-     Gradien dari PUTIH (warna halaman) ke transparan 
-  */
+  height: 150px; /* Ketinggian luntur */
   background: linear-gradient(
     to top, 
-    #ffffff 5%,  /* Mulai dari putih solid di bawah */
-    transparent 90%  /* Memudar ke transparan di atas */
+    #ffffff 10%,
+    transparent 90%
   );
-  
-  pointer-events: none; /* Agar tidak menghalangi klik */
+  pointer-events: none;
+  z-index: 3; /* Di atas ::before dan ::hero-section */
 }
+
+/* .hero-section yang sudah dimodifikasi (menjadi transparan) */
+.hero-section.modern-split-banners {
+  /* Dibuat transparan */
+  background-color: transparent; 
+
+  /* Style background-* dihapus dan dipindah ke wrapper */
+
+  /* Pastikan konten di atas background (z-index: 2) */
+  position: relative;
+  z-index: 2;
+  
+  /* Padding & margin sesuai diskusi kita */
+  padding-top: 8rem;
+  padding-bottom: 2rem; /* Dikecilkan */
+  margin-bottom: -3rem;  /* Dibuat negatif untuk menarik marquee */
+
+  color: #1a1a1a;
+  /* overflow: visible agar bayangan banner tidak terpotong */
+  overflow: visible; 
+}
+
+
+/* ==============================================
+  SISA STYLE HERO (TIDAK BERUBAH)
+============================================== */
+
 .modern-main-carousel-wrapper {
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
@@ -159,7 +193,7 @@
 
 /*
 ==================================
-  BRAND MARQUEE (Jarak Dipersempit)
+  BRAND MARQUEE (BORDER DIHAPUS)
 ==================================
 */
 .brand-marquee-section {
@@ -169,6 +203,8 @@
   /* padding sectionnya brand marquee */
   padding-bottom: 2.5rem; 
   background-color: #ffffff;
+  /* border-top: 1px solid #f0f0f0;    <-- DIHAPUS */
+  /* border-bottom: 1px solid #f0f0f0; <-- DIHAPUS */
 }
 
 .marquee-wrapper {
@@ -332,17 +368,18 @@
 }
 
 
-/* ==================================
-  Layanan & Toko (Tidak Berubah)
+/*
+==================================
+  Layanan & Toko (BORDER DIHAPUS)
 ==================================
 */
 .hm-services {
-  /* border-top: 1px solid #e9ecef;
-  border-bottom: 1px solid #e9ecef; */
+  /* border-top: 1px solid #e9ecef;    <-- DIHAPUS */
+  /* border-bottom: 1px solid #e9ecef; <-- DIHAPUS */
 }
 
 .hm-featured-stores {
-  /* border-top: 1px solid #e9ecef;  */
+  /* border-top: 1px solid #e9ecef; <-- DIHAPUS */
 }
 
 .btn-modern-secondary {
