@@ -23,28 +23,32 @@ const serviceCategories = [
     icon: "fa-rocket",
     link: "/store?services=Fast+Clean",
     description: "Pembersihan instan untuk kesibukan Anda.",
-    imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ab?q=80&w=2670&auto=format&fit=crop"
+    imageUrl:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ab?q=80&w=2670&auto=format&fit=crop",
   },
   {
     name: "Perawatan Kulit",
     icon: "fa-gem",
     link: "/store?services=Leather",
     description: "Mengembalikan kilau dan kelembutan bahan kulit.",
-    imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop"
+    imageUrl:
+      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop",
   },
   {
     name: "Suede & Nubuck",
     icon: "fa-leaf",
     link: "/store?services=Suede",
     description: "Perawatan khusus untuk bahan yang sensitif.",
-    imageUrl: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop"
+    imageUrl:
+      "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop",
   },
   {
     name: "Unyellowing",
     icon: "fa-sun",
     link: "/store?services=Unyellowing",
     description: "Solusi untuk sol yang menguning agar kembali putih.",
-    imageUrl: "https://images.unsplash.com/photo-1552346154-21d32810ABA3?q=80&w=2670&auto=format&fit=crop"
+    imageUrl:
+      "https://images.unsplash.com/photo-1552346154-21d32810ABA3?q=80&w=2670&auto=format&fit=crop",
   },
   // Anda bisa tambahkan lebih banyak di sini
 ];
@@ -246,7 +250,7 @@ const HomePage = ({
     </>
   );
 
-const renderModernHomepage = () => {
+  const renderModernHomepage = () => {
     // --- PERBAIKAN ERROR: Definisikan 'branding' dengan aman ---
     // Memberikan fallback object kosong jika theme atau theme.branding undefined
     const branding = theme?.branding || {};
@@ -255,8 +259,7 @@ const renderModernHomepage = () => {
     const sideBannerUrl =
       branding.modernHeroSideBannerUrl ||
       "https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop";
-    const sideBannerLink =
-      branding.modernHeroSideBannerLink || "/store";
+    const sideBannerLink = branding.modernHeroSideBannerLink || "/store";
 
     // Variabel untuk GAMBAR KIRI (kartu pink)
     const heroSecondaryImageUrl = branding.heroSecondaryImage;
@@ -397,6 +400,75 @@ const renderModernHomepage = () => {
             </div>
           </div>
         </section>
+        <section
+          className="hm-services py-5"
+          style={{ backgroundColor: "#ffffff" }}
+        >
+          <div className="container">
+            <Fade direction="up" triggerOnce>
+              <div className="text-center mb-5">
+                <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
+                  Layanan Komprehensif
+                </h2>
+                <p className="hm-section-subtitle" style={{ color: "#555" }}>
+                  Dari pembersihan cepat hingga restorasi mendetail.
+                </p>
+              </div>
+
+              {/* Versi 1: SLIDER BARU (Hanya tampil di Desktop) */}
+              <div className="hm-services-slider d-none d-lg-block">
+                <Swiper
+                  modules={[Navigation]}
+                  spaceBetween={30} // Jarak antar kartu
+                  slidesPerView={3.5} // Menampilkan 3 kartu penuh + 1/2 kartu
+                  navigation // Menampilkan panah navigasi
+                  className="mySwiper"
+                >
+                  {serviceCategories.map((category) => (
+                    <SwiperSlide key={category.name}>
+                      <Link to={category.link} className="hm-service-card">
+                        <img
+                          src={category.imageUrl}
+                          alt={category.name}
+                          className="hm-service-card-image"
+                        />
+                        <div className="hm-service-card-overlay">
+                          <div className="hm-service-card-content">
+                            <div className="category-icon mb-3">
+                              <i className={`fas ${category.icon}`}></i>
+                            </div>
+                            <h4 className="hm-service-card-title">
+                              {category.name}
+                            </h4>
+                            <p className="hm-service-card-desc">
+                              {category.description}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+
+              {/* Versi 2: GRID LAMA (Hanya tampil di Mobile) */}
+              <div className="category-grid d-lg-none">
+                {serviceCategories.map((category) => (
+                  <Link
+                    to={category.link}
+                    key={category.name}
+                    className="category-card"
+                  >
+                    <div className="category-icon">
+                      <i className={`fas ${category.icon}`}></i>
+                    </div>
+                    <span>{category.name}</span>
+                  </Link>
+                ))}
+              </div>
+            </Fade>
+          </div>
+        </section>
 
         {/* ==============================================
         MODIFIKASI: INFO SECTION (Sesuai Gambar)
@@ -441,9 +513,9 @@ const renderModernHomepage = () => {
                       {/* Teks putih */}
                       <p className="hm-info-text-white">
                         Kami tidak hanya membersihkan, kami merawat. Dengan
-                        menggunakan peralatan modern dan formula pembersih premium
-                        yang aman, kami memastikan setiap pasang sepatu kembali
-                        dalam kondisi terbaiknya.
+                        menggunakan peralatan modern dan formula pembersih
+                        premium yang aman, kami memastikan setiap pasang sepatu
+                        kembali dalam kondisi terbaiknya.
                       </p>
 
                       {/* Tombol putih dengan teks pink */}
@@ -462,73 +534,6 @@ const renderModernHomepage = () => {
             {/* Akhir .hm-info-card-pink */}
           </div>
         </section>
-
-<section
-  className="hm-services py-5"
-  style={{ backgroundColor: "#ffffff" }}
->
-  <div className="container">
-    <Fade direction="up" triggerOnce>
-      <div className="text-center mb-5">
-        <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
-          Layanan Komprehensif
-        </h2>
-        <p className="hm-section-subtitle" style={{ color: "#555" }}>
-          Dari pembersihan cepat hingga restorasi mendetail.
-        </p>
-      </div>
-
-      {/* Versi 1: SLIDER BARU (Hanya tampil di Desktop) */}
-      <div className="hm-services-slider d-none d-lg-block">
-        <Swiper
-          modules={[Navigation]}
-          spaceBetween={30} // Jarak antar kartu
-          slidesPerView={3.5} // Menampilkan 3 kartu penuh + 1/2 kartu
-          navigation // Menampilkan panah navigasi
-          className="mySwiper"
-        >
-          {serviceCategories.map((category) => (
-            <SwiperSlide key={category.name}>
-              <Link to={category.link} className="hm-service-card">
-                <img
-                  src={category.imageUrl}
-                  alt={category.name}
-                  className="hm-service-card-image"
-                />
-                <div className="hm-service-card-overlay">
-                  <div className="hm-service-card-content">
-                    <div className="category-icon mb-3">
-                      <i className={`fas ${category.icon}`}></i>
-                    </div>
-                    <h4 className="hm-service-card-title">{category.name}</h4>
-                    <p className="hm-service-card-desc">{category.description}</p>
-                  </div>
-                </div>
-              </Link>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
-
-      {/* Versi 2: GRID LAMA (Hanya tampil di Mobile) */}
-      <div className="category-grid d-lg-none">
-        {serviceCategories.map((category) => (
-          <Link
-            to={category.link}
-            key={category.name}
-            className="category-card"
-          >
-            <div className="category-icon">
-              <i className={`fas ${category.icon}`}></i>
-            </div>
-            <span>{category.name}</span>
-          </Link>
-        ))}
-      </div>
-
-    </Fade>
-  </div>
-</section>
 
         {/* ==============================================
         BAGIAN TOKO POPULER (Clean)
@@ -720,15 +725,14 @@ const renderModernHomepage = () => {
             onClick={() => navigate("/store")}
           />
         </div>
-      </div> {/* <-- Tag penutup yang hilang di versi sebelumnya, sekarang ada */}
-
+      </div>{" "}
+      {/* <-- Tag penutup yang hilang di versi sebelumnya, sekarang ada */}
       {/* Konten Utama */}
       <div className="d-none d-lg-block">
         {homePageTheme === "modern"
           ? renderModernHomepage()
           : renderClassicHomepage()}
       </div>
-
       {/* Konten Mobile (selalu classic) */}
       <div className="d-lg-none">{renderClassicHomepage()}</div>
     </div>
