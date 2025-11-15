@@ -83,7 +83,7 @@
   z-index: 2;
   
   /* Padding & margin sesuai diskusi kita */
-  padding-top: 2rem;
+  padding-top: 0rem;
   padding-bottom: 2rem; /* Dikecilkan */
   margin-bottom: -3rem;  /* Dibuat negatif untuk menarik marquee */
 
