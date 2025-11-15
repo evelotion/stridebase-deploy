@@ -21,7 +21,7 @@
 
 .hero-section.modern-split-banners {
  background-color: #f8f9fa; /* Fallback jika tdk ada gambar */
-  background-size: cover;
+  background-size: cover 60%;
   background-position: center 60%;
   background-repeat: no-repeat;
 
