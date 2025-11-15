@@ -70,8 +70,7 @@ const Navbar = ({
 
   // --- LOGIKA BARU UNTUK SCROLL ---
   const [isScrolled, setIsScrolled] = useState(false);
-  const isModernHome =
-    location.pathname === "/" && homePageTheme === "modern";
+  const isModernHome = location.pathname === "/" && homePageTheme === "modern";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -121,9 +120,9 @@ const Navbar = ({
       } else {
         // --- Saat di atas (Menghilang) ---
         return {
-          backgroundColor: "transparent !important",
-          background: "transparent !important", // Kunci: Hapus semua background
-          border: "none !important", // Kunci: Hapus semua border
+          backgroundColor: "transparent",
+          background: "transparent",
+          border: "none",
           transition: "all 0.3s ease-in-out",
         };
       }
