@@ -20,19 +20,24 @@
 }
 
 .hero-section.modern-split-banners {
-  background-color: #ffffff !important;
-  background-image: none !important;
+ background-color: #f8f9fa; /* Fallback jika tdk ada gambar */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* INI KUNCINYA: Mendorong konten ke bawah navbar */
+  padding-top: 8rem; /* (Sesuaikan 120px-140px) */
+
+  /* Beri jarak ke section marquee di bawahnya */
+  padding-bottom: 4.5rem; 
+
+  /* Kembalikan margin ke normal */
+  margin: 0;
+  /* --- AKHIR PERUBAHAN --- */
+
   color: #1a1a1a;
   overflow: hidden;
-  
-  /* Hapus padding-top dari aturan global */
-  padding-top: 0rem; 
-  
-  /* HANYA INI YANG MENGATUR JARAKNYA.
-     Ganti 1.5rem (24px) ke 1rem (16px) atau 0.5rem (8px) jika ingin lebih dekat. */
-  padding-bottom: 0rem; 
-  margin-bottom: -3.5rem;
-  margin-top: -1rem; 
+  position: relative;
 }
 
 .modern-main-carousel-wrapper {

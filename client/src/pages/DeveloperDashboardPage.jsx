@@ -683,13 +683,49 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     />
                   </div>
 
-                  {/*
-                  
-                  ============================================================
-                                    INI ADALAH BLOK BARU
-                  ============================================================
-                  
-                  */}
+                  <div className="mb-3">
+                    <label
+                      htmlFor="modernHeroSectionBgUrl"
+                      className="form-label"
+                    >
+                      Modern Hero Background (Atas)
+                    </label>
+                    <div className="input-group">
+                      <input
+                        type="file"
+                        className="form-control"
+                        id="modernHeroSectionBgUrl"
+                        onChange={(e) =>
+                          // Kita gunakan key baru: branding.modernHeroSectionBgUrl
+                          handleDeveloperUpload(
+                            e,
+                            "branding.modernHeroSectionBgUrl"
+                          )
+                        }
+                        accept="image/*"
+                      />
+                      {uploadingStatus["branding.modernHeroSectionBgUrl"] && (
+                        <span className="input-group-text">
+                          <div className="spinner-border spinner-border-sm"></div>
+                        </span>
+                      )}
+                    </div>
+                    <div className="form-text">
+                      Gambar background ini akan tampil di belakang navbar dan
+                      hero carousel.
+                    </div>
+                    {/* Pastikan kita mengecek config.branding.modernHeroSectionBgUrl */}
+                    {config.branding.modernHeroSectionBgUrl && (
+                      <img
+                        src={config.branding.modernHeroSectionBgUrl}
+                        alt="Hero Background Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxHeight: "50px" }}
+                      />
+                    )}
+                  </div>
+
+
                   <hr />
                   <div className="mb-3">
                     <label htmlFor="heroSecondaryImage" className="form-label">

@@ -241,7 +241,12 @@ const HomePage = ({
         {/* ==============================================
         HERO SECTION - SPLIT BANNERS
         ============================================== */}
-        <section className="hero-section modern-split-banners">
+        <section className="hero-section modern-split-banners"
+        style={{
+    backgroundImage: modernHeroSectionBgUrl
+      ? `url(${modernHeroSectionBgUrl})`
+      : "none",
+  }}>
           <div className="container">
             <div className="row g-4">
               {/* Kolom Kiri: Banner Carousel Utama */}
