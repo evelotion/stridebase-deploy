@@ -55,7 +55,7 @@
   */
   background: linear-gradient(
     to top, 
-    #ffffff 5%,  /* Mulai dari putih solid di bawah */
+    #ffffff 80%,  /* Mulai dari putih solid di bawah */
     transparent 90%  /* Memudar ke transparan di atas */
   );
   
