@@ -7,15 +7,46 @@ import API_BASE_URL from "../apiConfig";
 import GlobalAnnouncement from "../components/GlobalAnnouncement";
 import { Fade } from "react-awesome-reveal";
 import "./HomePageModern.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+
+// Impor CSS Swiper
+import "swiper/css";
+import "swiper/css/navigation";
 
 // Hapus 'import HeroCarousel' karena tidak digunakan di sini
 // (Carousel di 'classic' menggunakan Bootstrap bawaan)
 
 const serviceCategories = [
-  { name: "Cuci Cepat", icon: "fa-rocket", link: "/store?services=Fast+Clean" },
-  { name: "Perawatan Kulit", icon: "fa-gem", link: "/store?services=Leather" },
-  { name: "Suede", icon: "fa-leaf", link: "/store?services=Suede" },
-  { name: "Unyellowing", icon: "fa-sun", link: "/store?services=Unyellowing" },
+  {
+    name: "Cuci Cepat",
+    icon: "fa-rocket",
+    link: "/store?services=Fast+Clean",
+    description: "Pembersihan instan untuk kesibukan Anda.",
+    imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ab?q=80&w=2670&auto=format&fit=crop"
+  },
+  {
+    name: "Perawatan Kulit",
+    icon: "fa-gem",
+    link: "/store?services=Leather",
+    description: "Mengembalikan kilau dan kelembutan bahan kulit.",
+    imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop"
+  },
+  {
+    name: "Suede & Nubuck",
+    icon: "fa-leaf",
+    link: "/store?services=Suede",
+    description: "Perawatan khusus untuk bahan yang sensitif.",
+    imageUrl: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop"
+  },
+  {
+    name: "Unyellowing",
+    icon: "fa-sun",
+    link: "/store?services=Unyellowing",
+    description: "Solusi untuk sol yang menguning agar kembali putih.",
+    imageUrl: "https://images.unsplash.com/photo-1552346154-21d32810ABA3?q=80&w=2670&auto=format&fit=crop"
+  },
+  // Anda bisa tambahkan lebih banyak di sini
 ];
 
 const HomePage = ({
@@ -345,13 +376,6 @@ const renderModernHomepage = () => {
             </div>
           </section>
         </div>
-        {/* <-- Tag penutup untuk 'hm-hero-background-wrapper' */}
-
-        {/* ==============================================
-          AKHIR DARI PERUBAHAN STRUKTUR
-          ============================================== 
-        */}
-
         {/* ==============================================
         BRAND MARQUEE (Interaktif & Animatif)
         ============================================== */}
@@ -439,44 +463,72 @@ const renderModernHomepage = () => {
           </div>
         </section>
 
-        {/* ==============================================
-        AKHIR DARI PERBAIKAN
-        ============================================== */}
+<section
+  className="hm-services py-5"
+  style={{ backgroundColor: "#ffffff" }}
+>
+  <div className="container">
+    <Fade direction="up" triggerOnce>
+      <div className="text-center mb-5">
+        <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
+          Layanan Komprehensif
+        </h2>
+        <p className="hm-section-subtitle" style={{ color: "#555" }}>
+          Dari pembersihan cepat hingga restorasi mendetail.
+        </p>
+      </div>
 
-        {/* ==============================================
-        BAGIAN KATEGORI LAYANAN (Clean)
-        ============================================== */}
-        <section
-          className="hm-services py-5"
-          style={{ backgroundColor: "#ffffff" }}
+      {/* Versi 1: SLIDER BARU (Hanya tampil di Desktop) */}
+      <div className="hm-services-slider d-none d-lg-block">
+        <Swiper
+          modules={[Navigation]}
+          spaceBetween={30} // Jarak antar kartu
+          slidesPerView={3.5} // Menampilkan 3 kartu penuh + 1/2 kartu
+          navigation // Menampilkan panah navigasi
+          className="mySwiper"
         >
-          <div className="container">
-            <Fade direction="up" triggerOnce>
-              <div className="text-center mb-5">
-                <h2 className="hm-section-title" style={{ color: "#1a1a1a" }}>
-                  Layanan Komprehensif
-                </h2>
-                <p className="hm-section-subtitle" style={{ color: "#555" }}>
-                  Dari pembersihan cepat hingga restorasi mendetail.
-                </p>
-              </div>
-              <div className="category-grid">
-                {serviceCategories.map((category) => (
-                  <Link
-                    to={category.link}
-                    key={category.name}
-                    className="category-card"
-                  >
-                    <div className="category-icon">
+          {serviceCategories.map((category) => (
+            <SwiperSlide key={category.name}>
+              <Link to={category.link} className="hm-service-card">
+                <img
+                  src={category.imageUrl}
+                  alt={category.name}
+                  className="hm-service-card-image"
+                />
+                <div className="hm-service-card-overlay">
+                  <div className="hm-service-card-content">
+                    <div className="category-icon mb-3">
                       <i className={`fas ${category.icon}`}></i>
                     </div>
-                    <span>{category.name}</span>
-                  </Link>
-                ))}
-              </div>
-            </Fade>
-          </div>
-        </section>
+                    <h4 className="hm-service-card-title">{category.name}</h4>
+                    <p className="hm-service-card-desc">{category.description}</p>
+                  </div>
+                </div>
+              </Link>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* Versi 2: GRID LAMA (Hanya tampil di Mobile) */}
+      <div className="category-grid d-lg-none">
+        {serviceCategories.map((category) => (
+          <Link
+            to={category.link}
+            key={category.name}
+            className="category-card"
+          >
+            <div className="category-icon">
+              <i className={`fas ${category.icon}`}></i>
+            </div>
+            <span>{category.name}</span>
+          </Link>
+        ))}
+      </div>
+
+    </Fade>
+  </div>
+</section>
 
         {/* ==============================================
         BAGIAN TOKO POPULER (Clean)

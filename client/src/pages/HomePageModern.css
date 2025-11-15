@@ -437,3 +437,112 @@
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
 }
+
+/* ==============================================
+  STYLE BARU: SLIDER LAYANAN (DESKTOP)
+============================================== */
+
+.hm-services-slider {
+  position: relative;
+  /* Beri ruang untuk panah navigasi di luar container */
+  margin: 0 -15px;
+  padding: 0 15px;
+}
+
+.hm-services-slider .swiper-slide {
+  height: auto; /* Biarkan tinggi diatur oleh kartu */
+}
+
+.hm-service-card {
+  display: block;
+  position: relative;
+  height: 400px; /* Ketinggian kartu "taller" */
+  border-radius: 16px;
+  overflow: hidden;
+  color: #ffffff;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hm-service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.hm-service-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  transition: transform 0.4s ease;
+}
+
+.hm-service-card:hover .hm-service-card-image {
+  transform: scale(1.05); /* Efek zoom saat hover */
+}
+
+.hm-service-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Gradien dari bawah ke atas agar teks terbaca */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.1) 60%);
+  z-index: 2;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Posisikan konten di bawah */
+}
+
+.hm-service-card-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.hm-service-card-desc {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+/* Kustomisasi Panah Navigasi Swiper */
+.hm-services-slider .swiper-button-next,
+.hm-services-slider .swiper-button-prev {
+  color: #1a1a1a; /* Warna panah */
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+.hm-services-slider .swiper-button-next:hover,
+.hm-services-slider .swiper-button-prev:hover {
+  background-color: #ffffff;
+}
+
+.hm-services-slider .swiper-button-next::after,
+.hm-services-slider .swiper-button-prev::after {
+  font-size: 1rem; /* Ukuran ikon panah */
+  font-weight: 700;
+}
+
+.hm-services-slider .swiper-button-prev {
+  left: 0px; /* Posisi panah kiri */
+}
+.hm-services-slider .swiper-button-next {
+  right: 0px; /* Posisi panah kanan */
+}
+
+/* Sembunyikan panah jika di luar batas */
+.hm-services-slider .swiper-button-disabled {
+  opacity: 0;
+  pointer-events: none;
+}
