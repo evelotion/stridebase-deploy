@@ -29,7 +29,7 @@
   padding-top: 0rem; /* (Sesuaikan 120px-140px) */
 
   /* Beri jarak ke section marquee di bawahnya */
-  padding-bottom: 1rem; 
+  padding-bottom: 0rem; 
 
   /* Kembalikan margin ke normal */
   margin: 0;
