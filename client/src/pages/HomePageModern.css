@@ -40,6 +40,27 @@
   position: relative;
 }
 
+.hero-section.modern-split-banners::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  /* Atur ketinggian gradien di sini */
+  height: 150px; 
+
+  /* Kunci utamanya: 
+     Gradien dari PUTIH (warna halaman) ke transparan 
+  */
+  background: linear-gradient(
+    to top, 
+    #ffffff 10%,  /* Mulai dari putih solid di bawah */
+    transparent 90%  /* Memudar ke transparan di atas */
+  );
+  
+  pointer-events: none; /* Agar tidak menghalangi klik */
+}
 .modern-main-carousel-wrapper {
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
