@@ -24,7 +24,7 @@ const serviceCategories = [
     link: "/store?services=Fast+Clean",
     description: "Pembersihan instan untuk kesibukan Anda.",
     imageUrl:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ab?q=80&w=2670&auto=format&fit=crop",
+"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop",
   },
   {
     name: "Perawatan Kulit",
@@ -48,7 +48,7 @@ const serviceCategories = [
     link: "/store?services=Unyellowing",
     description: "Solusi untuk sol yang menguning agar kembali putih.",
     imageUrl:
-      "https://images.unsplash.com/photo-1552346154-21d32810ABA3?q=80&w=2670&auto=format&fit=crop",
+       "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop",
   },
   // Anda bisa tambahkan lebih banyak di sini
 ];
