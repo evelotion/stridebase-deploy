@@ -215,24 +215,30 @@ const HomePage = ({
     </>
   );
 
-  // --- FUNGSI UTAMA YANG KITA MODIFIKASI ---
   const renderModernHomepage = () => {
-    // --- AMBIL SEMUA URL DINAMIS ---
+    // --- PERBAIKAN ERROR: Definisikan 'branding' dengan aman ---
+    // Memberikan fallback object kosong jika theme atau theme.branding undefined
+    const branding = theme?.branding || {};
+
+    // --- AMBIL SEMUA URL DINAMIS (dari 'branding' yang sudah aman) ---
     const sideBannerUrl =
-      theme?.branding?.modernHeroSideBannerUrl ||
+      branding.modernHeroSideBannerUrl ||
       "https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop";
     const sideBannerLink =
-      theme?.branding?.modernHeroSideBannerLink || "/store";
-    
-    // Variabel untuk GAMBAR KIRI (yang kita tambahkan)
-    const heroSecondaryImageUrl = theme?.branding?.heroSecondaryImage;
-    
-    // Variabel untuk BACKGROUND (yang kita tambahkan)
-    const heroSecondaryBgUrl = theme?.branding?.heroSecondaryBgImage;
+      branding.modernHeroSideBannerLink || "/store";
+
+    // Variabel untuk GAMBAR KIRI (kartu pink)
+    const heroSecondaryImageUrl = branding.heroSecondaryImage;
+
+    // Variabel untuk BACKGROUND (kartu pink)
+    const heroSecondaryBgUrl = branding.heroSecondaryBgImage;
+
+    // --- VARIABEL BARU UNTUK BACKGROUND HERO ATAS ---
+    const modernHeroSectionBgUrl = branding.modernHeroSectionBgUrl;
 
     // Fallback untuk gambar kiri JIKA KOSONG (gambar placeholder lama)
-    const finalInfoImageUrl = 
-      heroSecondaryImageUrl || 
+    const finalInfoImageUrl =
+      heroSecondaryImageUrl ||
       "https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop";
 
     return (
@@ -241,12 +247,16 @@ const HomePage = ({
         {/* ==============================================
         HERO SECTION - SPLIT BANNERS
         ============================================== */}
-        <section className="hero-section modern-split-banners"
-        style={{
-    backgroundImage: modernHeroSectionBgUrl
-      ? `url(${modernHeroSectionBgUrl})`
-      : "none",
-  }}>
+        <section
+          className="hero-section modern-split-banners"
+          // --- PENAMBAHAN STYLE UNTUK BACKGROUND HERO ATAS ---
+          style={{
+            backgroundImage: modernHeroSectionBgUrl
+              ? `url(${modernHeroSectionBgUrl})`
+              : "none",
+          }}
+          // --- AKHIR PENAMBAHAN STYLE ---
+        >
           <div className="container">
             <div className="row g-4">
               {/* Kolom Kiri: Banner Carousel Utama */}
@@ -351,21 +361,17 @@ const HomePage = ({
           </div>
         </section>
 
-        
         {/* ==============================================
         MODIFIKASI: INFO SECTION (Sesuai Gambar)
         ============================================== */}
-        <section 
+        <section
           className="hm-info-section"
-          // HAPUS SEMUA inline style dari <section>
           // Biarkan CSS yang mengatur (default putih)
         >
           <div className="container">
-            {/* KARTU PINK BARU (PEMBUNGKUS)
-              Kita pindahkan style background dari <section> ke <div> ini
-            */}
-            <div 
-              className="hm-info-card-pink" 
+            {/* KARTU PINK BARU (PEMBUNGKUS) */}
+            <div
+              className="hm-info-card-pink"
               style={{
                 backgroundImage: heroSecondaryBgUrl
                   ? `url(${heroSecondaryBgUrl})`
@@ -373,7 +379,6 @@ const HomePage = ({
               }}
             >
               <div className="row g-5 align-items-center">
-                
                 {/* Kolom Kiri: Gambar (Sepatu) */}
                 <div className="col-lg-6">
                   <Fade direction="left" triggerOnce>
@@ -381,7 +386,7 @@ const HomePage = ({
                       // Gambar sepatu (sudah benar)
                       src={finalInfoImageUrl}
                       alt="Perawatan Sepatu Profesional"
-                      className="img-fluid hm-info-image" 
+                      className="img-fluid hm-info-image"
                     />
                   </Fade>
                 </div>
@@ -390,22 +395,21 @@ const HomePage = ({
                 <div className="col-lg-6">
                   <Fade direction="right" triggerOnce>
                     <div className="hm-info-content">
-                      
-                      {/* Ganti <h2 className="hm-info-title"> */}
+                      {/* Judul putih dengan glow */}
                       <h2 className="hm-info-title-white-glow">
                         Teknologi Canggih, <br />
                         Hasil Maksimal.
                       </h2>
-                      
-                      {/* Ganti <p className="hm-info-text"> */}
+
+                      {/* Teks putih */}
                       <p className="hm-info-text-white">
                         Kami tidak hanya membersihkan, kami merawat. Dengan
                         menggunakan peralatan modern dan formula pembersih premium
                         yang aman, kami memastikan setiap pasang sepatu kembali
                         dalam kondisi terbaiknya.
                       </p>
-                      
-                      {/* Ganti <Link className="btn btn-modern-secondary..."> */}
+
+                      {/* Tombol putih dengan teks pink */}
                       <Link
                         to="/about"
                         className="btn btn-modern-white-pink-text btn-lg"
@@ -415,15 +419,16 @@ const HomePage = ({
                     </div>
                   </Fade>
                 </div>
-              </div> {/* Akhir .row */}
-            </div> {/* Akhir .hm-info-card-pink */}
+              </div>{" "}
+              {/* Akhir .row */}
+            </div>{" "}
+            {/* Akhir .hm-info-card-pink */}
           </div>
         </section>
 
         {/* ==============================================
         AKHIR DARI PERBAIKAN
         ============================================== */}
-
 
         {/* ==============================================
         BAGIAN KATEGORI LAYANAN (Clean)
@@ -496,7 +501,6 @@ const HomePage = ({
       </div>
     );
   };
-  // --- AKHIR DARI FUNGSI YANG BERUBAH ---
 
   return (
     <div className="homepage-mobile-container">
