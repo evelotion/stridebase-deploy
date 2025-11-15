@@ -31,6 +31,8 @@
   /* Beri jarak ke section marquee di bawahnya */
   padding-bottom: 0rem; 
 
+  margin-bottom: -3rem;
+
   /* Kembalikan margin ke normal */
   margin: 0;
   /* --- AKHIR PERUBAHAN --- */
