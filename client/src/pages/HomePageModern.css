@@ -26,7 +26,7 @@
   background-repeat: no-repeat;
 
   /* INI KUNCINYA: Mendorong konten ke bawah navbar */
-  padding-top: 8rem; /* (Sesuaikan 120px-140px) */
+  padding-top: 0rem; /* (Sesuaikan 120px-140px) */
 
   /* Beri jarak ke section marquee di bawahnya */
   padding-bottom: 4.5rem; 
