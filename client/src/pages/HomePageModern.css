@@ -547,31 +547,27 @@
   pointer-events: none;
 }
 
-/* --- INSPIRASI 2: Judul "Eyebrow" di Tengah --- */
-
-/* Kita ubah pembungkusnya menjadi flexbox */
-.hm-services .text-center,
-.hm-featured-stores .text-center {
-  display: flex;
-  flex-direction: column-reverse; /* <-- Kunci: Membalik urutan */
-  align-items: center;
-  margin-bottom: 3rem;
-}
+/* --- INSPIRASI 3: Aksen Garis Bawah di Tengah --- */
 
 .hm-section-title {
-  /* Judul utama (sekarang di bawah) */
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-top: 0.25rem; /* Jarak dari eyebrow */
+  position: relative; /* Diperlukan untuk ::after */
+  display: inline-block; /* Agar ::after pas di bawah teks */
+  padding-bottom: 1rem; /* Beri ruang untuk garis */
+}
+
+.hm-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%); /* Pusatkan garis */
+  
+  width: 80px; /* Lebar garis */
+  height: 4px; /* Tebal garis */
+  background-color: #e5446a; /* Warna pink */
+  border-radius: 2px; /* Sudut melengkung */
 }
 
 .hm-section-subtitle {
-  /* "Eyebrow" (sekarang di atas) */
-  font-size: 0.9rem; /* Lebih kecil */
-  font-weight: 600;
-  color: #e5446a; /* Warna pink */
-  text-transform: uppercase; /* Kapital */
-  letter-spacing: 1px; /* Jarak antar huruf */
-  margin-bottom: 0;
+  margin-top: 0.5rem; /* Sesuaikan jarak */
 }
