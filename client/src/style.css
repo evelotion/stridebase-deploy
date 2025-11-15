@@ -97,7 +97,6 @@ body.is-user-layout {
 .nav-link {
   position: relative;
   text-decoration: none;
-  color: var(--text-dark);
   font-weight: 500;
   font-size: 0.9rem;
   padding: 0;
@@ -111,18 +110,38 @@ body.is-user-layout {
   height: 2px;
   bottom: -5px;
   left: 0;
-  background: var(--primary-color);
   transition: width 0.3s ease;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: var(--primary-color);
 }
 
 .nav-link:hover::after,
 .nav-link.active::after {
   width: 100%;
+}
+
+/* --- Penyesuaian Warna Font Navbar --- */
+
+/* Untuk Navbar Putih (Halaman Lain) */
+.navbar-light .nav-link {
+  color: var(--text-dark);
+}
+.navbar-light .nav-link:hover,
+.navbar-light .nav-link.active {
+  color: var(--primary-color);
+}
+.navbar-light .nav-link::after {
+  background: var(--primary-color);
+}
+
+/* Untuk Navbar Gelap (Modern Homepage) */
+.navbar-dark .nav-link {
+  color: rgba(255, 255, 255, 0.85); /* Putih transparan */
+}
+.navbar-dark .nav-link:hover,
+.navbar-dark .nav-link.active {
+  color: #ffffff; /* Putih solid */
+}
+.navbar-dark .nav-link::after {
+  background: #ffffff; /* Garis bawah putih */
 }
 
 .btn-gradient {
