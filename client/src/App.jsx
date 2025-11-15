@@ -257,6 +257,7 @@ const UserLayout = ({
         unreadCount={unreadCount}
         setNotifications={setNotifications}
         setUnreadCount={setUnreadCount}
+        homePageTheme={theme?.homePageTheme || "classic"}
       />
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
@@ -559,16 +560,16 @@ function AppContent() {
         >
           <Route
             index
-            element={
-              <HomePage
-                theme={theme}
-                user={user}
-                notifications={notifications}
-                unreadCount={unreadCount}
-                handleLogout={handleLogout}
-                homePageTheme={theme?.homePageTheme || "classic"}
-              />
-            }
+              element={
+                <HomePage
+                  theme={theme}
+                  user={user}
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  handleLogout={handleLogout}
+                  homePageTheme={theme?.homePageTheme || "classic"}
+                />
+              }
           />
           <Route
             path="about"
