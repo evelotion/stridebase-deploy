@@ -379,35 +379,3 @@
   border-radius: 12px;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
 }
-
-/* ==============================================
-  EFEK NAVBAR SCROLL (BARU)
-============================================== */
-
-/* Style dasar untuk navbar 'fixed'
-  Ini membuat navbar 'melayang' di atas.
-*/
-.navbar-fixed-theme {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1030; /* Pastikan di atas elemen lain */
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-/* Kondisi Transparan (Saat di paling atas)
-  - 'navbar-transparent' hanya aktif jika 'isHomePage' DAN '!isScrolled'.
-*/
-.navbar-transparent {
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Kondisi Solid (Saat di-scroll atau di halaman lain)
-  - 'navbar-scrolled' adalah defaultnya.
-*/
-.navbar-scrolled {
-  background-color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
-}
