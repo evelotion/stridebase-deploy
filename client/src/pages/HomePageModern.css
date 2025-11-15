@@ -68,7 +68,7 @@
     transparent 90%
   );
   pointer-events: none;
-  z-index: 3; /* Di atas ::before dan ::hero-section */
+  z-index: 2; /* Di atas ::before dan ::hero-section */
 }
 
 /* .hero-section yang sudah dimodifikasi (menjadi transparan) */
@@ -80,7 +80,7 @@
 
   /* Pastikan konten di atas background (z-index: 2) */
   position: relative;
-  z-index: 2;
+  z-index: 3;
   
   /* Padding & margin sesuai diskusi kita */
   padding-top: 0rem;
