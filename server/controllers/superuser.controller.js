@@ -202,7 +202,7 @@ export const getSecurityLogs = async (req, res, next) => {
 
 export const updateHomePageTheme = async (req, res, next) => {
   const { theme } = req.body;
-  if (!theme || !["classic", "modern"].includes(theme)) {
+  if (!theme || !["classic", "modern", "elevate"].includes(theme)) {
     return res.status(400).json({ message: "Tema tidak valid." });
   }
   try {
