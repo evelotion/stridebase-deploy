@@ -1,6 +1,6 @@
-// File: client/src/components/Navbar.jsx (Versi FINAL dengan Efek Scroll)
+// File: client/src/components/Navbar.jsx (Telah DIPERBAIKI)
 
-import React, { useState, useEffect } from "react"; // <-- TAMBAHKAN useState, useEffect
+import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 
@@ -62,23 +62,27 @@ const Navbar = ({
   unreadCount,
   setNotifications,
   setUnreadCount,
-  homePageTheme, // <-- TAMBAHKAN PROP INI (PENTING!)
+  homePageTheme, // Prop ini sangat penting
 }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const location = useLocation();
 
-  // --- LOGIKA BARU UNTUK SCROLL ---
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // --- PERBAIKAN 1: Logika tema diperbarui ---
+  // Kita cek apakah kita di homepage Modern ATAU homepage Elevate
   const isModernHome = location.pathname === "/" && homePageTheme === "modern";
+  const isElevateHome = location.pathname === "/" && homePageTheme === "elevate";
+  const isDynamicHome = isModernHome || isElevateHome; // Keduanya pakai efek scroll
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
-    if (isModernHome) {
-      // Hanya terapkan listener jika di homepage modern
+    if (isDynamicHome) { // <-- Diperbarui
+      // Terapkan listener jika di homepage (Modern atau Elevate)
       handleScroll(); // Cek status awal
       window.addEventListener("scroll", handleScroll);
     } else {
@@ -90,49 +94,77 @@ const Navbar = ({
       // Hapus listener saat ganti halaman
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [isModernHome, location.pathname]); // Jalankan ulang saat pindah halaman
+  }, [isDynamicHome, location.pathname]); // <-- Diperbarui
 
-  // --- FUNGSI BARU (Ini yang Anda tanyakan) ---
+  // --- PERBAIKAN 2: getNavClassName() diperbarui ---
   const getNavClassName = () => {
     if (isModernHome) {
-      // Dinamis untuk homepage modern:
-      // 'fixed-top' agar menempel
-      // 'navbar-dark' agar teks putih (kontras dgn bg gambar/pink)
+      // Dinamis untuk homepage modern (Pink)
       return `navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-dark ${
         isScrolled ? "shadow-sm" : ""
       }`;
     }
-    // Default untuk halaman lain (putih, solid)
+
+    if (isElevateHome) {
+      // Dinamis untuk homepage elevate (Transparan -> Putih)
+      if (isScrolled) {
+        // Saat scroll: Putih, teks gelap
+        return "navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-light bg-white shadow-sm";
+      } else {
+        // Saat di atas: Transparan, teks putih
+        return "navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-dark";
+      }
+    }
+
+    // Default untuk halaman lain (putih, solid, teks gelap)
     return "navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-light bg-white shadow-sm";
   };
 
-  // --- FUNGSI BARU (Ini yang Anda tanyakan) ---
+  // --- PERBAIKAN 3: getNavStyle() diperbarui ---
   const getNavStyle = () => {
+    const transitionStyle = { transition: "all 0.3s ease-in-out" };
+
     if (isModernHome) {
       if (isScrolled) {
-        // --- Saat di-scroll (Muncul) ---
+        // --- Modern Saat di-scroll (Pink) ---
         return {
           backgroundColor: "#e5446a",
           background: "#e5446a",
           borderColor: "transparent",
-          transition: "all 0.3s ease-in-out",
+          ...transitionStyle,
         };
       } else {
-        // --- Saat di atas (Menghilang) ---
+        // --- Modern Saat di atas (Transparan) ---
         return {
           backgroundColor: "transparent",
           background: "transparent",
           border: "none",
-          transition: "all 0.3s ease-in-out",
+          ...transitionStyle,
         };
       }
     }
-    // Halaman lain (non-modern-home) tidak perlu inline style
+    
+    if (isElevateHome) {
+      if (isScrolled) {
+         // --- Elevate Saat di-scroll (Putih) ---
+         // (Warna diatur oleh ClassName, hanya perlu transisi)
+        return { ...transitionStyle };
+      } else {
+        // --- Elevate Saat di atas (Transparan) ---
+        return {
+          backgroundColor: "transparent",
+          background: "transparent",
+          border: "none",
+          ...transitionStyle,
+        };
+      }
+    }
+
+    // Halaman lain tidak perlu inline style
     return {};
   };
-  // --- AKHIR LOGIKA BARU ---
+  // --- AKHIR LOGIKA PERBAIKAN ---
 
-  // Kode Anda yang sudah ada
   const isHomePage = location.pathname === "/";
 
   const handleLogout = () => {
@@ -171,7 +203,7 @@ const Navbar = ({
         <img
           src={theme.branding.logoUrl}
           alt="StrideBase Logo"
-          style={{ maxHeight: "32px" }} // <-- Ukuran logo Anda yang ada
+          style={{ maxHeight: "32px" }}
         />
       );
     }
@@ -182,19 +214,20 @@ const Navbar = ({
     if (theme?.branding?.logoUrl) {
       return <img src={theme.branding.logoUrl} alt="StrideBase Logo" />;
     }
-    return <span>StrideBase</span>;
+    return <em></em>;
   };
 
   return (
     <>
-      {/* --- INI BAGIAN YANG DIMODIFIKASI --- */}
       <nav className={getNavClassName()} style={getNavStyle()}>
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
             {renderLogo()}
           </Link>
-          <ul className="nav-menu-list list-unstyled d-flex mb-0 ms-auto">
-            {/* ... link Anda ... */}
+          
+          {/* --- PERBAIKAN 4: 'ms-auto' DIHAPUS DARI SINI --- */}
+          {/* Ini adalah menu link Anda (Home, About, dll) */}
+          <ul className="nav-menu-list list-unstyled d-flex mb-0">
             <li>
               <NavLink to="/" className="nav-link">
                 Home
@@ -216,13 +249,16 @@ const Navbar = ({
               </NavLink>
             </li>
           </ul>
+
+          {/* --- PERBAIKAN 5: 'ms-auto' DITAMBAHKAN DI SINI --- */}
+          {/* Ini adalah grup tombol auth/user di kanan */}
           <div
             id="navbarAuth"
-            className="ms-lg-4 d-flex align-items-center gap-2"
+            className="d-flex align-items-center gap-2 ms-auto" // <-- ms-auto dipindah ke sini
           >
             {user ? (
               <>
-                {/* ... (dropdown notifikasi & user Anda) ... */}
+                {/* Dropdown Notifikasi */}
                 <div className="dropdown">
                   <button
                     className="btn btn-light rounded-circle"
@@ -248,7 +284,6 @@ const Navbar = ({
                     className="dropdown-menu dropdown-menu-end dropdown-menu-custom"
                     style={{ width: "350px" }}
                   >
-                    {/* ... (isi dropdown notif) ... */}
                     <li className="p-2 border-bottom">
                       <h6 className="mb-0">Notifikasi</h6>
                     </li>
@@ -291,6 +326,8 @@ const Navbar = ({
                     </li>
                   </ul>
                 </div>
+                
+                {/* Dropdown User */}
                 <div className="dropdown">
                   <button
                     className="btn btn-dark dropdown-toggle btn-user-profile"
@@ -302,7 +339,6 @@ const Navbar = ({
                     {user.name.split(" ")[0]}
                   </button>
                   <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
-                    {/* ... (isi dropdown user) ... */}
                     {user.role === "developer" && (
                       <li>
                         <Link
@@ -379,7 +415,6 @@ const Navbar = ({
                   <UserAvatar name={user.name} size={40} />
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
-                  {/* ... (isi dropdown mobile) ... */}
                   {user.role === "developer" && (
                     <li>
                       <Link to="/developer/dashboard" className="dropdown-item">

@@ -631,9 +631,8 @@ const renderElevateHomepage = () => {
                     <div className="carousel-caption d-none d-md-block text-start">
                       <h1 className="display-4 fw-bold">{banner.title}</h1>
                       <p className="lead fs-4">
-                        {/* Ganti teks ini jika Anda menambah 'description' di model Banner */}
-                        Solusi terbaik untuk perawatan sepatu Anda.
-                      </p>
+    Choose shops that match your style and budget.
+  </p>
                       <Link
                         to={banner.linkUrl || "/store"}
                         className="btn btn-primary btn-lg shadow-sm"
@@ -667,56 +666,6 @@ const renderElevateHomepage = () => {
             </div>
           </div>
         </Fade>
-      </section>
-
-      {/* ==============================================
-        2. SERVICES SECTION (ELEVATE) - (Tidak Berubah)
-      ============================================== */}
-      <section className="he-services-section">
-        {/* ... (Konten section ini biarkan seperti sebelumnya) ... */}
-        {/* ... (Salin-tempel dari kode 'renderElevateHomepage' Anda sebelumnya) ... */}
-
-        {/* Placeholder - PASTIKAN ANDA MENG-COPY KONTEN ASLINYA DARI SEBELUMNYA */}
-        <div className="container">
-          <Fade direction="up" triggerOnce>
-            <div className="text-center">
-              <h2 className="he-section-title">Layanan Pilihan Kami</h2>
-              <p className="he-section-subtitle">
-                Dikerjakan oleh profesional untuk hasil terbaik.
-              </p>
-            </div>
-            {/* ... sisa slider layanan ... */}
-          </Fade>
-        </div>
-      </section>
-
-      {/* ==============================================
-        3. INFO SECTION (ELEVATE) - (Tidak Berubah)
-      ============================================== */}
-      <section className="he-info-section">
-        {/* ... (Konten section ini biarkan seperti sebelumnya) ... */}
-        {/* ... (Salin-tempel dari kode 'renderElevateHomepage' Anda sebelumnya) ... */}
-
-        {/* Placeholder - PASTIKAN ANDA MENG-COPY KONTEN ASLINYA DARI SEBELUMNYA */}
-        <div className="container">
-          {/* ... sisa info section (grid 50/50) ... */}
-        </div>
-      </section>
-
-      {/* ==============================================
-        4. TOKO POPULER (Sama seperti Modern) - (Tidak Berubah)
-      ============================================== */}
-      <section
-        className="hm-featured-stores py-5"
-        style={{ backgroundColor: "#f8f9fa" }}
-      >
-        {/* ... (Konten section ini biarkan seperti sebelumnya) ... */}
-        {/* ... (Salin-tempel dari kode 'renderElevateHomepage' Anda sebelumnya) ... */}
-        
-        {/* Placeholder - PASTIKAN ANDA MENG-COPY KONTEN ASLINYA DARI SEBELUMNYA */}
-        <div className="container">
-          {/* ... sisa toko populer ... */}
-        </div>
       </section>
     </div>
   );

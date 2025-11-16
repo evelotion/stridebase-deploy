@@ -75,22 +75,39 @@
 /* Indikator Carousel (Pindahkan ke tengah bawah) */
 .he-full-bleed-carousel .carousel-indicators {
   position: absolute;
-  bottom: 25px;
+  bottom: 25px; /* Jarak dari bawah */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); /* Posisikan di tengah */
   right: auto;
   z-index: 15;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 8px; /* Jarak antar tombol */
 }
+
 .he-full-bleed-carousel .carousel-indicators button {
-  width: 10px;
+  width: 10px; /* Ukuran tombol tidak aktif (bulat) */
   height: 10px;
-  border-radius: 50%;
+  border-radius: 50%; /* Bulat sempurna */
   background-color: rgba(255, 255, 255, 0.5);
   border: 0;
-  margin: 0 5px;
+  padding: 0; /* Hapus padding default */
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  
+  /* Hapus text-indent bawaan Bootstrap */
+  text-indent: -999px;
+  box-sizing: content-box; /* Pastikan ukuran tetap */
 }
+
 .he-full-bleed-carousel .carousel-indicators button.active {
+  width: 30px; /* Ukuran tombol aktif (pil) */
+  height: 10px;
+  border-radius: 5px; /* Sudut melengkung (bukan bulat) */
   background-color: #ffffff;
+  opacity: 1;
 }
 
 /* ==============================================
