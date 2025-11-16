@@ -7,6 +7,7 @@ import API_BASE_URL from "../apiConfig";
 import GlobalAnnouncement from "../components/GlobalAnnouncement";
 import { Fade } from "react-awesome-reveal";
 import "./HomePageModern.css";
+import "./HomePageElevate.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay} from "swiper/modules";
 
@@ -577,6 +578,279 @@ const HomePage = ({
     );
   };
 
+  const renderElevateHomepage = () => {
+  // Kita akan REUSE (menggunakan kembali) variabel yang sama dengan
+  // yang digunakan tema Modern untuk kemudahan di Dashboard.
+  const branding = theme?.branding || {};
+
+  // 1. Latar Belakang Hero (Elevate)
+  const heroBackgroundUrl =
+    branding.modernHeroSectionBgUrl ||
+    "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=2690&auto=format&fit=crop";
+
+  // 2. Banner Promo Samping (Elevate)
+  const sidePromoImageUrl =
+    branding.modernHeroSideBannerUrl ||
+    "https://images.unsplash.com/photo-1590740618063-27c5952f5ef6?q=80&w=2670&auto=format&fit=crop";
+  const sidePromoLink = branding.modernHeroSideBannerLink || "/store";
+
+  // 3. Gambar untuk Info Section (Elevate)
+  const infoImage1 =
+    branding.heroSecondaryBgUrl || // <-- Kita pakai ulang dari Modern
+    "https://images.unsplash.com/photo-1605412899338-88682b09bAC4?q=80&w=2574&auto=format&fit=crop";
+  const infoImage2 =
+    branding.heroSecondaryImage || // <-- Kita pakai ulang dari Modern
+    "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2742&auto=format&fit=crop";
+  const infoImage3 =
+    "https://images.unsplash.com/photo-1608231387042-8a8169141f1c?q=80&w=2574&auto=format&fit=crop"; // <-- Bisa di-hardcode atau tambah field baru
+
+  return (
+    <div className="home-elevate-wrapper">
+      {/* ==============================================
+        1. HERO SECTION (ELEVATE)
+      ============================================== */}
+      <section className="he-hero-section">
+        <div
+          className="he-hero-background-image"
+          style={{
+            backgroundImage: `url(${heroBackgroundUrl})`,
+          }}
+        ></div>
+
+        <div className="container he-hero-content-wrapper">
+          <div className="row g-4 h-100">
+            {/* Kolom Kiri: Carousel Kaca */}
+            <div className="col-lg-8 h-100">
+              <Fade direction="left" duration={800} triggerOnce>
+                <div className="he-glass-card he-main-carousel-glass">
+                  <div
+                    id="elevateMainBannerCarousel"
+                    className="carousel slide carousel-fade"
+                    data-bs-ride="carousel"
+                  >
+                    <div className="carousel-indicators">
+                      {banners.map((_, index) => (
+                        <button
+                          type="button"
+                          data-bs-target="#elevateMainBannerCarousel"
+                          data-bs-slide-to={index}
+                          className={index === 0 ? "active" : ""}
+                          aria-current={index === 0 ? "true" : "false"}
+                          aria-label={`Slide ${index + 1}`}
+                          key={index}
+                        ></button>
+                      ))}
+                    </div>
+                    <div className="carousel-inner">
+                      {banners.length > 0 ? (
+                        banners.map((banner, index) => (
+                          <div
+                            className={`carousel-item ${
+                              index === 0 ? "active" : ""
+                            }`}
+                            key={banner.id}
+                          >
+                            <Link to={banner.linkUrl || "#"}>
+                              <img
+                                src={banner.imageUrl}
+                                className="d-block w-100"
+                                alt={banner.title || "Main Banner"}
+                              />
+                            </Link>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="carousel-item active">
+                          <img
+                            src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
+                            className="d-block w-100"
+                            alt="Sepatu Bersih"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Fade>
+            </div>
+
+            {/* Kolom Kanan: Promo Kaca */}
+            <div className="col-lg-4 h-100">
+              <Fade direction="right" duration={800} triggerOnce>
+                <Link
+                  to={sidePromoLink}
+                  className="he-glass-card he-side-promo-glass"
+                >
+                  <img
+                    src={sidePromoImageUrl}
+                    alt="Promo"
+                    className="he-promo-image"
+                  />
+                  <h4>Diskon Musim Hujan</h4>
+                  <p>Perawatan anti-air spesial untuk sepatumu.</p>
+                  <span className="btn btn-sm btn-outline-light">
+                    Lihat Promo
+                  </span>
+                </Link>
+              </Fade>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==============================================
+        2. SERVICES SECTION (ELEVATE)
+      ============================================== */}
+      <section className="he-services-section">
+        <div className="container">
+          <Fade direction="up" triggerOnce>
+            <div className="text-center">
+              <h2 className="he-section-title">Layanan Pilihan Kami</h2>
+              <p className="he-section-subtitle">
+                Dikerjakan oleh profesional untuk hasil terbaik.
+              </p>
+            </div>
+
+            {/* Slider (Mirip Modern, tapi kartu beda) */}
+            <div className="hm-services-slider d-none d-lg-block">
+              <Swiper
+                modules={[Navigation, Autoplay]}
+                spaceBetween={30}
+                slidesPerView={3} // Tampilkan 3 kartu penuh
+                navigation
+                loop={true}
+                autoplay={{
+                  delay: 4000,
+                  disableOnInteraction: false,
+                }}
+                className="mySwiper"
+              >
+                {serviceCategories.map((category) => (
+                  <SwiperSlide key={category.name}>
+                    <Link to={category.link} className="he-service-card">
+                      <div className="he-service-card-image-wrapper">
+                        <img
+                          src={category.imageUrl}
+                          alt={category.name}
+                        />
+                      </div>
+                      <div className="he-service-card-content">
+                        <h4>{category.name}</h4>
+                        <p>{category.description}</p>
+                      </div>
+                    </Link>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+            {/* Grid Lama (Mobile) */}
+            <div className="category-grid d-lg-none">
+              {serviceCategories.map((category) => (
+                <Link
+                  to={category.link}
+                  key={category.name}
+                  className="category-card"
+                >
+                  <div className="category-icon">
+                    <i className={`fas ${category.icon}`}></i>
+                  </div>
+                  <span>{category.name}</span>
+                </Link>
+              ))}
+            </div>
+          </Fade>
+        </div>
+      </section>
+
+      {/* ==============================================
+        3. INFO SECTION (ELEVATE)
+      ============================================== */}
+      <section className="he-info-section">
+        <div className="container">
+          <div className="row g-5 align-items-center">
+            {/* Kolom Kiri: Teks */}
+            <div className="col-lg-6">
+              <Fade direction="left" triggerOnce>
+                <div className="he-info-text-content">
+                  <h2>Kualitas Adalah Prioritas Utama.</h2>
+                  <p>
+                    Kami percaya perawatan sepatu adalah sebuah seni.
+                    Menggunakan bahan pembersih terbaik yang diimpor
+                    langsung dan teknik yang teruji, kami menjamin setiap
+                    pasang kembali seperti baru.
+                  </p>
+                  <Link
+                    to="/about"
+                    className="btn btn-primary btn-lg shadow-sm"
+                    style={{ maxWidth: "200px" }}
+                  >
+                    Pelajari Metode Kami
+                  </Link>
+                </div>
+              </Fade>
+            </div>
+
+            {/* Kolom Kanan: Grid Gambar */}
+            <div className="col-lg-6">
+              <Fade direction="right" triggerOnce>
+                <div className="he-info-image-grid">
+                  <img src={infoImage1} alt="Proses Cuci" />
+                  <img src={infoImage2} alt="Sepatu Bersih" />
+                  <img src={infoImage3} alt="Detailing" />
+                </div>
+              </Fade>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==============================================
+        4. TOKO POPULER (Sama seperti Modern)
+      ============================================== */}
+      <section
+        className="hm-featured-stores py-5"
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
+        <div className="container">
+          <Fade direction="up" triggerOnce>
+            <div className="text-center mb-5">
+              <h2
+                className="hm-section-title" // Pakai style modern
+                style={{ color: "#1a1a1a" }}
+              >
+                Mitra Terpercaya Kami
+              </h2>
+              <p
+                className="hm-section-subtitle" // Pakai style modern
+                style={{ color: "#555" }}
+              >
+                Dipilih berdasarkan kualitas dan ulasan terbaik.
+              </p>
+            </div>
+            {loading ? (
+              <div className="text-center">
+                <div
+                  className="spinner-border text-primary"
+                  role="status"
+                >
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : (
+              <div className="results-grid-redesigned">
+                {featuredStores.map((store) => (
+                  <StoreCard store={store} key={store.id} />
+                ))}
+              </div>
+            )}
+          </Fade>
+        </div>
+      </section>
+    </div>
+  );
+};
+
   return (
     <div className="homepage-mobile-container">
       {/* Header Mobile (Sudah diperbaiki) */}
@@ -734,13 +1008,15 @@ const HomePage = ({
       {/* <-- Tag penutup yang hilang di versi sebelumnya, sekarang ada */}
       {/* Konten Utama */}
       <div className="d-none d-lg-block">
-        {homePageTheme === "modern"
-          ? renderModernHomepage()
-          : renderClassicHomepage()}
-      </div>
-      {/* Konten Mobile (selalu classic) */}
-      <div className="d-lg-none">{renderClassicHomepage()}</div>
-    </div>
+    {homePageTheme === "modern"
+      ? renderModernHomepage()
+      : homePageTheme === "elevate" // <-- KONDISI BARU
+      ? renderElevateHomepage()     // <-- PANGGIL FUNGSI BARU
+      : renderClassicHomepage()}
+  </div>
+  {/* Konten Mobile (selalu classic) */}
+  <div className="d-lg-none">{renderClassicHomepage()}</div>
+</div>
   );
 };
 

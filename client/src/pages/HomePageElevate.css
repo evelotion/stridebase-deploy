@@ -1,0 +1,277 @@
+/* File: client/src/pages/HomePageElevate.css (BARU) */
+
+.home-elevate-wrapper {
+  background-color: #ffffff; /* Latar belakang dasar yang bersih */
+  color: #1a1a1a;
+  overflow-x: hidden;
+}
+
+/* ==============================================
+   HERO SECTION (ELEVATE)
+============================================== */
+
+.he-hero-section {
+  position: relative;
+  height: 600px; /* Ketinggian hero yang pas */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  color: #ffffff;
+  margin-bottom: 4rem;
+}
+
+/* Gambar Latar Belakang Full-Width */
+.he-hero-background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-color: #f8f9fa; /* Fallback */
+  
+  /* Efek Gelap agar teks putih terbaca */
+  filter: brightness(0.8);
+}
+
+/* Wrapper untuk konten di atas background */
+.he-hero-content-wrapper {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  max-height: 420px; /* Samakan dengan tinggi carousel modern */
+}
+
+/* Efek Kaca Buram (Glassmorphism) */
+.he-glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  height: 100%;
+  overflow: hidden; /* Penting untuk carousel di dalamnya */
+}
+
+/* Carousel Utama (di dalam kartu kaca) */
+.he-main-carousel-glass {
+  width: 100%;
+  height: 100%;
+}
+
+/* Styling ulang carousel agar pas di dalam kartu kaca */
+.he-main-carousel-glass .carousel,
+.he-main-carousel-glass .carousel-inner,
+.he-main-carousel-glass .carousel-item {
+  height: 100%;
+}
+
+.he-main-carousel-glass .carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Hapus border-radius dari gambar modern */
+}
+
+/* Indikator Carousel (mirip modern, tapi lebih kontras) */
+.he-main-carousel-glass .carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: auto;
+  z-index: 15;
+}
+.he-main-carousel-glass .carousel-indicators button {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 0;
+  margin: 0 5px;
+}
+.he-main-carousel-glass .carousel-indicators button.active {
+  background-color: #ffffff;
+}
+
+/* Kartu Promo Samping (Kaca) */
+.he-side-promo-glass {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Teks di bawah */
+  padding: 1.5rem;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.he-side-promo-glass img.he-promo-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  filter: brightness(0.9); /* Sedikit lebih gelap dari main hero */
+}
+
+.he-side-promo-glass h4 {
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.he-side-promo-glass p {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.he-side-promo-glass .btn-outline-light {
+  border-width: 2px;
+  font-weight: 600;
+  max-width: 120px; /* Batasi lebar tombol */
+}
+
+/* ==============================================
+   SERVICES SECTION (ELEVATE)
+============================================== */
+.he-services-section {
+  padding: 4rem 0;
+  background-color: #f8f9fa; /* Latar abu-abu sangat muda */
+}
+
+/* Judul (Sama seperti Modern) */
+.he-section-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.he-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  /* Gunakan warna primer dari CSS variables */
+  background-color: var(--primary-color, #0D6EFD); 
+  border-radius: 2px;
+}
+.he-section-subtitle {
+  color: #555;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+/* Desain Kartu Layanan (Clean & Minimalist) */
+.he-service-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  text-decoration: none;
+  color: #1a1a1a;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+.he-service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+  border-color: var(--primary-color, #0D6EFD);
+}
+.he-service-card-image-wrapper {
+  height: 200px;
+  overflow: hidden;
+}
+.he-service-card-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.he-service-card:hover .he-service-card-image-wrapper img {
+  transform: scale(1.05);
+}
+.he-service-card-content {
+  padding: 1.5rem;
+}
+.he-service-card-content h4 {
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+.he-service-card-content p {
+  font-size: 0.9rem;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   INFO SECTION (ELEVATE)
+============================================== */
+.he-info-section {
+  padding: 5rem 0;
+  background-color: #ffffff;
+}
+.he-info-text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+.he-info-text-content h2 {
+  font-weight: 700;
+  font-size: 2.8rem;
+  line-height: 1.3;
+  margin-bottom: 1.5rem;
+}
+.he-info-text-content p {
+  font-size: 1.1rem;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+.he-info-text-content .btn {
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Grid Gambar (Kanan) */
+.he-info-image-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  height: 100%;
+  max-height: 500px;
+}
+.he-info-image-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+/* Gambar pertama dibuat lebih besar */
+.he-info-image-grid img:nth-child(1) {
+  grid-column: 1 / 3; /* Membentang 2 kolom */
+  grid-row: 1 / 2;
+  height: 280px; /* Ketinggian spesifik */
+}
+.he-info-image-grid img:nth-child(2) {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+.he-info-image-grid img:nth-child(3) {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}

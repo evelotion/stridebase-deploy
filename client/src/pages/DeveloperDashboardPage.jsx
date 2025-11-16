@@ -578,6 +578,20 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       Modern
                     </label>
                   </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="themeRadio"
+                      id="themeElevate"
+                      value="elevate"
+                      checked={currentTheme === "elevate"}
+                      onChange={() => handleThemeChange("elevate")}
+                    />
+                    <label className="form-check-label" htmlFor="themeElevate">
+                      Elevate
+                    </label>
+                  </div>
                 </div>
               )}
             </div>
