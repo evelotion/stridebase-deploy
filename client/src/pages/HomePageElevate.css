@@ -6,9 +6,9 @@
   --sb-dark-gray: #1a1a1a;
   --sb-gray: #f8f9fa;
   --sb-accent: #2563eb; /* Royal Blue */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.1); /* Lebih transparan */
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
 }
 
 .home-elevate-wrapper {
@@ -23,7 +23,7 @@
 ============================================== */
 .he-hero-section {
   position: relative;
-  height: 90vh; /* Lebih tinggi untuk kesan premium */
+  height: 90vh;
   min-height: 600px;
   width: 100%;
   overflow: hidden;
@@ -38,9 +38,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.4); /* Darken agar teks putih V3 menyala */
+  filter: brightness(0.4);
   transform: scale(1);
-  transition: transform 10s ease; /* Efek Zoom Lambat (Ken Burns) */
+  transition: transform 10s ease;
 }
 
 .carousel-item.active .he-hero-img {
@@ -62,7 +62,6 @@
 .he-hero-badge {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   padding: 10px 25px;
   border-radius: 50px;
   border: 1px solid rgba(255,255,255,0.3);
@@ -116,13 +115,13 @@
   padding: 3rem 0;
   position: relative;
   z-index: 2;
-  margin-top: -50px; /* Overlap sedikit ke hero */
-  transform: skewY(-2deg); /* Miring artistik */
+  margin-top: -50px;
+  transform: skewY(-2deg);
   box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 
 .he-trust-track-wrapper {
-  transform: skewY(2deg); /* Balikkan kemiringan untuk teks */
+  transform: skewY(2deg);
 }
 
 .he-brand-text {
@@ -145,7 +144,7 @@
    3. POPULAR STORES (Card with Hover Lift)
 ============================================== */
 .he-popular-section {
-  padding: 8rem 0 6rem; /* Padding atas lebih besar karena skew */
+  padding: 8rem 0 6rem;
   background: #fff;
 }
 
@@ -165,6 +164,7 @@
   background: #fff;
   box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   height: 100%;
+  border: 1px solid #f0f0f0;
 }
 
 .he-store-img-box {
@@ -194,6 +194,7 @@
 .he-store-card-premium:hover {
   transform: translateY(-15px);
   box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+  border-color: transparent;
 }
 
 .he-store-card-premium:hover .he-store-img-box img {
@@ -206,7 +207,7 @@
 .he-quote-section {
   padding: 10rem 0;
   background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop') no-repeat center center/cover;
-  background-attachment: fixed; /* Parallax Effect */
+  background-attachment: fixed;
   position: relative;
   color: #fff;
   text-align: center;
@@ -242,62 +243,122 @@
 }
 
 /* ==============================================
-   5. SERVICES (Glassmorphism V3)
+   5. SERVICES (PREMIUM GLASSMORPHISM - REFINED)
 ============================================== */
 .he-services-v3 {
-  padding: 8rem 0;
-  background: var(--sb-gray);
+  padding: 10rem 0;
+  /* Background Gelap Elegan untuk Kontras dengan Glass Card */
+  background: radial-gradient(circle at top right, #1a1a1a 0%, #000000 100%); 
   position: relative;
+  overflow: hidden;
 }
 
-/* Dekorasi Blur di background */
+/* Dekorasi Blob Bergerak */
 .he-blur-decoration {
   position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+  opacity: 0.4;
+  animation: floatBlob 10s infinite alternate;
+}
+
+.he-blur-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--sb-accent);
+  top: -10%;
+  left: -10%;
+}
+
+.he-blur-2 {
   width: 400px;
   height: 400px;
-  background: var(--sb-accent);
-  filter: blur(150px);
-  opacity: 0.1;
-  border-radius: 50%;
-  z-index: 0;
+  background: #a855f7; /* Ungu */
+  bottom: -10%;
+  right: -10%;
+  animation-delay: -5s;
 }
-.he-blur-1 { top: 10%; left: -10%; }
-.he-blur-2 { bottom: 10%; right: -10%; }
 
+@keyframes floatBlob {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+/* Judul Section di Dark Mode */
+.he-services-v3 .he-section-title {
+  color: #fff;
+}
+.he-services-v3 .text-muted {
+  color: rgba(255,255,255,0.6) !important;
+}
+
+/* KARTU KACA PREMIUM */
 .he-glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  /* Efek Kaca Asli */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  
   border-radius: 24px;
   padding: 3rem 2rem;
   height: 100%;
   transition: all 0.4s ease;
   position: relative;
   z-index: 1;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .he-glass-icon {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, var(--sb-black), var(--sb-accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  width: 70px;
+  height: 70px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #fff;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .he-glass-title {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  color: var(--sb-black);
+  color: #fff;
+  letter-spacing: -0.5px;
 }
 
+.he-glass-desc {
+  color: rgba(255,255,255,0.6);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Hover Effect: Glowing & Lifting */
 .he-glass-card:hover {
-  transform: translateY(-15px) scale(1.02);
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 30px 60px rgba(37, 99, 235, 0.15);
-  border-color: var(--sb-accent);
+  transform: translateY(-15px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 20px rgba(37, 99, 235, 0.2); /* Glow Biru */
+}
+
+.he-glass-card:hover .he-glass-icon {
+  background: var(--sb-accent);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
+  border-color: transparent;
 }
 
 /* ==============================================

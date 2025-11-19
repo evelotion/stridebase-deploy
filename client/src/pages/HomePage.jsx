@@ -6,7 +6,7 @@ import StoreCard from "../components/StoreCard";
 import API_BASE_URL from "../apiConfig";
 import GlobalAnnouncement from "../components/GlobalAnnouncement";
 // PERBAIKAN: Import Slide dan Zoom ditambahkan di sini
-import { Fade, Slide, Zoom } from "react-awesome-reveal"; 
+import { Fade, Slide, Zoom } from "react-awesome-reveal";
 import "./HomePageModern.css";
 import "./HomePageElevate.css";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -22,28 +22,32 @@ const serviceCategories = [
     icon: "fa-rocket",
     link: "/store?services=Fast+Clean",
     description: "Pembersihan instan untuk kesibukan Anda.",
-    imageUrl: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop",
   },
   {
     name: "Perawatan Kulit",
     icon: "fa-gem",
     link: "/store?services=Leather",
     description: "Mengembalikan kilau dan kelembutan bahan kulit.",
-    imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop",
   },
   {
     name: "Suede & Nubuck",
     icon: "fa-leaf",
     link: "/store?services=Suede",
     description: "Perawatan khusus untuk bahan yang sensitif.",
-    imageUrl: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=2525&auto=format&fit=crop",
   },
   {
     name: "Unyellowing",
     icon: "fa-sun",
     link: "/store?services=Unyellowing",
     description: "Solusi untuk sol yang menguning agar kembali putih.",
-    imageUrl: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=2564&auto=format&fit=crop",
   },
 ];
 
@@ -521,40 +525,70 @@ const HomePage = ({
     );
   };
 
-const renderElevateHomepage = () => {
+  const renderElevateHomepage = () => {
+    // V3 Services Data
     const v3Services = [
-      { title: "Unyellowing", icon: "fa-sun", desc: "Mengembalikan warna sole sepatu yang menguning menjadi putih kembali dengan teknik oksidasi khusus." },
-      { title: "Deep Cleaning", icon: "fa-hands-wash", desc: "Pembersihan menyeluruh hingga ke serat material terdalam untuk hasil higienis maksimal." },
-      { title: "Repaint", icon: "fa-paint-brush", desc: "Pewarnaan ulang sepatu pudar atau ganti warna total dengan cat khusus leather/canvas." },
-      { title: "Repair", icon: "fa-tools", desc: "Perbaikan sol lepas, jahitan sobek, dan kerusakan struktural lainnya." }
+      {
+        title: "Unyellowing",
+        icon: "fa-sun",
+        desc: "Mengembalikan warna sole sepatu yang menguning menjadi putih kembali dengan teknik oksidasi khusus.",
+      },
+      {
+        title: "Deep Cleaning",
+        icon: "fa-hands-wash",
+        desc: "Pembersihan menyeluruh hingga ke serat material terdalam untuk hasil higienis maksimal.",
+      },
+      {
+        title: "Repaint",
+        icon: "fa-paint-brush",
+        desc: "Pewarnaan ulang sepatu pudar atau ganti warna total dengan cat khusus leather/canvas.",
+      },
+      {
+        title: "Repair",
+        icon: "fa-tools",
+        desc: "Perbaikan sol lepas, jahitan sobek, dan kerusakan struktural lainnya.",
+      },
     ];
 
     return (
       <div className="home-elevate-wrapper">
-        
-        {/* 1. HERO: CINEMATIC CAROUSEL + V3 OVERLAY TEXT */}
+        {/* 1. HERO SECTION */}
         <section className="he-hero-section">
-          <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="6000">
+          <div
+            id="elevateCarousel"
+            className="carousel slide carousel-fade he-full-bleed-carousel"
+            data-bs-ride="carousel"
+            data-bs-interval="6000"
+          >
             <div className="carousel-inner">
-              {banners.length > 0 ? banners.map((b, i) => (
-                <div className={`carousel-item ${i===0?'active':''}`} key={b.id}>
-                  <img src={b.imageUrl} className="he-hero-img" alt="Hero" />
-                </div>
-              )) : (
+              {banners.length > 0 ? (
+                banners.map((b, i) => (
+                  <div
+                    className={`carousel-item ${i === 0 ? "active" : ""}`}
+                    key={b.id}
+                  >
+                    <img src={b.imageUrl} className="he-hero-img" alt="Hero" />
+                  </div>
+                ))
+              ) : (
                 <div className="carousel-item active">
-                  <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920" className="he-hero-img" alt="Hero Default" />
+                  <img
+                    src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920"
+                    className="he-hero-img"
+                    alt="Hero Default"
+                  />
                 </div>
               )}
             </div>
           </div>
-
           <div className="he-hero-overlay-content">
             <Zoom triggerOnce>
-               <div className="he-hero-badge">StrideBase Platform</div>
+              <div className="he-hero-badge">StrideBase Platform</div>
             </Zoom>
             <Fade direction="up" cascade damping={0.2} delay={300} triggerOnce>
               <h1 className="he-hero-headline">
-                Choose shops that match<br /> your style and budget.
+                Choose shops that match
+                <br /> your style and budget.
               </h1>
               <Link to="/store" className="he-btn-find">
                 <i className="fas fa-search me-2"></i> Find Store Now
@@ -563,116 +597,158 @@ const renderElevateHomepage = () => {
           </div>
         </section>
 
-        {/* 2. BRAND MARQUEE: PREMIUM STRIP (SKEWED) */}
+        {/* 2. BRAND MARQUEE */}
         <section className="he-brand-section">
           <div className="he-trust-track-wrapper d-flex overflow-hidden">
-            <div className="he-trust-track d-flex"> {/* Tambahkan logika marquee di CSS jika belum ada, atau gunakan react-fast-marquee */}
-               <marquee scrollamount="10" className="w-100 d-flex">
-                 <span className="he-brand-text">ADIDAS</span>
-                 <span className="he-brand-text">NIKE</span>
-                 <span className="he-brand-text">SKECHERS</span>
-                 <span className="he-brand-text">PUMA</span>
-                 <span className="he-brand-text">CONVERSE</span>
-                 <span className="he-brand-text">VANS</span>
-                 <span className="he-brand-text">NEW BALANCE</span>
-                 <span className="he-brand-text">REEBOK</span>
-               </marquee>
+            <div className="he-trust-track d-flex w-100">
+              <marquee scrollamount="10" className="w-100 d-flex">
+                <span className="he-brand-text">ADIDAS</span>
+                <span className="he-brand-text">NIKE</span>
+                <span className="he-brand-text">SKECHERS</span>
+                <span className="he-brand-text">PUMA</span>
+                <span className="he-brand-text">CONVERSE</span>
+                <span className="he-brand-text">VANS</span>
+                <span className="he-brand-text">NEW BALANCE</span>
+                <span className="he-brand-text">REEBOK</span>
+              </marquee>
             </div>
           </div>
         </section>
 
-        {/* 3. POPULAR STORES: V3 LAYOUT + PREMIUM HOVER CARDS */}
+        {/* 3. POPULAR STORES */}
         <section className="he-popular-section">
           <div className="container">
             <div className="d-flex justify-content-between align-items-end mb-5">
               <Fade triggerOnce>
                 <div>
-                  <span className="text-uppercase text-muted fw-bold ls-1" style={{letterSpacing:'2px'}}>Recommendation</span>
-                  <h2 className="he-section-title mb-0">Popular Store in <span style={{color: 'var(--sb-accent)'}}>JAKARTA</span></h2>
+                  <span
+                    className="text-uppercase text-muted fw-bold ls-1"
+                    style={{ letterSpacing: "2px" }}
+                  >
+                    Recommendation
+                  </span>
+                  <h2 className="he-section-title mb-0">
+                    Popular Store in{" "}
+                    <span style={{ color: "var(--sb-accent)" }}>JAKARTA</span>
+                  </h2>
                 </div>
               </Fade>
-              <Link to="/store" className="btn btn-link text-dark fw-bold text-decoration-none" style={{fontSize:'1.1rem'}}>
+              <Link
+                to="/store"
+                className="btn btn-link text-dark fw-bold text-decoration-none"
+                style={{ fontSize: "1.1rem" }}
+              >
                 View All Stores <i className="fas fa-arrow-right ms-2"></i>
               </Link>
             </div>
 
             <div className="row g-4">
-              {(featuredStores.length > 0 ? featuredStores.slice(0, 4) : [1,2,3,4]).map((store, i) => (
+              {(featuredStores.length > 0
+                ? featuredStores.slice(0, 4)
+                : [1, 2, 3, 4]
+              ).map((store, i) => (
                 <div className="col-lg-3 col-md-6" key={store.id || i}>
-                   <Fade direction="up" delay={i * 100} triggerOnce>
-                     {typeof store === 'object' ? (
-                       <Link to={`/store/${store.id}`} className="text-decoration-none">
-                         <div className="he-store-card-premium">
-                           <div className="he-store-img-box">
-                             <img 
-                                src={store.image_url || (store.storeImages && store.storeImages[0]) || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80"} 
-                                alt={store.store_name} 
-                             />
-                           </div>
-                           <div className="he-store-info">
-                             <h4 className="he-store-name">{store.store_name}</h4>
-                             <div className="he-store-meta d-flex align-items-center text-muted mb-3">
-                               <i className="fas fa-map-marker-alt text-danger me-2"></i>
-                               <small>{store.city || "Jakarta"}</small>
-                             </div>
-                             <div className="d-flex justify-content-between align-items-center">
-                                <span className="badge bg-light text-dark border rounded-pill px-3 py-2">
-                                  <i className="fas fa-concierge-bell me-1"></i> Available
-                                </span>
-                                <span className="text-warning small">
-                                   <i className="fas fa-star"></i> {store.rating || "4.8"}
-                                </span>
-                             </div>
-                           </div>
-                         </div>
-                       </Link>
-                     ) : (
-                       /* DUMMY SKELETON */
-                       <div className="he-store-card-premium">
+                  <Fade direction="up" delay={i * 100} triggerOnce>
+                    {typeof store === "object" ? (
+                      <Link
+                        to={`/store/${store.id}`}
+                        className="text-decoration-none"
+                      >
+                        <div className="he-store-card-premium">
                           <div className="he-store-img-box">
-                            <img src={`https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500&q=80`} alt="Store" />
+                            <img
+                              src={
+                                store.image_url ||
+                                (store.storeImages && store.storeImages[0]) ||
+                                "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80"
+                              }
+                              alt={store.store_name}
+                            />
                           </div>
                           <div className="he-store-info">
-                            <h4 className="he-store-name">Kick Rid Jakarta</h4>
-                            <div className="he-store-meta text-muted mb-2">
-                               <i className="fas fa-map-marker-alt text-danger me-2"></i>
-                               Condet Raya, Jaktim
+                            <h4 className="he-store-name">
+                              {store.store_name}
+                            </h4>
+                            <div className="he-store-meta d-flex align-items-center text-muted mb-3">
+                              <i className="fas fa-map-marker-alt text-danger me-2"></i>
+                              <small>{store.city || "Jakarta"}</small>
                             </div>
-                            <span className="badge bg-light text-dark border">11 Layanan</span>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <span className="badge bg-light text-dark border rounded-pill px-3 py-2">
+                                <i className="fas fa-concierge-bell me-1"></i>{" "}
+                                Available
+                              </span>
+                              <span className="text-warning small">
+                                <i className="fas fa-star"></i>{" "}
+                                {store.rating || "4.8"}
+                              </span>
+                            </div>
                           </div>
-                       </div>
-                     )}
-                   </Fade>
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="he-store-card-premium">
+                        <div className="he-store-img-box">
+                          <img
+                            src={`https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500&q=80`}
+                            alt="Store"
+                          />
+                        </div>
+                        <div className="he-store-info">
+                          <h4 className="he-store-name">Kick Rid Jakarta</h4>
+                          <div className="he-store-meta text-muted mb-2">
+                            <i className="fas fa-map-marker-alt text-danger me-2"></i>
+                            Condet Raya, Jaktim
+                          </div>
+                          <span className="badge bg-light text-dark border">
+                            11 Layanan
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </Fade>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* 4. QUOTE: ARISTOTLE WITH PARALLAX */}
+        {/* 4. QUOTE SECTION */}
         <section className="he-quote-section">
           <div className="he-quote-overlay"></div>
           <div className="container he-quote-content">
             <Fade direction="up" triggerOnce>
-              <i className="fas fa-quote-left fa-3x mb-4" style={{opacity: 0.5}}></i>
+              <i
+                className="fas fa-quote-left fa-3x mb-4"
+                style={{ opacity: 0.5 }}
+              ></i>
               <h2 className="he-quote-text">
-                "Quality is not an act,<br /> it is a habit."
+                "Quality is not an act,
+                <br /> it is a habit."
               </h2>
-              <div className="he-quote-author">— Aristotle, Greek philosopher</div>
+              <div className="he-quote-author">
+                — Aristotle, Greek philosopher
+              </div>
             </Fade>
           </div>
         </section>
 
-        {/* 5. SERVICES: GLASSMORPHISM CARDS (V3 CONTENT) */}
+        {/* 5. SERVICES (PREMIUM GLASS) */}
         <section className="he-services-v3">
           <div className="he-blur-decoration he-blur-1"></div>
           <div className="he-blur-decoration he-blur-2"></div>
-          
+
           <div className="container position-relative">
             <div className="text-center mb-5">
               <Fade direction="down" triggerOnce>
-                <h2 className="he-section-title">Layanan <br/>KOMPREHENSIF</h2>
-                <p className="text-muted fs-5" style={{maxWidth: '700px', margin: '0 auto'}}>
+                <h2 className="he-section-title">
+                  Layanan <br />
+                  KOMPREHENSIF
+                </h2>
+                <p
+                  className="text-muted fs-5"
+                  style={{ maxWidth: "700px", margin: "0 auto" }}
+                >
                   Teknologi perawatan modern untuk hasil maksimal.
                 </p>
               </Fade>
@@ -681,13 +757,20 @@ const renderElevateHomepage = () => {
             <div className="row g-4">
               {v3Services.map((srv, i) => (
                 <div className="col-md-3" key={i}>
-                  <Fade direction="up" delay={i * 150} triggerOnce className="h-100">
+                  <Fade
+                    direction="up"
+                    delay={i * 150}
+                    triggerOnce
+                    className="h-100"
+                  >
                     <div className="he-glass-card">
                       <div className="he-glass-icon">
                         <i className={`fas ${srv.icon}`}></i>
                       </div>
-                      <h4 className="he-glass-title">{srv.title}</h4>
-                      <p className="text-muted">{srv.desc}</p>
+                      <div>
+                        <h4 className="he-glass-title">{srv.title}</h4>
+                        <p className="he-glass-desc">{srv.desc}</p>
+                      </div>
                     </div>
                   </Fade>
                 </div>
@@ -696,28 +779,37 @@ const renderElevateHomepage = () => {
           </div>
         </section>
 
-        {/* 6. TECH SECTION: SLIDE IN ANIMATION */}
+        {/* 6. TECH SECTION */}
         <section className="he-tech-section">
           <div className="container">
             <div className="row align-items-center">
               <div className="col-lg-6 mb-5 mb-lg-0">
                 <Slide direction="left" triggerOnce>
-                    <img 
-                      src="https://images.unsplash.com/photo-1597404294360-feeeda04612e?auto=format&fit=crop&w=800&q=80" 
-                      alt="Technology" 
-                      className="he-tech-img" 
-                    />
+                  <img
+                    src="https://images.unsplash.com/photo-1597404294360-feeeda04612e?auto=format&fit=crop&w=800&q=80"
+                    alt="Technology"
+                    className="he-tech-img"
+                  />
                 </Slide>
               </div>
               <div className="col-lg-6">
                 <Slide direction="right" triggerOnce>
                   <div className="he-tech-content">
                     <span className="he-tech-label">Modern Technology</span>
-                    <h2 className="he-tech-title">Teknologi Canggih,<br/>Hasil Maksimal.</h2>
+                    <h2 className="he-tech-title">
+                      Teknologi Canggih,
+                      <br />
+                      Hasil Maksimal.
+                    </h2>
                     <p className="text-muted fs-5 mb-4">
-                      Kami menggunakan peralatan modern dan formula pembersih premium (Saphir, Jason Markk) untuk memastikan sepatu Anda kembali seperti baru tanpa merusak material aslinya.
+                      Kami menggunakan peralatan modern dan formula pembersih
+                      premium (Saphir, Jason Markk) untuk memastikan sepatu Anda
+                      kembali seperti baru tanpa merusak material aslinya.
                     </p>
-                    <Link to="/about" className="btn btn-dark rounded-pill px-5 py-3 fw-bold shadow">
+                    <Link
+                      to="/about"
+                      className="btn btn-dark rounded-pill px-5 py-3 fw-bold shadow"
+                    >
                       Pelajari Lebih Lanjut
                     </Link>
                   </div>
@@ -726,10 +818,10 @@ const renderElevateHomepage = () => {
             </div>
           </div>
         </section>
-
       </div>
     );
   };
+
   return (
     <div className="homepage-mobile-container">
       {/* Header Mobile */}
@@ -884,7 +976,7 @@ const renderElevateHomepage = () => {
           />
         </div>
       </div>
-      
+
       {/* Konten Utama (Desktop) */}
       <div className="d-none d-lg-block">
         {homePageTheme === "modern"
