@@ -579,94 +579,206 @@ const HomePage = ({
   };
 
 const renderElevateHomepage = () => {
-  // Variabel branding tidak lagi diperlukan untuk hero section ini,
-  // karena gambar diambil langsung dari 'banners'
-  // const branding = theme?.branding || {};
+  // --- 1. Konfigurasi Branding (Opsional, fallback ke default) ---
+  const heroBanners = banners.length > 0 ? banners : [
+    {
+      id: "default-1",
+      imageUrl: "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2574&auto=format&fit=crop",
+      title: "Elevate Your Steps",
+      subtitle: "Perawatan sepatu premium untuk profesional modern."
+    },
+    {
+      id: "default-2",
+      imageUrl: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?q=80&w=2671&auto=format&fit=crop",
+      title: "Attention to Detail",
+      subtitle: "Setiap jahitan dan material diperlakukan dengan presisi."
+    }
+  ];
 
   return (
     <div className="home-elevate-wrapper">
+      
       {/* ==============================================
-        1. HERO SECTION (ELEVATE) - VERSI BARU (FULL-BLEED)
+         SECTION 1: CINEMATIC HERO (Full Bleed)
       ============================================== */}
       <section className="he-hero-section">
-        {/* Tidak ada background statis, tidak ada container, tidak ada row */}
-        <Fade duration={800} triggerOnce>
-          <div
-            id="elevateMainBannerCarousel"
-            className="carousel slide carousel-fade he-full-bleed-carousel" // Class baru
-            data-bs-ride="carousel"
-          >
-            {/* Indikator Carousel */}
-            <div className="carousel-indicators">
-              {banners.map((_, index) => (
-                <button
-                  type="button"
-                  data-bs-target="#elevateMainBannerCarousel"
-                  data-bs-slide-to={index}
-                  className={index === 0 ? "active" : ""}
-                  aria-current={index === 0 ? "true" : "false"}
-                  aria-label={`Slide ${index + 1}`}
-                  key={index}
-                ></button>
-              ))}
-            </div>
+        <div
+          id="elevateHeroCarousel"
+          className="carousel slide carousel-fade he-full-bleed-carousel"
+          data-bs-ride="carousel"
+          data-bs-interval="6000" 
+        >
+          <div className="carousel-indicators he-indicators">
+            {heroBanners.map((_, index) => (
+              <button
+                type="button"
+                data-bs-target="#elevateHeroCarousel"
+                data-bs-slide-to={index}
+                className={index === 0 ? "active" : ""}
+                key={index}
+              ></button>
+            ))}
+          </div>
 
-            {/* Item Carousel (Inner) */}
-            <div className="carousel-inner">
-              {banners.length > 0 ? (
-                banners.map((banner, index) => (
-                  <div
-                    className={`carousel-item ${
-                      index === 0 ? "active" : ""
-                    }`}
-                    key={banner.id}
-                  >
-                    {/* Gambar sebagai background item */}
-                    <img
-                      src={banner.imageUrl}
-                      className="d-block w-100"
-                      alt={banner.title || "Main Banner"}
-                    />
-                    {/* Caption: Teks dan Tombol di atas gambar */}
-                    <div className="carousel-caption d-none d-md-block text-start">
-                      <h1 className="display-4 fw-bold">{banner.title}</h1>
-                      <p className="lead fs-4">
-    Choose shops that match your style and budget.
-  </p>
-                      <Link
-                        to={banner.linkUrl || "/store"}
-                        className="btn btn-primary btn-lg shadow-sm"
-                      >
-                        {/* Ganti teks ini jika Anda menambah 'buttonText' di model Banner */}
-                        Lihat Layanan
-                      </Link>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                // Fallback jika tidak ada banner
-                <div className="carousel-item active">
-                  <img
-                    src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop"
-                    className="d-block w-100"
-                    alt="Sepatu Bersih"
-                  />
-                  <div className="carousel-caption d-none d-md-block text-start">
-                    <h1 className="display-4 fw-bold">Stridebase Elevate</h1>
-                    <p className="lead fs-4">Kualitas perawatan premium.</p>
-                    <Link
-                      to="/store"
-                      className="btn btn-primary btn-lg shadow-sm"
-                    >
-                      Lihat Layanan
+          <div className="carousel-inner">
+            {heroBanners.map((banner, index) => (
+              <div
+                className={`carousel-item ${index === 0 ? "active" : ""}`}
+                key={banner.id}
+              >
+                <img
+                  src={banner.imageUrl}
+                  className="he-hero-img"
+                  alt={banner.title}
+                />
+                <div className="he-hero-overlay"></div>
+                
+                {/* Caption dengan Animasi Masuk */}
+                <div className="he-hero-caption">
+                  <Fade direction="up" cascade damping={0.2} triggerOnce key={index}>
+                     {/* Key index memaksa animasi ulang saat slide ganti (opsional) */}
+                    <h1 className="he-hero-title">
+                      {banner.title || "StrideBase Elevate"}
+                    </h1>
+                    <p className="he-hero-desc">
+                      {banner.subtitle || "Experience the best care for your footwear."}
+                    </p>
+                    <Link to="/store" className="btn he-btn-primary">
+                      Explore Services
                     </Link>
-                  </div>
+                  </Fade>
                 </div>
-              )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==============================================
+         SECTION 2: INFINITE TRUST STRIP
+      ============================================== */}
+      <div className="he-trust-strip">
+        <div className="he-trust-track">
+          {/* Ulangi teks agar scrolling terlihat mulus */}
+          {[...Array(10)].map((_, i) => (
+            <span key={i} className="he-brand-item">
+              Nike • Adidas • Jordan • Yeezy • Balenciaga • New Balance •
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ==============================================
+         SECTION 3: PREMIUM SERVICES (Grid with Glass Effect)
+      ============================================== */}
+      <section className="he-services-section">
+        <div className="container">
+          <div className="row mb-5 align-items-end">
+            <div className="col-lg-8">
+              <Fade direction="up" triggerOnce>
+                <div className="he-section-header">
+                  <span className="he-section-label">Layanan Kami</span>
+                  <h2 className="he-section-heading">Excellence in Every Pair.</h2>
+                </div>
+              </Fade>
+            </div>
+            <div className="col-lg-4 text-lg-end">
+              <Link to="/store" className="btn btn-outline-dark rounded-pill px-4">
+                Lihat Semua Layanan
+              </Link>
             </div>
           </div>
-        </Fade>
+
+          <div className="row g-4">
+            {serviceCategories.map((service, index) => (
+              <div className="col-md-6 col-lg-3" key={service.name}>
+                <Fade direction="up" delay={index * 150} triggerOnce>
+                  <Link to={service.link} className="he-service-card">
+                    {/* Background Image */}
+                    <div 
+                      className="he-service-bg"
+                      style={{ backgroundImage: `url(${service.imageUrl})` }}
+                    ></div>
+                    <div className="he-service-overlay"></div>
+                    
+                    {/* Content */}
+                    <div className="he-service-content">
+                      <div className="he-service-icon">
+                        <i className={`fas ${service.icon}`}></i>
+                      </div>
+                      <h4 className="he-service-title">{service.name}</h4>
+                      <p className="he-service-desc">{service.description}</p>
+                    </div>
+                  </Link>
+                </Fade>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
+
+      {/* ==============================================
+         SECTION 4: HOW IT WORKS (Clean Steps)
+      ============================================== */}
+      <section className="he-process-section">
+        <div className="container">
+          <div className="text-center mb-5">
+            <Fade direction="down" triggerOnce>
+              <span className="he-section-label">Proses</span>
+              <h2 className="he-section-heading">Mudah & Transparan</h2>
+            </Fade>
+          </div>
+          
+          <div className="row">
+            {[
+              { title: "Pesan", icon: "fa-mobile-alt", text: "Pilih layanan via aplikasi." },
+              { title: "Jemput / Drop", icon: "fa-box-open", text: "Kurir kami jemput atau drop di toko." },
+              { title: "Proses", icon: "fa-magic", text: "Ahli kami merawat sepatu Anda." },
+              { title: "Selesai", icon: "fa-check-circle", text: "Sepatu kembali bersih seperti baru." }
+            ].map((step, idx) => (
+              <div className="col-md-3" key={idx}>
+                <Fade direction="up" delay={idx * 200} triggerOnce>
+                  <div className="he-step-card">
+                    <div className="he-step-number">0{idx + 1}</div>
+                    <div className="he-step-icon-box">
+                      <i className={`fas ${step.icon}`}></i>
+                    </div>
+                    <h4 className="he-step-title">{step.title}</h4>
+                    <p className="text-muted">{step.text}</p>
+                  </div>
+                </Fade>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ==============================================
+         SECTION 5: FEATURED STORES (Menggunakan Komponen StoreCard yang sudah ada)
+      ============================================== */}
+      <section className="he-services-section" style={{ background: '#fff' }}>
+        <div className="container">
+           <div className="he-section-header text-center">
+              <span className="he-section-label">Mitra Pilihan</span>
+              <h2 className="he-section-heading">Top Rated Stores</h2>
+           </div>
+           
+           {loading ? (
+             <div className="text-center py-5">Loading...</div>
+           ) : (
+             <div className="row g-4">
+               {featuredStores.slice(0, 4).map((store, i) => (
+                 <div className="col-lg-3 col-md-6" key={store.id}>
+                   <Fade triggerOnce delay={i * 100}>
+                     <StoreCard store={store} />
+                   </Fade>
+                 </div>
+               ))}
+             </div>
+           )}
+        </div>
+      </section>
+
     </div>
   );
 };

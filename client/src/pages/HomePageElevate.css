@@ -1,251 +1,322 @@
-/* File: client/src/pages/HomePageElevate.css (BARU) */
+/* File: client/src/pages/HomePageElevate.css */
+
+:root {
+  --elevate-primary: #111111;
+  --elevate-accent: #0D6EFD;
+  --elevate-bg: #ffffff;
+  --elevate-text: #333333;
+  --elevate-gray: #f4f4f4;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+}
 
 .home-elevate-wrapper {
-  background-color: #ffffff; /* Latar belakang dasar yang bersih */
-  color: #1a1a1a;
+  background-color: var(--elevate-bg);
+  color: var(--elevate-text);
   overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* ==============================================
-   HERO SECTION (ELEVATE) - Full Bleed Carousel
+   1. HERO SECTION (Full Bleed & Cinematic)
 ============================================== */
-
 .he-hero-section {
-  /* Hapus semua padding/margin lama */
-  padding: 0;
-  margin: 0;
-  height: auto; /* Biarkan carousel yang menentukan tinggi */
-  margin-bottom: 4rem; /* Jarak ke section berikutnya */
-  background-color: #f0f2f5; /* Warna fallback jika gambar gagal dimuat */
-}
-
-.he-full-bleed-carousel {
+  position: relative;
   width: 100%;
-  /* Tentukan ketinggian hero carousel di sini */
-  height: 600px;
-  max-height: 85vh; /* Maksimal 85% dari tinggi layar */
+  height: 90vh; /* Lebih tinggi untuk kesan sinematik */
+  min-height: 600px;
+  overflow: hidden;
 }
 
+.he-full-bleed-carousel,
+.he-full-bleed-carousel .carousel-inner,
 .he-full-bleed-carousel .carousel-item {
   height: 100%;
-  width: 100%;
 }
 
-.he-full-bleed-carousel .carousel-item img {
+.he-hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Beri filter gelap agar teks putih lebih mudah dibaca */
-  filter: brightness(0.7);
+  filter: brightness(0.65); /* Sedikit lebih gelap agar teks pop */
+  transform: scale(1);
+  transition: transform 10s ease; /* Efek zoom lambat (Ken Burns effect) */
 }
 
-/* Styling Caption (Teks di atas Gambar) */
-.he-full-bleed-carousel .carousel-caption {
-  /* Override default Bootstrap untuk memposisikan di tengah-kiri */
+.carousel-item.active .he-hero-img {
+  transform: scale(1.1);
+}
+
+.he-hero-overlay {
   position: absolute;
-  top: 50%;
-  left: 15%; /* Mulai dari 15% dari kiri */
-  transform: translateY(-50%); /* Hanya ratakan vertikal */
-  bottom: auto;
-  right: auto;
-  width: auto;
-  max-width: 50%; /* Batasi lebar caption */
-  text-align: left !important; /* Paksa rata kiri */
-  padding: 0; /* Hapus padding default */
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  z-index: 1;
 }
 
-.he-full-bleed-carousel .carousel-caption h1 {
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-  color: #ffffff;
-  font-weight: 700;
-  margin-bottom: 1rem;
+.he-hero-caption {
+  position: absolute;
+  bottom: 15%;
+  left: 10%;
+  right: 10%;
+  z-index: 2;
+  color: white;
+  max-width: 800px;
 }
 
-.he-full-bleed-carousel .carousel-caption p {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  color: #ffffff;
-  opacity: 0.95;
+.he-hero-title {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
   margin-bottom: 1.5rem;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-.he-full-bleed-carousel .carousel-caption .btn {
+.he-hero-desc {
+  font-size: 1.25rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  max-width: 600px;
+}
+
+.he-btn-primary {
+  background-color: white;
+  color: var(--elevate-primary);
+  padding: 15px 40px;
+  border-radius: 50px;
   font-weight: 600;
-}
-
-/* Indikator Carousel (Pindahkan ke tengah bawah) */
-.he-full-bleed-carousel .carousel-indicators {
-  position: absolute;
-  bottom: 25px; /* Jarak dari bawah */
-  left: 50%;
-  transform: translateX(-50%); /* Posisikan di tengah */
-  right: auto;
-  z-index: 15;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  gap: 8px; /* Jarak antar tombol */
-}
-
-.he-full-bleed-carousel .carousel-indicators button {
-  width: 10px; /* Ukuran tombol tidak aktif (bulat) */
-  height: 10px;
-  border-radius: 50%; /* Bulat sempurna */
-  background-color: rgba(255, 255, 255, 0.5);
-  border: 0;
-  padding: 0; /* Hapus padding default */
-  opacity: 0.7;
+  font-size: 1.1rem;
+  border: none;
   transition: all 0.3s ease;
-  
-  /* Hapus text-indent bawaan Bootstrap */
-  text-indent: -999px;
-  box-sizing: content-box; /* Pastikan ukuran tetap */
 }
 
-.he-full-bleed-carousel .carousel-indicators button.active {
-  width: 30px; /* Ukuran tombol aktif (pil) */
-  height: 10px;
-  border-radius: 5px; /* Sudut melengkung (bukan bulat) */
-  background-color: #ffffff;
-  opacity: 1;
+.he-btn-primary:hover {
+  background-color: var(--elevate-accent);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+}
+
+/* Custom Indicators */
+.he-indicators {
+  bottom: 40px;
+}
+.he-indicators button {
+  width: 60px !important;
+  height: 4px !important;
+  border-radius: 2px;
+  background-color: rgba(255,255,255,0.3) !important;
+  margin: 0 5px !important;
+}
+.he-indicators button.active {
+  background-color: white !important;
+  width: 80px !important;
 }
 
 /* ==============================================
-   SERVICES SECTION (ELEVATE)
+   2. TRUST STRIP (Marquee halus)
+============================================== */
+.he-trust-strip {
+  background: var(--elevate-primary);
+  padding: 2rem 0;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+}
+.he-trust-track {
+  display: inline-flex;
+  animation: scroll 30s linear infinite;
+}
+.he-brand-item {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 3rem;
+  letter-spacing: 2px;
+}
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ==============================================
+   3. SERVICES SECTION (Glassmorphism)
 ============================================== */
 .he-services-section {
-  padding: 4rem 0;
-  background-color: #f8f9fa; /* Latar abu-abu sangat muda */
+  padding: 6rem 0;
+  background-color: var(--elevate-gray);
+  position: relative;
 }
 
-/* Judul (Sama seperti Modern) */
-.he-section-title {
-  position: relative;
-  display: inline-block;
-  padding-bottom: 1rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+.he-section-header {
+  margin-bottom: 4rem;
+  text-align: left;
 }
-.he-section-title::after {
-  content: '';
+
+.he-section-label {
+  color: var(--elevate-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.he-section-heading {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--elevate-primary);
+}
+
+.he-service-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  height: 400px; /* Kartu tinggi */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-soft);
+  display: block;
+  text-decoration: none;
+}
+
+.he-service-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+}
+
+.he-service-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.he-service-content {
   position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  /* Gunakan warna primer dari CSS variables */
-  background-color: var(--primary-color, #0D6EFD); 
-  border-radius: 2px;
-}
-.he-section-subtitle {
-  color: #555;
-  font-size: 1.1rem;
-  margin-bottom: 3rem;
-}
-
-/* Desain Kartu Layanan (Clean & Minimalist) */
-.he-service-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e9ecef;
-  text-decoration: none;
-  color: #1a1a1a;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-}
-.he-service-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
-  border-color: var(--primary-color, #0D6EFD);
-}
-.he-service-card-image-wrapper {
-  height: 200px;
-  overflow: hidden;
-}
-.he-service-card-image-wrapper img {
+  left: 0;
+  padding: 2rem;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  z-index: 2;
+  transform: translateY(20px);
   transition: transform 0.4s ease;
 }
-.he-service-card:hover .he-service-card-image-wrapper img {
-  transform: scale(1.05);
+
+.he-service-icon {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease 0.1s;
 }
-.he-service-card-content {
-  padding: 1.5rem;
-}
-.he-service-card-content h4 {
-  font-weight: 600;
-  font-size: 1.25rem;
+
+.he-service-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
   margin-bottom: 0.5rem;
 }
-.he-service-card-content p {
-  font-size: 0.9rem;
-  color: #6c757d;
-  line-height: 1.6;
+
+.he-service-desc {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.95rem;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+/* Hover Effects */
+.he-service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-hover);
+}
+.he-service-card:hover .he-service-bg {
+  transform: scale(1.1);
+}
+.he-service-card:hover .he-service-overlay {
+  opacity: 0.8;
+}
+.he-service-card:hover .he-service-content {
+  transform: translateY(0);
+}
+.he-service-card:hover .he-service-icon {
+  opacity: 1;
+  transform: translateY(0);
+}
+.he-service-card:hover .he-service-desc {
+  opacity: 1;
+  height: auto;
+  margin-top: 10px;
 }
 
 /* ==============================================
-   INFO SECTION (ELEVATE)
+   4. PROCESS SECTION (Steps)
 ============================================== */
-.he-info-section {
-  padding: 5rem 0;
-  background-color: #ffffff;
-}
-.he-info-text-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-}
-.he-info-text-content h2 {
-  font-weight: 700;
-  font-size: 2.8rem;
-  line-height: 1.3;
-  margin-bottom: 1.5rem;
-}
-.he-info-text-content p {
-  font-size: 1.1rem;
-  color: #555;
-  line-height: 1.7;
-  margin-bottom: 2rem;
-}
-.he-info-text-content .btn {
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
+.he-process-section {
+  padding: 6rem 0;
+  background: white;
 }
 
-/* Grid Gambar (Kanan) */
-.he-info-image-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 1rem;
-  height: 100%;
-  max-height: 500px;
+.he-step-card {
+  text-align: center;
+  padding: 2rem;
 }
-.he-info-image-grid img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+
+.he-step-number {
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(0,0,0,0.05);
+  line-height: 1;
+  margin-bottom: -20px;
+  position: relative;
+  z-index: 0;
 }
-/* Gambar pertama dibuat lebih besar */
-.he-info-image-grid img:nth-child(1) {
-  grid-column: 1 / 3; /* Membentang 2 kolom */
-  grid-row: 1 / 2;
-  height: 280px; /* Ketinggian spesifik */
+
+.he-step-icon-box {
+  width: 80px;
+  height: 80px;
+  background: var(--elevate-gray);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  z-index: 1;
+  font-size: 1.8rem;
+  color: var(--elevate-primary);
+  transition: transform 0.3s ease;
 }
-.he-info-image-grid img:nth-child(2) {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
+
+.he-step-card:hover .he-step-icon-box {
+  transform: rotateY(180deg);
+  background: var(--elevate-accent);
+  color: white;
 }
-.he-info-image-grid img:nth-child(3) {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
+
+.he-step-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* ==============================================
+   Responsive
+============================================== */
+@media (max-width: 768px) {
+  .he-hero-title { font-size: 2.5rem; }
+  .he-hero-caption { bottom: 10%; left: 5%; right: 5%; }
+  .he-section-heading { font-size: 2rem; }
 }
