@@ -1,333 +1,322 @@
 /* File: client/src/pages/HomePageElevate.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
 
 :root {
-  --sb-black: #0f0f0f;
-  --sb-dark-gray: #1a1a1a;
-  --sb-gray: #f5f5f5;
-  --sb-accent: #2563eb; /* Royal Blue yang modern */
-  --sb-text: #333;
-  --sb-text-light: #666;
+  --elevate-primary: #111111;
+  --elevate-accent: #0D6EFD;
+  --elevate-bg: #ffffff;
+  --elevate-text: #333333;
+  --elevate-gray: #f4f4f4;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
 }
 
 .home-elevate-wrapper {
-  font-family: 'Inter', sans-serif;
-  background-color: #fff;
-  color: var(--sb-text);
+  background-color: var(--elevate-bg);
+  color: var(--elevate-text);
   overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* ==============================================
-   1. HERO SECTION (V3 Hybrid: Carousel + Overlay)
+   1. HERO SECTION (Full Bleed & Cinematic)
 ============================================== */
 .he-hero-section {
   position: relative;
-  height: 85vh;
-  min-height: 600px;
   width: 100%;
+  height: 90vh; /* Lebih tinggi untuk kesan sinematik */
+  min-height: 600px;
   overflow: hidden;
 }
 
-.he-full-bleed-carousel {
+.he-full-bleed-carousel,
+.he-full-bleed-carousel .carousel-inner,
+.he-full-bleed-carousel .carousel-item {
   height: 100%;
-  width: 100%;
 }
 
 .he-hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Darken image agar text V3 terbaca jelas */
-  filter: brightness(0.5); 
+  filter: brightness(0.65); /* Sedikit lebih gelap agar teks pop */
   transform: scale(1);
-  transition: transform 8s ease;
+  transition: transform 10s ease; /* Efek zoom lambat (Ken Burns effect) */
 }
 
 .carousel-item.active .he-hero-img {
   transform: scale(1.1);
 }
 
-/* Konten Tengah sesuai PDF V3 */
-.he-hero-overlay-content {
+.he-hero-overlay {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  z-index: 10;
-  padding: 0 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  z-index: 1;
 }
 
-.he-hero-badge {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 8px 20px;
-  border-radius: 30px;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+.he-hero-caption {
+  position: absolute;
+  bottom: 15%;
+  left: 10%;
+  right: 10%;
+  z-index: 2;
+  color: white;
+  max-width: 800px;
 }
 
-.he-hero-headline {
-  font-size: 4.5rem;
+.he-hero-title {
+  font-size: 4rem;
   font-weight: 800;
-  color: #fff;
   line-height: 1.1;
+  letter-spacing: -1px;
   margin-bottom: 1.5rem;
-  max-width: 900px;
-  letter-spacing: -2px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-.he-hero-sub {
-  font-size: 1.2rem;
-  color: rgba(255,255,255,0.9);
-  margin-bottom: 2.5rem;
+.he-hero-desc {
+  font-size: 1.25rem;
   font-weight: 300;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  max-width: 600px;
 }
 
-.he-btn-find {
-  background: #fff;
-  color: var(--sb-black);
-  padding: 18px 40px;
-  font-size: 1.1rem;
-  font-weight: 700;
+.he-btn-primary {
+  background-color: white;
+  color: var(--elevate-primary);
+  padding: 15px 40px;
   border-radius: 50px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 600;
+  font-size: 1.1rem;
   border: none;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.he-btn-find:hover {
-  background: var(--sb-accent);
-  color: #fff;
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(37, 99, 235, 0.4);
+.he-btn-primary:hover {
+  background-color: var(--elevate-accent);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+}
+
+/* Custom Indicators */
+.he-indicators {
+  bottom: 40px;
+}
+.he-indicators button {
+  width: 60px !important;
+  height: 4px !important;
+  border-radius: 2px;
+  background-color: rgba(255,255,255,0.3) !important;
+  margin: 0 5px !important;
+}
+.he-indicators button.active {
+  background-color: white !important;
+  width: 80px !important;
 }
 
 /* ==============================================
-   2. BRAND MARQUEE (Sesuai PDF)
+   2. TRUST STRIP (Marquee halus)
 ============================================== */
-.he-brand-section {
-  background: var(--sb-black);
-  padding: 2.5rem 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+.he-trust-strip {
+  background: var(--elevate-primary);
+  padding: 2rem 0;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
 }
-.he-brand-text {
-  color: #666; /* Warna abu sesuai V3 */
-  font-weight: 800;
-  font-size: 2rem;
+.he-trust-track {
+  display: inline-flex;
+  animation: scroll 30s linear infinite;
+}
+.he-brand-item {
+  font-size: 1.5rem;
+  font-weight: 700;
   text-transform: uppercase;
-  margin: 0 40px;
+  margin: 0 3rem;
   letter-spacing: 2px;
-  opacity: 0.6;
-  transition: opacity 0.3s;
 }
-.he-brand-text:hover {
-  opacity: 1;
-  color: #fff;
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* ==============================================
-   3. POPULAR STORES (Layout Card Clean)
+   3. SERVICES SECTION (Glassmorphism)
 ============================================== */
-.he-popular-section {
+.he-services-section {
   padding: 6rem 0;
-  background: #fff;
-}
-
-.he-section-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 3rem;
-  color: var(--sb-black);
-  letter-spacing: -1px;
-}
-
-.he-store-card-v3 {
-  border: 1px solid #eee;
-  border-radius: 16px;
-  overflow: hidden;
-  transition: all 0.4s ease;
-  height: 100%;
-  background: #fff;
+  background-color: var(--elevate-gray);
   position: relative;
 }
 
-.he-store-img-box {
-  height: 220px;
-  overflow: hidden;
-  position: relative;
+.he-section-header {
+  margin-bottom: 4rem;
+  text-align: left;
 }
 
-.he-store-img-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.he-section-label {
+  color: var(--elevate-accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.he-section-heading {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--elevate-primary);
+}
+
+.he-service-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  height: 400px; /* Kartu tinggi */
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: var(--shadow-soft);
+  display: block;
+  text-decoration: none;
+}
+
+.he-service-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
   transition: transform 0.5s ease;
 }
 
-.he-store-info {
-  padding: 1.5rem;
+.he-service-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
 }
 
-.he-store-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: var(--sb-black);
+.he-service-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 2rem;
+  width: 100%;
+  z-index: 2;
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
 }
 
-.he-store-meta {
-  font-size: 0.9rem;
-  color: var(--sb-text-light);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.he-service-icon {
+  font-size: 2rem;
+  color: white;
   margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease 0.1s;
 }
 
-.he-store-services-count {
-  background: var(--sb-gray);
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.he-service-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
 }
 
-.he-store-card-v3:hover {
+.he-service-desc {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.95rem;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+/* Hover Effects */
+.he-service-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-  border-color: transparent;
+  box-shadow: var(--shadow-hover);
 }
-
-.he-store-card-v3:hover .he-store-img-box img {
+.he-service-card:hover .he-service-bg {
   transform: scale(1.1);
 }
+.he-service-card:hover .he-service-overlay {
+  opacity: 0.8;
+}
+.he-service-card:hover .he-service-content {
+  transform: translateY(0);
+}
+.he-service-card:hover .he-service-icon {
+  opacity: 1;
+  transform: translateY(0);
+}
+.he-service-card:hover .he-service-desc {
+  opacity: 1;
+  height: auto;
+  margin-top: 10px;
+}
 
 /* ==============================================
-   4. QUOTE SECTION (Aristotle)
+   4. PROCESS SECTION (Steps)
 ============================================== */
-.he-quote-section {
-  padding: 8rem 0;
-  background: var(--sb-black);
-  color: #fff;
+.he-process-section {
+  padding: 6rem 0;
+  background: white;
+}
+
+.he-step-card {
   text-align: center;
+  padding: 2rem;
+}
+
+.he-step-number {
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(0,0,0,0.05);
+  line-height: 1;
+  margin-bottom: -20px;
   position: relative;
-  overflow: hidden;
+  z-index: 0;
 }
 
-.he-quote-text {
-  font-family: 'Playfair Display', serif;
-  font-size: 3.5rem;
-  font-style: italic;
-  line-height: 1.3;
-  margin-bottom: 2rem;
-  position: relative;
-  z-index: 2;
-}
-
-.he-quote-author {
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-}
-
-/* ==============================================
-   5. COMPREHENSIVE SERVICES (Grid Modern)
-============================================== */
-.he-services-v3 {
-  padding: 6rem 0;
-  background: var(--sb-gray);
-}
-
-.he-service-box {
-  background: #fff;
-  padding: 2.5rem;
-  border-radius: 0; /* Kotak tegas sesuai style modern */
-  height: 100%;
-  transition: all 0.3s ease;
-  border-bottom: 3px solid transparent;
-}
-
-.he-service-box:hover {
-  border-bottom: 3px solid var(--sb-black);
-  transform: translateY(-5px);
-}
-
-.he-srv-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  color: var(--sb-black);
-}
-
-.he-srv-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.he-srv-desc {
-  font-size: 0.95rem;
-  color: #666;
-  line-height: 1.6;
-}
-
-/* ==============================================
-   6. TECH SECTION (Image + Text)
-============================================== */
-.he-tech-section {
-  padding: 6rem 0;
-  background: #fff;
-}
-
-.he-tech-img-wrapper {
-  position: relative;
-  padding-right: 2rem;
-}
-
-.he-tech-img {
-  width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-}
-
-.he-tech-content {
-  padding-left: 2rem;
+.he-step-icon-box {
+  width: 80px;
+  height: 80px;
+  background: var(--elevate-gray);
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  height: 100%;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  z-index: 1;
+  font-size: 1.8rem;
+  color: var(--elevate-primary);
+  transition: transform 0.3s ease;
 }
 
-.he-tech-label {
-  color: var(--sb-accent);
+.he-step-card:hover .he-step-icon-box {
+  transform: rotateY(180deg);
+  background: var(--elevate-accent);
+  color: white;
+}
+
+.he-step-title {
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-.he-tech-title {
-  font-size: 3rem;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 1.5rem;
-  color: var(--sb-black);
-}
-
-/* Responsive Adjustments */
+/* ==============================================
+   Responsive
+============================================== */
 @media (max-width: 768px) {
-  .he-hero-headline { font-size: 2.5rem; }
-  .he-quote-text { font-size: 2rem; }
-  .he-brand-text { font-size: 1.5rem; margin: 0 20px; }
-  .he-tech-content { padding-left: 0; margin-top: 2rem; }
+  .he-hero-title { font-size: 2.5rem; }
+  .he-hero-caption { bottom: 10%; left: 5%; right: 5%; }
+  .he-section-heading { font-size: 2rem; }
 }

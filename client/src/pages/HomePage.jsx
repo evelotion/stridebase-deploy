@@ -579,124 +579,138 @@ const HomePage = ({
   };
 
 const renderElevateHomepage = () => {
-  // --- Data Mockup untuk mengisi layout V3 jika data backend belum ready ---
-  const v3Services = [
-    { title: "Unyellowing", icon: "fa-sun", desc: "Mengembalikan warna sole sepatu yang menguning menjadi putih kembali dengan teknik oksidasi khusus." },
-    { title: "Deep Cleaning", icon: "fa-hands-wash", desc: "Pembersihan menyeluruh hingga ke serat material terdalam untuk hasil higienis maksimal." },
-    { title: "Repaint", icon: "fa-paint-brush", desc: "Pewarnaan ulang sepatu pudar atau ganti warna total dengan cat khusus leather/canvas." },
-    { title: "Repair", icon: "fa-tools", desc: "Perbaikan sol lepas, jahitan sobek, dan kerusakan struktural lainnya." }
+  // --- 1. Konfigurasi Branding (Opsional, fallback ke default) ---
+  const heroBanners = banners.length > 0 ? banners : [
+    {
+      id: "default-1",
+      imageUrl: "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2574&auto=format&fit=crop",
+      title: "Elevate Your Steps",
+      subtitle: "Perawatan sepatu premium untuk profesional modern."
+    },
+    {
+      id: "default-2",
+      imageUrl: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?q=80&w=2671&auto=format&fit=crop",
+      title: "Attention to Detail",
+      subtitle: "Setiap jahitan dan material diperlakukan dengan presisi."
+    }
   ];
 
   return (
     <div className="home-elevate-wrapper">
       
       {/* ==============================================
-         SECTION 1: HERO (Carousel + V3 Overlay Text)
+         SECTION 1: CINEMATIC HERO (Full Bleed)
       ============================================== */}
       <section className="he-hero-section">
-        {/* Background Carousel (User Request) */}
-        <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="5000">
-          <div className="carousel-inner">
-            {banners.length > 0 ? banners.map((b, i) => (
-              <div className={`carousel-item ${i===0?'active':''}`} key={b.id}>
-                <img src={b.imageUrl} className="he-hero-img" alt="Hero" />
-              </div>
-            )) : (
-              /* Fallback jika tidak ada banner */
-              <div className="carousel-item active">
-                <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920" className="he-hero-img" alt="Hero Default" />
-              </div>
-            )}
+        <div
+          id="elevateHeroCarousel"
+          className="carousel slide carousel-fade he-full-bleed-carousel"
+          data-bs-ride="carousel"
+          data-bs-interval="6000" 
+        >
+          <div className="carousel-indicators he-indicators">
+            {heroBanners.map((_, index) => (
+              <button
+                type="button"
+                data-bs-target="#elevateHeroCarousel"
+                data-bs-slide-to={index}
+                className={index === 0 ? "active" : ""}
+                key={index}
+              ></button>
+            ))}
           </div>
-        </div>
 
-        {/* Text Overlay Sesuai Design V3 PDF */}
-        <div className="he-hero-overlay-content">
-          <Fade direction="up" cascade damping={0.2} triggerOnce>
-            <div className="he-hero-badge">StrideBase Platform</div>
-            <h1 className="he-hero-headline">
-              Choose shops that match<br /> your style and budget.
-            </h1>
-            <Link to="/store" className="he-btn-find">
-              <i className="fas fa-search me-2"></i> Find Store
-            </Link>
-          </Fade>
-        </div>
-      </section>
-
-      {/* ==============================================
-         SECTION 2: BRAND MARQUEE (V3 PDF: "ADIDAS NIKE...")
-      ============================================== */}
-      <section className="he-brand-section">
-        {/* Kita gunakan efek marquee manual CSS atau library jika ada */}
-        <div className="d-flex overflow-hidden">
-          <div className="he-trust-track"> {/* Menggunakan class animasi dari CSS sebelumnya */}
-            {[...Array(10)].map((_, i) => (
-              <span key={i} className="he-brand-text">
-                ADIDAS • NIKE • SKECHERS • PUMA • CONVERSE • VANS •
-              </span>
+          <div className="carousel-inner">
+            {heroBanners.map((banner, index) => (
+              <div
+                className={`carousel-item ${index === 0 ? "active" : ""}`}
+                key={banner.id}
+              >
+                <img
+                  src={banner.imageUrl}
+                  className="he-hero-img"
+                  alt={banner.title}
+                />
+                <div className="he-hero-overlay"></div>
+                
+                {/* Caption dengan Animasi Masuk */}
+                <div className="he-hero-caption">
+                  <Fade direction="up" cascade damping={0.2} triggerOnce key={index}>
+                     {/* Key index memaksa animasi ulang saat slide ganti (opsional) */}
+                    <h1 className="he-hero-title">
+                      {banner.title || "StrideBase Elevate"}
+                    </h1>
+                    <p className="he-hero-desc">
+                      {banner.subtitle || "Experience the best care for your footwear."}
+                    </p>
+                    <Link to="/store" className="btn he-btn-primary">
+                      Explore Services
+                    </Link>
+                  </Fade>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ==============================================
-         SECTION 3: POPULAR STORES (V3 PDF: "Populer Store in...")
+         SECTION 2: INFINITE TRUST STRIP
       ============================================== */}
-      <section className="he-popular-section">
+      <div className="he-trust-strip">
+        <div className="he-trust-track">
+          {/* Ulangi teks agar scrolling terlihat mulus */}
+          {[...Array(10)].map((_, i) => (
+            <span key={i} className="he-brand-item">
+              Nike • Adidas • Jordan • Yeezy • Balenciaga • New Balance •
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ==============================================
+         SECTION 3: PREMIUM SERVICES (Grid with Glass Effect)
+      ============================================== */}
+      <section className="he-services-section">
         <div className="container">
-          <div className="d-flex justify-content-between align-items-end mb-5">
-            <Fade triggerOnce>
-              <div>
-                <span className="text-uppercase text-muted fw-bold ls-1">Recommendation</span>
-                <h2 className="he-section-title mb-0">Popular Store in <span style={{color: 'var(--sb-accent)'}}>JAKARTA</span></h2>
-              </div>
-            </Fade>
-            <Link to="/store" className="btn btn-link text-dark fw-bold text-decoration-none">
-              View All Stores <i className="fas fa-arrow-right ms-1"></i>
-            </Link>
+          <div className="row mb-5 align-items-end">
+            <div className="col-lg-8">
+              <Fade direction="up" triggerOnce>
+                <div className="he-section-header">
+                  <span className="he-section-label">Layanan Kami</span>
+                  <h2 className="he-section-heading">Excellence in Every Pair.</h2>
+                </div>
+              </Fade>
+            </div>
+            <div className="col-lg-4 text-lg-end">
+              <Link to="/store" className="btn btn-outline-dark rounded-pill px-4">
+                Lihat Semua Layanan
+              </Link>
+            </div>
           </div>
 
           <div className="row g-4">
-            {/* Gunakan data featuredStores dari state, atau dummy untuk visualisasi */}
-            {(featuredStores.length > 0 ? featuredStores.slice(0, 4) : [1,2,3,4]).map((store, i) => (
-              <div className="col-lg-3 col-md-6" key={store.id || i}>
-                 <Fade direction="up" delay={i * 100} triggerOnce>
-                   {typeof store === 'object' ? (
-                     <Link to={`/store/${store.id}`} className="text-decoration-none">
-                       <div className="he-store-card-v3">
-                         <div className="he-store-img-box">
-                           <img src={store.image_url || store.storeImages?.[0] || "https://via.placeholder.com/400"} alt={store.store_name} />
-                         </div>
-                         <div className="he-store-info">
-                           <h4 className="he-store-name">{store.store_name || "Kick Rid Jakarta"}</h4>
-                           <div className="he-store-meta">
-                             <i className="fas fa-map-marker-alt text-danger"></i>
-                             <span>{store.city || "Condet Raya, Jakarta Timur"}</span>
-                           </div>
-                           <span className="he-store-services-count">
-                             <i className="fas fa-concierge-bell me-1"></i> Available Services
-                           </span>
-                         </div>
-                       </div>
-                     </Link>
-                   ) : (
-                     // Skeleton / Dummy sesuai PDF
-                     <div className="he-store-card-v3">
-                        <div className="he-store-img-box">
-                          <img src={`https://source.unsplash.com/random/400x300?shoes,store,${i}`} alt="Store" />
-                        </div>
-                        <div className="he-store-info">
-                          <h4 className="he-store-name">Kick Rid Jakarta</h4>
-                          <div className="he-store-meta">
-                             <i className="fas fa-map-marker-alt text-danger"></i>
-                             <span>Condet Raya, Jaktim</span>
-                          </div>
-                          <span className="he-store-services-count">11 Layanan</span>
-                        </div>
-                     </div>
-                   )}
-                 </Fade>
+            {serviceCategories.map((service, index) => (
+              <div className="col-md-6 col-lg-3" key={service.name}>
+                <Fade direction="up" delay={index * 150} triggerOnce>
+                  <Link to={service.link} className="he-service-card">
+                    {/* Background Image */}
+                    <div 
+                      className="he-service-bg"
+                      style={{ backgroundImage: `url(${service.imageUrl})` }}
+                    ></div>
+                    <div className="he-service-overlay"></div>
+                    
+                    {/* Content */}
+                    <div className="he-service-content">
+                      <div className="he-service-icon">
+                        <i className={`fas ${service.icon}`}></i>
+                      </div>
+                      <h4 className="he-service-title">{service.name}</h4>
+                      <p className="he-service-desc">{service.description}</p>
+                    </div>
+                  </Link>
+                </Fade>
               </div>
             ))}
           </div>
@@ -704,44 +718,33 @@ const renderElevateHomepage = () => {
       </section>
 
       {/* ==============================================
-         SECTION 4: QUOTE (V3 PDF: Aristotle)
+         SECTION 4: HOW IT WORKS (Clean Steps)
       ============================================== */}
-      <section className="he-quote-section">
-        <div className="container">
-          <Fade direction="up" triggerOnce>
-            <i className="fas fa-quote-left fa-3x mb-4 text-muted opacity-25"></i>
-            <h2 className="he-quote-text">
-              "Quality is not an act,<br /> it is a habit."
-            </h2>
-            <div className="he-quote-author">— Aristotle, Greek philosopher</div>
-          </Fade>
-        </div>
-      </section>
-
-      {/* ==============================================
-         SECTION 5: SERVICES (V3 PDF: "Layanan KOMPREHENSIF")
-      ============================================== */}
-      <section className="he-services-v3">
+      <section className="he-process-section">
         <div className="container">
           <div className="text-center mb-5">
             <Fade direction="down" triggerOnce>
-              <h2 className="he-section-title">Layanan <br/>KOMPREHENSIF</h2>
-              <p className="text-muted" style={{maxWidth: '600px', margin: '0 auto'}}>
-                Kami menyediakan berbagai layanan perawatan sepatu profesional untuk memastikan alas kaki Anda selalu dalam kondisi prima.
-              </p>
+              <span className="he-section-label">Proses</span>
+              <h2 className="he-section-heading">Mudah & Transparan</h2>
             </Fade>
           </div>
-
-          <div className="row g-4">
-            {v3Services.map((srv, i) => (
-              <div className="col-md-3" key={i}>
-                <Fade direction="up" delay={i * 150} triggerOnce>
-                  <div className="he-service-box">
-                    <div className="he-srv-icon">
-                      <i className={`fas ${srv.icon}`}></i>
+          
+          <div className="row">
+            {[
+              { title: "Pesan", icon: "fa-mobile-alt", text: "Pilih layanan via aplikasi." },
+              { title: "Jemput / Drop", icon: "fa-box-open", text: "Kurir kami jemput atau drop di toko." },
+              { title: "Proses", icon: "fa-magic", text: "Ahli kami merawat sepatu Anda." },
+              { title: "Selesai", icon: "fa-check-circle", text: "Sepatu kembali bersih seperti baru." }
+            ].map((step, idx) => (
+              <div className="col-md-3" key={idx}>
+                <Fade direction="up" delay={idx * 200} triggerOnce>
+                  <div className="he-step-card">
+                    <div className="he-step-number">0{idx + 1}</div>
+                    <div className="he-step-icon-box">
+                      <i className={`fas ${step.icon}`}></i>
                     </div>
-                    <h4 className="he-srv-title">{srv.title}</h4>
-                    <p className="he-srv-desc">{srv.desc}</p>
+                    <h4 className="he-step-title">{step.title}</h4>
+                    <p className="text-muted">{step.text}</p>
                   </div>
                 </Fade>
               </div>
@@ -751,42 +754,28 @@ const renderElevateHomepage = () => {
       </section>
 
       {/* ==============================================
-         SECTION 6: TECHNOLOGY (V3 PDF: "Teknologi Canggih...")
+         SECTION 5: FEATURED STORES (Menggunakan Komponen StoreCard yang sudah ada)
       ============================================== */}
-      <section className="he-tech-section">
+      <section className="he-services-section" style={{ background: '#fff' }}>
         <div className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-6 mb-5 mb-lg-0">
-              <Slide direction="left" triggerOnce>
-                <div className="he-tech-img-wrapper">
-                  <img 
-                    src="https://images.unsplash.com/photo-1597404294360-feeeda04612e?auto=format&fit=crop&w=800&q=80" 
-                    alt="Technology" 
-                    className="he-tech-img" 
-                  />
-                </div>
-              </Slide>
-            </div>
-            <div className="col-lg-6">
-              <Slide direction="right" triggerOnce>
-                <div className="he-tech-content">
-                  <span className="he-tech-label">Quality Assurance</span>
-                  <h2 className="he-tech-title">Teknologi Canggih,<br/>Hasil Maksimal.</h2>
-                  <p className="text-muted fs-5 mb-4">
-                    Kami tidak hanya membersihkan, tapi merawat. Dengan menggunakan peralatan modern dan formula pembersih yang aman, kami menjamin sepatu Anda kembali seperti baru tanpa merusak material aslinya.
-                  </p>
-                  <ul className="list-unstyled">
-                    <li className="mb-3"><i className="fas fa-check-circle text-primary me-2"></i> Premium Chemicals (Saphir, Jason Markk)</li>
-                    <li className="mb-3"><i className="fas fa-check-circle text-primary me-2"></i> UV Sterilization Process</li>
-                    <li className="mb-3"><i className="fas fa-check-circle text-primary me-2"></i> Expert Technicians</li>
-                  </ul>
-                  <Link to="/about" className="btn btn-dark rounded-pill px-4 py-3 mt-3 w-50">
-                    Learn More
-                  </Link>
-                </div>
-              </Slide>
-            </div>
-          </div>
+           <div className="he-section-header text-center">
+              <span className="he-section-label">Mitra Pilihan</span>
+              <h2 className="he-section-heading">Top Rated Stores</h2>
+           </div>
+           
+           {loading ? (
+             <div className="text-center py-5">Loading...</div>
+           ) : (
+             <div className="row g-4">
+               {featuredStores.slice(0, 4).map((store, i) => (
+                 <div className="col-lg-3 col-md-6" key={store.id}>
+                   <Fade triggerOnce delay={i * 100}>
+                     <StoreCard store={store} />
+                   </Fade>
+                 </div>
+               ))}
+             </div>
+           )}
         </div>
       </section>
 
