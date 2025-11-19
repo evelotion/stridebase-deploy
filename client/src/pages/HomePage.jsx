@@ -554,11 +554,12 @@ const HomePage = ({
       <div className="home-elevate-wrapper">
         {/* 1. HERO SECTION */}
         <section className="he-hero-section">
+          {/* Background Carousel */}
           <div
             id="elevateCarousel"
             className="carousel slide carousel-fade he-full-bleed-carousel"
             data-bs-ride="carousel"
-            data-bs-interval="6000"
+            data-bs-interval="5000"
           >
             <div className="carousel-inner">
               {banners.length > 0 ? (
@@ -581,19 +582,32 @@ const HomePage = ({
               )}
             </div>
           </div>
+
+          {/* Overlay Content dengan Animasi & Tipografi Baru */}
           <div className="he-hero-overlay-content">
             <Zoom triggerOnce>
-              <div className="he-hero-badge">StrideBase Platform</div>
+              <div className="he-hero-badge">StrideBase Platform V3.0</div>
             </Zoom>
-            <Fade direction="up" cascade damping={0.2} delay={300} triggerOnce>
+
+            <Fade direction="up" cascade damping={0.2} delay={200} triggerOnce>
               <h1 className="he-hero-headline">
-                Choose shops that match
-                <br /> your style and budget.
+                Choose shops that match <br />
+                your <span className="text-highlight">style</span> and{" "}
+                <span className="text-highlight">budget</span>.
               </h1>
+
               <Link to="/store" className="he-btn-find">
-                <i className="fas fa-search me-2"></i> Find Store Now
+                Find Store <i className="fas fa-arrow-right ms-2"></i>
               </Link>
             </Fade>
+
+            {/* Indikator Scroll Mouse */}
+            <div className="scroll-indicator">
+              <div className="scroll-mouse">
+                <div className="scroll-wheel"></div>
+              </div>
+              <span>SCROLL</span>
+            </div>
           </div>
         </section>
 

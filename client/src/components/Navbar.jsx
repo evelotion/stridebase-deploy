@@ -1,10 +1,10 @@
-// File: client/src/components/Navbar.jsx (Telah DIPERBAIKI)
+// File: client/src/components/Navbar.jsx
 
 import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 
-// --- AWAL DARI LOGIKA AVATAR (Kode Anda yang sudah ada) ---
+// --- LOGIKA AVATAR ---
 const getInitials = (name) => {
   if (!name) return "?";
   const names = name.split(" ");
@@ -13,20 +13,14 @@ const getInitials = (name) => {
 };
 
 const getAvatarColor = (name) => {
-  if (!name) return "#6c757d"; // Warna default
+  if (!name) return "#6c757d";
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
   const colors = [
-    "#0d6efd",
-    "#6f42c1",
-    "#d63384",
-    "#dc3545",
-    "#fd7e14",
-    "#198754",
-    "#0dcaf0",
-    "#20c997",
+    "#0d6efd", "#6f42c1", "#d63384", "#dc3545",
+    "#fd7e14", "#198754", "#0dcaf0", "#20c997",
   ];
   const index = Math.abs(hash % colors.length);
   return colors[index];
@@ -54,7 +48,6 @@ const UserAvatar = ({ name, size = 32 }) => {
     </div>
   );
 };
-// --- AKHIR DARI LOGIKA AVATAR ---
 
 const Navbar = ({
   theme,
@@ -62,108 +55,87 @@ const Navbar = ({
   unreadCount,
   setNotifications,
   setUnreadCount,
-  homePageTheme, // Prop ini sangat penting
+  homePageTheme,
 }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const location = useLocation();
-
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // --- PERBAIKAN 1: Logika tema diperbarui ---
-  // Kita cek apakah kita di homepage Modern ATAU homepage Elevate
+  // Cek Tipe Homepage
   const isModernHome = location.pathname === "/" && homePageTheme === "modern";
   const isElevateHome = location.pathname === "/" && homePageTheme === "elevate";
-  const isDynamicHome = isModernHome || isElevateHome; // Keduanya pakai efek scroll
+  const isDynamicHome = isModernHome || isElevateHome;
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
-    if (isDynamicHome) { // <-- Diperbarui
-      // Terapkan listener jika di homepage (Modern atau Elevate)
-      handleScroll(); // Cek status awal
+    if (isDynamicHome) {
+      handleScroll();
       window.addEventListener("scroll", handleScroll);
     } else {
-      // Halaman lain selalu dianggap "di-scroll" (solid)
       setIsScrolled(true);
     }
 
     return () => {
-      // Hapus listener saat ganti halaman
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [isDynamicHome, location.pathname]); // <-- Diperbarui
+  }, [isDynamicHome, location.pathname]);
 
-  // --- PERBAIKAN 2: getNavClassName() diperbarui ---
+  // --- LOGIKA KELAS CSS (PENTING) ---
   const getNavClassName = () => {
+    const baseClasses = "navbar navbar-expand-lg d-none d-lg-flex fixed-top transition-all";
+
+    // 1. MODERN THEME (Tetap Seperti Aslinya)
     if (isModernHome) {
-      // Dinamis untuk homepage modern (Pink)
-      return `navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-dark ${
-        isScrolled ? "shadow-sm" : ""
-      }`;
+      return `${baseClasses} navbar-dark ${isScrolled ? "shadow-sm" : ""}`;
     }
 
+    // 2. ELEVATE THEME (BARU: Premium Glass Effect)
     if (isElevateHome) {
-      // Dinamis untuk homepage elevate (Transparan -> Putih)
       if (isScrolled) {
-        // Saat scroll: Putih, teks gelap
-        return "navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-light bg-white shadow-sm";
+        // Scrolled: Glass Effect (Kelas 'sb-navbar-glass' ada di CSS)
+        return `${baseClasses} sb-navbar-glass navbar-light`; 
       } else {
-        // Saat di atas: Transparan, teks putih
-        return "navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-dark";
+        // Top: Transparent (Kelas 'sb-navbar-transparent' ada di CSS)
+        return `${baseClasses} sb-navbar-transparent navbar-dark`;
       }
     }
 
-    // Default untuk halaman lain (putih, solid, teks gelap)
-    return "navbar navbar-expand-lg d-none d-lg-flex fixed-top navbar-light bg-white shadow-sm";
+    // 3. DEFAULT / CLASSIC (Halaman Lain)
+    return `${baseClasses} navbar-light bg-white shadow-sm`;
   };
 
-  // --- PERBAIKAN 3: getNavStyle() diperbarui ---
+  // --- LOGIKA INLINE STYLE ---
   const getNavStyle = () => {
-    const transitionStyle = { transition: "all 0.3s ease-in-out" };
+    const transitionStyle = { transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)" };
 
     if (isModernHome) {
       if (isScrolled) {
-        // --- Modern Saat di-scroll (Pink) ---
         return {
-          backgroundColor: "#e5446a",
-          background: "#e5446a",
+          backgroundColor: "#e5446a", // Pink Modern
           borderColor: "transparent",
           ...transitionStyle,
         };
       } else {
-        // --- Modern Saat di atas (Transparan) ---
         return {
           backgroundColor: "transparent",
-          background: "transparent",
           border: "none",
           ...transitionStyle,
         };
       }
     }
     
+    // Elevate Theme sekarang sepenuhnya dikontrol CSS (sb-navbar-glass), 
+    // jadi tidak butuh inline style untuk background color.
     if (isElevateHome) {
-      if (isScrolled) {
-         // --- Elevate Saat di-scroll (Putih) ---
-         // (Warna diatur oleh ClassName, hanya perlu transisi)
-        return { ...transitionStyle };
-      } else {
-        // --- Elevate Saat di atas (Transparan) ---
-        return {
-          backgroundColor: "transparent",
-          background: "transparent",
-          border: "none",
-          ...transitionStyle,
-        };
-      }
+      return { ...transitionStyle };
     }
 
-    // Halaman lain tidak perlu inline style
     return {};
   };
-  // --- AKHIR LOGIKA PERBAIKAN ---
 
   const isHomePage = location.pathname === "/";
 
@@ -192,7 +164,7 @@ const Navbar = ({
           );
         }
       } catch (error) {
-        console.error("Gagal menandai notifikasi sebagai terbaca:", error);
+        console.error("Gagal menandai notifikasi:", error);
       }
     }
   };
@@ -207,7 +179,7 @@ const Navbar = ({
         />
       );
     }
-    return <span className="fs-4">StrideBase</span>;
+    return <span className="fs-4 fw-bold">StrideBase</span>;
   };
 
   const renderMobileLogo = () => {
@@ -219,274 +191,125 @@ const Navbar = ({
 
   return (
     <>
+      {/* NAVBAR DESKTOP */}
       <nav className={getNavClassName()} style={getNavStyle()}>
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
             {renderLogo()}
           </Link>
           
-          {/* --- PERBAIKAN 4: 'ms-auto' DIHAPUS DARI SINI --- */}
-          {/* Ini adalah menu link Anda (Home, About, dll) */}
-          <ul className="nav-menu-list list-unstyled d-flex mb-0">
-            <li>
-              <NavLink to="/" className="nav-link">
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/about" className="nav-link">
-                About
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/store" className="nav-link">
-                Store
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/contact" className="nav-link">
-                Contact
-              </NavLink>
-            </li>
+          {/* MENU LINKS (Tengah) */}
+          <ul className="nav-menu-list list-unstyled d-flex mb-0 gap-4 mx-auto">
+            <li><NavLink to="/" className="nav-link fw-500">Home</NavLink></li>
+            <li><NavLink to="/about" className="nav-link fw-500">About</NavLink></li>
+            <li><NavLink to="/store" className="nav-link fw-500">Services</NavLink></li>
+            <li><NavLink to="/contact" className="nav-link fw-500">Contact</NavLink></li>
           </ul>
 
-          {/* --- PERBAIKAN 5: 'ms-auto' DITAMBAHKAN DI SINI --- */}
-          {/* Ini adalah grup tombol auth/user di kanan */}
-          <div
-            id="navbarAuth"
-            className="d-flex align-items-center gap-2 ms-auto" // <-- ms-auto dipindah ke sini
-          >
+          {/* AUTH / USER ACTIONS (Kanan) */}
+          <div id="navbarAuth" className="d-flex align-items-center gap-3">
             {user ? (
               <>
-                {/* Dropdown Notifikasi */}
+                {/* Notification */}
                 <div className="dropdown">
                   <button
-                    className="btn btn-light rounded-circle"
+                    className="btn btn-icon-only position-relative"
                     type="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                     onClick={handleOpenNotifications}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      position: "relative",
-                    }}
+                    style={{ border: 'none', background: 'transparent', color: 'inherit' }}
                   >
-                    <i className="fas fa-bell"></i>
+                    <i className="fas fa-bell fs-5"></i>
                     {unreadCount > 0 && (
-                      <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {unreadCount}
-                        <span className="visually-hidden">unread messages</span>
+                      <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                        <span className="visually-hidden">New alerts</span>
                       </span>
                     )}
                   </button>
-                  <ul
-                    className="dropdown-menu dropdown-menu-end dropdown-menu-custom"
-                    style={{ width: "350px" }}
-                  >
-                    <li className="p-2 border-bottom">
-                      <h6 className="mb-0">Notifikasi</h6>
-                    </li>
+                  <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0" style={{ width: "320px" }}>
+                    <li className="p-3 border-bottom"><h6 className="mb-0 fw-bold">Notifikasi</h6></li>
                     <div style={{ maxHeight: "300px", overflowY: "auto" }}>
-                      {notifications && notifications.length > 0 ? (
+                      {notifications?.length > 0 ? (
                         notifications.slice(0, 5).map((notif) => (
                           <li key={notif.id}>
-                            <Link
-                              to={notif.linkUrl || "#"}
-                              className="dropdown-item text-wrap"
-                            >
-                              <small>{notif.message}</small>
-                              <div
-                                className="text-muted"
-                                style={{ fontSize: "0.75rem" }}
-                              >
-                                {new Date(notif.createdAt).toLocaleString(
-                                  "id-ID"
-                                )}
+                            <Link to={notif.linkUrl || "#"} className="dropdown-item py-2 border-bottom">
+                              <div className="small text-wrap mb-1">{notif.message}</div>
+                              <div className="text-muted" style={{ fontSize: "0.7rem" }}>
+                                {new Date(notif.createdAt).toLocaleString("id-ID")}
                               </div>
                             </Link>
                           </li>
                         ))
                       ) : (
-                        <li className="p-3 text-center text-muted small">
-                          Tidak ada notifikasi baru.
-                        </li>
+                        <li className="p-4 text-center text-muted small">Tidak ada notifikasi baru.</li>
                       )}
                     </div>
-                    <li>
-                      <hr className="dropdown-divider my-1" />
-                    </li>
-                    <li>
-                      <Link
-                        to="/notifications"
-                        className="dropdown-item text-center small"
-                      >
-                        Lihat Semua Notifikasi
-                      </Link>
-                    </li>
+                    <li><Link to="/notifications" className="dropdown-item text-center small py-2 text-primary fw-bold">Lihat Semua</Link></li>
                   </ul>
                 </div>
                 
-                {/* Dropdown User */}
+                {/* User Profile */}
                 <div className="dropdown">
                   <button
-                    className="btn btn-dark dropdown-toggle btn-user-profile"
+                    className="btn d-flex align-items-center gap-2 p-1 pe-3 rounded-pill border-0"
                     type="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
+                    style={{ background: 'rgba(128,128,128,0.1)' }}
                   >
                     <UserAvatar name={user.name} size={32} />
-                    {user.name.split(" ")[0]}
+                    <span className="fw-bold small">{user.name.split(" ")[0]}</span>
                   </button>
-                  <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
-                    {user.role === "developer" && (
-                      <li>
-                        <Link
-                          to="/developer/dashboard"
-                          className="dropdown-item"
-                        >
-                          <i className="fas fa-crown fa-fw me-2"></i>SuperUser
-                          Panel
-                        </Link>
-                      </li>
-                    )}
-                    {user.role === "admin" && (
-                      <li>
-                        <Link to="/admin/dashboard" className="dropdown-item">
-                          <i className="fas fa-user-shield fa-fw me-2"></i>Panel
-                          Admin
-                        </Link>
-                      </li>
-                    )}
-                    {user.role === "mitra" && (
-                      <li>
-                        <Link to="/partner/dashboard" className="dropdown-item">
-                          <i className="fas fa-store fa-fw me-2"></i>Panel Toko
-                          Saya
-                        </Link>
-                      </li>
-                    )}
-                    <li>
-                      <Link to="/dashboard" className="dropdown-item">
-                        <i className="fas fa-tachometer-alt fa-fw me-2"></i>
-                        Dashboard Pengguna
-                      </Link>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <button
-                        onClick={handleLogout}
-                        className="dropdown-item dropdown-item-danger"
-                      >
-                        <i className="fas fa-sign-out-alt fa-fw me-2"></i>Logout
-                      </button>
-                    </li>
+                  <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0 mt-2">
+                    <li className="px-3 py-2 text-muted small text-uppercase fw-bold">Menu</li>
+                    {user.role === "developer" && <li><Link to="/developer/dashboard" className="dropdown-item"><i className="fas fa-crown me-2 text-warning"></i>SuperUser</Link></li>}
+                    {user.role === "admin" && <li><Link to="/admin/dashboard" className="dropdown-item"><i className="fas fa-shield-alt me-2 text-primary"></i>Admin Panel</Link></li>}
+                    {user.role === "mitra" && <li><Link to="/partner/dashboard" className="dropdown-item"><i className="fas fa-store me-2 text-success"></i>Toko Saya</Link></li>}
+                    <li><Link to="/dashboard" className="dropdown-item"><i className="fas fa-user-circle me-2"></i>Dashboard</Link></li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><button onClick={handleLogout} className="dropdown-item text-danger fw-bold"><i className="fas fa-sign-out-alt me-2"></i>Logout</button></li>
                   </ul>
                 </div>
               </>
             ) : (
-              <Link to="/login" className="btn btn-gradient">
-                Login / Signup
+              <Link to="/login" className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
+                Login
               </Link>
             )}
           </div>
         </div>
       </nav>
 
-      {/* --- KODE MOBILE ANDA (Tidak diubah) --- */}
+      {/* HEADER MOBILE (Tetap dipertahankan) */}
       {!isHomePage && (
         <div className="mobile-header d-lg-none">
           <div className="mobile-logo-container">
-            <Link className="navbar-brand" to="/">
-              {renderMobileLogo()}
-            </Link>
+            <Link className="navbar-brand" to="/">{renderMobileLogo()}</Link>
           </div>
           <div className="mobile-user-container">
             {user ? (
               <div className="dropdown">
-                <button
-                  className="btn btn-user-profile"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
+                <button className="btn btn-user-profile" type="button" data-bs-toggle="dropdown">
                   <UserAvatar name={user.name} size={40} />
                 </button>
-                <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom">
-                  {user.role === "developer" && (
-                    <li>
-                      <Link to="/developer/dashboard" className="dropdown-item">
-                        <i className="fas fa-crown fa-fw me-2"></i>SuperUser
-                        Panel
-                      </Link>
-                    </li>
-                  )}
-                  {user.role === "admin" && (
-                    <li>
-                      <Link to="/admin/dashboard" className="dropdown-item">
-                        <i className="fas fa-user-shield fa-fw me-2"></i>Panel
-                        Admin
-                      </Link>
-                    </li>
-                  )}
-                  {user.role === "mitra" && (
-                    <li>
-                      <Link to="/partner/dashboard" className="dropdown-item">
-                        <i className="fas fa-store fa-fw me-2"></i>Panel Toko
-                        Saya
-                      </Link>
-                    </li>
-                  )}
-                  <li>
-                    <Link to="/dashboard" className="dropdown-item">
-                      <i className="fas fa-tachometer-alt fa-fw me-2"></i>
-                      Dashboard Pengguna
-                    </Link>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="dropdown-item dropdown-item-danger"
-                    >
-                      <i className="fas fa-sign-out-alt fa-fw me-2"></i>Logout
-                    </button>
-                  </li>
+                <ul className="dropdown-menu dropdown-menu-end shadow">
+                  <li><Link to="/dashboard" className="dropdown-item">Dashboard</Link></li>
+                  <li><button onClick={handleLogout} className="dropdown-item text-danger">Logout</button></li>
                 </ul>
               </div>
-            ) : location.pathname === "/login" ? (
-              <Link to="/register" className="btn btn-gradient btn-sm">
-                Register
-              </Link>
             ) : (
-              <Link to="/login" className="btn btn-gradient btn-sm">
-                Login
-              </Link>
+              <Link to="/login" className="btn btn-primary btn-sm rounded-pill">Login</Link>
             )}
           </div>
         </div>
       )}
+      
       <div className="mobile-bottom-nav d-lg-none">
-        <NavLink to="/" className="nav-link">
-          <i className="fas fa-home"></i>
-          <span>Home</span>
-        </NavLink>
-        <NavLink to="/store" className="nav-link">
-          <i className="fas fa-store"></i>
-          <span>Store</span>
-        </NavLink>
-        <NavLink to="/contact" className="nav-link">
-          <i className="fas fa-comments"></i>
-          <span>Contact</span>
-        </NavLink>
-        <NavLink to="/dashboard" className="nav-link">
-          <i className="fas fa-user-circle"></i>
-          <span>Akun</span>
-        </NavLink>
+        <NavLink to="/" className="nav-link"><i className="fas fa-home"></i><span>Home</span></NavLink>
+        <NavLink to="/store" className="nav-link"><i className="fas fa-store"></i><span>Store</span></NavLink>
+        <NavLink to="/contact" className="nav-link"><i className="fas fa-comments"></i><span>Contact</span></NavLink>
+        <NavLink to="/dashboard" className="nav-link"><i className="fas fa-user"></i><span>Akun</span></NavLink>
       </div>
     </>
   );
