@@ -1,19 +1,20 @@
 /* File: client/src/pages/HomePageElevate.css */
 
 /* --- 1. IMPORT FONTS & VARIABLES --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap');
 
 :root {
-  --sb-black: #0f0f0f;
-  --sb-dark-gray: #1a1a1a;
-  --sb-gray: #f8f9fa;
+  --sb-black: #0a0a0a;
+  --sb-dark-gray: #1f1f1f;
+  --sb-gray: #f4f4f5;
   --sb-accent: #2563eb; /* Royal Blue */
+  --sb-gold: #d4af37;   /* Premium Gold Accent */
   --nav-height: 80px;
   
   /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 /* Reset & Base */
@@ -26,89 +27,58 @@
 
 /* ==============================================
    2. PREMIUM NAVBAR STYLES
-   (Digunakan oleh komponen Navbar.jsx)
 ============================================== */
-
-/* Kondisi 1: Navbar di posisi paling atas (Transparan) */
 .sb-navbar-transparent {
   background: transparent !important;
   padding-top: 20px !important;
   padding-bottom: 20px !important;
   box-shadow: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-
-.sb-navbar-transparent .nav-link {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
+.sb-navbar-transparent .nav-link { color: rgba(255, 255, 255, 0.8) !important; }
 .sb-navbar-transparent .nav-link:hover,
-.sb-navbar-transparent .nav-link.active {
-  color: #fff !important;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-.sb-navbar-transparent .navbar-brand {
-  color: #fff !important;
-}
-.sb-navbar-transparent .btn-icon-only {
-  color: #fff !important;
-}
+.sb-navbar-transparent .nav-link.active { color: #fff !important; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
+.sb-navbar-transparent .navbar-brand { color: #fff !important; }
+.sb-navbar-transparent .btn-icon-only { color: #fff !important; }
 
-/* Kondisi 2: Navbar saat di-scroll (Glassmorphism) */
 .sb-navbar-glass {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
   padding-top: 10px !important;
   padding-bottom: 10px !important;
 }
-
-.sb-navbar-glass .nav-link {
-  color: #444 !important;
-}
+.sb-navbar-glass .nav-link { color: #444 !important; }
 .sb-navbar-glass .nav-link:hover,
-.sb-navbar-glass .nav-link.active {
-  color: var(--sb-accent) !important;
-}
-.sb-navbar-glass .navbar-brand {
-  color: var(--sb-black) !important;
-}
-.sb-navbar-glass .btn-icon-only {
-  color: var(--sb-black) !important;
-}
+.sb-navbar-glass .nav-link.active { color: var(--sb-accent) !important; }
+.sb-navbar-glass .navbar-brand { color: var(--sb-black) !important; }
+.sb-navbar-glass .btn-icon-only { color: var(--sb-black) !important; }
 
 /* ==============================================
-   3. HERO SECTION (Cinematic & Interactive)
+   3. HERO SECTION
 ============================================== */
 .he-hero-section {
   position: relative;
-  height: 100vh; /* Full Screen */
+  height: 100vh;
   width: 100%;
   overflow: hidden;
   background: #000;
 }
 
-.he-full-bleed-carousel {
-  height: 100%;
-  width: 100%;
-}
+.he-full-bleed-carousel { height: 100%; width: 100%; }
 
-/* Gambar Background dengan Zoom Halus */
 .he-hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.45); /* Gelapkan agar teks terbaca */
+  filter: brightness(0.45);
   transform: scale(1.05);
   transition: transform 15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+.carousel-item.active .he-hero-img { transform: scale(1.2); }
 
-.carousel-item.active .he-hero-img {
-  transform: scale(1.2); /* Zoom in saat aktif */
-}
-
-/* Overlay Content */
 .he-hero-overlay-content {
   position: absolute;
   inset: 0;
@@ -119,45 +89,36 @@
   text-align: center;
   z-index: 10;
   padding: 0 20px;
-  /* Gradient halus dari bawah */
   background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%);
 }
 
-/* Badge (StrideBase Platform) */
 .he-hero-badge {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  padding: 10px 24px;
+  padding: 8px 20px;
   border-radius: 50px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
   margin-bottom: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   animation: floatBadge 4s ease-in-out infinite;
 }
+@keyframes floatBadge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-@keyframes floatBadge {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-/* Headline Utama */
 .he-hero-headline {
-  font-size: clamp(2.5rem, 5vw, 5.5rem);
-  font-weight: 900;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(3rem, 6vw, 6rem);
+  font-weight: 800;
   color: #fff;
-  line-height: 1.1;
+  line-height: 1.05;
   margin-bottom: 2.5rem;
   max-width: 1100px;
   letter-spacing: -2px;
-  text-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-/* Text Highlight (Style & Budget) */
 .text-highlight {
   position: relative;
   display: inline-block;
@@ -180,41 +141,26 @@
   transform: skewX(-15deg);
 }
 
-/* Tombol Find Store */
 .he-btn-find {
   background: #fff;
   color: var(--sb-black);
-  padding: 20px 50px;
-  font-size: 1rem;
+  padding: 18px 45px;
+  font-size: 0.95rem;
   font-weight: 700;
   border-radius: 100px;
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   border: none;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 10px;
 }
+.he-btn-find:hover { transform: translateY(-5px); padding-right: 55px; box-shadow: 0 15px 40px rgba(255, 255, 255, 0.25); }
 
-.he-btn-find:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
-  padding-right: 60px; /* Ruang untuk ikon panah geser */
-}
-
-.he-btn-find i {
-  transition: transform 0.3s ease;
-}
-.he-btn-find:hover i {
-  transform: translateX(5px);
-}
-
-/* Scroll Down Indicator */
 .scroll-indicator {
   position: absolute;
   bottom: 30px;
@@ -225,358 +171,353 @@
   align-items: center;
   gap: 10px;
   color: rgba(255,255,255,0.5);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   letter-spacing: 2px;
   font-weight: 600;
-  animation: fadeIn 2s ease-in-out;
 }
-
 .scroll-mouse {
-  width: 26px;
-  height: 42px;
-  border: 2px solid rgba(255,255,255,0.5);
+  width: 24px;
+  height: 38px;
+  border: 2px solid rgba(255,255,255,0.4);
   border-radius: 20px;
   position: relative;
 }
-
 .scroll-wheel {
   width: 4px;
-  height: 8px;
+  height: 6px;
   background: #fff;
   border-radius: 2px;
   position: absolute;
-  top: 8px;
+  top: 6px;
   left: 50%;
   transform: translateX(-50%);
   animation: scrollWheel 1.5s infinite;
 }
-
-@keyframes scrollWheel {
-  0% { top: 6px; opacity: 1; }
-  100% { top: 18px; opacity: 0; }
-}
+@keyframes scrollWheel { 0% { top: 6px; opacity: 1; } 100% { top: 18px; opacity: 0; } }
 
 /* ==============================================
-   4. BRAND MARQUEE (Miring/Skewed)
+   4. BRAND MARQUEE
 ============================================== */
 .he-brand-section {
   background: var(--sb-black);
   padding: 3.5rem 0;
   position: relative;
   z-index: 20;
-  margin-top: -60px; /* Overlap ke Hero */
-  transform: skewY(-2deg); /* Miring */
+  margin-top: -60px;
+  transform: skewY(-2deg);
   box-shadow: 0 -20px 50px rgba(0,0,0,0.5);
   border-top: 1px solid rgba(255,255,255,0.1);
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-
-.he-trust-track-wrapper {
-  transform: skewY(2deg); /* Balikkan kemiringan teks */
-}
-
+.he-trust-track-wrapper { transform: skewY(2deg); }
 .he-brand-text {
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.25);
+  font-family: 'Outfit', sans-serif;
   font-weight: 900;
   font-size: 3rem;
   text-transform: uppercase;
   margin: 0 60px;
-  letter-spacing: 5px;
+  letter-spacing: 4px;
   transition: all 0.3s ease;
-  /* Outline Text Effect */
-  -webkit-text-stroke: 1px rgba(255,255,255,0.1); 
+  -webkit-text-stroke: 1px rgba(255,255,255,0.1);
 }
-
-.he-brand-text:hover {
-  color: #fff;
-  text-shadow: 0 0 30px rgba(255,255,255,0.8);
-  -webkit-text-stroke: 0;
-}
+.he-brand-text:hover { color: #fff; text-shadow: 0 0 30px rgba(255,255,255,0.8); -webkit-text-stroke: 0; }
 
 /* ==============================================
-   5. POPULAR STORES (Clean & Lifted)
+   5. POPULAR STORES
 ============================================== */
 .he-popular-section {
-  padding: 10rem 0 6rem; /* Padding atas besar karena skew */
-  background: #fff;
+  padding: 10rem 0 6rem;
+  background-color: #fcfcfc;
+  position: relative;
+  z-index: 10;
 }
-
-.he-section-title {
-  font-size: 3rem;
-  font-weight: 900;
-  margin-bottom: 1rem;
+.he-section-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--sb-accent);
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: block;
+}
+.he-section-title-modern {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
   color: var(--sb-black);
-  letter-spacing: -1.5px;
+  letter-spacing: -1px;
   line-height: 1.2;
 }
-
-.he-store-card-premium {
-  border-radius: 24px;
-  overflow: hidden;
-  position: relative;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  background: #fff;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  height: 100%;
-  border: 1px solid #f0f0f0;
-}
-
-.he-store-img-box {
-  height: 260px;
-  overflow: hidden;
-  position: relative;
-}
-
-.he-store-img-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s ease;
-}
-
-.he-store-info {
-  padding: 2rem;
-}
-
-.he-store-name {
-  font-size: 1.4rem;
-  font-weight: 800;
-  margin-bottom: 0.5rem;
+.he-link-view-all {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
   color: var(--sb-black);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  padding-bottom: 2px;
+  transition: all 0.3s;
 }
+.he-link-view-all:hover { color: var(--sb-accent); border-color: var(--sb-accent); }
 
-.he-store-card-premium:hover {
-  transform: translateY(-15px);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-  border-color: transparent;
+.he-store-card-modern {
+  position: relative;
+  height: 400px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  cursor: pointer;
 }
+.he-store-img-wrapper { position: absolute; inset: 0; z-index: 1; }
+.he-store-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+.he-store-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, rgba(0,0,0,0.2) 50%, transparent 100%);
+  z-index: 2; opacity: 0.8; transition: opacity 0.4s ease;
+}
+.he-store-content {
+  position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px;
+  z-index: 3; transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.he-store-name-modern {
+  font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 700; color: #fff;
+  margin-bottom: 5px; line-height: 1.2; text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.he-store-location {
+  display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+  color: rgba(255,255,255,0.85); font-weight: 400; margin-bottom: 10px;
+}
+.he-store-hidden-details {
+  height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease 0.1s;
+}
+.he-store-stats { display: flex; gap: 10px; margin-bottom: 15px; }
+.he-stat-badge {
+  background: rgba(255,255,255,0.2); backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 30px;
+  font-size: 0.75rem; color: #fff; display: flex; align-items: center; gap: 5px;
+}
+.he-btn-visit {
+  width: 100%; background: #fff; color: var(--sb-black); border: none;
+  padding: 14px; border-radius: 10px; font-weight: 700; font-size: 0.8rem;
+  text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+  transition: background 0.3s;
+}
+.he-btn-visit:hover { background: var(--sb-accent); color: #fff; }
 
-.he-store-card-premium:hover .he-store-img-box img {
-  transform: scale(1.1);
-}
+.he-store-card-modern:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
+.he-store-card-modern:hover .he-store-img-wrapper img { transform: scale(1.1); }
+.he-store-card-modern:hover .he-store-overlay { opacity: 1; }
+.he-store-card-modern:hover .he-store-hidden-details { height: auto; max-height: 120px; opacity: 1; margin-top: 15px; }
 
 /* ==============================================
-   6. QUOTE SECTION (Parallax)
+   6. QUOTE SECTION (Cinematic Typography)
 ============================================== */
 .he-quote-section {
   padding: 12rem 0;
-  /* Ganti URL ini jika ingin gambar lain */
-  background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop') no-repeat center center;
-  background-size: cover;
-  background-attachment: fixed; /* Efek Parallax */
+  background: #050505;
   position: relative;
-  color: #fff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
-.he-quote-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(3px);
+/* Background Texture/Noise */
+.he-quote-bg-texture {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity: 0.3; z-index: 1;
 }
 
-.he-quote-content {
-  position: relative;
-  z-index: 2;
+.he-quote-content { position: relative; z-index: 10; max-width: 900px; padding: 0 20px; }
+
+.he-quote-icon {
+  font-size: 3rem; color: var(--sb-gold); margin-bottom: 2rem; opacity: 0.8;
 }
 
 .he-quote-text {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 4vw, 4.5rem);
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: 400;
   font-style: italic;
-  line-height: 1.3;
-  margin-bottom: 2.5rem;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  line-height: 1.2;
+  color: #fff;
+  margin-bottom: 3rem;
+  /* Gradient Text Effect */
+  background: linear-gradient(to right, #fff 20%, #aaa 50%, #fff 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: shineText 5s linear infinite;
 }
+@keyframes shineText { to { background-position: 200% center; } }
 
 .he-quote-author {
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
+  display: inline-block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--sb-accent);
-  font-weight: 700;
-  background: rgba(0,0,0,0.5);
-  display: inline-block;
-  padding: 10px 20px;
-  border-radius: 50px;
+  color: rgba(255,255,255,0.6);
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 20px;
 }
 
 /* ==============================================
-   7. SERVICES SECTION (Dark Glassmorphism)
+   7. SERVICES (Holographic Glass)
 ============================================== */
 .he-services-v3 {
   padding: 10rem 0;
-  /* Latar Belakang Gelap Elegan */
-  background: radial-gradient(circle at top right, #1a1a1a 0%, #000000 100%);
+  background: #0a0a0a;
   position: relative;
   overflow: hidden;
 }
 
-/* Judul di section gelap */
-.he-services-v3 .he-section-title {
-  color: #fff;
-}
-.he-services-v3 .text-muted {
-  color: rgba(255,255,255,0.6) !important;
-}
+/* Judul di Dark Mode */
+.he-services-v3 .he-section-title-modern { color: #fff; }
+.he-services-v3 .text-muted { color: rgba(255,255,255,0.5) !important; }
 
-/* Dekorasi Bola Cahaya (Blobs) */
-.he-blur-decoration {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  z-index: 0;
-  opacity: 0.4;
-  animation: floatBlob 10s infinite alternate;
+/* Dekorasi Cahaya (Blobs) */
+.he-blur-bg {
+  position: absolute; border-radius: 50%; filter: blur(100px); z-index: 0; opacity: 0.25;
 }
+.he-blur-1 { width: 600px; height: 600px; background: var(--sb-accent); top: -10%; left: -10%; }
+.he-blur-2 { width: 500px; height: 500px; background: #7c3aed; bottom: -10%; right: -10%; }
 
-.he-blur-1 {
-  width: 600px;
-  height: 600px;
-  background: var(--sb-accent);
-  top: -10%;
-  left: -10%;
-}
-
-.he-blur-2 {
-  width: 500px;
-  height: 500px;
-  background: #a855f7; /* Aksen Ungu */
-  bottom: -10%;
-  right: -10%;
-  animation-delay: -5s;
-}
-
-@keyframes floatBlob {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(50px, 50px); }
-}
-
-/* KARTU KACA (Glass Cards) */
+/* Kartu Kaca Holografik */
 .he-glass-card {
-  background: rgba(255, 255, 255, 0.03); /* Sangat transparan */
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  
-  border-radius: 30px;
-  padding: 3rem 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px 30px;
   height: 100%;
   transition: all 0.4s ease;
   position: relative;
   z-index: 1;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
 }
 
-.he-glass-icon {
-  width: 70px;
-  height: 70px;
+/* Efek Kilau (Sheen) */
+.he-glass-card::before {
+  content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+  transform: skewX(-25deg); transition: left 0.6s; pointer-events: none;
+}
+.he-glass-card:hover::before { left: 150%; }
+
+.he-glass-icon-box {
+  width: 60px; height: 60px;
   background: rgba(255,255,255,0.05);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
-  color: #fff;
-  transition: all 0.4s ease;
   border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; color: #fff;
+  margin-bottom: 25px; transition: all 0.4s ease;
 }
 
 .he-glass-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  color: #fff;
-  letter-spacing: -0.5px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 15px;
 }
-
 .he-glass-desc {
-  color: rgba(255,255,255,0.6);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.95rem; color: rgba(255,255,255,0.5); line-height: 1.6;
 }
 
-/* Hover Effect pada Kartu Kaca */
 .he-glass-card:hover {
-  transform: translateY(-15px);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 30px rgba(37, 99, 235, 0.2); /* Glow Biru */
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
-
-.he-glass-card:hover .he-glass-icon {
-  background: var(--sb-accent);
-  transform: scale(1.1) rotate(10deg);
-  box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
-  border-color: transparent;
-  color: #fff;
+.he-glass-card:hover .he-glass-icon-box {
+  background: var(--sb-accent); border-color: var(--sb-accent);
+  transform: scale(1.1); box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
 }
 
 /* ==============================================
-   8. TECH SECTION (Modern Split)
+   8. TECH SECTION (Immersive Split)
 ============================================== */
 .he-tech-section {
-  padding: 10rem 0;
-  background: #fff;
+  padding: 0; /* Full Width/Height Immersive */
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  min-height: 800px;
+  display: flex;
+  align-items: center;
 }
 
-.he-tech-img {
-  width: 100%;
-  border-radius: 40px;
-  /* Efek tumpuk bayangan */
-  box-shadow: -40px 40px 0 var(--sb-gray), 0 30px 60px rgba(0,0,0,0.15);
-  transition: transform 0.5s ease;
+/* Gambar sebagai Background Immersive */
+.he-tech-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; opacity: 0.6; filter: grayscale(20%) contrast(1.1);
+  transition: transform 1s ease;
+}
+.he-tech-section:hover .he-tech-bg { transform: scale(1.02); }
+
+/* Overlay Gradient untuk Readability */
+.he-tech-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, #000 10%, transparent 100%);
+  z-index: 1;
 }
 
-.he-tech-img:hover {
-  transform: rotate(2deg) scale(1.02);
+.he-tech-content-wrapper {
+  position: relative; z-index: 10;
+  padding: 4rem 0;
 }
 
-.he-tech-content {
-  padding-left: 5rem;
+/* Panel Kaca untuk Teks */
+.he-tech-panel {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 60px;
+  border-radius: 0 30px 30px 0; /* Rounded kanan saja */
+  border-left: 4px solid var(--sb-accent);
+  max-width: 650px;
 }
 
 .he-tech-label {
-  color: var(--sb-accent);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 1.5rem;
-  display: block;
-  font-size: 0.9rem;
+  color: var(--sb-accent); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 3px; margin-bottom: 20px; display: block; font-size: 0.8rem;
+}
+.he-tech-title {
+  font-family: 'Outfit', sans-serif; font-size: 4rem; font-weight: 700;
+  line-height: 1; color: #fff; margin-bottom: 30px;
+}
+.he-tech-desc {
+  color: rgba(255,255,255,0.7); font-size: 1.1rem; margin-bottom: 40px;
 }
 
-.he-tech-title {
-  font-size: 4rem;
-  font-weight: 900;
-  line-height: 1.05;
-  margin-bottom: 2rem;
-  color: var(--sb-black);
+.he-tech-list li {
+  color: #fff; margin-bottom: 15px; font-size: 1rem; display: flex; align-items: center;
 }
+.he-tech-list i { color: var(--sb-accent); margin-right: 15px; font-size: 1.2rem; }
 
 /* ==============================================
    9. RESPONSIVE
 ============================================== */
 @media (max-width: 992px) {
-  .he-hero-headline { font-size: 3.5rem; }
+  .he-hero-headline { font-size: 4rem; }
   .he-brand-text { font-size: 2rem; margin: 0 30px; }
-  .he-tech-content { padding-left: 0; margin-top: 4rem; }
   .he-tech-title { font-size: 3rem; }
+  .he-tech-panel { border-radius: 30px; margin: 20px; width: auto; }
+  .he-tech-overlay { background: rgba(0,0,0,0.7); } /* Gelapkan semua di mobile */
 }
 
 @media (max-width: 768px) {
-  .he-hero-headline { font-size: 2.5rem; }
-  .he-brand-section { transform: skewY(-5deg); margin-top: -40px; padding: 2rem 0; }
+  .he-hero-headline { font-size: 3rem; }
+  .he-brand-section { transform: skewY(-5deg); margin-top: -40px; }
   .he-trust-track-wrapper { transform: skewY(5deg); }
   .he-popular-section { padding-top: 8rem; }
   .he-quote-text { font-size: 2rem; }
+  .he-tech-panel { padding: 30px; }
 }
