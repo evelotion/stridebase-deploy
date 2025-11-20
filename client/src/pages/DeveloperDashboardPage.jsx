@@ -1,6 +1,7 @@
-// File: client/src/pages/DeveloperDashboardPage.jsx (LENGKAP DAN SUDAH DIPERBAIKI)
+// File: client/src/pages/DeveloperDashboardPage.jsx
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getSuperUserConfig,
   updateSuperUserConfig,
@@ -116,6 +117,7 @@ const googleFonts = [
   "Kaushan Script",
   "Satisfy",
   "Cookie",
+  "Outfit",
 ];
 
 const LogDetails = ({ details }) => {
@@ -123,7 +125,6 @@ const LogDetails = ({ details }) => {
     return <small>{String(details)}</small>;
   }
 
-  // --- INI BAGIAN YANG PERLU ANDA TAMBAHKAN ---
   // Tampilan khusus untuk User Deletion Request
   if (details.userId && details.userName) {
     return (
@@ -149,7 +150,6 @@ const LogDetails = ({ details }) => {
       </div>
     );
   }
-  // --- AKHIR DARI BAGIAN YANG HILANG ---
 
   const formatKey = (key) => {
     const result = key.replace(/([A-Z])/g, " $1");
@@ -204,6 +204,10 @@ const LogDetails = ({ details }) => {
 
 const ThemePreview = ({ config }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  // Safety check jika config belum dimuat
+  if (!config) return null;
+
   const previewStyle = {
     fontFamily: config.typography?.fontFamily || "sans-serif",
     "--preview-primary-color": config.colors?.primary || "#0d6efd",
@@ -265,12 +269,21 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
-  const [activeTab, setActiveTab] = useState("theme"); // Ubah default tab ke 'theme'
+  const [activeTab, setActiveTab] = useState("theme");
   const [uploadingStatus, setUploadingStatus] = useState({});
+  const navigate = useNavigate(); // Tambahkan hook navigasi
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setLoadingTheme(true);
+
+    // Cek Token terlebih dahulu
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     try {
       const [configData, requestsData, logsData, themeRes] = await Promise.all([
         getSuperUserConfig(),
@@ -286,23 +299,38 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
       setConfig(configData);
       setInitialConfig(JSON.stringify(configData));
-      setApprovalRequests(requestsData);
-      setSecurityLogs(logsData);
+
+      // Safety check: Pastikan data selalu array agar tidak error .map()
+      setApprovalRequests(Array.isArray(requestsData) ? requestsData : []);
+      setSecurityLogs(Array.isArray(logsData) ? logsData : []);
     } catch (err) {
+      console.error("Fetch Error:", err);
       setError(err.message);
       if (showMessage) showMessage(err.message, "Error");
+
+      // Jika error akses ditolak, force logout
+      if (
+        err.message &&
+        (err.message.includes("403") ||
+          err.message.includes("401") ||
+          err.message.includes("Forbidden"))
+      ) {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
     } finally {
       setLoading(false);
       setLoadingTheme(false);
     }
-  }, [showMessage]);
+  }, [showMessage, navigate]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const handleThemeChange = async (newTheme) => {
-    setCurrentTheme(newTheme); // Update state secara optimis
+    setCurrentTheme(newTheme);
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
@@ -320,10 +348,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       if (!response.ok) {
         throw new Error(data.message);
       }
-      showMessage("Tema homepage berhasil diubah!");
+      if (showMessage) showMessage("Tema homepage berhasil diubah!");
     } catch (err) {
-      showMessage(err.message, "Error");
-      // Kembalikan ke tema sebelumnya jika gagal
+      if (showMessage) showMessage(err.message, "Error");
       fetchData();
     }
   };
@@ -372,6 +399,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       const keys = path.split(".");
       let current = updatedConfig;
       for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {}; // Safety check
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = result.imageUrl;
@@ -393,35 +421,29 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
     setUploadingStatus((prev) => ({ ...prev, [path]: true }));
     const formData = new FormData();
-    formData.append("asset", file); // 'asset' sesuai dengan nama di backend
+    formData.append("asset", file);
 
     try {
-      const result = await uploadDeveloperAsset(formData); // Panggil apiService baru
+      const result = await uploadDeveloperAsset(formData);
 
-      // Buat config baru dengan URL gambar yang diperbarui
       const updatedConfig = JSON.parse(JSON.stringify(config));
       const keys = path.split(".");
       let current = updatedConfig;
       for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {}; // Pastikan path ada
+        if (!current[keys[i]]) current[keys[i]] = {};
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = result.imageUrl;
 
-      // --- TAMBAHAN BARIS UNTUK MENYIMPAN OTOMATIS ---
-      await updateSuperUserConfig(updatedConfig); // Kirim config baru ke server
-      setConfig(updatedConfig); // Perbarui state lokal
-      setInitialConfig(JSON.stringify(updatedConfig)); // Set config awal baru
-      // --- AKHIR TAMBAHAN ---
+      await updateSuperUserConfig(updatedConfig);
+      setConfig(updatedConfig);
+      setInitialConfig(JSON.stringify(updatedConfig));
 
       if (showMessage)
-        // Ubah pesannya untuk mengonfirmasi penyimpanan
         showMessage("Gambar berhasil diunggah dan disimpan!", "Success");
     } catch (err) {
-      // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG BUKA)
       if (showMessage) showMessage(err.message, "Error");
     } finally {
-      // <-- INI BAGIAN YANG DIPERBAIKI (KURUNG TUTUP)
       setUploadingStatus((prev) => ({ ...prev, [path]: false }));
     }
   };
@@ -476,15 +498,49 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     }
   };
 
-  const hasChanges = JSON.stringify(config) !== initialConfig;
+  const hasChanges =
+    initialConfig && config ? JSON.stringify(config) !== initialConfig : false;
 
-  if (loading || !config)
-    return <div className="p-4">Memuat dashboard developer...</div>;
-  if (error) return <div className="p-4 text-danger">Error: {error}</div>;
+  if (loading)
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "80vh" }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <span className="ms-3">Memuat Dashboard Developer...</span>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="container py-5 text-center">
+        <div className="alert alert-danger d-inline-block">
+          <h4 className="alert-heading">Error</h4>
+          <p>{error}</p>
+          <button
+            className="btn btn-outline-danger btn-sm mt-2"
+            onClick={() => window.location.reload()}
+          >
+            Refresh Halaman
+          </button>
+        </div>
+      </div>
+    );
+
+  // Safety check: Jika config masih null, tampilkan pesan
+  if (!config)
+    return (
+      <div className="p-4 text-center text-muted">
+        Konfigurasi tidak ditemukan. Silakan coba refresh.
+      </div>
+    );
 
   return (
     <div className="container-fluid p-4">
-      <div className="d-flex justify-content-between align-itemsC-enter mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="fs-2 mb-0">Developer Dashboard</h2>
         {activeTab === "theme" && (
           <button
@@ -514,8 +570,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
             Log Aktivitas{" "}
             <span className="badge bg-danger ms-1">
               {
-                approvalRequests.filter((req) => req.status === "PENDING")
-                  .length
+                (approvalRequests || []).filter(
+                  (req) => req.status === "PENDING"
+                ).length
               }
             </span>
           </button>
@@ -550,48 +607,25 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 <p>Memuat pilihan tema...</p>
               ) : (
                 <div className="d-flex gap-3">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="themeRadio"
-                      id="themeClassic"
-                      value="classic"
-                      checked={currentTheme === "classic"}
-                      onChange={() => handleThemeChange("classic")}
-                    />
-                    <label className="form-check-label" htmlFor="themeClassic">
-                      Classic
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="themeRadio"
-                      id="themeModern"
-                      value="modern"
-                      checked={currentTheme === "modern"}
-                      onChange={() => handleThemeChange("modern")}
-                    />
-                    <label className="form-check-label" htmlFor="themeModern">
-                      Modern
-                    </label>
-                  </div>
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="themeRadio"
-                      id="themeElevate"
-                      value="elevate"
-                      checked={currentTheme === "elevate"}
-                      onChange={() => handleThemeChange("elevate")}
-                    />
-                    <label className="form-check-label" htmlFor="themeElevate">
-                      Elevate
-                    </label>
-                  </div>
+                  {["classic", "modern", "elevate"].map((themeName) => (
+                    <div className="form-check" key={themeName}>
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="themeRadio"
+                        id={`theme${themeName}`}
+                        value={themeName}
+                        checked={currentTheme === themeName}
+                        onChange={() => handleThemeChange(themeName)}
+                      />
+                      <label
+                        className="form-check-label text-capitalize"
+                        htmlFor={`theme${themeName}`}
+                      >
+                        {themeName}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -628,7 +662,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                           </span>
                         )}
                       </div>
-                      {config.branding[key] && (
+                      {config.branding && config.branding[key] && (
                         <img
                           src={config.branding[key]}
                           alt={`${key} preview`}
@@ -639,12 +673,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     </div>
                   ))}
 
+                  {/* Hero Section Inputs */}
                   <div className="mb-3">
                     <label
                       htmlFor="modernHeroSideBannerUrl"
                       className="form-label"
                     >
-                      Modern Hero Side Banner URL
+                      Modern Hero Side Banner
                     </label>
                     <div className="input-group">
                       <input
@@ -665,36 +700,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         </span>
                       )}
                     </div>
-                    {config.branding.modernHeroSideBannerUrl && (
+                    {config.branding?.modernHeroSideBannerUrl && (
                       <img
                         src={config.branding.modernHeroSideBannerUrl}
-                        alt="Side Banner Preview"
+                        alt="Preview"
                         className="img-thumbnail mt-2"
                         style={{ maxHeight: "50px" }}
                       />
                     )}
-                  </div>
-
-                  <div className="mb-3">
-                    <label
-                      htmlFor="modernHeroSideBannerLink"
-                      className="form-label"
-                    >
-                      Modern Hero Side Banner Link
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="modernHeroSideBannerLink"
-                      value={config.branding.modernHeroSideBannerLink || ""}
-                      onChange={(e) =>
-                        handleConfigChange(
-                          e,
-                          "branding.modernHeroSideBannerLink"
-                        )
-                      }
-                      placeholder="/store"
-                    />
                   </div>
 
                   <div className="mb-3">
@@ -710,7 +723,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         className="form-control"
                         id="modernHeroSectionBgUrl"
                         onChange={(e) =>
-                          // Kita gunakan key baru: branding.modernHeroSectionBgUrl
                           handleDeveloperUpload(
                             e,
                             "branding.modernHeroSectionBgUrl"
@@ -724,21 +736,15 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         </span>
                       )}
                     </div>
-                    <div className="form-text">
-                      Gambar background ini akan tampil di belakang navbar dan
-                      hero carousel.
-                    </div>
-                    {/* Pastikan kita mengecek config.branding.modernHeroSectionBgUrl */}
-                    {config.branding.modernHeroSectionBgUrl && (
+                    {config.branding?.modernHeroSectionBgUrl && (
                       <img
                         src={config.branding.modernHeroSectionBgUrl}
-                        alt="Hero Background Preview"
+                        alt="Preview"
                         className="img-thumbnail mt-2"
                         style={{ maxHeight: "50px" }}
                       />
                     )}
                   </div>
-
 
                   <hr />
                   <div className="mb-3">
@@ -751,7 +757,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         className="form-control"
                         id="heroSecondaryImage"
                         onChange={(e) =>
-                          // Kita gunakan handler yang sama, tapi simpan di path/key yang baru
                           handleDeveloperUpload(
                             e,
                             "branding.heroSecondaryImage"
@@ -766,11 +771,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       )}
                     </div>
                     <div className="form-text">
-                      Gambar ini untuk section baru di tema Modern (sesuai
-                      Langkah 1).
+                      Gambar ini untuk section baru di tema Modern.
                     </div>
-                    {/* Pastikan kita mengecek config.branding.heroSecondaryImage */}
-                    {config.branding.heroSecondaryImage && (
+                    {config.branding?.heroSecondaryImage && (
                       <img
                         src={config.branding.heroSecondaryImage}
                         alt="Hero Sekunder Preview"
@@ -779,12 +782,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       />
                     )}
                   </div>
-                  {/*
-                  ============================================================
-                                AKHIR DARI BLOK BARU
-                  ============================================================
-                  
-                  */}
+
                   <div className="mb-3">
                     <label
                       htmlFor="heroSecondaryBgImage"
@@ -798,7 +796,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         className="form-control"
                         id="heroSecondaryBgImage"
                         onChange={(e) =>
-                          // Kita simpan di key yang baru: heroSecondaryBgImage
                           handleDeveloperUpload(
                             e,
                             "branding.heroSecondaryBgImage"
@@ -815,7 +812,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     <div className="form-text">
                       Background untuk section gambar hero sekunder.
                     </div>
-                    {config.branding.heroSecondaryBgImage && (
+                    {config.branding?.heroSecondaryBgImage && (
                       <img
                         src={config.branding.heroSecondaryBgImage}
                         alt="Hero Background Preview"
@@ -825,34 +822,40 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     )}
                   </div>
                 </div>
+
                 <div className="col-md-6">
                   <h5 className="mb-4 fw-bold">Warna & Font</h5>
-                  <div className="mb-3">
-                    <label htmlFor="primaryColor" className="form-label">
-                      Warna Primer
-                    </label>
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      id="primaryColor"
-                      value={config.colors.primary}
-                      onChange={(e) => handleConfigChange(e, "colors.primary")}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="secondaryColor" className="form-label">
-                      Warna Sekunder
-                    </label>
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      id="secondaryColor"
-                      value={config.colors.secondary}
-                      onChange={(e) =>
-                        handleConfigChange(e, "colors.secondary")
-                      }
-                    />
-                  </div>
+                  {/* Color Inputs */}
+                  {[
+                    { label: "Warna Primer", path: "colors.primary" },
+                    { label: "Warna Sekunder", path: "colors.secondary" },
+                    { label: "Latar Tombol", path: "colors.button.background" },
+                    { label: "Teks Tombol", path: "colors.button.text" },
+                    {
+                      label: "Latar Tombol (Hover)",
+                      path: "colors.button.backgroundHover",
+                    },
+                    {
+                      label: "Teks Tombol (Hover)",
+                      path: "colors.button.textHover",
+                    },
+                  ].map((item, idx) => {
+                    const val = item.path
+                      .split(".")
+                      .reduce((o, i) => (o ? o[i] : null), config);
+                    return (
+                      <div className="mb-3" key={idx}>
+                        <label className="form-label">{item.label}</label>
+                        <input
+                          type="color"
+                          className="form-control form-control-color"
+                          value={val || "#000000"}
+                          onChange={(e) => handleConfigChange(e, item.path)}
+                        />
+                      </div>
+                    );
+                  })}
+
                   <div className="mb-3">
                     <label htmlFor="fontFamily" className="form-label">
                       Jenis Font
@@ -860,9 +863,11 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     <select
                       className="form-select"
                       id="fontFamily"
-                      value={config.typography.fontFamily
-                        .split(",")[0]
-                        .replace(/'/g, "")}
+                      value={
+                        config.typography?.fontFamily
+                          ?.split(",")[0]
+                          .replace(/'/g, "") || ""
+                      }
                       onChange={(e) =>
                         handleConfigChange(
                           {
@@ -883,182 +888,95 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       ))}
                     </select>
                   </div>
-                  <div className="mb-3">
-                    <label htmlFor="baseFontSize" className="form-label">
-                      Ukuran Font Dasar:{" "}
-                      <strong>{config.typography.baseFontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="baseFontSize"
-                      min="12"
-                      max="20"
-                      value={parseInt(config.typography.baseFontSize)}
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.baseFontSize")
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="buttonFontSize" className="form-label">
-                      Ukuran Font Tombol:{" "}
-                      <strong>{config.typography.buttonFontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="buttonFontSize"
-                      min="12"
-                      max="24"
-                      value={parseInt(config.typography.buttonFontSize)}
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.buttonFontSize")
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="h1FontSize" className="form-label">
-                      Ukuran Font Judul (H1):{" "}
-                      <strong>{config.typography.h1FontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="h1FontSize"
-                      min="24"
-                      max="48"
-                      value={parseInt(config.typography.h1FontSize)} // <-- INI BAGIAN YANG DIPERBAIKI (UNDERSCORE HILANG)
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.h1FontSize")
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="displayFontSize" className="form-label">
-                      Ukuran Font Display:{" "}
-                      <strong>{config.typography.displayFontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="displayFontSize"
-                      min="40"
-                      max="72"
-                      value={parseInt(config.typography.displayFontSize)}
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.displayFontSize")
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="buttonLgFontSize" className="form-label">
-                      Ukuran Font Tombol (Besar):{" "}
-                      <strong>{config.typography.buttonLgFontSize}</strong>
-                    </label>
-                    <input
-                      type="range"
-                      className="form-range"
-                      id="buttonLgFontSize"
-                      min="14"
-                      max="28"
-                      value={parseInt(config.typography.buttonLgFontSize)}
-                      onChange={(e) =>
-                        handleSliderChange(e, "typography.buttonLgFontSize")
-                      }
-                    />
-                  </div>
-                  <hr className="my-4" />
-                  <h6 className="mb-3 fw-bold">Warna Tombol Utama</h6>
-                  <div className="mb-3">
-                    <label htmlFor="buttonBackground" className="form-label">
-                      Latar Tombol
-                    </label>
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      id="buttonBackground"
-                      value={config.colors.button?.background || "#000000"}
-                      onChange={(e) =>
-                        handleConfigChange(e, "colors.button.background")
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="buttonText" className="form-label">
-                      Teks Tombol
-                    </label>
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      id="buttonText"
-                      value={config.colors.button?.text || "#ffffff"}
-                      onChange={(e) =>
-                        handleConfigChange(e, "colors.button.text")
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label
-                      htmlFor="buttonBackgroundHover"
-                      className="form-label"
-                    >
-                      Latar Tombol (Hover)
-                    </label>
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      id="buttonBackgroundHover"
-                      value={config.colors.button?.backgroundHover || "#000000"}
-                      onChange={(e) =>
-                        handleConfigChange(e, "colors.button.backgroundHover")
-                      }
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="buttonTextHover" className="form-label">
-                      Teks Tombol (Hover)
-                    </label>
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      id="buttonTextHover"
-                      value={config.colors.button?.textHover || "#ffffff"}
-                      onChange={(e) =>
-                        handleConfigChange(e, "colors.button.textHover")
-                      }
-                    />
-                  </div>
+
+                  {/* Font Size Sliders */}
+                  {[
+                    {
+                      id: "baseFontSize",
+                      label: "Ukuran Font Dasar",
+                      path: "typography.baseFontSize",
+                      min: 12,
+                      max: 20,
+                    },
+                    {
+                      id: "buttonFontSize",
+                      label: "Ukuran Font Tombol",
+                      path: "typography.buttonFontSize",
+                      min: 12,
+                      max: 24,
+                    },
+                    {
+                      id: "h1FontSize",
+                      label: "Ukuran Font Judul (H1)",
+                      path: "typography.h1FontSize",
+                      min: 24,
+                      max: 48,
+                    },
+                    {
+                      id: "displayFontSize",
+                      label: "Ukuran Font Display",
+                      path: "typography.displayFontSize",
+                      min: 40,
+                      max: 72,
+                    },
+                    {
+                      id: "buttonLgFontSize",
+                      label: "Ukuran Font Tombol (Besar)",
+                      path: "typography.buttonLgFontSize",
+                      min: 14,
+                      max: 28,
+                    },
+                  ].map((slider) => {
+                    const val = slider.path
+                      .split(".")
+                      .reduce((o, i) => (o ? o[i] : null), config);
+                    return (
+                      <div className="mb-3" key={slider.id}>
+                        <label className="form-label">
+                          {slider.label}: <strong>{val}</strong>
+                        </label>
+                        <input
+                          type="range"
+                          className="form-range"
+                          min={slider.min}
+                          max={slider.max}
+                          value={parseInt(val || slider.min)}
+                          onChange={(e) => handleSliderChange(e, slider.path)}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               <hr className="my-4" />
               <h5 className="mb-3 fw-bold">Fitur (Feature Flags)</h5>
               <div className="row">
-                {Object.entries(config.featureFlags)
-                  .filter(([key]) => key !== "pageStatus")
-                  .map(([key, value]) => (
-                    <div
-                      className="col-md-6 mb-3 form-check form-switch"
-                      key={key}
-                    >
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        role="switch"
-                        id={key}
-                        checked={!!value}
-                        onChange={(e) =>
-                          handleConfigChange(e, `featureFlags.${key}`)
-                        }
-                      />
-                      <label
-                        className="form-check-label text-capitalize"
-                        htmlFor={key}
+                {config.featureFlags &&
+                  Object.entries(config.featureFlags)
+                    .filter(([key]) => key !== "pageStatus")
+                    .map(([key, value]) => (
+                      <div
+                        className="col-md-6 mb-3 form-check form-switch"
+                        key={key}
                       >
-                        {key.replace(/([A-Z])/g, " $1")}
-                      </label>
-                    </div>
-                  ))}
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          id={key}
+                          checked={!!value}
+                          onChange={(e) =>
+                            handleConfigChange(e, `featureFlags.${key}`)
+                          }
+                        />
+                        <label
+                          className="form-check-label text-capitalize"
+                          htmlFor={key}
+                        >
+                          {key.replace(/([A-Z])/g, " $1")}
+                        </label>
+                      </div>
+                    ))}
               </div>
             </div>
           </div>
@@ -1078,7 +996,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
           <h5 className="mb-3 d-none d-lg-block">
             Log Aktivitas & Persetujuan
           </h5>
-          {approvalRequests.length > 0 ? (
+          {(approvalRequests || []).length > 0 ? (
             <>
               <div className="table-responsive d-none d-lg-block">
                 <table className="table table-hover align-top">
@@ -1088,8 +1006,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       <th>Tipe</th>
                       <th style={{ minWidth: "300px" }}>Detail</th>
                       <th>Pemohon</th>
-                      <th className="text-nowrap">Direview Oleh</th>{" "}
-                      {/* PERBAIKAN 1: Mencegah text wrap */}
+                      <th className="text-nowrap">Direview Oleh</th>
                       <th>Status</th>
                       <th className="text-end">Aksi</th>
                     </tr>
@@ -1126,7 +1043,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         <td className="text-end">
                           {req.status === "PENDING" && (
                             <div className="btn-group">
-                              {/* PERBAIKAN 2: Mengganti tombol dengan ikon */}
                               <button
                                 className="btn btn-sm btn-outline-success"
                                 onClick={() =>
@@ -1233,7 +1149,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 </tr>
               </thead>
               <tbody>
-                {securityLogs.length > 0 ? (
+                {(securityLogs || []).length > 0 ? (
                   securityLogs.map((log) => (
                     <tr key={log.id}>
                       <td className="text-nowrap">
