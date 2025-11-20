@@ -599,21 +599,22 @@ const renderElevateHomepage = () => {
         </section>
 
         {/* 2. BRAND MARQUEE */}
-        <section className="he-brand-section">
-          <div className="he-trust-track-wrapper d-flex overflow-hidden">
-            <div className="he-trust-track d-flex w-100">
-               <marquee scrollamount="12" className="w-100 d-flex">
-                 <span className="he-brand-text">ADIDAS</span>
-                 <span className="he-brand-text">NIKE</span>
-                 <span className="he-brand-text">SKECHERS</span>
-                 <span className="he-brand-text">PUMA</span>
-                 <span className="he-brand-text">CONVERSE</span>
-                 <span className="he-brand-text">VANS</span>
-                 <span className="he-brand-text">NEW BALANCE</span>
-                 <span className="he-brand-text">REEBOK</span>
-                 <span className="he-brand-text">ASICS</span>
-               </marquee>
-            </div>
+<section className="he-brand-section">
+          <div className="he-trust-track-wrapper overflow-hidden">
+             {/* Speed diperlambat (scrollamount="12" -> "8") agar lebih elegan */}
+             <marquee scrollamount="8" className="w-100 d-flex align-items-center">
+               <span className="he-brand-text">ADIDAS</span>
+               <span className="he-brand-text">NIKE</span>
+               <span className="he-brand-text">SKECHERS</span>
+               <span className="he-brand-text">PUMA</span>
+               <span className="he-brand-text">CONVERSE</span>
+               <span className="he-brand-text">VANS</span>
+               <span className="he-brand-text">NEW BALANCE</span>
+               <span className="he-brand-text">REEBOK</span>
+               <span className="he-brand-text">ASICS</span>
+               <span className="he-brand-text">FILA</span>
+               <span className="he-brand-text">BALENCIAGA</span>
+             </marquee>
           </div>
         </section>
 

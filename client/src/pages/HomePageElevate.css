@@ -1,7 +1,7 @@
 /* File: client/src/pages/HomePageElevate.css */
 
 /* --- 1. IMPORT FONTS & VARIABLES --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap');
 
 :root {
   --sb-black: #0a0a0a;
@@ -28,40 +28,70 @@
 /* ==============================================
    2. PREMIUM NAVBAR STYLES
 ============================================== */
+
+/* Kondisi 1: Navbar di posisi paling atas (Invisible/Clean) */
 .sb-navbar-transparent {
   background: transparent !important;
-  padding-top: 20px !important;
-  padding-bottom: 20px !important;
+  border-bottom: none !important;
   box-shadow: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 25px !important;
+  padding-bottom: 25px !important;
 }
-.sb-navbar-transparent .nav-link { color: rgba(255, 255, 255, 0.8) !important; }
-.sb-navbar-transparent .nav-link:hover,
-.sb-navbar-transparent .nav-link.active { color: #fff !important; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
-.sb-navbar-transparent .navbar-brand { color: #fff !important; }
-.sb-navbar-transparent .btn-icon-only { color: #fff !important; }
 
+.sb-navbar-transparent .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.sb-navbar-transparent .nav-link:hover,
+.sb-navbar-transparent .nav-link.active {
+  color: #fff !important;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+}
+
+.sb-navbar-transparent .navbar-brand {
+  color: #fff !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.sb-navbar-transparent .btn-icon-only {
+  color: #fff !important;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(4px);
+}
+
+/* Kondisi 2: Navbar saat di-scroll (Glass Strip) */
 .sb-navbar-glass {
   background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05) !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
 }
-.sb-navbar-glass .nav-link { color: #444 !important; }
+
+.sb-navbar-glass .nav-link {
+  color: #444 !important;
+}
 .sb-navbar-glass .nav-link:hover,
-.sb-navbar-glass .nav-link.active { color: var(--sb-accent) !important; }
-.sb-navbar-glass .navbar-brand { color: var(--sb-black) !important; }
-.sb-navbar-glass .btn-icon-only { color: var(--sb-black) !important; }
+.sb-navbar-glass .nav-link.active {
+  color: var(--sb-accent) !important;
+}
+.sb-navbar-glass .navbar-brand {
+  color: var(--sb-black) !important;
+}
+.sb-navbar-glass .btn-icon-only {
+  color: var(--sb-black) !important;
+}
 
 /* ==============================================
-   3. HERO SECTION
+   3. HERO SECTION (CLEAN LOOK)
 ============================================== */
 .he-hero-section {
   position: relative;
-  height: 90vh; /* Sedikit dikurangi dari full screen agar footer terlihat dikit (inviting scroll) */
+  height: 90vh; /* Sedikit dikurangi agar user melihat konten bawah */
   width: 100%;
   overflow: hidden;
   background: #000;
@@ -76,27 +106,27 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* PERUBAHAN: Brightness dinaikkan (0.45 -> 0.75) agar banner lebih jelas */
-  filter: brightness(0.75) contrast(1.1); 
+  /* Brightness lebih tinggi agar banner jelas */
+  filter: brightness(0.75) contrast(1.1);
   transform: scale(1);
   transition: transform 10s ease;
 }
 
 .carousel-item.active .he-hero-img {
-  transform: scale(1.1); /* Zoom halus yang tidak berlebihan */
+  transform: scale(1.1);
 }
 
-/* Overlay Gradient hanya di bagian bawah agar tengah banner bersih */
+/* Overlay Gradient hanya di bawah */
 .he-hero-overlay-content {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Konten turun ke bawah */
-  align-items: center;       /* Tetap di tengah secara horizontal */
+  justify-content: flex-end; /* Konten di bawah */
+  align-items: center;
   text-align: center;
   z-index: 10;
-  padding-bottom: 80px; /* Jarak dari bawah */
+  padding-bottom: 80px;
   background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 30%, transparent 70%);
 }
 
@@ -118,12 +148,11 @@
   gap: 8px;
 }
 
-/* Headline Lebih Kecil & Bersih */
+/* Headline Clean & Elegan */
 .he-hero-headline {
   font-family: 'Outfit', sans-serif;
-  /* Ukuran font dikecilkan drastis agar elegan */
-  font-size: clamp(2rem, 4vw, 3.5rem); 
-  font-weight: 600; /* Tidak terlalu tebal */
+  font-size: clamp(2rem, 4vw, 3.5rem); /* Tidak terlalu besar */
+  font-weight: 600;
   color: #fff;
   line-height: 1.2;
   margin-bottom: 2rem;
@@ -132,17 +161,17 @@
   text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-/* Highlight Text Style */
+/* Text Highlight */
 .text-highlight {
-  font-weight: 300; /* Lebih tipis untuk kontras gaya */
+  font-weight: 300;
   font-family: 'Playfair Display', serif;
   font-style: italic;
   color: #fff;
-  border-bottom: 2px solid var(--sb-accent); /* Garis bawah simpel ganti blok warna */
+  border-bottom: 2px solid var(--sb-accent);
   padding-bottom: 2px;
 }
 
-/* Container Tombol */
+/* Actions Container */
 .he-hero-actions {
   display: flex;
   gap: 15px;
@@ -150,7 +179,7 @@
   align-items: center;
 }
 
-/* Tombol Utama (Clean White) */
+/* Tombol Utama (White) */
 .he-btn-find {
   background: #fff;
   color: var(--sb-black);
@@ -166,14 +195,13 @@
   align-items: center;
   gap: 10px;
 }
-
 .he-btn-find:hover {
   background: transparent;
   color: #fff;
   transform: translateY(-3px);
 }
 
-/* Tombol Sekunder (Glass / Outline) */
+/* Tombol Sekunder (Glass) */
 .he-btn-secondary {
   background: rgba(255,255,255,0.1);
   backdrop-filter: blur(5px);
@@ -190,7 +218,6 @@
   align-items: center;
   gap: 10px;
 }
-
 .he-btn-secondary:hover {
   background: rgba(255,255,255,0.2);
   border-color: #fff;
@@ -198,60 +225,76 @@
 }
 
 /* ==============================================
-   4. BRAND MARQUEE
+   4. BRAND MARQUEE (CLEAN & SPACIOUS)
 ============================================== */
 .he-brand-section {
-  background: var(--sb-black);
-  padding: 3.5rem 0;
+  background: #000;
+  padding: 2rem 0;
   position: relative;
   z-index: 20;
-  margin-top: -60px;
-  transform: skewY(-2deg);
-  box-shadow: 0 -20px 50px rgba(0,0,0,0.5);
-  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 0;
+  transform: none; /* Lurus */
+  box-shadow: none;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-.he-trust-track-wrapper { transform: skewY(2deg); }
-.he-brand-text {
-  color: rgba(255,255,255,0.25);
-  font-family: 'Outfit', sans-serif;
-  font-weight: 900;
-  font-size: 3rem;
-  text-transform: uppercase;
-  margin: 0 60px;
-  letter-spacing: 4px;
-  transition: all 0.3s ease;
-  -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+
+.he-trust-track-wrapper {
+  transform: none;
+  display: flex;
+  align-items: center;
+  height: 60px;
 }
-.he-brand-text:hover { color: #fff; text-shadow: 0 0 30px rgba(255,255,255,0.8); -webkit-text-stroke: 0; }
+
+.he-brand-text {
+  color: #555; /* Abu gelap kalem */
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem; /* Ukuran sedang */
+  text-transform: uppercase;
+  margin: 0 80px; /* Spasi lebar */
+  letter-spacing: 3px;
+  transition: all 0.4s ease;
+  opacity: 0.7;
+  -webkit-text-stroke: 0;
+}
+
+.he-brand-text:hover {
+  color: #fff;
+  opacity: 1;
+  text-shadow: 0 0 20px rgba(255,255,255,0.5);
+  transform: scale(1.1);
+}
 
 /* ==============================================
-   5. POPULAR STORES
+   5. POPULAR STORES (MODERN CARD)
 ============================================== */
 .he-popular-section {
-  padding: 10rem 0 6rem;
+  padding: 8rem 0;
   background-color: #fcfcfc;
   position: relative;
   z-index: 10;
 }
+
 .he-section-subtitle {
   font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   color: var(--sb-accent);
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 10px;
   display: block;
 }
+
 .he-section-title-modern {
   font-family: 'Outfit', sans-serif;
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--sb-black);
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   line-height: 1.2;
 }
+
 .he-link-view-all {
   font-family: 'Outfit', sans-serif;
   font-size: 0.9rem;
@@ -262,61 +305,79 @@
   padding-bottom: 2px;
   transition: all 0.3s;
 }
-.he-link-view-all:hover { color: var(--sb-accent); border-color: var(--sb-accent); }
+.he-link-view-all:hover {
+  color: var(--sb-accent);
+  border-color: var(--sb-accent);
+}
 
+/* Kartu Modern */
 .he-store-card-modern {
   position: relative;
-  height: 400px;
-  border-radius: 20px;
+  height: 380px;
+  border-radius: 16px;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.03);
   transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
   cursor: pointer;
 }
-.he-store-img-wrapper { position: absolute; inset: 0; z-index: 1; }
-.he-store-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+
+.he-store-img-wrapper {
+  position: absolute; inset: 0; z-index: 1;
+}
+.he-store-img-wrapper img {
+  width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease;
+}
+
 .he-store-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, rgba(0,0,0,0.2) 50%, transparent 100%);
   z-index: 2; opacity: 0.8; transition: opacity 0.4s ease;
 }
+
 .he-store-content {
-  position: absolute; bottom: 0; left: 0; width: 100%; padding: 30px;
+  position: absolute; bottom: 0; left: 0; width: 100%; padding: 25px;
   z-index: 3; transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
+
 .he-store-name-modern {
-  font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 700; color: #fff;
+  font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700; color: #fff;
   margin-bottom: 5px; line-height: 1.2; text-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
+
 .he-store-location {
-  display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
-  color: rgba(255,255,255,0.85); font-weight: 400; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px; font-size: 0.85rem;
+  color: rgba(255,255,255,0.8); font-weight: 400; margin-bottom: 15px;
 }
+
 .he-store-hidden-details {
   height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease 0.1s;
 }
-.he-store-stats { display: flex; gap: 10px; margin-bottom: 15px; }
+
+.he-store-stats { display: flex; gap: 15px; margin-bottom: 15px; }
 .he-stat-badge {
-  background: rgba(255,255,255,0.2); backdrop-filter: blur(5px);
-  border: 1px solid rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 30px;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 30px;
   font-size: 0.75rem; color: #fff; display: flex; align-items: center; gap: 5px;
 }
+
 .he-btn-visit {
   width: 100%; background: #fff; color: var(--sb-black); border: none;
-  padding: 14px; border-radius: 10px; font-weight: 700; font-size: 0.8rem;
+  padding: 12px; border-radius: 8px; font-weight: 600; font-size: 0.85rem;
   text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
   transition: background 0.3s;
 }
 .he-btn-visit:hover { background: var(--sb-accent); color: #fff; }
 
-.he-store-card-modern:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
+/* Hover Effects */
+.he-store-card-modern:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
 .he-store-card-modern:hover .he-store-img-wrapper img { transform: scale(1.1); }
-.he-store-card-modern:hover .he-store-overlay { opacity: 1; }
-.he-store-card-modern:hover .he-store-hidden-details { height: auto; max-height: 120px; opacity: 1; margin-top: 15px; }
+.he-store-card-modern:hover .he-store-overlay { opacity: 1; background: linear-gradient(to top, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 100%); }
+.he-store-card-modern:hover .he-store-hidden-details { height: auto; max-height: 100px; opacity: 1; margin-top: 10px; }
+
 
 /* ==============================================
-   6. QUOTE SECTION (Cinematic Typography)
+   6. QUOTE SECTION (Cinematic)
 ============================================== */
 .he-quote-section {
   padding: 12rem 0;
@@ -329,7 +390,6 @@
   text-align: center;
 }
 
-/* Background Texture/Noise */
 .he-quote-bg-texture {
   position: absolute; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
@@ -350,7 +410,6 @@
   line-height: 1.2;
   color: #fff;
   margin-bottom: 3rem;
-  /* Gradient Text Effect */
   background: linear-gradient(to right, #fff 20%, #aaa 50%, #fff 80%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -375,23 +434,17 @@
 ============================================== */
 .he-services-v3 {
   padding: 10rem 0;
-  background: #0a0a0a;
+  background: radial-gradient(circle at top right, #1a1a1a 0%, #000000 100%);
   position: relative;
   overflow: hidden;
 }
 
-/* Judul di Dark Mode */
-.he-services-v3 .he-section-title-modern { color: #fff; }
-.he-services-v3 .text-muted { color: rgba(255,255,255,0.5) !important; }
-
-/* Dekorasi Cahaya (Blobs) */
 .he-blur-bg {
   position: absolute; border-radius: 50%; filter: blur(100px); z-index: 0; opacity: 0.25;
 }
 .he-blur-1 { width: 600px; height: 600px; background: var(--sb-accent); top: -10%; left: -10%; }
 .he-blur-2 { width: 500px; height: 500px; background: #7c3aed; bottom: -10%; right: -10%; }
 
-/* Kartu Kaca Holografik */
 .he-glass-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -406,7 +459,6 @@
   overflow: hidden;
 }
 
-/* Efek Kilau (Sheen) */
 .he-glass-card::before {
   content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
   background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
@@ -425,8 +477,7 @@
 }
 
 .he-glass-title {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 15px;
+  font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 15px;
 }
 .he-glass-desc {
   font-size: 0.95rem; color: rgba(255,255,255,0.5); line-height: 1.6;
@@ -447,7 +498,7 @@
    8. TECH SECTION (Immersive Split)
 ============================================== */
 .he-tech-section {
-  padding: 0; /* Full Width/Height Immersive */
+  padding: 0;
   background: #000;
   position: relative;
   overflow: hidden;
@@ -456,7 +507,6 @@
   align-items: center;
 }
 
-/* Gambar sebagai Background Immersive */
 .he-tech-bg {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; opacity: 0.6; filter: grayscale(20%) contrast(1.1);
@@ -464,7 +514,6 @@
 }
 .he-tech-section:hover .he-tech-bg { transform: scale(1.02); }
 
-/* Overlay Gradient untuk Readability */
 .he-tech-overlay {
   position: absolute; inset: 0;
   background: linear-gradient(to right, #000 10%, transparent 100%);
@@ -476,13 +525,12 @@
   padding: 4rem 0;
 }
 
-/* Panel Kaca untuk Teks */
 .he-tech-panel {
   background: rgba(10, 10, 10, 0.7);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.05);
   padding: 60px;
-  border-radius: 0 30px 30px 0; /* Rounded kanan saja */
+  border-radius: 0 30px 30px 0;
   border-left: 4px solid var(--sb-accent);
   max-width: 650px;
 }
@@ -508,18 +556,18 @@
    9. RESPONSIVE
 ============================================== */
 @media (max-width: 992px) {
-  .he-hero-headline { font-size: 4rem; }
-  .he-brand-text { font-size: 2rem; margin: 0 30px; }
+  .he-hero-headline { font-size: 3rem; }
+  .he-brand-text { font-size: 1.5rem; margin: 0 40px; }
   .he-tech-title { font-size: 3rem; }
   .he-tech-panel { border-radius: 30px; margin: 20px; width: auto; }
-  .he-tech-overlay { background: rgba(0,0,0,0.7); } /* Gelapkan semua di mobile */
+  .he-tech-overlay { background: rgba(0,0,0,0.7); }
 }
 
 @media (max-width: 768px) {
-  .he-hero-headline { font-size: 3rem; }
-  .he-brand-section { transform: skewY(-5deg); margin-top: -40px; }
-  .he-trust-track-wrapper { transform: skewY(5deg); }
-  .he-popular-section { padding-top: 8rem; }
+  .he-hero-headline { font-size: 2rem; }
+  .he-brand-section { padding: 1.5rem 0; }
+  .he-popular-section { padding-top: 4rem; }
   .he-quote-text { font-size: 2rem; }
   .he-tech-panel { padding: 30px; }
+  .he-store-card-modern { height: 320px; }
 }
