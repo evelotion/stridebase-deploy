@@ -157,8 +157,8 @@
 .he-hero-headline {
   font-family: 'Outfit', sans-serif;
   /* Ukuran font dikecilkan */
-  font-size: clamp(2.5rem, 4vw, 3.5rem); 
-  font-weight: 700; /* Tidak terlalu bold */
+  font-size: clamp(1.5rem, 3vw, 2.5rem); 
+  font-weight: 500; /* Tidak terlalu bold */
   color: #fff;
   line-height: 1.2;
   margin-bottom: 2.5rem; /* Jarak ke tombol */
