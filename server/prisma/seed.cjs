@@ -1,123 +1,126 @@
-// File: server/prisma/seed.cjs (Dengan Perbaikan Urutan Hapus)
-
+// File: server/prisma/seed.cjs
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log(
-    "🚀 [SEED] Memulai proses seeding data trial dengan skema final..."
-  );
-  console.log("🔥 [SEED] Menghapus data transaksi dan toko lama...");
-  // Hapus data yang memiliki relasi ke User terlebih dahulu
-  await prisma.securityLog.deleteMany();
-  // <-- TAMBAHKAN BARIS INI DI SINI
-  await prisma.review.deleteMany();
-  await prisma.notification.deleteMany();
-  await prisma.platformEarning.deleteMany();
+  console.log("🚀 [SEED] Memulai proses seeding ke Database Render...");
+
+  // --- 1. PEMBERSIHAN DATA (Urutan sangat penting untuk menghindari error Foreign Key) ---
+  console.log("🔥 [SEED] Menghapus data lama...");
+
+  // Hapus data transaksi & detail terlebih dahulu
+  await prisma.ledgerEntry.deleteMany();
   await prisma.walletTransaction.deleteMany();
-  await prisma.payoutRequest.deleteMany();
+  await prisma.platformEarning.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.invoice.deleteMany();
+
+  // Hapus review & notifikasi
+  await prisma.review.deleteMany();
+  await prisma.notification.deleteMany();
+
+  // Hapus booking (transaksi utama)
   await prisma.booking.deleteMany();
-  await prisma.service.deleteMany();
-  await prisma.storeSchedule.deleteMany();
+
+  // Hapus data terkait toko
   await prisma.storePromo.deleteMany();
   await prisma.promo.deleteMany();
-  await prisma.approvalRequest.deleteMany();
+  await prisma.service.deleteMany();
+  await prisma.storeSchedule.deleteMany();
   await prisma.storeWallet.deleteMany();
+  await prisma.payoutRequest.deleteMany();
+  await prisma.approvalRequest.deleteMany();
+
+  // Hapus toko
   await prisma.store.deleteMany();
+
+  // Hapus data terkait user
   await prisma.address.deleteMany();
   await prisma.loyaltyPoint.deleteMany();
+  await prisma.securityLog.deleteMany();
 
-  // Hapus pengguna non-developer/admin setelah semua relasi terhapus
-  await prisma.user.deleteMany({
-    where: { role: { in: ["customer", "mitra"] } },
-  });
-  console.log("✅ [SEED] Data lama berhasil dibersihkan.");
+  // Hapus Banner & Setting Global
+  await prisma.banner.deleteMany();
+  await prisma.globalSetting.deleteMany();
 
-  console.log("👤 [SEED] Membuat atau memperbarui pengguna...");
+  // Terakhir hapus user
+  await prisma.user.deleteMany();
+
+  console.log("✅ [SEED] Database bersih.");
+
+  // --- 2. MEMBUAT DATA BARU ---
+  console.log("👤 [SEED] Membuat user...");
+
   const passwordHash = await bcrypt.hash("password123", 10);
-  const dev = await prisma.user.upsert({
-    where: { email: "developer@stridebase.com" },
-    update: {
-      password: passwordHash,
-      name: "Developer Stride",
-      isEmailVerified: true,
-    },
-    create: {
-      id: "user-dev-01",
-      email: "developer@stridebase.com",
+
+  // Developer
+  const dev = await prisma.user.create({
+    data: {
+      email: "  debase.com",
       name: "Developer Stride",
       password: passwordHash,
       role: "developer",
       isEmailVerified: true,
+      phone: "08111111111",
     },
   });
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@stridebase.com" },
-    update: {
-      password: passwordHash,
-      name: "Super Admin",
-      isEmailVerified: true,
-    },
-    create: {
-      id: "user-admin-01",
+
+  // Admin
+  const admin = await prisma.user.create({
+    data: {
       email: "admin@stridebase.com",
       name: "Super Admin",
       password: passwordHash,
       role: "admin",
       isEmailVerified: true,
+      phone: "08222222222",
     },
   });
+
+  // Mitra 1
   const mitra1 = await prisma.user.create({
     data: {
-      id: "user-mitra-01",
       email: "budi.clean@example.com",
       name: "Budi Santoso",
       password: passwordHash,
       role: "mitra",
       isEmailVerified: true,
+      phone: "08333333333",
     },
   });
+
+  // Mitra 2
   const mitra2 = await prisma.user.create({
     data: {
-      id: "user-mitra-02",
       email: "citra.shine@example.com",
       name: "Citra Lestari",
       password: passwordHash,
       role: "mitra",
       isEmailVerified: true,
+      phone: "08444444444",
     },
   });
+
+  // Customer
   const cust1 = await prisma.user.create({
     data: {
-      id: "user-customer-01",
       email: "siti.rahayu@example.com",
       name: "Siti Rahayu",
       password: passwordHash,
       role: "customer",
       isEmailVerified: true,
+      phone: "08555555555",
     },
   });
-  console.log(`✅ [SEED] Pengguna berhasil dibuat.`);
 
-  // Upsert untuk pilihan tema homepage
-  await prisma.globalSetting.upsert({
-    where: { key: "homePageTheme" },
-    update: {},
-    create: {
-      key: "homePageTheme",
-      value: "classic", // Nilai default
-      description: "Pilihan tema untuk Homepage: 'classic' atau 'modern'.",
-    },
-  });
+  // --- 3. MEMBUAT ALAMAT ---
   await prisma.address.create({
     data: {
       userId: cust1.id,
       label: "Rumah",
       recipientName: "Siti Rahayu",
-      phoneNumber: "081234567890",
+      phoneNumber: "08555555555",
       street: "Jl. Melati No. 123",
       city: "Jakarta Timur",
       province: "DKI Jakarta",
@@ -126,8 +129,10 @@ async function main() {
       isPrimary: true,
     },
   });
-  console.log("✅ [SEED] Alamat untuk customer berhasil dibuat.");
-  console.log("🏪 [SEED] Membuat data toko...");
+
+  // --- 4. MEMBUAT TOKO ---
+  console.log("🏪 [SEED] Membuat toko...");
+
   const store1 = await prisma.store.create({
     data: {
       name: "CleanStep Express (PRO)",
@@ -144,9 +149,10 @@ async function main() {
         "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
       ],
-      wallet: { create: {} },
+      wallet: { create: { balance: 0 } },
     },
   });
+
   const store2 = await prisma.store.create({
     data: {
       name: "Citra Shine Shoes",
@@ -162,12 +168,13 @@ async function main() {
       images: [
         "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
       ],
-      wallet: { create: {} },
+      wallet: { create: { balance: 0 } },
     },
   });
-  console.log(`✅ [SEED] Toko berhasil dibuat.`);
 
-  console.log("🧼 [SEED] Membuat data layanan...");
+  // --- 5. MEMBUAT LAYANAN ---
+  console.log("🧼 [SEED] Membuat layanan...");
+
   await prisma.service.createMany({
     data: [
       {
@@ -180,7 +187,6 @@ async function main() {
       },
       {
         name: "Deep Clean Sneakers",
-
         description: "Pembersihan total.",
         price: 85000,
         shoeType: "sneakers",
@@ -213,8 +219,42 @@ async function main() {
       },
     ],
   });
-  console.log("✅ [SEED] Layanan berhasil dibuat.");
-  console.log("🎉 [SEED] Proses seeding data trial selesai!");
+
+  // --- 6. MEMBUAT BANNER (Untuk Hero Section) ---
+  console.log("🖼️ [SEED] Membuat banner...");
+
+  await prisma.banner.createMany({
+    data: [
+      {
+        title: "Premium Care for Your Kicks",
+        description: "Experience the best shoe cleaning service in town.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1920&auto=format&fit=crop",
+        linkUrl: "/store",
+        status: "active",
+      },
+      {
+        title: "Restoration Experts",
+        description: "Bring your old shoes back to life.",
+        imageUrl:
+          "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1920&auto=format&fit=crop",
+        linkUrl: "/about",
+        status: "active",
+      },
+    ],
+  });
+
+  // --- 7. GLOBAL SETTINGS ---
+  await prisma.globalSetting.create({
+    data: {
+      key: "homePageTheme",
+      value: "elevate", // Default ke tema baru Anda
+      description:
+        "Pilihan tema untuk Homepage: 'classic', 'modern', atau 'elevate'.",
+    },
+  });
+
+  console.log("🎉 [SEED] Selesai! Database Render siap digunakan.");
 }
 
 main()
