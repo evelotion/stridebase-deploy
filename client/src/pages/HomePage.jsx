@@ -525,8 +525,8 @@ const HomePage = ({
     );
   };
 
-const renderElevateHomepage = () => {
-    // Data Services (sama seperti sebelumnya)
+  const renderElevateHomepage = () => {
+    // Data Services Static (Icon & Teks)
     const v3Services = [
       { title: "Unyellowing", icon: "fa-sun", desc: "Mengembalikan warna sol sepatu yang menguning menjadi putih kembali." },
       { title: "Deep Cleaning", icon: "fa-hands-wash", desc: "Pembersihan mendalam untuk semua material (Canvas, Suede, Leather)." },
@@ -537,35 +537,46 @@ const renderElevateHomepage = () => {
     return (
       <div className="home-elevate-wrapper">
         
-        {/* 1. HERO SECTION (CLEAN, BANNER FOCUSED, LEFT ALIGNED) */}
+        {/* 1. HERO SECTION (DYNAMIC BACKGROUND FROM ADMIN) */}
         <section className="he-hero-section">
           
-          {/* A. CAROUSEL BACKGROUND (Data dari Banners Admin) */}
+          {/* A. CAROUSEL BACKGROUND */}
+          {/* Data diambil dari state 'banners' yang sudah di-fetch di useEffect utama */}
           <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="5000">
             
-            {/* Indikator Slide di Kiri Bawah */}
-            <div className="carousel-indicators he-custom-indicators">
-              {banners.length > 0 && banners.map((_, index) => (
-                <button
-                  type="button"
-                  data-bs-target="#elevateCarousel"
-                  data-bs-slide-to={index}
-                  className={`he-indicator-dot ${index === 0 ? "active" : ""}`}
-                  key={index}
-                  aria-current={index === 0 ? "true" : "false"}
-                ></button>
-              ))}
-            </div>
+            {/* Indikator Slide (Hanya muncul jika banner > 1) */}
+            {banners.length > 1 && (
+              <div className="carousel-indicators he-custom-indicators">
+                {banners.map((_, index) => (
+                  <button
+                    type="button"
+                    data-bs-target="#elevateCarousel"
+                    data-bs-slide-to={index}
+                    className={`he-indicator-dot ${index === 0 ? "active" : ""}`}
+                    key={index}
+                    aria-current={index === 0 ? "true" : "false"}
+                  ></button>
+                ))}
+              </div>
+            )}
 
             <div className="carousel-inner h-100">
-              {banners.length > 0 ? banners.map((b, i) => (
-                <div className={`carousel-item h-100 ${i===0?'active':''}`} key={b.id}>
-                  <img src={b.imageUrl} className="he-hero-img" alt="Hero Banner" />
-                </div>
-              )) : (
-                /* Fallback jika tidak ada banner dari admin */
+              {banners.length > 0 ? (
+                // MAPPING DATA BANNER DARI ADMIN
+                banners.map((banner, index) => (
+                  <div className={`carousel-item h-100 ${index === 0 ? 'active' : ''}`} key={banner.id}>
+                    <img 
+                      src={banner.imageUrl} 
+                      className="he-hero-img" 
+                      alt={banner.title || "StrideBase Banner"} 
+                      onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920"; }} // Fallback jika gambar rusak
+                    />
+                  </div>
+                ))
+              ) : (
+                // FALLBACK JIKA BELUM ADA BANNER DARI ADMIN
                 <div className="carousel-item active h-100">
-                  <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920" className="he-hero-img" alt="Hero Default" />
+                  <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920" className="he-hero-img" alt="Default Hero" />
                 </div>
               )}
             </div>
@@ -574,25 +585,25 @@ const renderElevateHomepage = () => {
           {/* B. GRADIENT OVERLAY */}
           <div className="he-hero-overlay-gradient"></div>
 
-          {/* C. TEXT CONTENT (Hanya Headline & Tombol) */}
+          {/* C. TEXT CONTENT (CLEAN & MINIMALIST) */}
           <div className="he-hero-content-left">
              <div className="he-hero-text-box">
                 <Fade direction="up" cascade damping={0.2} triggerOnce>
                   
-                  {/* Headline (Font lebih kecil) */}
+                  {/* Headline Utama (Ukuran Font Dikecilkan di CSS) */}
                   <h1 className="he-hero-headline">
                     Choose shops that <br/>
                     <span className="text-highlight">match your style</span> <br/>
                     and budget.
                   </h1>
 
-                  {/* Tombol Aksi */}
+                  {/* Tombol Aksi Saja (Deskripsi & Badge Dihapus) */}
                   <div className="he-hero-actions">
                     <Link to="/store" className="he-btn-primary-glow">
                        <i className="fas fa-search"></i> Find Store
                     </Link>
                     <Link to="/about" className="he-btn-glass">
-                       Explore
+                       How it Works
                     </Link>
                   </div>
 
