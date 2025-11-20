@@ -552,7 +552,7 @@ const renderElevateHomepage = () => {
     return (
       <div className="home-elevate-wrapper">
         
-        {/* 1. HERO SECTION */}
+{/* 1. HERO SECTION (CLEAN LOOK REDESIGN) */}
         <section className="he-hero-section">
           <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="5000">
             <div className="carousel-inner">
@@ -569,27 +569,32 @@ const renderElevateHomepage = () => {
           </div>
 
           <div className="he-hero-overlay-content">
+            {/* Badge Kecil */}
             <Zoom triggerOnce>
-               <div className="he-hero-badge">StrideBase Platform V3.0</div>
+               <div className="he-hero-badge">
+                 <i className="fas fa-sparkles text-warning"></i> 
+                 <span>StrideBase V3.0</span>
+               </div>
             </Zoom>
             
-            <Fade direction="up" cascade damping={0.2} delay={200} triggerOnce>
+            {/* Headline Clean & Elegant */}
+            <Fade direction="up" cascade damping={0.1} delay={200} triggerOnce>
               <h1 className="he-hero-headline">
-                Choose shops that match <br />
-                your <span className="text-highlight">style</span> and <span className="text-highlight">budget</span>.
+                Your shoes deserve the best <br />
+                <span className="text-highlight">style</span> and <span className="text-highlight">care</span>.
               </h1>
               
-              <Link to="/store" className="he-btn-find">
-                Find Store <i className="fas fa-arrow-right ms-2"></i>
-              </Link>
-            </Fade>
-
-            <div className="scroll-indicator">
-              <div className="scroll-mouse">
-                <div className="scroll-wheel"></div>
+              {/* Tombol Variatif dengan FontAwesome */}
+              <div className="he-hero-actions">
+                <Link to="/store" className="he-btn-find">
+                  <i className="fas fa-search"></i> Find Store
+                </Link>
+                
+                <Link to="/about" className="he-btn-secondary">
+                  <i className="fas fa-play-circle"></i> How it Works
+                </Link>
               </div>
-              <span>SCROLL</span>
-            </div>
+            </Fade>
           </div>
         </section>
 
