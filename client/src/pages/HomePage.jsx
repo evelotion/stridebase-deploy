@@ -526,7 +526,7 @@ const HomePage = ({
   };
 
 const renderElevateHomepage = () => {
-    // Data Services sesuai PDF
+    // Data Services (sama seperti sebelumnya)
     const v3Services = [
       { title: "Unyellowing", icon: "fa-sun", desc: "Mengembalikan warna sol sepatu yang menguning menjadi putih kembali." },
       { title: "Deep Cleaning", icon: "fa-hands-wash", desc: "Pembersihan mendalam untuk semua material (Canvas, Suede, Leather)." },
@@ -537,13 +537,15 @@ const renderElevateHomepage = () => {
     return (
       <div className="home-elevate-wrapper">
         
-        {/* 1. HERO SECTION (LAYOUT KIRI + GAMBAR FULL) */}
+        {/* 1. HERO SECTION (CLEAN, BANNER FOCUSED, LEFT ALIGNED) */}
         <section className="he-hero-section">
           
-          {/* A. CAROUSEL IMAGE (BACKGROUND) */}
-          <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="6000">
+          {/* A. CAROUSEL BACKGROUND (Data dari Banners Admin) */}
+          <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+            
+            {/* Indikator Slide di Kiri Bawah */}
             <div className="carousel-indicators he-custom-indicators">
-              {banners.map((_, index) => (
+              {banners.length > 0 && banners.map((_, index) => (
                 <button
                   type="button"
                   data-bs-target="#elevateCarousel"
@@ -558,9 +560,10 @@ const renderElevateHomepage = () => {
             <div className="carousel-inner h-100">
               {banners.length > 0 ? banners.map((b, i) => (
                 <div className={`carousel-item h-100 ${i===0?'active':''}`} key={b.id}>
-                  <img src={b.imageUrl} className="he-hero-img" alt="Hero" />
+                  <img src={b.imageUrl} className="he-hero-img" alt="Hero Banner" />
                 </div>
               )) : (
+                /* Fallback jika tidak ada banner dari admin */
                 <div className="carousel-item active h-100">
                   <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920" className="he-hero-img" alt="Hero Default" />
                 </div>
@@ -568,54 +571,31 @@ const renderElevateHomepage = () => {
             </div>
           </div>
 
-          {/* B. GRADIENT OVERLAY (Supaya teks kiri terbaca) */}
+          {/* B. GRADIENT OVERLAY */}
           <div className="he-hero-overlay-gradient"></div>
 
-          {/* C. TEXT CONTENT (RATA KIRI) */}
+          {/* C. TEXT CONTENT (Hanya Headline & Tombol) */}
           <div className="he-hero-content-left">
              <div className="he-hero-text-box">
-                <Fade direction="up" cascade damping={0.1} triggerOnce>
-                  {/* Badge */}
-                  <div className="he-hero-badge-pill">
-                    <span className="he-badge-dot"></span> 
-                    StrideBase Premium V3
-                  </div>
-
-                  {/* Headline Besar */}
+                <Fade direction="up" cascade damping={0.2} triggerOnce>
+                  
+                  {/* Headline (Font lebih kecil) */}
                   <h1 className="he-hero-headline">
                     Choose shops that <br/>
-                    <span className="text-highlight filled">match your style</span> <br/>
+                    <span className="text-highlight">match your style</span> <br/>
                     and budget.
                   </h1>
-
-                  {/* Deskripsi dengan garis tepi */}
-                  <p className="he-hero-desc">
-                    Platform perawatan sepatu #1 di Jakarta. Temukan artisan terbaik untuk restorasi, unyellowing, dan deep cleaning dalam satu aplikasi.
-                  </p>
 
                   {/* Tombol Aksi */}
                   <div className="he-hero-actions">
                     <Link to="/store" className="he-btn-primary-glow">
-                       Find Store Now
+                       <i className="fas fa-search"></i> Find Store
                     </Link>
                     <Link to="/about" className="he-btn-glass">
-                       <i className="fas fa-play-circle"></i> Watch Video
+                       Explore
                     </Link>
                   </div>
 
-                  {/* Social Proof (Elaborasi Tambahan) */}
-                  <div className="he-social-proof">
-                     <div className="he-avatars">
-                        <img src="https://i.pravatar.cc/150?img=12" alt="User" className="he-avatar-stack"/>
-                        <img src="https://i.pravatar.cc/150?img=33" alt="User" className="he-avatar-stack"/>
-                        <img src="https://i.pravatar.cc/150?img=59" alt="User" className="he-avatar-stack"/>
-                        <div className="he-avatar-stack bg-dark text-white d-flex align-items-center justify-content-center small border-0" style={{fontSize:'0.7rem'}}>+2k</div>
-                     </div>
-                     <div className="he-proof-text">
-                        Trusted by <strong>2,500+</strong> Sneakerheads <br/>
-                        <span className="text-warning"><i className="fas fa-star"></i> 4.9/5.0 Rating</span>
-                     </div>
-                  </div>
                 </Fade>
              </div>
           </div>
@@ -624,7 +604,7 @@ const renderElevateHomepage = () => {
         {/* 2. BRAND MARQUEE */}
         <section className="he-brand-section">
           <div className="he-trust-track-wrapper overflow-hidden">
-             <marquee scrollamount="12" className="w-100 d-flex align-items-center">
+             <marquee scrollamount="10" className="w-100 d-flex align-items-center">
                <span className="he-brand-text">ADIDAS</span>
                <span className="he-brand-text">NIKE</span>
                <span className="he-brand-text">SKECHERS</span>
@@ -643,7 +623,7 @@ const renderElevateHomepage = () => {
             <div className="d-flex justify-content-between align-items-end he-section-header">
               <Fade triggerOnce>
                 <div>
-                  <span className="he-section-label">Recommended</span>
+                  <span className="he-section-label">Featured</span>
                   <h2 className="he-section-title">Popular Stores in <span style={{color: 'var(--sb-accent)'}}>JAKARTA TIMUR</span></h2>
                 </div>
               </Fade>
