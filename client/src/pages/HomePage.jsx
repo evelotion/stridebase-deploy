@@ -526,19 +526,20 @@ const HomePage = ({
   };
 
 const renderElevateHomepage = () => {
+    // Data sesuai Mockup PDF untuk Services
     const v3Services = [
-      { title: "Unyellowing", icon: "fa-sun", desc: "Advanced oxidation process to restore sole brightness." },
-      { title: "Deep Cleaning", icon: "fa-hands-wash", desc: "Micro-fiber deep cleanse for all materials." },
-      { title: "Restoration", icon: "fa-tools", desc: "Structural repair and material replacement." },
-      { title: "Repaint", icon: "fa-paint-brush", desc: "Color restoration with premium leather paints." }
+      { title: "Unyellowing", icon: "fa-sun", desc: "Mengembalikan warna sol sepatu menjadi putih kembali." },
+      { title: "Deep Cleaning", icon: "fa-hands-wash", desc: "Pembersihan mendalam untuk semua jenis material." },
+      { title: "Repaint", icon: "fa-paint-brush", desc: "Pewarnaan ulang sepatu agar terlihat baru lagi." },
+      { title: "Repair", icon: "fa-hammer", desc: "Perbaikan sol dan struktur sepatu yang rusak." }
     ];
 
     return (
       <div className="home-elevate-wrapper">
         
-        {/* 1. HERO: ETHEREAL LUXURY */}
+        {/* 1. HERO SECTION (Structure: Title, Sub, Button Centered) */}
         <section className="he-hero-section">
-          <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="6000">
+          <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="5000">
             <div className="carousel-inner">
               {banners.length > 0 ? banners.map((b, i) => (
                 <div className={`carousel-item ${i===0?'active':''}`} key={b.id}>
@@ -553,138 +554,181 @@ const renderElevateHomepage = () => {
           </div>
 
           <div className="he-hero-overlay-content">
-            <div className="he-hero-text-wrapper">
-              <Fade direction="up" cascade damping={0.2} triggerOnce>
-                <span className="he-hero-subtitle">StrideBase Premium Care</span>
-                <h1 className="he-hero-headline">
-                  Your shoes deserve <br/> 
-                  <i>perfection</i> in every detail.
-                </h1>
-                
-                <div className="mt-4">
-                  <Link to="/store" className="he-btn-editorial me-3">
-                    Find Store
-                  </Link>
-                  <Link to="/about" className="he-btn-editorial" style={{border: 'none'}}>
-                    Explore <i className="fas fa-arrow-right ms-2"></i>
-                  </Link>
-                </div>
-              </Fade>
-            </div>
-          </div>
-
-          {/* Pagination Dots */}
-          <div className="he-hero-pagination d-none d-md-flex">
-             <div className="he-page-dot active"></div>
-             <div className="he-page-dot"></div>
-             <div className="he-page-dot"></div>
+            <Fade direction="up" cascade damping={0.2} triggerOnce>
+              {/* Badge Kecil di atas (Opsional, agar tidak kosong) */}
+              <div className="text-uppercase ls-2 text-white-50 mb-3 fw-bold" style={{letterSpacing:'3px', fontSize:'0.9rem'}}>
+                StrideBase Premium
+              </div>
+              
+              {/* Headline Sesuai PDF */}
+              <h1 className="he-hero-headline">
+                Choose shops that <span className="text-highlight">match</span><br /> 
+                your style and budget.
+              </h1>
+              
+              {/* Tombol Find Store */}
+              <Link to="/store" className="he-btn-find">
+                <i className="fas fa-search"></i> Find Store
+              </Link>
+            </Fade>
           </div>
         </section>
 
-        {/* 2. BRAND MARQUEE (CLEAN WHITE) */}
+        {/* 2. BRAND MARQUEE (Structure: Logo Brands List) */}
         <section className="he-brand-section">
           <div className="he-trust-track-wrapper overflow-hidden">
-             <marquee scrollamount="6" className="w-100 d-flex align-items-center">
-               <span className="he-brand-text">ADIDAS</span>
-               <span className="he-brand-text">NIKE</span>
-               <span className="he-brand-text">GUCCI</span>
-               <span className="he-brand-text">BALENCIAGA</span>
-               <span className="he-brand-text">OFF-WHITE</span>
+             <marquee scrollamount="10" className="w-100 d-flex align-items-center">
+               <span className="he-brand-text"><i className="fab fa-adidas me-2"></i> ADIDAS</span>
+               <span className="he-brand-text"><i className="fab fa-nike me-2"></i> NIKE</span>
+               <span className="he-brand-text">SKECHERS</span>
+               <span className="he-brand-text">PUMA</span>
+               <span className="he-brand-text">CONVERSE</span>
+               <span className="he-brand-text">VANS</span>
                <span className="he-brand-text">NEW BALANCE</span>
-               <span className="he-brand-text">ASICS</span>
-               <span className="he-brand-text">PRADA</span>
+               <span className="he-brand-text">REEBOK</span>
              </marquee>
           </div>
         </section>
 
-        {/* 3. QUOTE & SERVICES */}
-        <section className="he-quote-section">
+        {/* 3. POPULAR STORES (Structure: Title left, Link right, Grid) */}
+        <section className="he-popular-section">
           <div className="container">
-            <Fade direction="up" triggerOnce>
-              <div className="he-quote-line"></div>
-              <h2 className="he-quote-text">"Quality is not an act, it is a habit."</h2>
-              <p className="text-muted text-uppercase ls-2">— Aristotle</p>
-            </Fade>
+            <div className="d-flex justify-content-between align-items-end he-section-header">
+              <Fade triggerOnce>
+                <div>
+                  <span className="he-section-label">Top Rated</span>
+                  <h2 className="he-section-title">Popular Stores in <br/><span style={{color: 'var(--sb-accent)'}}>JAKARTA TIMUR</span></h2>
+                </div>
+              </Fade>
+              <Link to="/store" className="btn btn-outline-light rounded-pill px-4 d-none d-md-block">
+                View All <i className="fas fa-arrow-right ms-2"></i>
+              </Link>
+            </div>
 
-            <div className="he-services-grid">
-               {v3Services.map((srv, i) => (
-                 <div className="he-service-item" key={i}>
-                    <div className="he-srv-icon-simple"><i className={`fas ${srv.icon}`}></i></div>
-                    <h4 className="he-srv-title-simple">{srv.title}</h4>
-                    <p className="he-srv-desc-simple">{srv.desc}</p>
-                 </div>
-               ))}
+            <div className="row g-4">
+              {(featuredStores.length > 0 ? featuredStores.slice(0, 4) : [1,2,3,4]).map((store, i) => (
+                <div className="col-lg-3 col-md-6" key={store.id || i}>
+                   <Fade direction="up" delay={i * 100} triggerOnce>
+                     {typeof store === 'object' ? (
+                       <Link to={`/store/${store.id}`} className="he-store-card">
+                         <div className="he-store-img-box">
+                           <img 
+                              src={store.image_url || (store.storeImages && store.storeImages[0]) || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"} 
+                              alt={store.store_name} 
+                           />
+                           <div className="he-store-overlay-hover"></div>
+                         </div>
+                         <div className="he-store-info">
+                           <h3 className="he-store-name">{store.store_name}</h3>
+                           <div className="he-store-loc">
+                             <i className="fas fa-map-marker-alt text-danger"></i>
+                             <span>{store.city || "Jakarta Timur"}</span>
+                           </div>
+                           <div className="he-store-badge">
+                              <i className="fas fa-concierge-bell"></i> {store.serviceCount || "11"} Layanan
+                           </div>
+                         </div>
+                       </Link>
+                     ) : (
+                       /* Dummy Skeleton Sesuai PDF */
+                       <div className="he-store-card">
+                          <div className="he-store-img-box">
+                            <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=600&q=80" alt="Store" />
+                            <div className="he-store-overlay-hover"></div>
+                          </div>
+                          <div className="he-store-info">
+                            <h3 className="he-store-name">KICK RID Jakarta</h3>
+                            <div className="he-store-loc">
+                               <i className="fas fa-map-marker-alt text-danger"></i> Condet Raya, Jaktim
+                            </div>
+                            <div className="he-store-badge"><i className="fas fa-concierge-bell"></i> 011 Layanan</div>
+                          </div>
+                       </div>
+                     )}
+                   </Fade>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* 4. POPULAR STORES (PORTRAIT CLEAN) */}
-        <section className="he-popular-section">
-          <div className="container">
-             <div className="he-section-header-center">
-                <span className="text-uppercase text-primary fw-bold ls-2 mb-2 d-block">Curated Selection</span>
-                <h2 className="he-section-title-serif">Popular in Jakarta</h2>
-             </div>
-             
-             <div className="row g-4">
-               {(featuredStores.length > 0 ? featuredStores.slice(0, 4) : [1,2,3,4]).map((store, i) => (
-                 <div className="col-lg-3 col-md-6" key={store.id || i}>
-                    <Fade delay={i*100} triggerOnce>
-                      {typeof store === 'object' ? (
-                        <Link to={`/store/${store.id}`} className="he-store-card-clean">
-                          <div className="he-clean-img-wrapper">
-                             <img src={store.image_url || (store.storeImages && store.storeImages[0]) || "https://images.unsplash.com/photo-1549298916-b41d501d3772"} alt={store.store_name} />
-                             <div className="he-clean-overlay">
-                                <h4 className="he-clean-title">{store.store_name}</h4>
-                                <div className="he-clean-meta"><i className="fas fa-map-marker-alt me-2"></i>{store.city}</div>
-                             </div>
-                          </div>
-                        </Link>
-                      ) : (
-                        <div className="he-store-card-clean">
-                           <div className="he-clean-img-wrapper">
-                              <img src="https://images.unsplash.com/photo-1519415943484-9fa1873496d4?w=500&q=80" alt="Dummy" />
-                              <div className="he-clean-overlay">
-                                 <h4 className="he-clean-title">Kick Avenue</h4>
-                                 <div className="he-clean-meta">Jakarta Selatan</div>
-                              </div>
-                           </div>
-                        </div>
-                      )}
-                    </Fade>
-                 </div>
-               ))}
-             </div>
-             
-             <div className="text-center mt-5">
-               <Link to="/store" className="btn btn-outline-dark rounded-0 px-5 py-3 text-uppercase ls-2 fw-bold">View All Stores</Link>
-             </div>
+        {/* 4. QUOTE SECTION (Structure: Aristotle Quote Centered) */}
+        <section className="he-quote-section">
+          <div className="he-quote-bg"></div>
+          <div className="container he-quote-content">
+            <Fade direction="up" triggerOnce>
+              <i className="fas fa-quote-left he-quote-icon"></i>
+              <h2 className="he-quote-text">
+                "Quality is not an act,<br /> it is a habit."
+              </h2>
+              <p className="he-quote-author">— Aristotle, Greek Philosopher</p>
+            </Fade>
           </div>
         </section>
 
-        {/* 5. TECH SECTION */}
-        <section className="he-tech-section">
-          <div className="container-fluid p-0">
-             <div className="row g-0 align-items-center">
-                <div className="col-lg-6">
-                   <div className="p-5 m-lg-5">
-                      <Fade direction="left" triggerOnce>
-                         <span className="text-primary text-uppercase fw-bold mb-3 d-block">Innovation</span>
-                         <h2 className="he-tech-head">Technology meets<br/>Craftsmanship.</h2>
-                         <p className="text-secondary mb-4 fs-5" style={{maxWidth:'500px'}}>
-                           We utilize state-of-the-art cleaning technology combined with traditional artisan techniques to ensure your footwear receives the care it deserves.
-                         </p>
-                         <ul className="list-unstyled text-white-50 mb-5">
-                           <li className="mb-2"><i className="fas fa-check text-primary me-3"></i> Eco-friendly Solutions</li>
-                           <li className="mb-2"><i className="fas fa-check text-primary me-3"></i> UV Sterilization</li>
-                           <li className="mb-2"><i className="fas fa-check text-primary me-3"></i> Material-safe Processes</li>
-                         </ul>
-                         <Link to="/about" className="btn btn-light rounded-0 px-4 py-3 fw-bold">Discover More</Link>
-                      </Fade>
-                   </div>
+        {/* 5. SERVICES (Structure: Grid 4 Columns) */}
+        <section className="he-services-section">
+          <div className="container">
+            <div className="text-center mb-5">
+              <Fade direction="down" triggerOnce>
+                <span className="he-section-label">Our Services</span>
+                <h2 className="he-section-title">Layanan <br/>KOMPREHENSIF</h2>
+              </Fade>
+            </div>
+
+            <div className="row g-4">
+              {v3Services.map((srv, i) => (
+                <div className="col-md-3" key={i}>
+                  <Fade direction="up" delay={i * 100} triggerOnce className="h-100">
+                    <div className="he-srv-card h-100">
+                       <div className="he-srv-icon">
+                         <i className={`fas ${srv.icon}`}></i>
+                       </div>
+                       <h4 className="he-srv-title">{srv.title}</h4>
+                       <p className="he-srv-desc">{srv.desc}</p>
+                    </div>
+                  </Fade>
                 </div>
-                <div className="col-lg-6 he-tech-visual">
-                   <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2000&auto=format&fit=crop" alt="Tech" />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 6. TECH SECTION (Structure: Split Image Left / Text Right) */}
+        <section className="he-tech-section">
+          <div className="container">
+             <div className="row align-items-center">
+                <div className="col-lg-6 mb-5 mb-lg-0">
+                   <Slide direction="left" triggerOnce>
+                      <img 
+                        src="https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1000&auto=format&fit=crop" 
+                        alt="Tech" 
+                        className="he-tech-img"
+                      />
+                   </Slide>
+                </div>
+                <div className="col-lg-6 ps-lg-5">
+                   <Slide direction="right" triggerOnce>
+                      <span className="he-section-label">Innovation</span>
+                      <h2 className="he-tech-title">Teknologi Canggih,<br/>Hasil Maksimal.</h2>
+                      <p className="he-tech-desc">
+                        Kami tidak hanya membersihkan, tapi merawat. Dengan menggunakan peralatan modern dan formula pembersih premium yang aman, kami memastikan sepatu Anda kembali dalam kondisi prima tanpa merusak material.
+                      </p>
+                      <div className="d-flex gap-3 mt-4">
+                         <div className="d-flex align-items-center gap-2">
+                            <i className="fas fa-check-circle text-primary fs-4"></i> <span>Aman</span>
+                         </div>
+                         <div className="d-flex align-items-center gap-2">
+                            <i className="fas fa-check-circle text-primary fs-4"></i> <span>Cepat</span>
+                         </div>
+                         <div className="d-flex align-items-center gap-2">
+                            <i className="fas fa-check-circle text-primary fs-4"></i> <span>Garansi</span>
+                         </div>
+                      </div>
+                      <Link to="/store" className="he-tech-btn mt-4">
+                        Find Store <i className="fas fa-arrow-right ms-2"></i>
+                      </Link>
+                   </Slide>
                 </div>
              </div>
           </div>
@@ -693,6 +737,8 @@ const renderElevateHomepage = () => {
       </div>
     );
   };
+
+
   return (
     <div className="homepage-mobile-container">
       {/* Header Mobile */}

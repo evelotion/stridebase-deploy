@@ -1,77 +1,80 @@
 /* File: client/src/pages/HomePageElevate.css */
 
-/* --- 1. IMPORT FONTS --- */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,500&display=swap");
+/* --- 1. IMPORT FONTS (Hanya Outfit & Inter - Modern Pop) --- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800;900&display=swap");
 
 :root {
-  --sb-black: #0a0a0a;
-  --sb-gray: #f4f4f5;
-  --sb-accent: #2563eb;
-  --glass-border: rgba(255, 255, 255, 0.15);
+  --sb-black: #050505;
+  --sb-card-bg: #0f0f0f;
+  --sb-text: #ffffff;
+  --sb-accent: #3b82f6; /* Electric Blue */
+  --sb-gold: #fbbf24; /* Premium Gold */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-glow: 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
 /* Base */
 .home-elevate-wrapper {
   font-family: "Outfit", sans-serif;
-  background-color: #fff;
-  color: #333;
+  background-color: var(--sb-black);
+  color: var(--sb-text);
   overflow-x: hidden;
 }
 
 /* ==============================================
-   2. PREMIUM NAVBAR (INVISIBLE TO GLASS)
+   2. PREMIUM NAVBAR (DARK MODE)
 ============================================== */
+/* Navbar Transparent (Top) */
 .sb-navbar-transparent {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 30px 0 !important; /* Lebih lega */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8),
+    transparent
+  ) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 20px 0 !important;
   transition: all 0.4s ease;
 }
 .sb-navbar-transparent .nav-link {
-  color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 400;
-  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500;
   font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 .sb-navbar-transparent .nav-link:hover,
 .sb-navbar-transparent .nav-link.active {
-  color: #fff !important;
-  transform: translateY(-2px);
+  color: var(--sb-accent) !important;
+  text-shadow: 0 0 10px var(--sb-accent);
 }
 .sb-navbar-transparent .navbar-brand {
   color: #fff !important;
-  font-family: "Playfair Display", serif; /* Logo jadi elegan */
-  letter-spacing: 1px;
-}
-.sb-navbar-transparent .btn-icon-only {
-  color: #fff !important;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
+  font-weight: 800;
+  letter-spacing: -1px;
+  font-size: 1.5rem;
 }
 
-/* Scrolled State */
+/* Navbar Glass (Scrolled) */
 .sb-navbar-glass {
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(20px) !important;
+  background: rgba(5, 5, 5, 0.85) !important;
+  backdrop-filter: blur(15px) !important;
   padding: 15px 0 !important;
-  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.05) !important;
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
 }
 .sb-navbar-glass .nav-link {
-  color: #222 !important;
-  font-weight: 500;
+  color: #fff !important;
+}
+.sb-navbar-glass .nav-link:hover {
+  color: var(--sb-accent) !important;
 }
 .sb-navbar-glass .navbar-brand {
-  color: #000 !important;
-  font-family: "Playfair Display", serif;
-}
-.sb-navbar-glass .btn-icon-only {
-  color: #000 !important;
-  border-color: rgba(0, 0, 0, 0.1);
+  color: #fff !important;
 }
 
 /* ==============================================
-   3. HERO SECTION (ETHEREAL LUXURY)
+   3. HERO SECTION (STRUKTUR PDF - PREMIUM)
 ============================================== */
 .he-hero-section {
   position: relative;
@@ -90,344 +93,376 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Gambar terang dan tajam */
-  filter: brightness(0.8) contrast(1.05);
+  /* Gelapkan sedikit agar teks putih kontras */
+  filter: brightness(0.6) contrast(1.1);
   transform: scale(1);
-  transition: transform 12s ease;
+  transition: transform 8s ease;
 }
 .carousel-item.active .he-hero-img {
   transform: scale(1.1);
 }
 
-/* Overlay sangat halus hanya di bawah untuk teks */
+/* Overlay di Tengah (Sesuai PDF) */
 .he-hero-overlay-content {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center vertical */
-  align-items: center; /* Center horizontal */
+  justify-content: center;
+  align-items: center;
   text-align: center;
   z-index: 10;
-  background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
-}
-
-/* Kontainer Teks Bersih */
-.he-hero-text-wrapper {
-  max-width: 900px;
+  /* Vignette effect */
+  background: radial-gradient(circle, transparent 40%, #000000 150%);
   padding: 0 20px;
-  animation: fadeUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Badge Kecil Elegan */
-.he-hero-subtitle {
-  font-family: "Inter", sans-serif;
-  font-size: 0.75rem;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 20px;
-  display: inline-block;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-  padding-bottom: 5px;
-}
-
-/* Headline Utama: Playfair Display Italic */
+/* Headline Pop & Modern */
 .he-hero-headline {
-  font-family: "Playfair Display", serif;
-  font-size: clamp(3.5rem, 6vw, 6rem); /* Besar tapi tipis */
-  font-weight: 400; /* Regular/Thin */
-  font-style: italic;
-  color: #fff;
-  line-height: 1.1;
-  margin-bottom: 2rem;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-/* Tombol Sangat Minimalis */
-.he-btn-editorial {
-  background: transparent;
-  color: #fff;
   font-family: "Outfit", sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  padding: 15px 40px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 0; /* Kotak tegas atau rounded 0 untuk kesan luxury */
-  text-decoration: none;
-  transition: all 0.4s ease;
-  position: relative;
-  overflow: hidden;
+  font-size: clamp(2.5rem, 5vw, 4rem); /* Tidak terlalu besar */
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  max-width: 900px;
+  text-transform: capitalize;
+  letter-spacing: -1px;
+  /* Efek Glow halus */
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
-.he-btn-editorial::before {
+.text-highlight {
+  color: var(--sb-accent);
+  position: relative;
+  display: inline-block;
+}
+/* Garis bawah futuristik */
+.text-highlight::after {
   content: "";
   position: absolute;
-  top: 0;
+  bottom: 2px;
   left: 0;
-  width: 0;
-  height: 100%;
-  background: #fff;
-  transition: width 0.4s ease;
-  z-index: -1;
-}
-
-.he-btn-editorial:hover {
-  color: #000;
-  border-color: #fff;
-}
-.he-btn-editorial:hover::before {
   width: 100%;
+  height: 3px;
+  background: var(--sb-accent);
+  box-shadow: 0 0 10px var(--sb-accent);
 }
 
-/* Indikator Halaman Minimalis (Garis) */
-.he-hero-pagination {
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-  display: flex;
+/* Tombol Premium Solid */
+.he-btn-find {
+  background: var(--sb-text);
+  color: #000;
+  padding: 16px 40px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 8px; /* Sedikit kotak (Modern) */
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid #fff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
   gap: 10px;
-  z-index: 20;
+  margin-top: 2rem;
 }
-.he-page-dot {
-  width: 40px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.3);
-  transition: all 0.3s;
-}
-.he-page-dot.active {
-  background: #fff;
-  width: 60px;
+
+.he-btn-find:hover {
+  background: var(--sb-accent);
+  border-color: var(--sb-accent);
+  color: #fff;
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+  transform: translateY(-3px);
 }
 
 /* ==============================================
-   4. BRAND MARQUEE (CLEAN LINE)
+   4. BRAND MARQUEE (STRUKTUR PDF - PREMIUM)
 ============================================== */
 .he-brand-section {
-  background: #fff; /* Ubah ke Putih agar clean contrast setelah hero gelap */
-  padding: 2.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  background: #000;
+  padding: 2rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .he-trust-track-wrapper {
   height: 50px;
   display: flex;
   align-items: center;
 }
-
 .he-brand-text {
-  color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.4);
   font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  font-size: 1.5rem; /* Ukuran wajar */
+  font-weight: 800;
+  font-size: 1.5rem;
   text-transform: uppercase;
-  margin: 0 60px;
-  letter-spacing: 2px;
-  opacity: 0.4; /* Pudar agar tidak dominan */
-  transition: opacity 0.3s;
+  margin: 0 50px;
+  letter-spacing: 3px;
+  transition: all 0.3s;
 }
 .he-brand-text:hover {
-  opacity: 1;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  transform: scale(1.1);
 }
 
 /* ==============================================
-   5. POPULAR STORES (MINIMALIST CARD)
+   5. POPULAR STORES (STRUKTUR PDF - PREMIUM CARD)
 ============================================== */
 .he-popular-section {
   padding: 8rem 0;
-  background-color: #fff;
+  background: var(--sb-black); /* Latar gelap */
 }
 
-.he-section-header-center {
-  text-align: center;
-  margin-bottom: 5rem;
+.he-section-header {
+  margin-bottom: 4rem;
+  text-align: left;
 }
-
-.he-section-title-serif {
-  font-family: "Playfair Display", serif;
-  font-size: 3rem;
-  color: #000;
+.he-section-label {
+  color: var(--sb-accent);
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
   margin-bottom: 10px;
+  display: block;
+}
+.he-section-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -1px;
 }
 
-.he-store-card-clean {
+/* Kartu Toko "Dark Glass" */
+.he-store-card {
+  background: var(--sb-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  position: relative;
+  height: 100%;
   display: block;
   text-decoration: none;
-  color: inherit;
-  transition: transform 0.5s ease;
-}
-.he-store-card-clean:hover {
-  transform: translateY(-10px);
 }
 
-.he-clean-img-wrapper {
-  position: relative;
-  height: 420px; /* Portrait ratio */
+.he-store-img-box {
+  height: 240px;
   overflow: hidden;
-  background: #f0f0f0;
-  margin-bottom: 20px;
+  position: relative;
 }
-
-.he-clean-img-wrapper img {
+.he-store-img-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.8s ease;
-  filter: grayscale(10%);
+  transition: transform 0.6s ease;
+  filter: grayscale(20%);
 }
-.he-store-card-clean:hover img {
-  transform: scale(1.05);
+.he-store-overlay-hover {
+  position: absolute;
+  inset: 0;
+  background: rgba(59, 130, 246, 0.2); /* Blue tint on hover */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.he-store-info {
+  padding: 25px;
+  position: relative;
+}
+.he-store-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.he-store-loc {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.he-store-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #fff;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hover Effects */
+.he-store-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--sb-accent);
+  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15);
+}
+.he-store-card:hover .he-store-img-box img {
+  transform: scale(1.1);
   filter: grayscale(0%);
 }
-
-/* Overlay Info on Hover (Muncul dari bawah) */
-.he-clean-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  transform: translateY(100%);
-  transition: transform 0.4s ease;
+.he-store-card:hover .he-store-overlay-hover {
+  opacity: 1;
 }
-.he-store-card-clean:hover .he-clean-overlay {
-  transform: translateY(0);
-}
-
-.he-clean-title {
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  font-size: 1.2rem;
-  margin-bottom: 5px;
-  color: #000;
-}
-.he-clean-meta {
-  font-size: 0.85rem;
-  color: #666;
+.he-store-card:hover .he-store-badge {
+  background: var(--sb-accent);
+  color: #fff;
 }
 
 /* ==============================================
-   6. QUOTE & SERVICES (COMBINED CLEAN)
+   6. QUOTE SECTION (STRUKTUR PDF - ARISTOTLE)
 ============================================== */
 .he-quote-section {
-  padding: 10rem 0;
-  background: #f9f9f9;
+  padding: 8rem 0;
+  background: #0a0a0a;
   text-align: center;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+/* Background Pattern */
+.he-quote-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: radial-gradient(#fff 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+.he-quote-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.he-quote-icon {
+  font-size: 2.5rem;
+  color: var(--sb-accent);
+  margin-bottom: 2rem;
 }
 .he-quote-text {
-  font-family: "Playfair Display", serif;
-  font-size: 3.5rem;
+  font-family: "Outfit", sans-serif; /* Font Pop, bukan keriting */
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
   line-height: 1.3;
-  color: #1a1a1a;
-  max-width: 800px;
-  margin: 0 auto 2rem;
+  margin-bottom: 2rem;
 }
-.he-quote-line {
-  width: 50px;
-  height: 2px;
-  background: var(--sb-accent);
-  margin: 0 auto 20px;
+.he-quote-author {
+  font-size: 1rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
 }
 
-/* Service Grid Simple */
-.he-services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  padding: 4rem 0;
+/* ==============================================
+   7. SERVICES (STRUKTUR PDF - PREMIUM GRID)
+============================================== */
+.he-services-section {
+  padding: 8rem 0;
+  background: var(--sb-black);
 }
-.he-service-item {
+.he-srv-card {
+  background: linear-gradient(145deg, #151515, #0a0a0a);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 40px 30px;
   text-align: center;
-  padding: 2rem;
-  border: 1px solid transparent;
-  transition: all 0.3s;
+  transition: all 0.4s ease;
 }
-.he-service-item:hover {
-  border-color: #eee;
-  background: #fff;
+.he-srv-icon {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 25px;
+  transition: transform 0.4s ease, color 0.4s ease;
 }
-.he-srv-icon-simple {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 1.5rem;
+.he-srv-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 15px;
 }
-.he-srv-title-simple {
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-}
-.he-srv-desc-simple {
-  font-size: 0.9rem;
-  color: #777;
+.he-srv-desc {
+  font-size: 0.95rem;
+  color: #888;
   line-height: 1.6;
 }
 
+/* Hover */
+.he-srv-card:hover {
+  border-color: var(--sb-accent);
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  background: #1a1a1a;
+}
+.he-srv-card:hover .he-srv-icon {
+  color: var(--sb-accent);
+  transform: scale(1.2) rotate(10deg);
+  text-shadow: 0 0 20px var(--sb-accent);
+}
+
 /* ==============================================
-   7. TECH SECTION (FULL WIDTH)
+   8. TECH SECTION (STRUKTUR PDF - DARK TECH)
 ============================================== */
 .he-tech-section {
   padding: 8rem 0;
-  background: #000;
+  background: #050505;
   color: #fff;
 }
-.he-tech-split {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.he-tech-text {
-  padding: 0 5rem;
-  flex: 1;
-}
-.he-tech-visual {
-  flex: 1;
-  height: 500px;
-}
-.he-tech-visual img {
+.he-tech-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(100%);
-  transition: filter 0.5s;
+  border-radius: 20px;
+  box-shadow: 0 0 50px rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
-.he-tech-visual:hover img {
-  filter: grayscale(0%);
-}
-
-.he-tech-head {
-  font-family: "Playfair Display", serif;
+.he-tech-title {
   font-size: 3rem;
+  font-weight: 700;
   margin-bottom: 1.5rem;
+  line-height: 1.1;
+}
+.he-tech-desc {
+  color: #aaa;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+.he-tech-btn {
+  background: transparent;
+  border: 2px solid var(--sb-accent);
+  color: var(--sb-accent);
+  padding: 12px 30px;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s;
+  display: inline-block;
+}
+.he-tech-btn:hover {
+  background: var(--sb-accent);
+  color: #fff;
+  box-shadow: 0 0 20px var(--sb-accent);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .he-hero-headline {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
   .he-brand-text {
-    font-size: 1rem;
     margin: 0 20px;
+    font-size: 1.2rem;
   }
-  .he-tech-text {
-    padding: 2rem 0;
+  .he-popular-section,
+  .he-services-section {
+    padding: 5rem 0;
   }
-  .he-clean-img-wrapper {
-    height: 300px;
+  .he-tech-title {
+    font-size: 2.2rem;
   }
 }
