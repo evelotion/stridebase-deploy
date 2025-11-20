@@ -1,101 +1,84 @@
 /* File: client/src/pages/HomePageElevate.css */
 
-/* --- 1. IMPORT FONTS & VARIABLES --- */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap");
+/* --- 1. IMPORT FONTS --- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,500&display=swap");
 
 :root {
   --sb-black: #0a0a0a;
-  --sb-dark-gray: #1f1f1f;
   --sb-gray: #f4f4f5;
-  --sb-accent: #2563eb; /* Royal Blue */
-  --sb-gold: #d4af37; /* Premium Gold Accent */
-  --nav-height: 80px;
-
-  /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  --sb-accent: #2563eb;
+  --glass-border: rgba(255, 255, 255, 0.15);
 }
 
-/* Reset & Base */
+/* Base */
 .home-elevate-wrapper {
-  font-family: "Inter", sans-serif;
+  font-family: "Outfit", sans-serif;
   background-color: #fff;
   color: #333;
   overflow-x: hidden;
 }
 
 /* ==============================================
-   2. PREMIUM NAVBAR STYLES
+   2. PREMIUM NAVBAR (INVISIBLE TO GLASS)
 ============================================== */
-
-/* Kondisi 1: Navbar di posisi paling atas (Invisible/Clean) */
 .sb-navbar-transparent {
   background: transparent !important;
-  border-bottom: none !important;
+  border: none !important;
   box-shadow: none !important;
-  padding-top: 25px !important;
-  padding-bottom: 25px !important;
+  padding: 30px 0 !important; /* Lebih lega */
+  transition: all 0.4s ease;
 }
-
 .sb-navbar-transparent .nav-link {
   color: rgba(255, 255, 255, 0.9) !important;
-  font-weight: 500;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 400;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
 }
-
 .sb-navbar-transparent .nav-link:hover,
 .sb-navbar-transparent .nav-link.active {
   color: #fff !important;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
 }
-
 .sb-navbar-transparent .navbar-brand {
   color: #fff !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-family: "Playfair Display", serif; /* Logo jadi elegan */
+  letter-spacing: 1px;
 }
-
 .sb-navbar-transparent .btn-icon-only {
   color: #fff !important;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-/* Kondisi 2: Navbar saat di-scroll (Glass Strip) */
+/* Scrolled State */
 .sb-navbar-glass {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05) !important;
-  padding-top: 12px !important;
-  padding-bottom: 12px !important;
+  padding: 15px 0 !important;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.05) !important;
 }
-
 .sb-navbar-glass .nav-link {
-  color: #444 !important;
-}
-.sb-navbar-glass .nav-link:hover,
-.sb-navbar-glass .nav-link.active {
-  color: var(--sb-accent) !important;
+  color: #222 !important;
+  font-weight: 500;
 }
 .sb-navbar-glass .navbar-brand {
-  color: var(--sb-black) !important;
+  color: #000 !important;
+  font-family: "Playfair Display", serif;
 }
 .sb-navbar-glass .btn-icon-only {
-  color: var(--sb-black) !important;
+  color: #000 !important;
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 /* ==============================================
-   3. HERO SECTION (CLEAN LOOK)
+   3. HERO SECTION (ETHEREAL LUXURY)
 ============================================== */
 .he-hero-section {
   position: relative;
-  height: 100vh; /* Full Screen mutlak */
+  height: 100vh;
   width: 100%;
   overflow: hidden;
   background: #000;
-  font-family: "Outfit", sans-serif;
 }
 
 .he-full-bleed-carousel {
@@ -103,726 +86,348 @@
   width: 100%;
 }
 
-/* Gambar Background */
 .he-hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Gambar lebih terang, tapi kontras tinggi */
-  filter: brightness(0.8) contrast(1.1) saturate(1.1);
+  /* Gambar terang dan tajam */
+  filter: brightness(0.8) contrast(1.05);
   transform: scale(1);
-  transition: transform 10s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 12s ease;
 }
-
-/* Efek Zoom Lambat */
 .carousel-item.active .he-hero-img {
-  transform: scale(1.15);
-}
-
-/* --- ARTISTIC OVERLAY (Teks Raksasa di Belakang) --- */
-.he-hero-art-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 18vw; /* SANGAT BESAR */
-  font-weight: 900;
-  color: transparent;
-  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.1); /* Hanya garis tipis */
-  white-space: nowrap;
-  z-index: 1;
-  pointer-events: none;
-  letter-spacing: -5px;
-  mix-blend-mode: overlay; /* Menyatu dengan gambar */
-  text-transform: uppercase;
-}
-
-/* --- FLOATING GLASS MONOLITH (Konten Utama) --- */
-.he-hero-content-wrapper {
-  position: absolute;
-  bottom: 10%;
-  left: 5%; /* Posisi Asimetris (Kiri Bawah) */
-  z-index: 10;
-  max-width: 600px;
-  width: 90%;
-}
-
-/* Kartu Kaca Tebal */
-.he-hero-glass-card {
-  background: rgba(20, 20, 20, 0.6); /* Gelap transparan */
-  backdrop-filter: blur(20px); /* Blur kuat */
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 5px solid var(--sb-accent); /* Aksen warna di kiri */
-  padding: 40px;
-  border-radius: 0 20px 20px 0; /* Unik: siku di kiri, bulat di kanan */
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-  transform: translateY(50px);
-  opacity: 0;
-  animation: slideUpCard 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.5s;
-}
-
-@keyframes slideUpCard {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Typography di dalam Card */
-.he-hero-subtitle {
-  font-family: "Inter", sans-serif;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  color: var(--sb-accent);
-  font-weight: 700;
-  margin-bottom: 15px;
-  display: block;
-}
-
-.he-hero-title {
-  font-family: "Outfit", sans-serif;
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 800;
-  color: #fff;
-  line-height: 1;
-  margin-bottom: 25px;
-  letter-spacing: -1px;
-}
-
-.he-hero-desc {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.1rem;
-  margin-bottom: 35px;
-  font-weight: 300;
-  line-height: 1.6;
-}
-
-/* Tombol Premium */
-.he-hero-btn-group {
-  display: flex;
-  gap: 20px;
-}
-
-.he-btn-solid {
-  background: #fff;
-  color: #000;
-  padding: 15px 40px;
-  font-weight: 700;
-  text-transform: uppercase;
-  text-decoration: none;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
-  border: 2px solid #fff;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.he-btn-solid:hover {
-  background: var(--sb-accent);
-  border-color: var(--sb-accent);
-  color: #fff;
-  transform: translateX(5px);
-}
-
-.he-btn-outline {
-  background: transparent;
-  color: #fff;
-  padding: 15px 40px;
-  font-weight: 600;
-  text-transform: uppercase;
-  text-decoration: none;
-  letter-spacing: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
-}
-
-.he-btn-outline:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* --- SLIDER PROGRESS & NAVIGATION (Kanan Bawah) --- */
-.he-hero-controls {
-  position: absolute;
-  bottom: 10%;
-  right: 5%;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 20px;
-}
-
-.he-slider-counter {
-  font-family: "Outfit", sans-serif;
-  font-size: 4rem;
-  font-weight: 900;
-  color: transparent;
-  -webkit-text-stroke: 2px #fff;
-  opacity: 0.5;
-  position: relative;
-}
-.he-slider-counter::after {
-  content: "01"; /* Dinamis via JS idealnya, tapi CSS static ok utk demo */
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: #fff;
-  overflow: hidden;
-  height: 50%; /* Efek potong */
-  -webkit-text-stroke: 0;
-}
-
-.he-slider-nav-btns {
-  display: flex;
-  gap: 10px;
-}
-
-.he-nav-btn {
-  width: 60px;
-  height: 60px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.he-nav-btn:hover {
-  background: var(--sb-accent);
-  border-color: var(--sb-accent);
-}
-
-/* ==============================================
-   4. BRAND MARQUEE (CLEAN & SPACIOUS)
-============================================== */
-.he-brand-section {
-  background: #000;
-  padding: 2rem 0;
-  position: relative;
-  z-index: 20;
-  margin-top: 0;
-  transform: none; /* Lurus */
-  box-shadow: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.he-trust-track-wrapper {
-  transform: none;
-  display: flex;
-  align-items: center;
-  height: 60px;
-}
-
-.he-brand-text {
-  color: #555; /* Abu gelap kalem */
-  font-family: "Outfit", sans-serif;
-  font-weight: 700;
-  font-size: 1.8rem; /* Ukuran sedang */
-  text-transform: uppercase;
-  margin: 0 80px; /* Spasi lebar */
-  letter-spacing: 3px;
-  transition: all 0.4s ease;
-  opacity: 0.7;
-  -webkit-text-stroke: 0;
-}
-
-.he-brand-text:hover {
-  color: #fff;
-  opacity: 1;
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
   transform: scale(1.1);
 }
 
+/* Overlay sangat halus hanya di bawah untuk teks */
+.he-hero-overlay-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertical */
+  align-items: center; /* Center horizontal */
+  text-align: center;
+  z-index: 10;
+  background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+}
+
+/* Kontainer Teks Bersih */
+.he-hero-text-wrapper {
+  max-width: 900px;
+  padding: 0 20px;
+  animation: fadeUp 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Badge Kecil Elegan */
+.he-hero-subtitle {
+  font-family: "Inter", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 20px;
+  display: inline-block;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 5px;
+}
+
+/* Headline Utama: Playfair Display Italic */
+.he-hero-headline {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(3.5rem, 6vw, 6rem); /* Besar tapi tipis */
+  font-weight: 400; /* Regular/Thin */
+  font-style: italic;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Tombol Sangat Minimalis */
+.he-btn-editorial {
+  background: transparent;
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 15px 40px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0; /* Kotak tegas atau rounded 0 untuk kesan luxury */
+  text-decoration: none;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.he-btn-editorial::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: #fff;
+  transition: width 0.4s ease;
+  z-index: -1;
+}
+
+.he-btn-editorial:hover {
+  color: #000;
+  border-color: #fff;
+}
+.he-btn-editorial:hover::before {
+  width: 100%;
+}
+
+/* Indikator Halaman Minimalis (Garis) */
+.he-hero-pagination {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+.he-page-dot {
+  width: 40px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: all 0.3s;
+}
+.he-page-dot.active {
+  background: #fff;
+  width: 60px;
+}
+
 /* ==============================================
-   5. POPULAR STORES (MODERN CARD)
+   4. BRAND MARQUEE (CLEAN LINE)
+============================================== */
+.he-brand-section {
+  background: #fff; /* Ubah ke Putih agar clean contrast setelah hero gelap */
+  padding: 2.5rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.he-trust-track-wrapper {
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+.he-brand-text {
+  color: #1a1a1a;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem; /* Ukuran wajar */
+  text-transform: uppercase;
+  margin: 0 60px;
+  letter-spacing: 2px;
+  opacity: 0.4; /* Pudar agar tidak dominan */
+  transition: opacity 0.3s;
+}
+.he-brand-text:hover {
+  opacity: 1;
+}
+
+/* ==============================================
+   5. POPULAR STORES (MINIMALIST CARD)
 ============================================== */
 .he-popular-section {
   padding: 8rem 0;
-  background-color: #fcfcfc;
-  position: relative;
-  z-index: 10;
+  background-color: #fff;
 }
 
-.he-section-subtitle {
-  font-family: "Inter", sans-serif;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  color: var(--sb-accent);
-  font-weight: 600;
+.he-section-header-center {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.he-section-title-serif {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  color: #000;
   margin-bottom: 10px;
+}
+
+.he-store-card-clean {
   display: block;
-}
-
-.he-section-title-modern {
-  font-family: "Outfit", sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--sb-black);
-  letter-spacing: -0.5px;
-  line-height: 1.2;
-}
-
-.he-link-view-all {
-  font-family: "Outfit", sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
   text-decoration: none;
-  color: var(--sb-black);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  padding-bottom: 2px;
-  transition: all 0.3s;
+  color: inherit;
+  transition: transform 0.5s ease;
 }
-.he-link-view-all:hover {
-  color: var(--sb-accent);
-  border-color: var(--sb-accent);
+.he-store-card-clean:hover {
+  transform: translateY(-10px);
 }
 
-/* Kartu Modern */
-.he-store-card-modern {
+.he-clean-img-wrapper {
   position: relative;
-  height: 380px;
-  border-radius: 16px;
+  height: 420px; /* Portrait ratio */
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-  cursor: pointer;
+  background: #f0f0f0;
+  margin-bottom: 20px;
 }
 
-.he-store-img-wrapper {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-.he-store-img-wrapper img {
+.he-clean-img-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.8s ease;
+  filter: grayscale(10%);
+}
+.he-store-card-clean:hover img {
+  transform: scale(1.05);
+  filter: grayscale(0%);
 }
 
-.he-store-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.9) 10%,
-    rgba(0, 0, 0, 0.2) 50%,
-    transparent 100%
-  );
-  z-index: 2;
-  opacity: 0.8;
-  transition: opacity 0.4s ease;
-}
-
-.he-store-content {
+/* Overlay Info on Hover (Muncul dari bawah) */
+.he-clean-overlay {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 25px;
-  z-index: 3;
-  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(100%);
+  transition: transform 0.4s ease;
+}
+.he-store-card-clean:hover .he-clean-overlay {
+  transform: translateY(0);
 }
 
-.he-store-name-modern {
+.he-clean-title {
   font-family: "Outfit", sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 5px;
-  line-height: 1.2;
-  text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.he-store-location {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 400;
-  margin-bottom: 15px;
-}
-
-.he-store-hidden-details {
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  transition: all 0.4s ease 0.1s;
-}
-
-.he-store-stats {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-.he-stat-badge {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 6px 12px;
-  border-radius: 30px;
-  font-size: 0.75rem;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.he-btn-visit {
-  width: 100%;
-  background: #fff;
-  color: var(--sb-black);
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
   font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #000;
+}
+.he-clean-meta {
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.he-btn-visit:hover {
-  background: var(--sb-accent);
-  color: #fff;
-}
-
-/* Hover Effects */
-.he-store-card-modern:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-.he-store-card-modern:hover .he-store-img-wrapper img {
-  transform: scale(1.1);
-}
-.he-store-card-modern:hover .he-store-overlay {
-  opacity: 1;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.95) 20%,
-    rgba(0, 0, 0, 0.5) 60%,
-    rgba(0, 0, 0, 0.2) 100%
-  );
-}
-.he-store-card-modern:hover .he-store-hidden-details {
-  height: auto;
-  max-height: 100px;
-  opacity: 1;
-  margin-top: 10px;
+  color: #666;
 }
 
 /* ==============================================
-   6. QUOTE SECTION (Cinematic)
+   6. QUOTE & SERVICES (COMBINED CLEAN)
 ============================================== */
 .he-quote-section {
-  padding: 12rem 0;
-  background: #050505;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 10rem 0;
+  background: #f9f9f9;
   text-align: center;
 }
-
-.he-quote-bg-texture {
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-  opacity: 0.3;
-  z-index: 1;
-}
-
-.he-quote-content {
-  position: relative;
-  z-index: 10;
-  max-width: 900px;
-  padding: 0 20px;
-}
-
-.he-quote-icon {
-  font-size: 3rem;
-  color: var(--sb-gold);
-  margin-bottom: 2rem;
-  opacity: 0.8;
-}
-
 .he-quote-text {
   font-family: "Playfair Display", serif;
-  font-size: clamp(2.5rem, 5vw, 5rem);
-  font-weight: 400;
-  font-style: italic;
-  line-height: 1.2;
-  color: #fff;
-  margin-bottom: 3rem;
-  background: linear-gradient(to right, #fff 20%, #aaa 50%, #fff 80%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% auto;
-  animation: shineText 5s linear infinite;
+  font-size: 3.5rem;
+  line-height: 1.3;
+  color: #1a1a1a;
+  max-width: 800px;
+  margin: 0 auto 2rem;
 }
-@keyframes shineText {
-  to {
-    background-position: 200% center;
-  }
-}
-
-.he-quote-author {
-  display: inline-block;
-  font-family: "Outfit", sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding-top: 20px;
-}
-
-/* ==============================================
-   7. SERVICES (Holographic Glass)
-============================================== */
-.he-services-v3 {
-  padding: 10rem 0;
-  background: radial-gradient(circle at top right, #1a1a1a 0%, #000000 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-.he-blur-bg {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  z-index: 0;
-  opacity: 0.25;
-}
-.he-blur-1 {
-  width: 600px;
-  height: 600px;
+.he-quote-line {
+  width: 50px;
+  height: 2px;
   background: var(--sb-accent);
-  top: -10%;
-  left: -10%;
-}
-.he-blur-2 {
-  width: 500px;
-  height: 500px;
-  background: #7c3aed;
-  bottom: -10%;
-  right: -10%;
+  margin: 0 auto 20px;
 }
 
-.he-glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 40px 30px;
-  height: 100%;
-  transition: all 0.4s ease;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
+/* Service Grid Simple */
+.he-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 4rem 0;
 }
-
-.he-glass-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.05),
-    transparent
-  );
-  transform: skewX(-25deg);
-  transition: left 0.6s;
-  pointer-events: none;
+.he-service-item {
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid transparent;
+  transition: all 0.3s;
 }
-.he-glass-card:hover::before {
-  left: 150%;
+.he-service-item:hover {
+  border-color: #eee;
+  background: #fff;
 }
-
-.he-glass-icon-box {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: #fff;
-  margin-bottom: 25px;
-  transition: all 0.4s ease;
+.he-srv-icon-simple {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1.5rem;
 }
-
-.he-glass-title {
+.he-srv-title-simple {
   font-family: "Outfit", sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
 }
-.he-glass-desc {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.5);
+.he-srv-desc-simple {
+  font-size: 0.9rem;
+  color: #777;
   line-height: 1.6;
 }
 
-.he-glass-card:hover {
-  transform: translateY(-10px);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-.he-glass-card:hover .he-glass-icon-box {
-  background: var(--sb-accent);
-  border-color: var(--sb-accent);
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
-}
-
 /* ==============================================
-   8. TECH SECTION (Immersive Split)
+   7. TECH SECTION (FULL WIDTH)
 ============================================== */
 .he-tech-section {
-  padding: 0;
+  padding: 8rem 0;
   background: #000;
-  position: relative;
-  overflow: hidden;
-  min-height: 800px;
+  color: #fff;
+}
+.he-tech-split {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
 }
-
-.he-tech-bg {
-  position: absolute;
-  inset: 0;
+.he-tech-text {
+  padding: 0 5rem;
+  flex: 1;
+}
+.he-tech-visual {
+  flex: 1;
+  height: 500px;
+}
+.he-tech-visual img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.6;
-  filter: grayscale(20%) contrast(1.1);
-  transition: transform 1s ease;
+  filter: grayscale(100%);
+  transition: filter 0.5s;
 }
-.he-tech-section:hover .he-tech-bg {
-  transform: scale(1.02);
-}
-
-.he-tech-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right, #000 10%, transparent 100%);
-  z-index: 1;
+.he-tech-visual:hover img {
+  filter: grayscale(0%);
 }
 
-.he-tech-content-wrapper {
-  position: relative;
-  z-index: 10;
-  padding: 4rem 0;
+.he-tech-head {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
 }
 
-.he-tech-panel {
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 60px;
-  border-radius: 0 30px 30px 0;
-  border-left: 4px solid var(--sb-accent);
-  max-width: 650px;
-}
-
-.he-tech-label {
-  color: var(--sb-accent);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  margin-bottom: 20px;
-  display: block;
-  font-size: 0.8rem;
-}
-.he-tech-title {
-  font-family: "Outfit", sans-serif;
-  font-size: 4rem;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  margin-bottom: 30px;
-}
-.he-tech-desc {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.1rem;
-  margin-bottom: 40px;
-}
-
-.he-tech-list li {
-  color: #fff;
-  margin-bottom: 15px;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-}
-.he-tech-list i {
-  color: var(--sb-accent);
-  margin-right: 15px;
-  font-size: 1.2rem;
-}
-
-/* ==============================================
-   9. RESPONSIVE
-============================================== */
-@media (max-width: 992px) {
+/* Responsive */
+@media (max-width: 768px) {
   .he-hero-headline {
     font-size: 3rem;
   }
   .he-brand-text {
-    font-size: 1.5rem;
-    margin: 0 40px;
+    font-size: 1rem;
+    margin: 0 20px;
   }
-  .he-tech-title {
-    font-size: 3rem;
+  .he-tech-text {
+    padding: 2rem 0;
   }
-  .he-tech-panel {
-    border-radius: 30px;
-    margin: 20px;
-    width: auto;
-  }
-  .he-tech-overlay {
-    background: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (max-width: 768px) {
-  .he-hero-headline {
-    font-size: 2rem;
-  }
-  .he-brand-section {
-    padding: 1.5rem 0;
-  }
-  .he-popular-section {
-    padding-top: 4rem;
-  }
-  .he-quote-text {
-    font-size: 2rem;
-  }
-  .he-tech-panel {
-    padding: 30px;
-  }
-  .he-store-card-modern {
-    height: 320px;
+  .he-clean-img-wrapper {
+    height: 300px;
   }
 }
