@@ -93,7 +93,7 @@
 ============================================== */
 .he-hero-section {
   position: relative;
-  height: 100vh;
+  height: 100vh; /* Full Screen */
   width: 100%;
   overflow: hidden;
   background: #000;
@@ -102,106 +102,196 @@
 .he-full-bleed-carousel {
   height: 100%;
   width: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 .he-hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Gelapkan gambar agar teks putih "pop" keluar */
-  filter: brightness(0.5) contrast(1.1);
+  /* Gambar tetap terang, kontras dinaikkan */
+  filter: brightness(0.85) contrast(1.1) saturate(1.1);
   transform: scale(1);
-  transition: transform 8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.carousel-item.active .he-hero-img {
-  transform: scale(1.15);
+  transition: transform 10s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Overlay Text di Tengah */
-.he-hero-overlay-content {
+.carousel-item.active .he-hero-img {
+  transform: scale(1.15); /* Zoom in perlahan */
+}
+
+/* --- GRADIENT OVERLAY (Kunci Rata Kiri Terbaca) --- */
+.he-hero-overlay-gradient {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  z-index: 10;
-  padding: 0 20px;
-  /* Vignette halus di pinggir */
-  background: radial-gradient(circle, transparent 50%, #000000 150%);
+  z-index: 1;
+  /* Gradasi Hitam Pekat di Kiri -> Transparan di Kanan */
+  background: linear-gradient(90deg, 
+    rgba(0,0,0,0.95) 0%, 
+    rgba(0,0,0,0.8) 35%, 
+    rgba(0,0,0,0.2) 65%, 
+    transparent 100%
+  );
 }
 
-/* Badge "Pop" */
-.he-hero-badge {
-  background: rgba(59, 130, 246, 0.2); /* Tint biru */
-  border: 1px solid rgba(59, 130, 246, 0.5);
-  color: #60a5fa;
-  padding: 8px 20px;
-  border-radius: 4px; /* Kotak rounded dikit */
+/* --- CONTENT WRAPPER (Rata Kiri) --- */
+.he-hero-content-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center; /* Vertically Center */
+  padding-left: 5vw;   /* Jarak dari kiri layar */
+}
+
+.he-hero-text-box {
+  max-width: 700px; /* Membatasi lebar teks agar tidak nabrak gambar utama */
+  padding-right: 20px;
+}
+
+/* Badge Keren */
+.he-hero-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 8px 16px;
+  border-radius: 50px;
+  margin-bottom: 25px;
   font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 3px;
+  color: var(--sb-accent);
   text-transform: uppercase;
-  margin-bottom: 25px;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+  letter-spacing: 2px;
+  backdrop-filter: blur(5px);
 }
+.he-badge-dot {
+  width: 8px; height: 8px; background: var(--sb-accent); border-radius: 50%;
+  box-shadow: 0 0 10px var(--sb-accent); animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-/* Headline Besar & Bold */
+/* Headline */
 .he-hero-headline {
-  font-family: "Outfit", sans-serif;
-  font-size: clamp(3rem, 6vw, 5.5rem); /* Responsif tapi besar */
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(3rem, 5.5vw, 5rem);
   font-weight: 800;
   color: #fff;
   line-height: 1.1;
-  margin-bottom: 2rem;
-  max-width: 1000px;
-  text-transform: capitalize;
-  letter-spacing: -2px;
+  margin-bottom: 1.5rem;
+  letter-spacing: -1.5px;
 }
 
 .text-highlight {
   color: transparent;
-  /* Efek teks stroke (outline) */
-  -webkit-text-stroke: 2px #fff;
+  -webkit-text-stroke: 1px #fff; /* Outline Effect */
   position: relative;
-  display: inline-block;
 }
-/* Isi warna saat hover atau animasi */
-.text-highlight::before {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+/* Isi warna saat aktif */
+.text-highlight.filled {
+  -webkit-text-stroke: 0;
   color: var(--sb-accent);
-  overflow: hidden;
-  border-bottom: 4px solid var(--sb-accent);
 }
 
-/* Tombol Utama: Solid White Block */
-.he-btn-find {
+/* Deskripsi */
+.he-hero-desc {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+  font-weight: 300;
+  max-width: 550px;
+  border-left: 3px solid var(--sb-accent);
+  padding-left: 20px;
+}
+
+/* Tombol Group */
+.he-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 3rem;
+}
+
+.he-btn-primary-glow {
   background: #fff;
   color: #000;
-  padding: 18px 45px;
+  padding: 16px 40px;
+  font-weight: 700;
   font-size: 1rem;
-  font-weight: 800;
-  border-radius: 4px; /* Sudut tegas */
+  border-radius: 8px;
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  box-shadow: 0 0 0 rgba(255,255,255,0);
 }
-.he-btn-find:hover {
+.he-btn-primary-glow:hover {
   background: var(--sb-accent);
   color: #fff;
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); /* Glow biru */
-  transform: scale(1.05);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
 }
+
+.he-btn-glass {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 16px 30px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  display: flex; align-items: center; gap: 10px;
+}
+.he-btn-glass:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: #fff;
+}
+
+/* --- SOCIAL PROOF (ELABORASI TAMBAHAN) --- */
+.he-social-proof {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.he-avatars {
+  display: flex;
+}
+.he-avatar-stack {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid #000; object-fit: cover;
+  margin-left: -15px; /* Overlap */
+}
+.he-avatar-stack:first-child { margin-left: 0; }
+
+.he-proof-text {
+  font-size: 0.85rem;
+  color: #aaa;
+  font-weight: 500;
+}
+.he-proof-text strong { color: #fff; font-weight: 700; }
+
+/* Carousel Indicators (Custom Position Kanan Bawah) */
+.he-custom-indicators {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  z-index: 20;
+  display: flex;
+  gap: 10px;
+}
+.he-indicator-dot {
+  width: 50px; height: 4px; background: rgba(255,255,255,0.2);
+  border: none; transition: all 0.3s;
+}
+.he-indicator-dot.active { background: var(--sb-accent); width: 80px; }
 
 /* ==============================================
    4. BRAND MARQUEE (BLACK & WHITE POP)
