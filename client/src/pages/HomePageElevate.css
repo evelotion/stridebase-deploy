@@ -363,32 +363,40 @@
   position: absolute;
   bottom: 20px;
   left: 20px;
-  right: 20px; /* Memberi jarak kiri-kanan agar terlihat melayang */
-  background: rgba(255, 255, 255, 0.1); /* Glass Effect */
+  right: 20px;
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
-  padding: 20px 25px;
+  padding: 15px 20px; /* Sedikit disesuaikan agar seimbang */
   z-index: 5;
   transition: all 0.4s ease;
+  
+  /* Flexbox Settings - PERBAIKAN DISINI */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 15px; /* Jarak pasti antara teks dan tombol */
 }
 
 /* Info Kiri (Teks) */
 .he-store-info-left {
-  flex: 1;
+  flex: 1;       /* Mengambil sisa ruang */
+  min-width: 0;  /* KUNCI PERBAIKAN: Mencegah teks panjang mendorong tombol keluar */
 }
 
 .he-store-name-wide {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.3rem; /* Sedikit disesuaikan agar muat */
   font-weight: 700;
   color: #fff;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   line-height: 1.2;
+  /* Pastikan truncate berjalan */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .he-store-meta-wide {
@@ -397,12 +405,6 @@
   gap: 12px;
   font-size: 0.85rem;
   color: rgba(255,255,255,0.7);
-}
-
-.he-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 /* Tombol Aksi (Kanan) */
@@ -415,9 +417,10 @@
   align-items: center;
   justify-content: center;
   color: #000;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
-  margin-left: 15px;
+  flex-shrink: 0; /* KUNCI PERBAIKAN: Mencegah tombol gepeng */
+  /* margin-left dihapus karena sudah pakai gap */
 }
 
 /* HOVER EFFECTS */
