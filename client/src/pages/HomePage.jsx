@@ -628,60 +628,78 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* 3. POPULAR STORES */}
+{/* 3. POPULAR STORES (WIDE & PREMIUM) */}
         <section className="he-popular-section">
           <div className="container">
             <div className="d-flex justify-content-between align-items-end he-section-header">
               <Fade triggerOnce>
                 <div>
-                  <span className="he-section-label">Featured</span>
-                  <h2 className="he-section-title">Popular Stores in <span style={{color: 'var(--sb-accent)'}}>JAKARTA TIMUR</span></h2>
+                  <span className="he-section-label">Curated Selection</span>
+                  <h2 className="he-section-title">Popular Stores in <span style={{color: 'var(--sb-accent)'}}>JAKARTA</span></h2>
                 </div>
               </Fade>
-              <Link to="/store" className="btn btn-outline-light rounded-pill px-4 d-none d-md-block">
+              <Link to="/store" className="btn btn-outline-light rounded-pill px-4 d-none d-md-block fw-bold">
                 View All <i className="fas fa-arrow-right ms-2"></i>
               </Link>
             </div>
 
             <div className="row g-4">
-              {(featuredStores.length > 0 ? featuredStores.slice(0, 4) : [1,2,3,4]).map((store, i) => (
-                <div className="col-lg-3 col-md-6" key={store.id || i}>
+              {/* Menggunakan slice(0, 3) karena grid col-lg-4 memuat 3 kartu per baris */}
+              {(featuredStores.length > 0 ? featuredStores.slice(0, 3) : [1,2,3]).map((store, i) => (
+                <div className="col-lg-4 col-md-6" key={store.id || i}>
                    <Fade direction="up" delay={i * 100} triggerOnce>
                      {typeof store === 'object' ? (
-                       <Link to={`/store/${store.id}`} className="he-store-card">
-                         <div className="he-store-img-box">
-                           <img 
-                              src={store.image_url || (store.storeImages && store.storeImages[0]) || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"} 
-                              alt={store.store_name} 
-                           />
-                           <div className="he-store-info-overlay">
-                              <h3 className="he-store-name">{store.store_name}</h3>
-                              <div className="he-store-loc">
-                                <i className="fas fa-map-marker-alt text-primary"></i>
-                                <span>{store.city || "Jakarta Timur"}</span>
-                              </div>
-                              <div className="he-store-badges">
-                                <span className="he-badge-pill">
-                                  <i className="fas fa-star text-warning me-1"></i> {store.rating || "4.9"}
-                                </span>
-                                <span className="he-badge-pill">
-                                  {store.serviceCount || "11"} Layanan
-                                </span>
-                              </div>
-                           </div>
+                       /* --- KARTU PREMIUM WIDE --- */
+                       <Link to={`/store/${store.id}`} className="he-store-card-wide">
+                         
+                         {/* Badge Rating di Pojok Kanan Atas */}
+                         <div className="he-store-top-badge">
+                            <i className="fas fa-star"></i> {store.rating ? store.rating.toFixed(1) : "4.8"}
                          </div>
+
+                         {/* Gambar Full */}
+                         <img 
+                            src={store.image_url || (store.storeImages && store.storeImages[0]) || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80"} 
+                            alt={store.store_name} 
+                            className="he-store-wide-img"
+                         />
+
+                         {/* Panel Info Melayang (Glass) */}
+                         <div className="he-store-floating-panel">
+                            <div className="he-store-info-left">
+                               <h3 className="he-store-name-wide">{store.store_name}</h3>
+                               <div className="he-store-meta-wide">
+                                  <div className="he-meta-item">
+                                     <i className="fas fa-map-marker-alt text-primary"></i> 
+                                     {store.city || "Jakarta"}
+                                  </div>
+                                  <div className="he-meta-item">
+                                     <i className="fas fa-concierge-bell text-warning"></i> 
+                                     {store.serviceCount || "12"} Services
+                                  </div>
+                               </div>
+                            </div>
+                            
+                            {/* Tombol Bulat */}
+                            <div className="he-store-action-btn">
+                               <i className="fas fa-arrow-right"></i>
+                            </div>
+                         </div>
+
                        </Link>
                      ) : (
-                       <div className="he-store-card">
-                          <div className="he-store-img-box">
-                            <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=600&q=80" alt="Store" />
-                            <div className="he-store-info-overlay">
-                              <h3 className="he-store-name">KICK RID Jakarta</h3>
-                              <div className="he-store-loc"><i className="fas fa-map-marker-alt text-primary"></i> Condet Raya, Jaktim</div>
-                              <div className="he-store-badges">
-                                <span className="he-badge-pill">011 Layanan</span>
-                              </div>
-                            </div>
+                       /* --- SKELETON (JIKA LOADING) --- */
+                       <div className="he-store-card-wide">
+                          <div className="he-store-top-badge"><i className="fas fa-star"></i> 4.9</div>
+                          <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=800&q=80" alt="Loading" className="he-store-wide-img" />
+                          <div className="he-store-floating-panel">
+                             <div className="he-store-info-left">
+                                <h3 className="he-store-name-wide">KICK RID Jakarta</h3>
+                                <div className="he-store-meta-wide">
+                                   <div className="he-meta-item"><i className="fas fa-map-marker-alt"></i> Loading...</div>
+                                </div>
+                             </div>
+                             <div className="he-store-action-btn"><i className="fas fa-arrow-right"></i></div>
                           </div>
                        </div>
                      )}
