@@ -1,72 +1,70 @@
 // File: server/prisma/seed.cjs
+
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🚀 [SEED] Memulai proses seeding ke Database Render...");
+  console.log("🚀 [SEED] Memulai proses seeding ke Database Neon Baru...");
 
-  // --- 1. PEMBERSIHAN DATA (Urutan sangat penting untuk menghindari error Foreign Key) ---
-  console.log("🔥 [SEED] Menghapus data lama...");
+  // --- 1. BERSIHKAN DATA LAMA (Urutan Wajib: Anak dulu baru Induk) ---
+  console.log("🔥 [SEED] Membersihkan database...");
 
-  // Hapus data transaksi & detail terlebih dahulu
+  // Hapus data transaksi & detail
   await prisma.ledgerEntry.deleteMany();
   await prisma.walletTransaction.deleteMany();
   await prisma.platformEarning.deleteMany();
   await prisma.payment.deleteMany();
-  await prisma.invoice.deleteMany();
-
-  // Hapus review & notifikasi
+  await prisma.invoice.deleteMany(); // Invoice bergantung pada Payment/Store
+  
+  // Hapus interaksi & notifikasi
   await prisma.review.deleteMany();
   await prisma.notification.deleteMany();
-
-  // Hapus booking (transaksi utama)
+  
+  // Hapus Booking (Data Transaksi Utama)
   await prisma.booking.deleteMany();
 
-  // Hapus data terkait toko
+  // Hapus Data Relasi Toko
   await prisma.storePromo.deleteMany();
   await prisma.promo.deleteMany();
   await prisma.service.deleteMany();
   await prisma.storeSchedule.deleteMany();
-  await prisma.storeWallet.deleteMany();
-  await prisma.payoutRequest.deleteMany();
+  await prisma.payoutRequest.deleteMany(); // Payout bergantung pada Wallet
+  await prisma.storeWallet.deleteMany();   // Wallet bergantung pada Store
   await prisma.approvalRequest.deleteMany();
-
-  // Hapus toko
+  
+  // Hapus Toko
   await prisma.store.deleteMany();
 
-  // Hapus data terkait user
+  // Hapus Data Relasi User
   await prisma.address.deleteMany();
   await prisma.loyaltyPoint.deleteMany();
   await prisma.securityLog.deleteMany();
 
-  // Hapus Banner & Setting Global
+  // Hapus Konfigurasi Global
   await prisma.banner.deleteMany();
   await prisma.globalSetting.deleteMany();
 
-  // Terakhir hapus user
+  // Terakhir: Hapus User
   await prisma.user.deleteMany();
 
   console.log("✅ [SEED] Database bersih.");
 
-  // --- 2. MEMBUAT DATA BARU ---
+  // --- 2. MEMBUAT USER ---
   console.log("👤 [SEED] Membuat user...");
-
   const passwordHash = await bcrypt.hash("password123", 10);
 
-  // Developer
   const dev = await prisma.user.create({
     data: {
-      email: "  debase.com",
+      email: "developer@stridebase.com",
       name: "Developer Stride",
       password: passwordHash,
       role: "developer",
       isEmailVerified: true,
-      phone: "08111111111",
+      phone: "08111111111"
     },
   });
 
-  // Admin
   const admin = await prisma.user.create({
     data: {
       email: "admin@stridebase.com",
@@ -74,11 +72,10 @@ async function main() {
       password: passwordHash,
       role: "admin",
       isEmailVerified: true,
-      phone: "08222222222",
+      phone: "08222222222"
     },
   });
 
-  // Mitra 1
   const mitra1 = await prisma.user.create({
     data: {
       email: "budi.clean@example.com",
@@ -86,11 +83,10 @@ async function main() {
       password: passwordHash,
       role: "mitra",
       isEmailVerified: true,
-      phone: "08333333333",
+      phone: "08333333333"
     },
   });
 
-  // Mitra 2
   const mitra2 = await prisma.user.create({
     data: {
       email: "citra.shine@example.com",
@@ -98,11 +94,10 @@ async function main() {
       password: passwordHash,
       role: "mitra",
       isEmailVerified: true,
-      phone: "08444444444",
+      phone: "08444444444"
     },
   });
 
-  // Customer
   const cust1 = await prisma.user.create({
     data: {
       email: "siti.rahayu@example.com",
@@ -110,7 +105,7 @@ async function main() {
       password: passwordHash,
       role: "customer",
       isEmailVerified: true,
-      phone: "08555555555",
+      phone: "08555555555"
     },
   });
 
@@ -132,7 +127,7 @@ async function main() {
 
   // --- 4. MEMBUAT TOKO ---
   console.log("🏪 [SEED] Membuat toko...");
-
+  
   const store1 = await prisma.store.create({
     data: {
       name: "CleanStep Express (PRO)",
@@ -143,8 +138,7 @@ async function main() {
       tier: "PRO",
       subscriptionFee: 99000,
       rating: 4.8,
-      headerImageUrl:
-        "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
+      headerImageUrl: "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
       images: [
         "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
@@ -163,8 +157,7 @@ async function main() {
       tier: "BASIC",
       commissionRate: 15,
       rating: 4.5,
-      headerImageUrl:
-        "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
+      headerImageUrl: "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
       images: [
         "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
       ],
@@ -174,7 +167,7 @@ async function main() {
 
   // --- 5. MEMBUAT LAYANAN ---
   console.log("🧼 [SEED] Membuat layanan...");
-
+  
   await prisma.service.createMany({
     data: [
       {
@@ -220,41 +213,38 @@ async function main() {
     ],
   });
 
-  // --- 6. MEMBUAT BANNER (Untuk Hero Section) ---
+  // --- 6. MEMBUAT BANNER (Penting untuk Hero Section) ---
   console.log("🖼️ [SEED] Membuat banner...");
-
+  
   await prisma.banner.createMany({
     data: [
       {
         title: "Premium Care for Your Kicks",
         description: "Experience the best shoe cleaning service in town.",
-        imageUrl:
-          "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1920&auto=format&fit=crop",
+        imageUrl: "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1920&auto=format&fit=crop",
         linkUrl: "/store",
-        status: "active",
+        status: "active"
       },
       {
         title: "Restoration Experts",
         description: "Bring your old shoes back to life.",
-        imageUrl:
-          "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1920&auto=format&fit=crop",
+        imageUrl: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1920&auto=format&fit=crop",
         linkUrl: "/about",
-        status: "active",
-      },
-    ],
+        status: "active"
+      }
+    ]
   });
 
-  // --- 7. GLOBAL SETTINGS ---
+  // --- 7. SETTING GLOBAL ---
   await prisma.globalSetting.create({
     data: {
       key: "homePageTheme",
-      value: "elevate", // Default ke tema baru Anda
-      description:
-        "Pilihan tema untuk Homepage: 'classic', 'modern', atau 'elevate'.",
+      value: "elevate", // Default tema ke Elevate sesuai request
+      description: "Pilihan tema untuk Homepage: 'classic', 'modern', atau 'elevate'.",
     },
   });
 
-  console.log("🎉 [SEED] Selesai! Database Render siap digunakan.");
+  console.log("🎉 [SEED] Selesai! Data siap digunakan.");
 }
 
 main()
