@@ -498,87 +498,140 @@
   letter-spacing: 3px;
   font-weight: 700;
 }
-
 /* ==============================================
-   7. SERVICES (HOLOGRAPHIC GRID)
+   7. SERVICES (PREMIUM OBSIDIAN GLASS)
 ============================================== */
 .he-services-section {
   padding: 10rem 0;
-  background: #080808;
+  background: #080808; /* Sedikit lebih terang dari hitam pekat */
   position: relative;
   overflow: hidden;
 }
 
-/* Glowing Orb Background */
-.he-orb {
+/* Dekorasi Latar Belakang (Glow Halus) */
+.he-glow-blob {
   position: absolute;
-  width: 400px;
-  height: 400px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
   border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.15;
+  pointer-events: none;
   z-index: 0;
 }
-.he-orb-1 {
-  top: 10%;
-  left: -10%;
-  background: var(--sb-accent);
-}
-.he-orb-2 {
-  bottom: 10%;
-  right: -10%;
-  background: #8b5cf6;
-}
+.he-blob-left { top: -20%; left: -10%; }
+.he-blob-right { bottom: -20%; right: -10%; background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%); }
 
-.he-srv-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 40px 30px;
-  border-radius: 16px;
-  text-align: left;
-  transition: all 0.4s ease;
+/* KARTU LAYANAN */
+.he-service-card-premium {
   position: relative;
-  z-index: 1;
+  background: rgba(255, 255, 255, 0.02); /* Sangat transparan */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 40px 30px;
   height: 100%;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
 }
 
-.he-srv-icon-box {
-  width: 60px;
-  height: 60px;
+/* Efek Cahaya Masuk (Sheen) */
+.he-service-card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.he-service-card-premium:hover::before {
+  left: 100%;
+}
+
+/* Wrapper Ikon */
+.he-service-icon-box {
+  width: 70px;
+  height: 70px;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #fff;
   margin-bottom: 25px;
-  transition: all 0.4s;
+  transition: all 0.4s ease;
+  position: relative;
 }
 
-.he-srv-title {
+/* Ikon di dalamnya */
+.he-service-icon-box i {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Judul Layanan */
+.he-service-title {
+  font-family: 'Outfit', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 15px;
-}
-.he-srv-desc {
-  font-size: 0.95rem;
-  color: #888;
-  line-height: 1.6;
+  margin-bottom: 12px;
+  transition: color 0.3s ease;
 }
 
-/* Hover: Card menyala */
-.he-srv-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--sb-accent);
-  transform: translateY(-8px);
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.1);
+/* Deskripsi */
+.he-service-desc {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  font-weight: 400;
 }
-.he-srv-card:hover .he-srv-icon-box {
+
+/* Tombol Panah Kecil (Indikator) */
+.he-service-arrow {
+  margin-top: 20px;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.4s ease;
+  color: var(--sb-accent);
+  font-size: 1.2rem;
+}
+
+/* --- HOVER STATES --- */
+.he-service-card-premium:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--sb-accent); /* Border jadi biru/aksen */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 
+              0 0 0 1px var(--sb-accent) inset; /* Inner glow */
+}
+
+.he-service-card-premium:hover .he-service-icon-box {
   background: var(--sb-accent);
+  border-color: var(--sb-accent);
   color: #fff;
-  box-shadow: 0 0 20px var(--sb-accent);
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.he-service-card-premium:hover .he-service-icon-box i {
+  transform: rotate(-10deg) scale(1.1);
+}
+
+.he-service-card-premium:hover .he-service-title {
+  color: #fff;
+}
+
+.he-service-card-premium:hover .he-service-arrow {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 /* ==============================================

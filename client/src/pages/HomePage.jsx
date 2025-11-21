@@ -705,29 +705,38 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* 5. SERVICES */}
+{/* 5. SERVICES (PREMIUM OBSIDIAN GLASS) */}
         <section className="he-services-section">
-          <div className="he-orb he-orb-1"></div>
-          <div className="he-orb he-orb-2"></div>
+          {/* Background Blobs */}
+          <div className="he-glow-blob he-blob-left"></div>
+          <div className="he-glow-blob he-blob-right"></div>
           
           <div className="container position-relative">
             <div className="text-center mb-5">
               <Fade direction="down" triggerOnce>
-                <span className="he-section-label">Expertise</span>
+                <span className="he-section-label">Our Expertise</span>
                 <h2 className="he-section-title">Layanan <br/>KOMPREHENSIF</h2>
               </Fade>
             </div>
 
             <div className="row g-4">
               {v3Services.map((srv, i) => (
-                <div className="col-md-3" key={i}>
+                <div className="col-md-3 col-sm-6" key={i}>
                   <Fade direction="up" delay={i * 100} triggerOnce className="h-100">
-                    <div className="he-srv-card">
-                       <div className="he-srv-icon-box">
+                    <div className="he-service-card-premium">
+                       {/* Icon */}
+                       <div className="he-service-icon-box">
                          <i className={`fas ${srv.icon}`}></i>
                        </div>
-                       <h4 className="he-srv-title">{srv.title}</h4>
-                       <p className="he-srv-desc">{srv.desc}</p>
+                       
+                       {/* Content */}
+                       <h4 className="he-service-title">{srv.title}</h4>
+                       <p className="he-service-desc">{srv.desc}</p>
+                       
+                       {/* Hover Reveal Arrow */}
+                       <div className="he-service-arrow">
+                          <i className="fas fa-arrow-right"></i>
+                       </div>
                     </div>
                   </Fade>
                 </div>
