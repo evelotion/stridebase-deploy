@@ -628,18 +628,22 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* 3. POPULAR STORES */}
+{/* 3. POPULAR STORES (PREMIUM CINEMATIC CARD) */}
         <section className="he-popular-section">
           <div className="container">
-            <div className="d-flex justify-content-between align-items-end he-section-header">
+            {/* Header Section */}
+            <div className="d-flex justify-content-between align-items-end he-section-header mb-5">
               <Fade triggerOnce>
                 <div>
-                  <span className="he-section-label">Featured</span>
-                  <h2 className="he-section-title">Popular Stores in <span style={{color: 'var(--sb-accent)'}}>JAKARTA TIMUR</span></h2>
+                  <span className="he-section-label">Curated Selection</span>
+                  <h2 className="he-section-title">
+                    Popular Stores in <br/>
+                    <span style={{color: 'var(--sb-accent)'}}>JAKARTA TIMUR</span>
+                  </h2>
                 </div>
               </Fade>
-              <Link to="/store" className="btn btn-outline-light rounded-pill px-4 d-none d-md-block">
-                View All <i className="fas fa-arrow-right ms-2"></i>
+              <Link to="/store" className="btn btn-outline-light rounded-pill px-4 d-none d-md-block" style={{borderWidth:'2px', fontWeight:'700'}}>
+                View All Stores <i className="fas fa-arrow-right ms-2"></i>
               </Link>
             </div>
 
@@ -648,39 +652,59 @@ const HomePage = ({
                 <div className="col-lg-3 col-md-6" key={store.id || i}>
                    <Fade direction="up" delay={i * 100} triggerOnce>
                      {typeof store === 'object' ? (
+                       /* --- KARTU TOKO DINAMIS (DATA DARI DB) --- */
                        <Link to={`/store/${store.id}`} className="he-store-card">
+                         {/* 1. Gambar Background */}
                          <div className="he-store-img-box">
                            <img 
                               src={store.image_url || (store.storeImages && store.storeImages[0]) || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"} 
                               alt={store.store_name} 
                            />
-                           <div className="he-store-info-overlay">
-                              <h3 className="he-store-name">{store.store_name}</h3>
-                              <div className="he-store-loc">
-                                <i className="fas fa-map-marker-alt text-primary"></i>
-                                <span>{store.city || "Jakarta Timur"}</span>
+                           <div className="he-store-overlay-hover"></div>
+                         </div>
+
+                         {/* 2. Konten Info (Slide Up) */}
+                         <div className="he-store-info">
+                           <h3 className="he-store-name">{store.store_name}</h3>
+                           <div className="he-store-loc">
+                             <i className="fas fa-map-marker-alt text-primary"></i>
+                             <span>{store.city || "Jakarta Timur"}</span>
+                           </div>
+
+                           {/* Detail yang muncul saat Hover */}
+                           <div className="he-store-details-hidden">
+                              <div className="he-store-badges-row">
+                                 <div className="he-store-badge">
+                                    <i className="fas fa-star text-warning"></i> {store.rating ? store.rating.toFixed(1) : "4.8"}
+                                 </div>
+                                 <div className="he-store-badge">
+                                    <i className="fas fa-concierge-bell"></i> {store.serviceCount || "8"} Services
+                                 </div>
                               </div>
-                              <div className="he-store-badges">
-                                <span className="he-badge-pill">
-                                  <i className="fas fa-star text-warning me-1"></i> {store.rating || "4.9"}
-                                </span>
-                                <span className="he-badge-pill">
-                                  {store.serviceCount || "11"} Layanan
-                                </span>
-                              </div>
+                              <button className="he-btn-store-visit">
+                                Visit Store <i className="fas fa-arrow-right"></i>
+                              </button>
                            </div>
                          </div>
                        </Link>
                      ) : (
+                       /* --- SKELETON / DUMMY (JIKA DATA BELUM LOAD) --- */
                        <div className="he-store-card">
                           <div className="he-store-img-box">
                             <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=600&q=80" alt="Store" />
-                            <div className="he-store-info-overlay">
-                              <h3 className="he-store-name">KICK RID Jakarta</h3>
-                              <div className="he-store-loc"><i className="fas fa-map-marker-alt text-primary"></i> Condet Raya, Jaktim</div>
-                              <div className="he-store-badges">
-                                <span className="he-badge-pill">011 Layanan</span>
-                              </div>
+                            <div className="he-store-overlay-hover"></div>
+                          </div>
+                          <div className="he-store-info">
+                            <h3 className="he-store-name">KICK RID Jakarta</h3>
+                            <div className="he-store-loc">
+                               <i className="fas fa-map-marker-alt text-primary"></i> Condet Raya
+                            </div>
+                            <div className="he-store-details-hidden">
+                               <div className="he-store-badges-row">
+                                  <div className="he-store-badge"><i className="fas fa-star text-warning"></i> 4.9</div>
+                                  <div className="he-store-badge"><i className="fas fa-tag"></i> Promo</div>
+                               </div>
+                               <button className="he-btn-store-visit">Visit Store</button>
                             </div>
                           </div>
                        </div>
@@ -688,6 +712,13 @@ const HomePage = ({
                    </Fade>
                 </div>
               ))}
+            </div>
+            
+            {/* Tombol Mobile (View All) */}
+            <div className="d-md-none text-center mt-5">
+               <Link to="/store" className="btn btn-outline-light rounded-pill px-5 py-3 fw-bold w-100">
+                  View All Stores
+               </Link>
             </div>
           </div>
         </section>
