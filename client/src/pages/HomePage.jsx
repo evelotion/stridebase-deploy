@@ -525,8 +525,7 @@ const HomePage = ({
     );
   };
 
-  const renderElevateHomepage = () => {
-    // Data Services Static (Icon & Teks)
+ const renderElevateHomepage = () => {
     const v3Services = [
       { title: "Unyellowing", icon: "fa-sun", desc: "Mengembalikan warna sol sepatu yang menguning menjadi putih kembali." },
       { title: "Deep Cleaning", icon: "fa-hands-wash", desc: "Pembersihan mendalam untuk semua material (Canvas, Suede, Leather)." },
@@ -537,67 +536,45 @@ const HomePage = ({
     return (
       <div className="home-elevate-wrapper">
         
-        {/* 1. HERO SECTION (DYNAMIC BACKGROUND FROM ADMIN) */}
+        {/* 1. HERO SECTION */}
         <section className="he-hero-section">
-          
-          {/* A. CAROUSEL BACKGROUND */}
-          {/* Data diambil dari state 'banners' yang sudah di-fetch di useEffect utama */}
           <div id="elevateCarousel" className="carousel slide carousel-fade he-full-bleed-carousel" data-bs-ride="carousel" data-bs-interval="5000">
-            
-            {/* Indikator Slide (Hanya muncul jika banner > 1) */}
-            {banners.length > 1 && (
-              <div className="carousel-indicators he-custom-indicators">
-                {banners.map((_, index) => (
-                  <button
-                    type="button"
-                    data-bs-target="#elevateCarousel"
-                    data-bs-slide-to={index}
-                    className={`he-indicator-dot ${index === 0 ? "active" : ""}`}
-                    key={index}
-                    aria-current={index === 0 ? "true" : "false"}
-                  ></button>
-                ))}
-              </div>
-            )}
+            <div className="carousel-indicators he-custom-indicators">
+              {banners.length > 0 && banners.map((_, index) => (
+                <button
+                  type="button"
+                  data-bs-target="#elevateCarousel"
+                  data-bs-slide-to={index}
+                  className={`he-indicator-dot ${index === 0 ? "active" : ""}`}
+                  key={index}
+                  aria-current={index === 0 ? "true" : "false"}
+                ></button>
+              ))}
+            </div>
 
             <div className="carousel-inner h-100">
-              {banners.length > 0 ? (
-                // MAPPING DATA BANNER DARI ADMIN
-                banners.map((banner, index) => (
-                  <div className={`carousel-item h-100 ${index === 0 ? 'active' : ''}`} key={banner.id}>
-                    <img 
-                      src={banner.imageUrl} 
-                      className="he-hero-img" 
-                      alt={banner.title || "StrideBase Banner"} 
-                      onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920"; }} // Fallback jika gambar rusak
-                    />
-                  </div>
-                ))
-              ) : (
-                // FALLBACK JIKA BELUM ADA BANNER DARI ADMIN
+              {banners.length > 0 ? banners.map((b, i) => (
+                <div className={`carousel-item h-100 ${i===0?'active':''}`} key={b.id}>
+                  <img src={b.imageUrl} className="he-hero-img" alt="Hero Banner" />
+                </div>
+              )) : (
                 <div className="carousel-item active h-100">
-                  <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920" className="he-hero-img" alt="Default Hero" />
+                  <img src="https://images.unsplash.com/photo-1556906781-9a412961c28c?auto=format&fit=crop&w=1920" className="he-hero-img" alt="Hero Default" />
                 </div>
               )}
             </div>
           </div>
 
-          {/* B. GRADIENT OVERLAY */}
           <div className="he-hero-overlay-gradient"></div>
 
-          {/* C. TEXT CONTENT (CLEAN & MINIMALIST) */}
           <div className="he-hero-content-left">
              <div className="he-hero-text-box">
                 <Fade direction="up" cascade damping={0.2} triggerOnce>
-                  
-                  {/* Headline Utama (Ukuran Font Dikecilkan di CSS) */}
                   <h1 className="he-hero-headline">
                     Choose shops that <br/>
                     <span className="text-highlight">match your style</span> <br/>
                     and budget.
                   </h1>
-
-                  {/* Tombol Aksi Saja (Deskripsi & Badge Dihapus) */}
                   <div className="he-hero-actions">
                     <Link to="/store" className="he-btn-primary-glow">
                        <i className="fas fa-search"></i> Find Store
@@ -606,7 +583,6 @@ const HomePage = ({
                        How it Works
                     </Link>
                   </div>
-
                 </Fade>
              </div>
           </div>
@@ -628,7 +604,7 @@ const HomePage = ({
           </div>
         </section>
 
-{/* 3. POPULAR STORES (WIDE & PREMIUM) */}
+        {/* 3. POPULAR STORES (UPDATED WITH FULL ADDRESS) */}
         <section className="he-popular-section">
           <div className="container">
             <div className="d-flex justify-content-between align-items-end he-section-header">
@@ -644,59 +620,64 @@ const HomePage = ({
             </div>
 
             <div className="row g-4">
-              {/* Menggunakan slice(0, 3) karena grid col-lg-4 memuat 3 kartu per baris */}
+              {/* Grid col-lg-4 untuk tampilan lebih lebar */}
               {(featuredStores.length > 0 ? featuredStores.slice(0, 3) : [1,2,3]).map((store, i) => (
                 <div className="col-lg-4 col-md-6" key={store.id || i}>
                    <Fade direction="up" delay={i * 100} triggerOnce>
                      {typeof store === 'object' ? (
-                       /* --- KARTU PREMIUM WIDE --- */
                        <Link to={`/store/${store.id}`} className="he-store-card-wide">
                          
-                         {/* Badge Rating di Pojok Kanan Atas */}
+                         {/* Rating Badge */}
                          <div className="he-store-top-badge">
-                            <i className="fas fa-star"></i> {store.rating ? store.rating.toFixed(1) : "4.8"}
+                            <i className="fas fa-star"></i> {store.rating ? store.rating.toFixed(1) : "New"}
                          </div>
 
                          {/* Gambar Full */}
                          <img 
-                            src={store.image_url || (store.storeImages && store.storeImages[0]) || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80"} 
-                            alt={store.store_name} 
+                            src={store.headerImageUrl || (store.images && store.images[0]) || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80"} 
+                            alt={store.name} 
                             className="he-store-wide-img"
                          />
 
-                         {/* Panel Info Melayang (Glass) */}
+                         {/* Panel Info Melayang */}
                          <div className="he-store-floating-panel">
                             <div className="he-store-info-left">
-                               <h3 className="he-store-name-wide">{store.store_name}</h3>
-                               <div className="he-store-meta-wide">
-                                  <div className="he-meta-item">
-                                     <i className="fas fa-map-marker-alt text-primary"></i> 
-                                     {store.city || "Jakarta"}
-                                  </div>
-                                  <div className="he-meta-item">
-                                     <i className="fas fa-concierge-bell text-warning"></i> 
-                                     {store.serviceCount || "12"} Services
-                                  </div>
+                               {/* Nama Toko */}
+                               <h3 className="he-store-name-wide text-truncate">{store.name}</h3>
+                               
+                               {/* Alamat Lengkap */}
+                               <div className="he-store-meta-wide d-flex align-items-start">
+                                  <i className="fas fa-map-marker-alt text-primary mt-1 me-2 flex-shrink-0"></i> 
+                                  <span style={{
+                                    fontSize: '0.85rem', 
+                                    lineHeight: '1.4', 
+                                    display: '-webkit-box', 
+                                    WebkitLineClamp: '2', 
+                                    WebkitBoxOrient: 'vertical', 
+                                    overflow: 'hidden'
+                                  }}>
+                                    {store.location || "Lokasi tidak tersedia"}
+                                  </span>
                                </div>
                             </div>
                             
-                            {/* Tombol Bulat */}
-                            <div className="he-store-action-btn">
+                            {/* Tombol Aksi */}
+                            <div className="he-store-action-btn flex-shrink-0">
                                <i className="fas fa-arrow-right"></i>
                             </div>
                          </div>
 
                        </Link>
                      ) : (
-                       /* --- SKELETON (JIKA LOADING) --- */
+                       /* Skeleton Loading */
                        <div className="he-store-card-wide">
                           <div className="he-store-top-badge"><i className="fas fa-star"></i> 4.9</div>
                           <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=800&q=80" alt="Loading" className="he-store-wide-img" />
                           <div className="he-store-floating-panel">
                              <div className="he-store-info-left">
-                                <h3 className="he-store-name-wide">KICK RID Jakarta</h3>
+                                <h3 className="he-store-name-wide">Loading Store...</h3>
                                 <div className="he-store-meta-wide">
-                                   <div className="he-meta-item"><i className="fas fa-map-marker-alt"></i> Loading...</div>
+                                   <i className="fas fa-map-marker-alt"></i> Loading Address...
                                 </div>
                              </div>
                              <div className="he-store-action-btn"><i className="fas fa-arrow-right"></i></div>
