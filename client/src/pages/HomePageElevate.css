@@ -27,7 +27,6 @@
 
 /* ==============================================
    2. PREMIUM NAVBAR STYLES
-   (Mengatur Warna & Efek Kaca Navbar)
 ============================================== */
 
 /* Kondisi 1: Navbar di posisi paling atas (Invisible/Clean) */
@@ -370,18 +369,20 @@
   -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 16px;
-  padding: 15px 20px;
+  padding: 15px 20px; /* Padding disesuaikan */
   z-index: 5;
   transition: all 0.4s ease;
+
+  /* Layout Flexbox yang diperbaiki */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 15px;
+  gap: 15px; /* Jarak pasti antara teks dan tombol */
 }
 
 .he-store-info-left {
   flex: 1;
-  min-width: 0; /* Mencegah teks panjang merusak layout */
+  min-width: 0; /* Mencegah teks mendorong tombol keluar */
 }
 
 .he-store-name-wide {
@@ -421,7 +422,7 @@
   color: #000;
   font-size: 1.1rem;
   transition: all 0.3s ease;
-  flex-shrink: 0;
+  flex-shrink: 0; /* Mencegah tombol gepeng */
 }
 
 .he-store-card-wide:hover {
@@ -512,7 +513,7 @@
 }
 
 /* ==============================================
-   7. SERVICES (PREMIUM OBSIDIAN GLASS)
+   7. SERVICES (REFINED PREMIUM GLASS)
 ============================================== */
 .he-services-section {
   padding: 10rem 0;
@@ -523,34 +524,29 @@
 
 .he-glow-blob {
   position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(
-    circle,
-    rgba(59, 130, 246, 0.15) 0%,
-    transparent 70%
-  );
+  width: 500px;
+  height: 500px;
   border-radius: 50%;
   pointer-events: none;
+  filter: blur(80px);
   z-index: 0;
+  opacity: 0.2;
 }
 .he-blob-left {
-  top: -20%;
+  top: -10%;
   left: -10%;
+  background: var(--sb-accent);
 }
 .he-blob-right {
-  bottom: -20%;
+  bottom: -10%;
   right: -10%;
-  background: radial-gradient(
-    circle,
-    rgba(251, 191, 36, 0.1) 0%,
-    transparent 70%
-  );
+  background: var(--sb-gold);
 }
 
 .he-service-card-premium {
   position: relative;
-  background: rgba(255, 255, 255, 0.02);
+  /* Background sedikit lebih gelap agar teks lebih terbaca */
+  background: rgba(20, 20, 20, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -561,11 +557,12 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between; /* Konten rata atas-bawah */
   align-items: flex-start;
   overflow: hidden;
 }
 
+/* Efek Sheen */
 .he-service-card-premium::before {
   content: "";
   position: absolute;
@@ -586,73 +583,94 @@
   left: 100%;
 }
 
+/* Icon Box */
 .he-service-icon-box {
-  width: 70px;
-  height: 70px;
-  background: rgba(255, 255, 255, 0.05);
+  width: 65px;
+  height: 65px;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: #fff;
   margin-bottom: 25px;
   transition: all 0.4s ease;
-  position: relative;
 }
 
-.he-service-icon-box i {
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Content Wrapper */
+.he-service-content {
+  flex-grow: 1;
 }
 
 .he-service-title {
   font-family: "Outfit", sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   transition: color 0.3s ease;
 }
 
 .he-service-desc {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.6);
   line-height: 1.6;
   font-weight: 400;
 }
 
+/* Arrow Indikator */
 .he-service-arrow {
-  margin-top: 20px;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.4s ease;
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   color: var(--sb-accent);
-  font-size: 1.2rem;
+  opacity: 0.7;
+  transform: translateX(0);
+  transition: all 0.3s ease;
 }
 
+.he-service-arrow i {
+  transition: transform 0.3s ease;
+}
+
+/* HOVER EFFECTS SERVICES */
 .he-service-card-premium:hover {
   transform: translateY(-10px);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(30, 30, 30, 0.8);
   border-color: var(--sb-accent);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--sb-accent) inset;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
+
 .he-service-card-premium:hover .he-service-icon-box {
   background: var(--sb-accent);
   border-color: var(--sb-accent);
   color: #fff;
   transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
 }
-.he-service-card-premium:hover .he-service-icon-box i {
-  transform: rotate(-10deg) scale(1.1);
-}
+
 .he-service-card-premium:hover .he-service-title {
   color: #fff;
 }
+
+.he-service-card-premium:hover .he-service-desc {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .he-service-card-premium:hover .he-service-arrow {
   opacity: 1;
-  transform: translateX(0);
+  color: #fff;
+}
+
+.he-service-card-premium:hover .he-service-arrow i {
+  transform: translateX(5px);
 }
 
 /* ==============================================
@@ -743,7 +761,6 @@
 
 /* ==============================================
    10. FOOTER DARK MODE OVERRIDE
-   (Memastikan Footer menyatu dengan tema gelap)
 ============================================== */
 footer,
 .bg-light.text-dark.py-5.mt-auto {
