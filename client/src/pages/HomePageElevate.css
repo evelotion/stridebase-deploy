@@ -750,3 +750,57 @@
     padding: 5rem 0;
   }
 }
+
+/* ==============================================
+   10. FOOTER & FINAL POLISH (DARK THEME)
+============================================== */
+
+/* Paksa Footer menjadi Hitam di Halaman Elevate */
+/* Karena Footer berada di luar komponen HomePage, kita target tag 'footer' global 
+   tapi CSS ini hanya dimuat saat Elevate aktif */
+footer, .bg-light.text-dark.py-5.mt-auto {
+  background-color: #050505 !important; /* Hitam Pekat */
+  color: #fff !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Ubah warna teks link di footer */
+footer a, footer .text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+  transition: color 0.3s;
+}
+footer a:hover {
+  color: var(--sb-accent) !important;
+  text-decoration: none;
+}
+
+/* Ubah warna input newsletter di footer jika ada */
+footer input.form-control {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+}
+footer input.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Pastikan Navbar Glass (Saat Scroll) Gelap */
+.sb-navbar-glass {
+  background: rgba(5, 5, 5, 0.85) !important; /* Hitam Transparan */
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8) !important;
+}
+
+/* Pastikan teks navbar putih saat mode glass */
+.sb-navbar-glass .nav-link {
+  color: rgba(255,255,255,0.9) !important;
+}
+.sb-navbar-glass .nav-link:hover, 
+.sb-navbar-glass .nav-link.active {
+  color: var(--sb-accent) !important;
+}
+.sb-navbar-glass .navbar-brand,
+.sb-navbar-glass .btn-icon-only {
+  color: #fff !important;
+}
