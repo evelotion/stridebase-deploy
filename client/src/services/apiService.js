@@ -105,11 +105,11 @@ export const uploadImage = (formData) =>
 // =================================================================
 // PARTNER ENDPOINTS (DIPERBAIKI)
 // =================================================================
-// --- Dashboard & Stats (PENTING: Ini yang sebelumnya hilang) ---
+// --- Dashboard & Stats ---
 export const getPartnerDashboard = () => apiRequest("/api/partner/dashboard");
 export const getPartnerStats = () => apiRequest("/api/partner/stats");
 
-// --- Store Status (PENTING: Gunakan ini di PartnerDashboardPage) ---
+// --- Store Status ---
 export const updatePartnerStoreStatus = (status) =>
   apiRequest("/api/partner/store-status", "PATCH", { status });
 
@@ -124,6 +124,12 @@ export const deletePartnerService = (serviceId) =>
 
 // --- Orders ---
 export const getPartnerOrders = () => apiRequest("/api/partner/orders");
+
+// [PERBAIKAN] Menambahkan fungsi updateOrderStatus yang hilang
+// Fungsi ini digunakan untuk mengubah status pesanan (Pending -> Confirmed -> Cancelled)
+export const updateOrderStatus = (bookingId, status) =>
+  apiRequest(`/api/partner/orders/${bookingId}/status`, "PATCH", { status });
+
 export const updateWorkStatus = (bookingId, newWorkStatus) =>
   apiRequest(`/api/partner/orders/${bookingId}/work-status`, "PATCH", {
     newWorkStatus,
@@ -171,7 +177,6 @@ export const changeUserStatus = (userId, data) =>
 
 // --- Stores (Admin View) ---
 export const getAllStoresForAdmin = () => apiRequest("/api/admin/stores");
-// PERHATIAN: Ini untuk Admin mengubah status toko orang lain
 export const updateStoreStatus = (storeId, newStatus) =>
   apiRequest(`/api/admin/stores/${storeId}/status`, "PATCH", { newStatus });
 export const softDeleteStore = (storeId) =>
