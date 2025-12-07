@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Fade } from "react-awesome-reveal";
-import { getPartnerWallet, requestPayout } from "../services/apiService"; // Pastikan API ini ada
+// PERBAIKAN: Ubah import agar sesuai dengan apiService.js
+import { getPartnerWalletData, requestPartnerPayout } from "../services/apiService";
 import "../pages/PartnerElevate.css";
 
 const PartnerWalletPage = ({ showMessage }) => {
@@ -25,8 +26,9 @@ const PartnerWalletPage = ({ showMessage }) => {
   const fetchWalletData = async () => {
     setLoading(true);
     try {
-      const data = await getPartnerWallet();
-      setWallet(data.wallet); // Asumsi response: { wallet: { balance: 100000 }, transactions: [...] }
+      // PERBAIKAN: Gunakan nama fungsi yang benar
+      const data = await getPartnerWalletData();
+      setWallet(data.wallet); 
       setTransactions(data.transactions || []);
     } catch (err) {
       if (showMessage) showMessage("Gagal memuat data dompet", "Error");
@@ -49,7 +51,11 @@ const PartnerWalletPage = ({ showMessage }) => {
 
     setIsSubmitting(true);
     try {
-      await requestPayout({ amount });
+      // PERBAIKAN: Gunakan nama fungsi yang benar.
+      // Catatan: requestPartnerPayout di apiService sudah membungkus { amount },
+      // jadi kita cukup kirim nilai amount-nya saja.
+      await requestPartnerPayout(amount);
+      
       if (showMessage)
         showMessage("Permintaan penarikan berhasil dikirim", "Success");
       setShowWithdrawModal(false);
