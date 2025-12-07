@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Fade } from "react-awesome-reveal";
+// PERBAIKAN: Menggunakan nama fungsi yang benar sesuai apiService.js
 import {
   getPartnerServices,
-  createService,
-  updateService,
-  deleteService,
+  createPartnerService,
+  updatePartnerService,
+  deletePartnerService,
 } from "../services/apiService";
 import "../pages/PartnerElevate.css";
 
@@ -54,7 +55,8 @@ const PartnerServicesPage = ({ showMessage }) => {
   const handleDelete = async (id) => {
     if (!window.confirm("Hapus layanan ini?")) return;
     try {
-      await deleteService(id);
+      // PERBAIKAN: Menggunakan deletePartnerService
+      await deletePartnerService(id);
       setServices((prev) => prev.filter((s) => s.id !== id));
       if (showMessage) showMessage("Layanan dihapus", "Success");
     } catch (err) {
@@ -66,10 +68,12 @@ const PartnerServicesPage = ({ showMessage }) => {
     e.preventDefault();
     try {
       if (editingService) {
-        await updateService(editingService.id, formData);
+        // PERBAIKAN: Menggunakan updatePartnerService
+        await updatePartnerService(editingService.id, formData);
         if (showMessage) showMessage("Layanan diperbarui", "Success");
       } else {
-        await createService(formData);
+        // PERBAIKAN: Menggunakan createPartnerService
+        await createPartnerService(formData);
         if (showMessage) showMessage("Layanan ditambahkan", "Success");
       }
       setShowModal(false);
