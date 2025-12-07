@@ -1,201 +1,176 @@
-// File: client/src/pages/InvoicePrintPage.jsx (Versi Final dengan Mode Pratinjau & Detail Penerbit)
+// File: client/src/pages/InvoicePrintPage.jsx
 
-import React, { useState, useEffect, useMemo } from "react";
-import { useParams, useLocation } from "react-router-dom";
-import "../invoice.css";
-import API_BASE_URL from "../apiConfig";
-import { getInvoiceByIdForAdmin } from "../services/apiService";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const InvoicePrintPage = () => {
-  const { invoiceId } = useParams();
   const location = useLocation();
-  const [invoice, setInvoice] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(null);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-
-  // Cek apakah ini mode pratinjau dari state navigasi
-  const isPreview = useMemo(() => location.state?.isPreview, [location.state]);
+  const navigate = useNavigate();
+  const [invoiceData, setInvoiceData] = useState(null);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      setLoading(true);
-      try {
-        // Ambil data tema secara paralel
-        const themeRes = await fetch(`${API_BASE_URL}/api/public/theme-config`);
-        if (themeRes.ok) {
-          const themeData = await themeRes.json();
-          setTheme(themeData);
-        }
-
-        // Jika ini mode PRATINJAU, ambil data dari state
-        if (isPreview && location.state.invoiceData) {
-          setInvoice(location.state.invoiceData);
-        }
-        // Jika BUKAN mode pratinjau, ambil dari API berdasarkan ID
-        else if (invoiceId) {
-          const invoiceData = await getInvoiceByIdForAdmin(invoiceId);
-          setInvoice(invoiceData);
-        } else {
-          throw new Error("Data invoice tidak ditemukan.");
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchInitialData();
-  }, [invoiceId, isPreview, location.state]);
-
-  useEffect(() => {
-    // Otomatis picu dialog cetak jika BUKAN mode pratinjau dan data sudah siap
-    if (!isPreview && invoice && theme) {
-      window.print();
+    // Ambil data dari state navigasi (dikirim dari AdminStoresPage)
+    if (location.state?.invoiceData) {
+      setInvoiceData(location.state.invoiceData);
+    } else {
+      // Jika diakses langsung tanpa data, kembali
+      navigate("/admin/stores");
     }
-  }, [isPreview, invoice, theme]);
+  }, [location, navigate]);
 
-  if (loading) return <div>Memuat invoice...</div>;
-  if (!invoice) return <div>Invoice tidak ditemukan.</div>;
+  const handleDownloadPDF = () => {
+    if (!invoiceData) return;
 
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "PAID":
-        return "status-paid";
-      case "SENT":
-        return "status-sent";
-      case "OVERDUE":
-        return "status-overdue";
-      default:
-        return "status-preview";
-    }
+    const doc = new jsPDF();
+    const { invoiceNumber, store, issueDate, dueDate, items, totalAmount } =
+      invoiceData;
+
+    // -- PDF GENERATION LOGIC --
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("INVOICE", 14, 22);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`No: ${invoiceNumber}`, 14, 28);
+    doc.text(
+      `Tanggal: ${new Date(issueDate).toLocaleDateString("id-ID")}`,
+      14,
+      33
+    );
+
+    // Info Mitra
+    doc.text("DITAGIHKAN KEPADA:", 14, 45);
+    doc.setFont("helvetica", "bold");
+    doc.text(store.name, 14, 50);
+    doc.setFont("helvetica", "normal");
+    doc.text(store.location || "", 14, 55);
+
+    // Tabel
+    const tableBody = items.map((item) => [
+      item.description,
+      `Rp ${item.unitPrice.toLocaleString()}`,
+      item.quantity,
+      `Rp ${item.total.toLocaleString()}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 65,
+      head: [["Deskripsi", "Harga Satuan", "Qty", "Total"]],
+      body: tableBody,
+      theme: "grid",
+      headStyles: { fillColor: [66, 66, 66] },
+    });
+
+    // Total
+    const finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      `TOTAL TAGIHAN: Rp ${totalAmount.toLocaleString("id-ID")}`,
+      196,
+      finalY,
+      { align: "right" }
+    );
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.text(
+      `Jatuh Tempo: ${new Date(dueDate).toLocaleDateString("id-ID")}`,
+      196,
+      finalY + 6,
+      { align: "right" }
+    );
+
+    doc.save(`${invoiceNumber.replace(/\//g, "-")}.pdf`);
   };
 
+  if (!invoiceData) return null;
+
   return (
-    <div className="invoice-box">
-      {isPreview && (
-        <div className="preview-banner">
-          --- INI ADALAH PRATINJAU / PREVIEW ---
+    <div className="min-vh-100 bg-secondary bg-opacity-25 py-5 d-flex justify-content-center">
+      <div
+        className="bg-white p-5 shadow-lg"
+        style={{ width: "210mm", minHeight: "297mm" }}
+      >
+        {/* Visual Preview di Layar */}
+        <div className="d-flex justify-content-between align-items-center mb-5 border-bottom pb-4">
+          <h1 className="fw-bold text-dark">INVOICE</h1>
+          <div className="text-end">
+            <h5 className="mb-0">StrideBase HQ</h5>
+            <small className="text-muted">Platform Management</small>
+          </div>
         </div>
-      )}
-      <header className="invoice-header">
-        <div className="invoice-header__logo">
-          {theme?.branding?.logoUrl ? (
-            <img src={theme.branding.logoUrl} alt="StrideBase Logo" />
-          ) : (
-            <h2>StrideBase</h2>
-          )}
-        </div>
-        <div className="invoice-header__details">
-          <h1>INVOICE</h1>
-          <p>
-            <strong>No:</strong> {invoice.invoiceNumber}
-          </p>
-          <p>
-            <strong>Status:</strong>{" "}
-            <span className={getStatusClass(invoice.status)}>
-              {invoice.status}
-            </span>
-          </p>
-        </div>
-      </header>
 
-      <section className="invoice-meta">
-        <div className="invoice-meta__client">
-          <h4>Ditagihkan Kepada:</h4>
-          <p>
-            <strong>{invoice.store.name}</strong>
-            <br />
-            {invoice.store.location}
-            <br />
-            {invoice.store.owner?.email ||
-              invoice.store.ownerUser?.email ||
-              "Email tidak tersedia"}
-          </p>
+        <div className="row mb-5">
+          <div className="col-6">
+            <h6 className="text-muted small text-uppercase">Kepada</h6>
+            <h4 className="fw-bold">{invoiceData.store.name}</h4>
+            <p className="text-muted mb-0">{invoiceData.store.location}</p>
+          </div>
+          <div className="col-6 text-end">
+            <h6 className="text-muted small text-uppercase">Detail</h6>
+            <p className="mb-0">
+              <strong>No:</strong> {invoiceData.invoiceNumber}
+            </p>
+            <p className="mb-0">
+              <strong>Tgl:</strong>{" "}
+              {new Date(invoiceData.issueDate).toLocaleDateString("id-ID")}
+            </p>
+            <p className="mb-0 text-danger">
+              <strong>Jatuh Tempo:</strong>{" "}
+              {new Date(invoiceData.dueDate).toLocaleDateString("id-ID")}
+            </p>
+          </div>
         </div>
-        <div className="invoice-meta__dates">
-          <p>
-            <strong>Tanggal Terbit:</strong>
-            <br />
-            {new Date(invoice.issueDate).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
-          <p>
-            <strong>Tanggal Jatuh Tempo:</strong>
-            <br />
-            {new Date(invoice.dueDate).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </p>
-        </div>
-      </section>
 
-      <table className="items-table">
-        <thead>
-          <tr>
-            <th className="item-desc">Deskripsi</th>
-            <th className="item-qty">Jumlah</th>
-            <th className="item-price">Harga Satuan</th>
-            <th className="item-total">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(invoice.items || []).map((item, index) => (
-            <tr key={item.id || index}>
-              <td>{item.description}</td>
-              <td className="text-center">{item.quantity}</td>
-              <td className="text-right">
-                Rp {item.unitPrice.toLocaleString("id-ID")}
-              </td>
-              <td className="text-right">
-                Rp {item.total.toLocaleString("id-ID")}
-              </td>
+        <table className="table table-bordered mb-4">
+          <thead className="table-light">
+            <tr>
+              <th>Deskripsi</th>
+              <th className="text-end">Harga</th>
+              <th className="text-center">Qty</th>
+              <th className="text-end">Total</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {invoiceData.items.map((item, idx) => (
+              <tr key={idx}>
+                <td>{item.description}</td>
+                <td className="text-end">
+                  Rp {item.unitPrice.toLocaleString()}
+                </td>
+                <td className="text-center">{item.quantity}</td>
+                <td className="text-end">Rp {item.total.toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <section className="invoice-summary">
-        <div className="invoice-summary__totals">
-          <div className="total-row">
-            <span>Subtotal</span>
-            <span>Rp {invoice.totalAmount.toLocaleString("id-ID")}</span>
-          </div>
-          <div className="total-row grand-total">
-            <span>TOTAL TAGIHAN</span>
-            <span>Rp {invoice.totalAmount.toLocaleString("id-ID")}</span>
-          </div>
+        <div className="text-end">
+          <h3 className="fw-bold">
+            Rp {invoiceData.totalAmount.toLocaleString("id-ID")}
+          </h3>
         </div>
-      </section>
 
-      {invoice.notes && (
-        <section className="invoice-notes">
-          <h4>Catatan:</h4>
-          <p>{invoice.notes}</p>
-        </section>
-      )}
-
-      <footer className="invoice-footer">
-        <div className="audit-trail">
-          <p>
-            Diterbitkan oleh: {invoice.issuer?.name || "N/A"} (ID:{" "}
-            {invoice.issuer?.id || "N/A"})
-            <br />
-            Tanggal Cetak:{" "}
-            {new Date().toLocaleString("id-ID", {
-              dateStyle: "full",
-              timeStyle: "long",
-            })}
-          </p>
+        {/* Floating Action Buttons */}
+        <div className="position-fixed bottom-0 start-50 translate-middle-x mb-4 d-flex gap-3 p-3 bg-dark rounded-pill shadow">
+          <button
+            className="btn btn-light rounded-pill px-4"
+            onClick={() => navigate(-1)}
+          >
+            <i className="fas fa-arrow-left me-2"></i> Kembali
+          </button>
+          <button
+            className="btn btn-primary rounded-pill px-4"
+            onClick={handleDownloadPDF}
+          >
+            <i className="fas fa-download me-2"></i> Download PDF
+          </button>
         </div>
-        <p>Terima kasih atas kerja sama Anda.</p>
-        <p>StrideBase Marketplace &copy; 2025</p>
-      </footer>
+      </div>
     </div>
   );
 };

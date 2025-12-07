@@ -1,57 +1,39 @@
-import React from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+// File: client/src/pages/PaymentFinishPage.jsx
+
+import React from "react";
+import { Link } from "react-router-dom";
+import { Fade } from "react-awesome-reveal";
+import "./HomePageElevate.css";
 
 const PaymentFinishPage = () => {
-    const [searchParams] = useSearchParams();
-    const status = searchParams.get('status');
-    const orderId = searchParams.get('order_id');
+  return (
+    // [FIX] Tambahkan 'he-centered-page-fix'
+    <div className="home-elevate-wrapper he-centered-page-fix text-center p-4">
+      
+      {/* [FIX] Tambahkan 'he-zoom-out-card' */}
+      <div className="he-zoom-out-card" style={{ maxWidth: '500px' }}>
+        <Fade direction="up" triggerOnce>
+          <div className="mb-4 text-primary" style={{ fontSize: '4rem' }}>
+            <i className="fas fa-hourglass-half"></i>
+          </div>
+          <h2 className="he-section-title mb-3">Memproses Pembayaran</h2>
+          <p className="he-service-desc mb-5">
+            Sistem kami sedang memverifikasi transaksi Anda. Mohon tunggu sebentar atau cek status di dashboard.
+          </p>
+          
+          <div className="d-flex gap-3 justify-content-center">
+            <Link to="/dashboard" className="he-btn-primary-glow px-4">
+              Cek Dashboard
+            </Link>
+            <Link to="/" className="he-btn-glass px-4">
+              Home
+            </Link>
+          </div>
+        </Fade>
+      </div>
 
-    const statusDetails = {
-        success: {
-            icon: 'fa-check-circle text-success',
-            title: 'Pembayaran Berhasil!',
-            message: 'Terima kasih! Pembayaran Anda telah kami konfirmasi. Pesanan Anda sedang diproses.'
-        },
-        pending: {
-            icon: 'fa-clock text-warning',
-            title: 'Menunggu Pembayaran',
-            message: 'Pesanan Anda telah dibuat. Silakan selesaikan pembayaran Anda.'
-        },
-        error: {
-            icon: 'fa-times-circle text-danger',
-            title: 'Pembayaran Gagal',
-            message: 'Maaf, terjadi kesalahan saat memproses pembayaran Anda. Silakan coba lagi.'
-        }
-    };
-
-    const currentStatus = statusDetails[status] || statusDetails['error'];
-
-    return (
-        <main className="container success-container d-flex align-items-center justify-content-center">
-            <div className="success-box text-center">
-                <div className="success-icon-wrapper">
-                    <i className={`fas ${currentStatus.icon}`}></i>
-                </div>
-                <h2 className="success-title">{currentStatus.title}</h2>
-                <p className="success-details mb-4">
-                    {currentStatus.message}
-                </p>
-
-                {orderId && (
-                     <p className="text-muted small">ID Pesanan Anda: {orderId}</p>
-                )}
-
-                <div className="d-flex justify-content-center gap-2 mt-4">
-                    <Link to="/dashboard" className="btn btn-dark btn-rounded">
-                        Lihat Dashboard
-                    </Link>
-                    <Link to="/" className="btn btn-outline-secondary btn-rounded">
-                        Kembali ke Beranda
-                    </Link>
-                </div>
-            </div>
-        </main>
-    );
+    </div>
+  );
 };
 
 export default PaymentFinishPage;

@@ -1,18 +1,27 @@
-// File: server/routes/booking.routes.js
-import express from 'express';
-import { authenticateToken } from '../middleware/authenticateToken.js';
-import { createBooking, getBookingById, cancelBooking } from '../controllers/booking.controller.js';
+import express from "express";
+import {
+  createBooking,
+  getUserBookings,
+  getBookingById,
+  cancelBooking,
+  getActiveBooking, // <-- Pastikan method baru ini di-import
+} from "../controllers/booking.controller.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
 
 const router = express.Router();
 
-// Semua route booking memerlukan login
-router.use(authenticateToken);
+// Public routes (none for now)
 
-router.post('/', createBooking);
-router.get('/:id', getBookingById);
+// Protected routes (User must be logged in)
+router.post("/", authenticateToken, createBooking);
+router.get("/user/me", authenticateToken, getUserBookings);
 
-// Rute baru untuk membatalkan booking
-router.patch('/:bookingId/cancel', authenticateToken, cancelBooking);
+// --- RUTE BARU: Widget Live Activity (Mobile) ---
+// Letakkan SEBELUM rute /:id agar tidak tertukar
+router.get("/active/latest", authenticateToken, getActiveBooking);
+// ------------------------------------------------
 
+router.get("/:id", authenticateToken, getBookingById);
+router.put("/:id/cancel", authenticateToken, cancelBooking);
 
 export default router;

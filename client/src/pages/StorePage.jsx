@@ -1,281 +1,246 @@
-// File: client/src/pages/StorePage.jsx (Versi Perbaikan Final)
+// File: client/src/pages/StorePage.jsx
 
-import React, { useState, useEffect, useCallback } from "react";
-import StoreCard from "../components/StoreCard";
-import { useSearchParams } from "react-router-dom";
-import { getStores } from "../services/apiService";
-
-const UNIQUE_SERVICES = [
-  "Fast Clean Sneakers",
-  "Deep Clean Leather",
-  "Cuci Cepat Reguler",
-  "Perawatan Suede",
-  "Unyellowing Treatment",
-  "Repair Consultation",
-];
-
-const RatingFilter = ({ rating, setRating }) => (
-  <div className="d-flex">
-    {[1, 2, 3, 4, 5].map((star) => (
-      <i
-        key={star}
-        className={`fas fa-star fa-lg`}
-        style={{
-          cursor: "pointer",
-          color: star <= rating ? "#ffc107" : "#e4e5e9",
-          marginRight: "4px",
-        }}
-        onClick={() => setRating(star === rating ? 0 : star)}
-      />
-    ))}
-  </div>
-);
+import React, { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Fade } from "react-awesome-reveal";
+import API_BASE_URL from "../apiConfig";
+import "./StorePageElevate.css";
 
 const StorePage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchParams] = useSearchParams();
 
-  // State untuk filter, diinisialisasi dari URL
-  const [searchTerm, setSearchTerm] = useState(
-    searchParams.get("search") || ""
-  );
-  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "rating");
-  const [minRating, setMinRating] = useState(
-    parseInt(searchParams.get("minRating")) || 0
-  );
-  const [userLocation, setUserLocation] = useState({
-    lat: searchParams.get("lat") || null,
-    lng: searchParams.get("lng") || null,
-  });
-  const [selectedServices, setSelectedServices] = useState(
-    searchParams.get("services")?.split(",") || []
-  );
-  const [openNow, setOpenNow] = useState(
-    searchParams.get("openNow") === "true"
-  );
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8; // Grid 4x2 agar rapi
 
-  // --- PERBAIKAN UTAMA ADA DI useEffect INI ---
+  const categories = [
+    "All",
+    "Fast Clean",
+    "Deep Clean",
+    "Leather",
+    "Suede",
+    "Repaint",
+    "Repair",
+  ];
+
   useEffect(() => {
-    // Fungsi ini akan membuat parameter URL berdasarkan state filter saat ini
-    const updateUrlParams = () => {
-      const params = new URLSearchParams();
-      if (searchTerm) params.append("search", searchTerm);
-      if (sortBy) params.append("sortBy", sortBy);
-      if (minRating > 0) params.append("minRating", minRating.toString());
-      if (userLocation.lat && userLocation.lng) {
-        params.append("lat", userLocation.lat);
-        params.append("lng", userLocation.lng);
-      }
-      if (selectedServices.length > 0)
-        params.append("services", selectedServices.join(","));
-      if (openNow) params.append("openNow", "true");
-
-      // Ganti URL tanpa memicu re-render yang tidak perlu
-      setSearchParams(params, { replace: true });
-    };
-
-    // Fungsi untuk mengambil data dari API
     const fetchStores = async () => {
-      setLoading(true);
-      const params = new URLSearchParams(searchParams); // Ambil parameter langsung dari URL
       try {
-        const data = await getStores(params);
+        setLoading(true);
+        const response = await fetch(`${API_BASE_URL}/api/stores`);
+        if (!response.ok) throw new Error("Gagal mengambil data toko");
+        const data = await response.json();
         setStores(data);
-      } catch (error) {
-        console.error("Gagal mengambil data toko:", error);
-        if (showMessage) {
-          showMessage(error.message || "Gagal mengambil data toko", "Error");
+
+        const serviceQuery = searchParams.get("services");
+        if (serviceQuery) {
+          const match = categories.find((c) =>
+            c.toLowerCase().includes(serviceQuery.toLowerCase())
+          );
+          if (match) setSelectedCategory(match);
         }
+      } catch (error) {
+        console.error(error);
+        if (showMessage) showMessage("Gagal memuat daftar toko", "Error");
       } finally {
         setLoading(false);
       }
     };
+    fetchStores();
+  }, [searchParams]);
 
-    updateUrlParams(); // Pertama, update URL
-    fetchStores(); // Kedua, ambil data berdasarkan URL yang baru
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    searchTerm,
-    sortBy,
-    minRating,
-    userLocation.lat,
-    userLocation.lng,
-    selectedServices,
-    openNow,
-  ]);
-  // --- AKHIR PERBAIKAN ---
+  const filteredStores = stores.filter((store) => {
+    const matchesSearch = store.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || true;
+    return matchesSearch && matchesCategory;
+  });
 
-  const handleGetUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-          setSortBy("distance");
-        },
-        (error) => {
-          showMessage(
-            "Gagal mendapatkan lokasi. Pastikan Anda mengizinkan akses lokasi."
-          );
-          console.error(error);
-        }
-      );
-    } else {
-      showMessage("Geolocation tidak didukung oleh browser Anda.");
+  const totalPages = Math.ceil(filteredStores.length / ITEMS_PER_PAGE);
+  const paginatedStores = filteredStores.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const handleServiceFilterChange = (serviceName) => {
-    setSelectedServices((prev) =>
-      prev.includes(serviceName)
-        ? prev.filter((s) => s !== serviceName)
-        : [...prev, serviceName]
-    );
-  };
-
-  const resetAdvancedFilters = () => {
-    setMinRating(0);
-    setSelectedServices([]);
-    setOpenNow(false);
-  };
-
-  const hasActiveAdvancedFilters =
-    minRating > 0 || selectedServices.length > 0 || openNow;
-
   return (
-    <div className="store-page-redesigned">
-      <div className="filter-panel-top">
-        <div className="container d-flex flex-wrap align-items-center gap-2">
-          <div className="search-input-wrapper flex-grow-1">
-            <i className="fas fa-search"></i>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Cari nama atau lokasi toko..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+    <div className="pe-dashboard-wrapper luxury-blue-theme">
+      {/* --- 1. HERO SECTION (MINIMALIST TYPOGRAPHY) --- */}
+      <section className="sp-hero">
+        <div className="sp-hero-orb orb-1"></div>
+        <div className="sp-hero-orb orb-2"></div>
 
-          <div className="dropdown">
-            <button
-              className={`btn ${
-                hasActiveAdvancedFilters ? "btn-dark" : "btn-outline-dark"
-              }`}
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              data-bs-auto-close="outside"
-            >
-              <i className="fas fa-filter me-2"></i>
-              Filter Lanjutan
-              {hasActiveAdvancedFilters && (
-                <span className="filter-active-dot"></span>
-              )}
-            </button>
-            <div className="dropdown-menu p-4" style={{ width: "350px" }}>
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Min Rating</label>
-                <RatingFilter rating={minRating} setRating={setMinRating} />
-              </div>
-              <div className="mb-3">
-                <label className="form-label fw-semibold">
-                  Layanan Spesifik
-                </label>
-                <div className="service-filter-list">
-                  {UNIQUE_SERVICES.map((service) => (
-                    <div className="form-check" key={service}>
-                      <input
-                        className="form-check-input me-2"
-                        type="checkbox"
-                        id={`service-adv-${service}`}
-                        checked={selectedServices.includes(service)}
-                        onChange={() => handleServiceFilterChange(service)}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor={`service-adv-${service}`}
-                      >
-                        {service}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="mb-3 form-check form-switch">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="openNowSwitchAdv"
-                  checked={openNow}
-                  onChange={(e) => setOpenNow(e.target.checked)}
-                />
-                <label
-                  className="form-check-label fw-semibold"
-                  htmlFor="openNowSwitchAdv"
+        <div className="container position-relative z-2 text-center">
+          <Fade direction="up" triggerOnce>
+            <span className="sp-hero-badge">CURATED SELECTION</span>
+            <h1 className="sp-hero-title">
+              DISCOVER <br />
+              <span className="lx-text-blue-gradient">ARTISANS.</span>
+            </h1>
+          </Fade>
+        </div>
+      </section>
+
+      {/* --- 2. FLOATING SEARCH & FILTER (GLASS PILL) --- */}
+      <div className="sp-filter-sticky">
+        <div className="container">
+          <div className="sp-filter-glass">
+            <div className="sp-search-box">
+              <i className="fas fa-search"></i>
+              <input
+                type="text"
+                placeholder="Search by name or location..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="sp-filter-divider d-none d-md-block"></div>
+            <div className="sp-category-scroll">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  className={`sp-cat-pill ${
+                    selectedCategory === cat ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedCategory(cat)}
                 >
-                  Sedang Buka
-                </label>
-              </div>
-              <hr />
-              <button
-                className="btn btn-sm btn-light w-100"
-                onClick={resetAdvancedFilters}
-              >
-                Reset Filter
-              </button>
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
-
-          <select
-            className="form-select flex-grow-0"
-            style={{ width: "180px" }}
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="rating">Urutkan: Rating</option>
-            <option value="distance" disabled={!userLocation.lat}>
-              Urutkan: Jarak
-            </option>
-            <option value="createdAt">Urutkan: Terbaru</option>
-          </select>
-
-          <button
-            className="btn btn-outline-dark"
-            onClick={handleGetUserLocation}
-          >
-            <i
-              className={`fas ${
-                userLocation.lat
-                  ? "fa-location-crosshairs"
-                  : "fa-location-arrow"
-              }`}
-            ></i>
-          </button>
         </div>
       </div>
 
-      <main className="container py-4">
-        <h5 className="mb-4">Menampilkan {stores.length} Toko</h5>
-        <div className="results-grid-redesigned">
+      {/* --- 3. THE GALLERY (STORE GRID) --- */}
+      <section className="sp-grid-section">
+        <div className="container">
           {loading ? (
-            <p>Memuat toko...</p>
-          ) : stores.length > 0 ? (
-            stores.map((store) => <StoreCard key={store.id} store={store} />)
+            <div className="sp-loader">
+              <div className="spinner-border text-primary"></div>
+            </div>
+          ) : filteredStores.length > 0 ? (
+            <>
+              <div className="row g-4">
+                {paginatedStores.map((store, index) => (
+                  <div className="col-md-6 col-lg-3" key={store.id}>
+                    <Fade direction="up" delay={index * 50} triggerOnce>
+                      <Link to={`/store/${store.id}`} className="sp-card-link">
+                        <div className="sp-card">
+                          {/* Image Area - Clean & Cinematic */}
+                          <div className="sp-card-img-wrapper">
+                            <img
+                              src={
+                                store.headerImageUrl ||
+                                (store.images && store.images[0]) ||
+                                "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"
+                              }
+                              alt={store.name}
+                              className="sp-card-img"
+                            />
+
+                            {/* Tier Badge (Pengganti Harga) */}
+                            <div className="sp-tier-badge">
+                              {store.tier === "PRO"
+                                ? "PRO PARTNER"
+                                : "VERIFIED"}
+                            </div>
+
+                            {/* Rating Star (Minimalis) */}
+                            <div className="sp-rating-badge">
+                              ★ {store.rating ? store.rating.toFixed(1) : "N/A"}
+                            </div>
+                          </div>
+
+                          {/* Content Area - Gallery Style */}
+                          <div className="sp-card-body">
+                            <div className="d-flex justify-content-between align-items-end">
+                              <div>
+                                <h3 className="sp-card-title text-truncate">
+                                  {store.name}
+                                </h3>
+                                <div className="sp-card-meta">
+                                  <span className="text-truncate">
+                                    {store.location || "Jakarta"}
+                                  </span>
+                                </div>
+                              </div>
+                              {/* Tombol Panah Halus */}
+                              <div className="sp-card-arrow">
+                                <i className="fas fa-arrow-right"></i>
+                              </div>
+                            </div>
+
+                            {/* Hover Reveal: Explore Text */}
+                            <div className="sp-card-hover-text">
+                              Explore Atelier
+                            </div>
+                          </div>
+
+                          {/* Glow Border Effect */}
+                          <div className="sp-card-border-glow"></div>
+                        </div>
+                      </Link>
+                    </Fade>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="sp-pagination">
+                  <button
+                    className="sp-page-btn"
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                  >
+                    <i className="fas fa-arrow-left"></i>
+                  </button>
+                  <span className="sp-page-info">
+                    PAGE {currentPage} OF {totalPages}
+                  </span>
+                  <button
+                    className="sp-page-btn"
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                  >
+                    <i className="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
-            <div className="w-100 text-center py-5">
-              <p className="text-muted">
-                Toko tidak ditemukan dengan kriteria tersebut.
-              </p>
+            <div className="sp-empty-state">
+              <h3>No Artisans Found</h3>
+              <p>Try adjusting your search.</p>
+              <button
+                className="lx-btn-outline-blue"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedCategory("All");
+                }}
+              >
+                Clear Filters
+              </button>
             </div>
           )}
         </div>
-      </main>
+      </section>
     </div>
   );
 };

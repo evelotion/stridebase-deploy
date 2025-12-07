@@ -1,15 +1,106 @@
 /* File: stridebase-app-render/client/src/style.css */
 
 /* General Styles */
+
 :root {
-  --primary-color: #0dcaf0;
-  --secondary-color: #28a745;
-  --text-dark: #343a40;
-  --text-muted: #6c757d;
-  --bg-light: #f8f9fa;
-  --bg-white: #ffffff;
-  --border-color: #dee2e6;
-  --font-family: "Poppins", sans-serif; /* Fallback font */
+  /* ================= DARK MODE (DEFAULT) ================= */
+  --sb-bg-primary: #000000;
+  --sb-bg-secondary: #050505;
+  --sb-bg-tertiary: #080808;
+
+  --sb-text-main: #ffffff;
+  --sb-text-muted: rgba(255, 255, 255, 0.65);
+  --sb-text-inverse: #000000;
+
+  --sb-card-bg: #111;
+  --sb-card-border: rgba(255, 255, 255, 0.1);
+  --sb-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  --sb-accent: #3b82f6;
+
+  /* --- NAVBAR VARIABLES (DARK MODE) --- */
+  --nav-text-color: #ffffff;
+  --nav-icon-bg: rgba(255, 255, 255, 0.1);
+  --nav-icon-border: rgba(255, 255, 255, 0.2);
+
+  /* Background Navbar (Penting agar navbar berubah warna) */
+  --nav-glass-bg: rgba(5, 5, 5, 0.85); /* Hitam kaca saat scroll */
+  --nav-gradient-top: rgba(0, 0, 0, 0.9); /* Gradasi hitam di posisi top */
+  --nav-border-bottom: rgba(255, 255, 255, 0.15);
+
+  --nav-underline: #ffffff; 
+  --nav-underline-glow: 0 0 10px rgba(255, 255, 255, 0.6);
+
+  --sb-input-text: #ffffff;
+  --sb-input-placeholder: rgba(255, 255, 255, 0.4);
+}
+
+/* ================= LIGHT MODE OVERRIDE (Porcelain) ================= */
+[data-theme="light"] {
+  --sb-bg-primary: #ffffff;
+  --sb-bg-secondary: #f8fafc;
+  --sb-bg-tertiary: #f1f5f9;
+
+  /* Text dibalik menjadi Gelap */
+  --sb-text-main: #0f172a; /* Hitam kebiruan */
+--sb-text-muted: #64748b;
+  --sb-text-inverse: #ffffff;
+
+  --sb-card-bg: #ffffff;
+  --sb-card-border: #e2e8f0;
+  --sb-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: #cbd5e1;
+
+  /* --- NAVBAR VARIABLES (LIGHT MODE) --- */
+  --nav-text-color: #111827; /* Teks jadi Hitam */
+  --nav-icon-bg: rgba(0, 0, 0, 0.05); /* Icon bg abu muda */
+  --nav-icon-border: rgba(0, 0, 0, 0.1); /* Border icon abu */
+
+  /* Background Navbar (Override ke Putih) */
+  --nav-glass-bg: rgba(255, 255, 255, 0.85); /* Putih kaca saat scroll */
+  --nav-gradient-top: rgba(255, 255, 255, 0.9); /* Putih pudar di posisi top */
+  --nav-border-bottom: rgba(0, 0, 0, 0.05);
+
+  /* Helper Override */
+  --override-text-color: #0f172a;
+  --nav-underline: #3b82f6; /* Sama dengan --sb-accent */
+  --nav-underline-glow: none;
+
+  --sb-input-text: #0f172a;
+  --sb-input-placeholder: #94a3b8;
+  
+
+}
+
+/* --- Helper Classes (Adaptive Text) --- */
+.he-hero-headline,
+.he-section-title,
+.he-store-name-wide,
+.he-service-title,
+.he-quote-text,
+.he-process-title,
+.he-promo-big-text {
+  color: var(--sb-text-main) !important;
+  transition: color 0.3s ease;
+}
+
+p,
+.he-service-desc,
+.he-process-desc,
+.he-promo-sub {
+  color: var(--sb-text-muted) !important;
+}
+
+[data-theme="light"] .text-white {
+  color: var(--override-text-color) !important;
+}
+[data-theme="light"] .text-white-50 {
+  color: var(--sb-text-muted) !important;
 }
 
 html {

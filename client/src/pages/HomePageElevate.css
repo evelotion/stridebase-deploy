@@ -1,109 +1,550 @@
 /* File: client/src/pages/HomePageElevate.css */
+/* --- 1. IMPORT FONTS --- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap");
 
-/* --- 1. IMPORT FONTS (Outfit untuk Judul Pop, Inter untuk Teks) --- */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800;900&display=swap");
-
-:root {
-  --sb-black: #050505; /* Hitam pekat */
-  --sb-card-bg: #0f0f0f; /* Abu sangat gelap */
-  --sb-text: #ffffff;
-  --sb-accent: #3b82f6; /* Electric Blue (Pop Color) */
-  --sb-gold: #fbbf24; /* Premium Accent */
-
-  /* Variable Kaca Premium */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shine: rgba(255, 255, 255, 0.05);
+html {
+  scroll-behavior: smooth;
 }
 
-/* Base Reset */
+:root {
+  /* ================= DARK MODE (DEFAULT) ================= */
+  --sb-bg-primary: #000000;
+  --sb-bg-secondary: #050505;
+  --sb-bg-tertiary: #080808;
+
+  --sb-text-main: #ffffff;
+  --sb-text-muted: rgba(255, 255, 255, 0.65);
+  --sb-text-inverse: #000000;
+
+  --sb-card-bg: #111;
+  --sb-card-border: rgba(255, 255, 255, 0.1);
+  --sb-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  --sb-accent: #3b82f6;
+
+  /* --- NAVBAR VARIABLES (DARK MODE) --- */
+  --nav-text-color: #ffffff;
+  --nav-icon-bg: rgba(255, 255, 255, 0.1);
+  --nav-icon-border: rgba(255, 255, 255, 0.2);
+
+  /* Background Navbar (Penting agar navbar berubah warna) */
+  --nav-glass-bg: rgba(5, 5, 5, 0.85); /* Hitam kaca saat scroll */
+  --nav-gradient-top: rgba(0, 0, 0, 0.9); /* Gradasi hitam di posisi top */
+  --nav-border-bottom: rgba(255, 255, 255, 0.15);
+
+  --nav-underline: #ffffff;
+  --nav-underline-glow: 0 0 10px rgba(255, 255, 255, 0.6);
+
+  --sb-input-text: #ffffff;
+  --sb-input-placeholder: rgba(255, 255, 255, 0.4);
+}
+
+/* ================= LIGHT MODE OVERRIDE (Porcelain) ================= */
+[data-theme="light"] {
+  --sb-bg-primary: #ffffff;
+  --sb-bg-secondary: #f8fafc;
+  --sb-bg-tertiary: #f1f5f9;
+
+  /* Text dibalik menjadi Gelap */
+  --sb-text-main: #0f172a; /* Hitam kebiruan */
+  --sb-text-muted: #475569;
+  --sb-text-inverse: #ffffff;
+
+  --sb-card-bg: #ffffff;
+  --sb-card-border: #e2e8f0;
+  --sb-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: #cbd5e1;
+
+  /* --- NAVBAR VARIABLES (LIGHT MODE) --- */
+  --nav-text-color: #111827; /* Teks jadi Hitam */
+  --nav-icon-bg: rgba(0, 0, 0, 0.05); /* Icon bg abu muda */
+  --nav-icon-border: rgba(0, 0, 0, 0.1); /* Border icon abu */
+
+  /* Background Navbar (Override ke Putih) */
+  --nav-glass-bg: rgba(255, 255, 255, 0.85); /* Putih kaca saat scroll */
+  --nav-gradient-top: transparent; /* Putih pudar di posisi top */
+  --nav-border-bottom: rgba(0, 0, 0, 0.05);
+
+  /* Helper Override */
+  --override-text-color: #0f172a;
+  --nav-underline: #3b82f6; /* Sama dengan --sb-accent */
+  --nav-underline-glow: none;
+  --sb-input-text: #0f172a;
+  --sb-input-placeholder: #94a3b8;
+}
+
+/* --- Helper Classes (Adaptive Text) --- */
+.he-hero-headline,
+.he-section-title,
+.he-store-name-wide,
+.he-service-title,
+.he-quote-text,
+.he-process-title,
+.he-promo-big-text {
+  color: var(--sb-text-main) !important;
+  transition: color 0.3s ease;
+}
+
+p,
+.he-service-desc,
+.he-process-desc,
+.he-promo-sub {
+  color: var(--sb-text-muted) !important;
+}
+
+[data-theme="light"] .text-white {
+  color: var(--override-text-color) !important;
+}
+[data-theme="light"] .text-white-50 {
+  color: var(--sb-text-muted) !important;
+}
+
 .home-elevate-wrapper {
-  font-family: "Outfit", sans-serif; /* Font Utama Pop */
-  background-color: var(--sb-black);
-  color: var(--sb-text);
+  background-color: var(--sb-bg-primary);
+  color: var(--sb-text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
   overflow-x: hidden;
 }
 
+/* Pastikan Background Navbar menggunakan Variabel yang sudah kita buat */
+.sb-navbar-glass {
+  background: var(--nav-glass-bg) !important;
+}
+
+.sb-navbar-transparent {
+  background: linear-gradient(
+    to bottom,
+    var(--nav-gradient-top),
+    transparent
+  ) !important;
+}
+
+/* Update background section agar berubah putih saat light mode */
+.he-hero-section,
+.he-popular-section,
+.he-process-section {
+  background: var(--sb-bg-primary); /* Gunakan variabel primary */
+}
+.he-services-section {
+  background: var(--sb-bg-tertiary); /* Gunakan variabel tertiary */
+}
+
+/* Update kartu agar backgroundnya dinamis */
+.he-store-card-wide,
+.he-service-card-premium,
+.he-promo-card {
+  background: var(--sb-card-bg);
+  border: 1px solid var(--sb-card-border);
+  box-shadow: var(--sb-card-shadow);
+}
 /* ==============================================
-   2. PREMIUM NAVBAR STYLES (ADAPTASI DARI MODERN)
-   Logic: Transparan di atas, Kaca saat scroll
+2. PREMIUM NAVBAR STYLES (EFEK BORDER MEMUDAR)
 ============================================== */
 
-/* Posisi Atas (Invisible) */
+/* Navbar Transparent (Top) */
 .sb-navbar-transparent {
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.9),
     transparent
   ) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  padding: 25px 0 !important;
-  transition: all 0.4s ease;
+  border-bottom: none !important; /* Hapus border solid bawaan */
+  padding: 10px 0 !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: fixed; /* Penting untuk ::after */
 }
-.sb-navbar-transparent .nav-link {
-  color: rgba(255, 255, 255, 0.7) !important;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-size: 0.85rem;
+
+/* EFEK GARIS MEMUDAR (FADING BORDER) */
+.sb-navbar-transparent::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px; /* Sangat tipis */
+  /* Gradasi: Transparan -> Putih -> Transparan */
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
+
+/* Navbar Glass (Scrolled) */
+.sb-navbar-glass {
+  background: rgba(5, 5, 5, 0.85) !important; /* Hitam Glass */
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: none !important; /* Hapus border solid */
+  padding: 15px 0 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+  position: fixed;
+}
+
+/* EFEK GARIS MEMUDAR (FADING BORDER) - UNTUK SCROLLED */
+.sb-navbar-glass::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px; /* Sangat tipis */
+  /* Gradasi sedikit lebih terang saat di-scroll */
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Link Styles */
+.sb-navbar-transparent .nav-link,
+.sb-navbar-glass .nav-link {
+  color: var(--nav-text-color) !important;
+  font-family: "Outfit", sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  transition: color 0.3s ease;
+  padding-bottom: 5px;
+}
+
+/* Efek Garis Bawah Hover (Biru) */
+.sb-navbar-transparent .nav-link::after,
+.sb-navbar-glass .nav-link::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--nav-underline) !important;
+  box-shadow: var(--nav-underline-glow) !important;
+}
+
 .sb-navbar-transparent .nav-link:hover,
-.sb-navbar-transparent .nav-link.active {
-  color: #fff !important;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+.sb-navbar-glass .nav-link:hover,
+.sb-navbar-transparent .nav-link.active,
+.sb-navbar-glass .nav-link.active {
+  color: var(--sb-accent) !important;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
 }
-.sb-navbar-transparent .navbar-brand {
-  color: #fff !important;
-  font-weight: 900; /* Lebih tebal (Pop) */
+
+.sb-navbar-transparent .nav-link:hover::after,
+.sb-navbar-glass .nav-link:hover::after,
+.sb-navbar-transparent .nav-link.active::after,
+.sb-navbar-glass .nav-link.active::after {
+  width: 100%;
+}
+
+/* Brand Logo */
+.sb-navbar-transparent .navbar-brand,
+.sb-navbar-glass .navbar-brand {
+  color: var(--nav-text-color) !important;
+  font-weight: 900;
   letter-spacing: -1px;
   font-size: 1.5rem;
 }
-/* Tombol User di Navbar Transparan */
-.sb-navbar-transparent .btn-icon-only {
-  color: #fff !important;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+
+/* Tombol Icon (Lonceng & User) */
+.sb-navbar-transparent .sb-btn-icon,
+.sb-navbar-glass .sb-btn-icon,
+.sb-navbar-transparent .sb-btn-profile,
+.sb-navbar-glass .sb-btn-profile {
+  background: var(--nav-icon-bg) !important;
+  border: 1px solid var(--nav-icon-border) !important;
+  color: var(--nav-text-color) !important;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-/* Posisi Scroll (Glass Effect) */
-.sb-navbar-glass {
-  background: rgba(10, 10, 10, 0.85) !important; /* Gelap transparan */
+/* Hover State Button */
+.sb-navbar-transparent .sb-btn-icon:hover,
+.sb-navbar-glass .sb-btn-icon:hover,
+.sb-navbar-transparent .sb-btn-profile:hover,
+.sb-navbar-glass .sb-btn-profile:hover,
+.sb-navbar-transparent .sb-btn-icon.show,
+.sb-navbar-glass .sb-btn-icon.show,
+.sb-navbar-transparent .sb-btn-profile.show,
+.sb-navbar-glass .sb-btn-profile.show {
+  background: var(--sb-bg-primary) !important; /* Adaptif ke background page */
+  color: var(--sb-accent) !important;
+  border-color: var(--sb-accent) !important;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Layout Tombol */
+.sb-btn-icon {
+  width: 44px; /* Sedikit lebih besar agar touch-friendly */
+  height: 44px;
+  border-radius: 50% !important; /* Paksa bulat */
+  background: var(--nav-icon-bg);
+  border: 1px solid var(--nav-icon-border);
+  color: var(--nav-text-color) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sb-btn-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 15px 4px 4px;
+  border-radius: 50px;
+  background: var(--nav-icon-bg);
+  border: 1px solid var(--nav-icon-border);
+  color: var(--nav-text-color) !important;
+}
+
+.he-btn-navbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.1); /* Transparan Putih */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px; /* Bentuk Kapsul */
+  color: var(--nav-text-color) !important;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Efek Hover */
+.he-btn-navbar:hover {
+  background: var(--sb-accent); /* Biru Neon */
+  border-color: var(--sb-accent);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); /* Glow Biru */
+}
+
+/* Ikon Panah di dalam tombol */
+.he-btn-navbar i {
+  transition: transform 0.3s ease;
+}
+
+.he-btn-navbar:hover i {
+  transform: translateX(4px); /* Geser panah ke kanan saat hover */
+}
+
+/* Fix Khusus Light Mode */
+[data-theme="light"] .he-btn-navbar {
+  background: rgba(0, 0, 0, 0.05); /* Abu tipis */
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #111827 !important;
+}
+
+[data-theme="light"] .he-btn-navbar:hover {
+  background: var(--sb-accent);
+  border-color: var(--sb-accent);
+  color: #ffffff !important;
+}
+
+.sb-profile-name {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  color: var(--nav-text-color) !important;
+}
+
+.sb-notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 1px solid #000;
+}
+
+/* 1. Style Dasar Dropdown (Tanpa Display Block) */
+.dropdown-menu-custom {
+  
+  /* GANTI DENGAN VARIABEL DINAMIS */
+  background: var(--sb-card-bg) !important; 
+  
+  /* Pastikan efek kaca tetap ada jika diinginkan, atau sesuaikan */
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 15px 0 !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
-}
-.sb-navbar-glass .nav-link {
-  color: #ccc !important;
-}
-.sb-navbar-glass .nav-link:hover {
-  color: var(--sb-accent) !important;
-}
-.sb-navbar-glass .navbar-brand {
-  color: #fff !important;
-}
-.sb-navbar-glass .btn-icon-only {
-  color: #fff !important;
-  border-color: rgba(255, 255, 255, 0.1);
+
+  border: 1px solid var(--sb-card-border) !important;
+  border-top: 1px solid var(--sb-card-border) !important; /* Gunakan border dinamis juga */
+
+  border-radius: 16px !important;
+  box-shadow: var(--sb-card-shadow) !important; /* Gunakan shadow dinamis */
+
+  margin-top: 15px !important;
+  padding: 8px !important;
+  min-width: 260px;
+
+  display: none;
+  transform-origin: top center;
 }
 
-/* ==============================================
-   3. HERO SECTION (FULL BLEED CINEMATIC)
+/* 2. Style SAAT MUNCUL (Ada class .show) */
+.dropdown-menu-custom.show {
+  display: block; /* Baru munculkan disini */
+  animation: dropdownFadeIn 0.25s ease-out forwards;
+  opacity: 0; /* Mulai transparan agar animasi halus */
+}
+
+/* 3. Keyframes Animasi (Fade Down Halus) */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 4. Reset Animasi Hover Item (Agar item tidak geser) */
+.dropdown-menu-custom .dropdown-item {
+  color: var(--sb-text-muted) !important; 
+
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+/* Hover State */
+.dropdown-menu-custom .dropdown-item:hover,
+.dropdown-menu-custom .dropdown-item:focus {
+  background: rgba(59, 130, 246, 0.15) !important; /* Biru transparan (aman untuk light/dark) */
+  
+  /* Saat hover, kita bisa paksa warna aksen atau teks utama */
+  color: var(--sb-accent) !important; 
+  
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Header Dropdown */
+.dropdown-menu-custom h6 {
+  color: var(--sb-text-main) !important;
+
+  font-family: "Outfit", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 12px 16px;
+  opacity: 0.5;
+  border-bottom: 1px solid var(--sb-card-border); /* Gunakan border dinamis */
+  margin-bottom: 4px;
+}
+
+/* Ikon di dalam Item */
+.dropdown-menu-custom .dropdown-item i {
+  width: 20px;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--sb-accent); /* Warna Biru Electric */
+  transition: transform 0.2s;
+}
+
+.dropdown-menu-custom .dropdown-item:hover i {
+  transform: scale(1.1);
+  text-shadow: 0 0 10px var(--sb-accent);
+}
+
+/* Garis Pemisah (Divider) */
+.dropdown-menu-custom .dropdown-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  margin: 8px 0;
+  opacity: 1;
+}
+
+/* Item Logout (Merah) */
+.dropdown-menu-custom .dropdown-item.text-danger {
+  color: #ef4444 !important; /* Merah Terang */
+}
+
+.dropdown-menu-custom .dropdown-item.text-danger:hover {
+  background: rgba(239, 68, 68, 0.15) !important; /* Merah Transparan */
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+/* Notifikasi Text Styling */
+.dropdown-menu-custom .text-dark {
+ color: var(--sb-text-main) !important; /* Judul Notif jadi Putih */
+}
+.dropdown-menu-custom .text-muted {
+ color: var(--sb-text-muted) !important;/* Isi Notif jadi Abu */
+}
+
+/* Scrollbar untuk Notifikasi */
+.dropdown-menu-custom div[style*="overflowY"]::-webkit-scrollbar {
+  width: 4px;
+}
+.dropdown-menu-custom div[style*="overflowY"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dropdown-menu-custom div[style*="overflowY"]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.dropdown-menu-custom div[style*="overflowY"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+} /* ==============================================
+   3. HERO SECTION (CLEAN LOOK - FULL SCREEN FIX)
 ============================================== */
 .he-hero-section {
   position: relative;
-  height: 100vh; /* Full Screen */
   width: 100%;
+  /* FIX: Gunakan 100dvh agar pas 1 layar penuh di HP (tanpa terpotong address bar) */
+  height: 100dvh;
+  min-height: 100vh; /* Fallback untuk browser lama */
   overflow: hidden;
-  background: #000;
+  background: var(--sb-bg-primary);
+  margin: 0;
+  padding: 0;
+  z-index: 1;
 }
 
-/* Carousel sebagai Background Utama */
-.he-full-bleed-carousel {
-  height: 100%;
-  width: 100%;
-  position: absolute;
+/* Carousel Background (DIPAKSA FULL HEIGHT) */
+/* Kita target juga .carousel-inner dan .carousel-item agar tingginya maksa 100% */
+.he-full-bleed-carousel,
+.he-full-bleed-carousel .carousel-inner,
+.he-full-bleed-carousel .carousel-item {
+  height: 100% !important;
+  width: 100% !important;
+  position: absolute !important;
   inset: 0;
   z-index: 0;
 }
@@ -111,112 +552,132 @@
 .he-hero-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  /* Brightness dinaikkan agar banner admin terlihat jelas & natural */
-  filter: brightness(0.85) contrast(1.05);
+  object-fit: cover; /* Gambar akan di-crop otomatis agar full layar */
+  object-position: center; /* Fokus gambar di tengah */
+  display: block;
+
+  /* Filter: Sedikit lebih gelap agar teks biru terbaca */
+  filter: brightness(0.7) contrast(1.1);
+
+  /* Animasi Zoom Lambat */
   transform: scale(1);
-  transition: transform 12s ease;
+  transition: transform 12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  /* Pastikan posisi absolut agar tidak ada celah putih */
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .carousel-item.active .he-hero-img {
-  transform: scale(1.1); /* Zoom in sangat halus */
+  transform: scale(1.15); /* Zoom sedikit lebih dramatis saat aktif */
 }
 
-/* Gradient Overlay (Kiri ke Kanan) untuk keterbacaan teks */
+/* Gradient Overlay */
 .he-hero-overlay-gradient {
   position: absolute;
   inset: 0;
-  z-index: 1;
-  /* Gradasi lebih soft karena konten lebih sedikit */
-  background: linear-gradient(90deg, 
-    rgba(0,0,0,0.8) 0%, 
-    rgba(0,0,0,0.5) 30%, 
+  z-index: 1; /* Di atas gambar, di bawah teks */
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.9) 0%,
+    /* Gelap di kiri untuk teks */ rgba(0, 0, 0, 0.6) 40%,
     transparent 100%
   );
-  pointer-events: none;
+  pointer-events: none; /* Agar klik tembus ke bawah */
 }
 
-/* Content Container (Rata Kiri) */
+/* Content Container */
 .he-hero-content-left {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
   width: 100%;
+  height: 100%;
   z-index: 10;
   display: flex;
-  align-items: center; /* Tengah Vertikal */
-  padding-left: 6vw;   /* Jarak dari kiri */
+  align-items: center; /* Vertikal: Tengah */
+  padding-left: clamp(20px, 6vw, 100px); /* Padding responsif */
 }
 
 .he-hero-text-box {
-  max-width: 600px;
+  max-width: 700px;
+  position: relative; /* Agar z-index berfungsi */
 }
 
-/* Headline Lebih Kecil & Elegan (Sesuai Request) */
+/* --- HEADLINE BARU (LEBIH DINAMIS) --- */
 .he-hero-headline {
-  font-family: 'Outfit', sans-serif;
-  /* Ukuran font dikecilkan */
-  font-size: clamp(1.5rem, 3vw, 2.5rem); 
-  font-weight: 500; /* Tidak terlalu bold */
-  color: #fff;
-  line-height: 1.2;
-  margin-bottom: 2.5rem; /* Jarak ke tombol */
-  letter-spacing: -0.5px;
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(3rem, 5vw, 4.5rem); /* Ukuran responsif */
+  font-weight: 800;
+  color: var(--sb-text-main);
+  line-height: 1.1;
+  margin-bottom: 2.5rem;
+  letter-spacing: -1.5px;
   text-transform: capitalize;
+  text-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
 }
 
+/* --- TEKS HIGHLIGHT (GRADASI BIRU ELEVATE) --- */
 .text-highlight {
-  color: #fff;
   position: relative;
-  z-index: 1;
   display: inline-block;
-}
-/* Highlight berupa garis bawah tipis futuristik */
-.text-highlight::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: var(--sb-accent);
-  box-shadow: 0 0 15px var(--sb-accent);
+
+  /* Membuat teks jadi Gradasi (Biru Tua -> Biru Muda/Cyan) */
+  background: linear-gradient(135deg, var(--sb-accent) 0%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* Fallback */
+
+  /* Efek Glow Biru yang "Dreamy" */
+  filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.6));
+
+  font-style: italic;
+  padding-right: 10px;
 }
 
-/* Tombol Action */
+/* Hapus garis bawah kaku yang lama */
+.text-highlight::after {
+  content: none;
+}
+
+/* Actions Button */
 .he-hero-actions {
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap; /* Agar aman di layar kecil */
 }
 
 .he-btn-primary-glow {
-  background: #fff;
-  color: #000;
-  padding: 10px 30px; /* Sedikit lebih ramping */
-  font-weight: 600;
+  background: var(--sb-accent);
+  color: #fff;
+  padding: 14px 35px;
+  font-weight: 700;
   font-size: 0.95rem;
-  border-radius: 50px; /* Pill shape */
+  border-radius: 50px;
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
   display: inline-flex;
   align-items: center;
   gap: 10px;
 }
 
 .he-btn-primary-glow:hover {
-  background: var(--sb-accent);
-  color: #fff;
-  box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
-  transform: translateY(-2px);
+  background: #fff;
+  color: var(--sb-accent);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+  transform: translateY(-3px);
 }
 
 .he-btn-glass {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   padding: 14px 30px;
   font-weight: 500;
@@ -231,44 +692,47 @@
 }
 
 .he-btn-glass:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-color: #fff;
 }
 
-/* Indikator Carousel Minimalis */
+/* Indikator Carousel */
 .he-custom-indicators {
   position: absolute;
   bottom: 40px;
-  left: 6vw; /* Sejajar dengan teks kiri */
+  left: clamp(20px, 6vw, 100px); /* Samakan padding kiri dengan konten */
   right: auto;
   z-index: 20;
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin: 0;
 }
 .he-indicator-dot {
-  width: 10px; height: 10px; 
+  width: 12px;
+  height: 12px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
   padding: 0;
   transition: all 0.3s;
   opacity: 1;
+  cursor: pointer;
 }
-.he-indicator-dot.active { 
-  background: #fff; 
-  border-color: #fff; 
+.he-indicator-dot.active {
+  background: var(--sb-accent);
+  border-color: var(--sb-accent);
   transform: scale(1.2);
+  box-shadow: 0 0 15px var(--sb-accent);
 }
 
 /* ==============================================
    4. BRAND MARQUEE (BLACK & WHITE POP)
 ============================================== */
 .he-brand-section {
-  background: #000;
+  background: var(--sb-bg-primary);
   padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid var(--sb-card-border);
+  border-bottom: 1px solid var(--sb-card-border);
   position: relative;
   z-index: 20;
 }
@@ -278,7 +742,7 @@
   align-items: center;
 }
 .he-brand-text {
-  color: #fff;
+  color: var(--sb-text-main);
   font-family: "Outfit", sans-serif;
   font-weight: 900;
   font-size: 1.8rem;
@@ -299,101 +763,108 @@
    5. POPULAR STORES (PREMIUM WIDE GLASS)
 ============================================== */
 .he-popular-section {
-  padding: 10rem 0;
-  background: #050505;
+  padding: 5rem 0 10rem;
+  background: var(--sb-bg-secondary);
   position: relative;
   overflow: hidden;
 }
 
-/* Header Section */
-.he-section-header { margin-bottom: 4rem; }
+.he-section-header {
+  margin-bottom: 3rem;
+} /* Margin header dikurangi dikit */
+
 .he-section-label {
-  color: var(--sb-accent); font-weight: 700; letter-spacing: 4px; 
-  text-transform: uppercase; font-size: 0.8rem; margin-bottom: 10px; display: block;
+  color: var(--sb-accent);
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+  display: block;
 }
 .he-section-title {
-  font-size: 3rem; font-weight: 800; color: #fff; letter-spacing: -1px;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--sb-text);
+  letter-spacing: -1px;
 }
 
-/* --- KARTU TOKO (LEBAR & PREMIUM) --- */
+/* --- KARTU TOKO (COMPACT SIZE) --- */
 .he-store-card-wide {
   display: block;
   position: relative;
-  height: 420px; /* Tinggi proporsional */
-  border-radius: 24px;
+  
+  width: 100%;              /* Lebar mengikuti kolom grid */
+  aspect-ratio: 1 / 1;      /* KUNCI: Memaksa bentuk kotak sempurna */
+  height: auto !important;  /* Reset tinggi fixed yang lama (320px) */
+  
+  border-radius: 24px;      /* Sudut lebih membulat */
   overflow: hidden;
   text-decoration: none;
-  background: #111;
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--sb-card-bg);
+  border: 1px solid var(--sb-card-border);
   transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Gambar Latar */
 .he-store-wide-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.7s ease;
-  filter: brightness(0.85);
+  filter: brightness(0.9);
 }
 
-/* Badge Top Right (Rating) */
 .he-store-top-badge {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 15px; /* Jarak top dikurangi */
+  right: 15px;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 14px; /* Padding badge dikurangi */
   border-radius: 50px;
-  color: #fbbf24; /* Gold */
+  color: #fbbf24;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   z-index: 5;
   display: flex;
   align-items: center;
   gap: 5px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* PANEL INFO MELAYANG (FLOATING GLASS) */
-.he-store-floating-panel {
+/* PANEL INFO MELAYANG (LEBIH RAMPING) */.he-store-floating-panel {
   position: absolute;
   bottom: 20px;
   left: 20px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(25, 25, 25, 0.6); /* Sedikit lebih gelap agar teks terbaca */
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 15px 20px; /* Sedikit disesuaikan agar seimbang */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 15px;
   z-index: 5;
   transition: all 0.4s ease;
-  
-  /* Flexbox Settings - PERBAIKAN DISINI */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 15px; /* Jarak pasti antara teks dan tombol */
+  gap: 12px;
 }
 
-/* Info Kiri (Teks) */
 .he-store-info-left {
-  flex: 1;       /* Mengambil sisa ruang */
-  min-width: 0;  /* KUNCI PERBAIKAN: Mencegah teks panjang mendorong tombol keluar */
+  flex: 1;
+  min-width: 0;
 }
 
 .he-store-name-wide {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.3rem; /* Sedikit disesuaikan agar muat */
+  font-family: "Outfit", sans-serif;
+  font-size: 1.2rem; /* Font nama sedikit dikecilkan */
   font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
+  color: var(--sb-text-main);
+  margin-bottom: 3px;
   line-height: 1.2;
-  /* Pastikan truncate berjalan */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -402,72 +873,66 @@
 .he-store-meta-wide {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
+  gap: 10px;
+  font-size: 0.8rem; /* Font meta dikecilkan */
+  color: var(--sb-text-muted);
 }
 
-/* Tombol Aksi (Kanan) */
 .he-store-action-btn {
-  width: 45px;
-  height: 45px;
-  background: #fff;
+  width: 40px; /* Tombol sedikit dikecilkan */
+  height: 40px;
+  background: var(--sb-text-main);
+  color: var(--sb-bg-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #000;
-  font-size: 1.1rem;
+  font-size: 1rem;
   transition: all 0.3s ease;
-  flex-shrink: 0; /* KUNCI PERBAIKAN: Mencegah tombol gepeng */
-  /* margin-left dihapus karena sudah pakai gap */
+  flex-shrink: 0;
 }
 
 /* HOVER EFFECTS */
 .he-store-card-wide:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-8px); /* Lift tidak terlalu tinggi */
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .he-store-card-wide:hover .he-store-wide-img {
   transform: scale(1.1);
-  filter: brightness(1); /* Gambar jadi terang saat hover */
+  filter: brightness(1);
 }
 
-/* Saat hover, panel kaca menjadi lebih solid/terang */
 .he-store-card-wide:hover .he-store-floating-panel {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-5px);
+  transform: translateY(-3px);
 }
 
 .he-store-card-wide:hover .he-store-action-btn {
   background: var(--sb-accent);
   color: #fff;
-  transform: rotate(-45deg); /* Efek putar panah */
+  transform: rotate(-45deg);
 }
 /* ==============================================
    6. QUOTE SECTION (DARK MODE + GLOW)
 ============================================== */
 .he-quote-section {
-  padding: 10rem 0;
-  background: #000;
+  padding: 8rem 0;
+  background: var(--sb-bg-primary);
   text-align: center;
   position: relative;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--sb-card-border);
+  border-bottom: 1px solid var(--sb-card-border);
 }
 /* Grid Background Pattern */
 .he-quote-bg {
   position: absolute;
   inset: 0;
   opacity: 0.1;
-  background-image: linear-gradient(
-      rgba(255, 255, 255, 0.3) 1px,
-      transparent 1px
-    ),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-image: linear-gradient(var(--sb-card-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sb-card-border) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -479,17 +944,33 @@
 }
 .he-quote-icon {
   font-size: 3rem;
-  color: var(--sb-gold);
+  color: var(--sb-accent);
   margin-bottom: 2rem;
-  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5); /* Gold Glow */
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.6); /* Gold Glow */
 }
 .he-quote-text {
   font-family: "Outfit", sans-serif;
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(3rem, 6vw, 4rem);
   font-weight: 700;
-  color: #fff;
+  color: var(--sb-text-main);
   line-height: 1.3;
   margin-bottom: 2rem;
+  background: linear-gradient(
+    to right,
+    var(--sb-text-main) 5%,
+    var(--sb-text-main) 30%,
+    var(--sb-text-muted) 10%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: shineText 5s linear infinite;
+
+  /* TAMBAHAN: EFEK GLOWING (BERSINAR KELUAR) */
+  /* Layer 1: Glow putih dekat */
+  /* Layer 2: Glow biru (accent) menyebar jauh */
+  filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0.6))
+    drop-shadow(0 0 2.5px var(--sb-text));
 }
 .he-quote-author {
   font-size: 1rem;
@@ -502,8 +983,8 @@
    7. SERVICES (PREMIUM OBSIDIAN GLASS)
 ============================================== */
 .he-services-section {
-  padding: 10rem 0;
-  background: #080808; /* Sedikit lebih terang dari hitam pekat */
+  padding: 8rem 0;
+  background: var(--sb-bg-tertiary);
   position: relative;
   overflow: hidden;
 }
@@ -513,21 +994,41 @@
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.15) 0%,
+    transparent 70%
+  );
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
 }
-.he-blob-left { top: -20%; left: -10%; }
-.he-blob-right { bottom: -20%; right: -10%; background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%); }
+.he-blob-left {
+  top: -20%;
+  left: -10%;
+}
+.he-blob-right {
+  bottom: -20%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.15) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
 
 /* KARTU LAYANAN */
 .he-service-card-premium {
   position: relative;
-  background: rgba(255, 255, 255, 0.02); /* Sangat transparan */
+  background: var(--sb-card-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--sb-card-border);
   border-radius: 24px;
   padding: 40px 30px;
   height: 100%;
@@ -542,11 +1043,18 @@
 
 /* Efek Cahaya Masuk (Sheen) */
 .he-service-card-premium::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
   transition: left 0.6s ease;
   pointer-events: none;
 }
@@ -565,7 +1073,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.8rem;
-  color: #fff;
+  color: var(--sb-text-main);
   margin-bottom: 25px;
   transition: all 0.4s ease;
   position: relative;
@@ -578,10 +1086,10 @@
 
 /* Judul Layanan */
 .he-service-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--sb-text-main);
   margin-bottom: 12px;
   transition: color 0.3s ease;
 }
@@ -589,7 +1097,7 @@
 /* Deskripsi */
 .he-service-desc {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--sb-text-muted);
   line-height: 1.6;
   font-weight: 400;
 }
@@ -609,8 +1117,7 @@
   transform: translateY(-10px);
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--sb-accent); /* Border jadi biru/aksen */
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 
-              0 0 0 1px var(--sb-accent) inset; /* Inner glow */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--sb-accent) inset; /* Inner glow */
 }
 
 .he-service-card-premium:hover .he-service-icon-box {
@@ -635,84 +1142,243 @@
 }
 
 /* ==============================================
-   8. TECH SECTION (IMMERSIVE DARK)
+   7.5. PROMO SECTION (NEW)
 ============================================== */
-.he-tech-section {
-  padding: 10rem 0;
-  background: #000;
-  color: #fff;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Layout Split modern */
-.he-tech-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5rem;
-  align-items: center;
-}
-
-.he-tech-visual {
+.he-promo-section {
+  padding: 5rem 0;
+  background: var(--sb-bg-secondary);
   position: relative;
-  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 0 50px rgba(59, 130, 246, 0.15); /* Glow biru halus */
-}
-.he-tech-visual img {
-  width: 100%;
-  display: block;
-  transition: transform 0.5s;
-}
-.he-tech-visual:hover img {
-  transform: scale(1.03);
+  border-top: 1px solid var(--sb-card-border);
 }
 
-/* Overlay text box di atas gambar (opsional style) atau di samping */
-.he-tech-content {
-  padding-right: 2rem;
+/* Base Card Style untuk Promo */
+.he-promo-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 3.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
 }
 
-.he-tech-head {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 2rem;
-}
-.he-tech-desc {
-  color: #999;
-  font-size: 1.1rem;
-  margin-bottom: 3rem;
+.he-promo-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--sb-accent);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
 }
 
-.he-tech-list li {
-  margin-bottom: 15px;
-  font-size: 1.1rem;
+/* --- Left Box Styles --- */
+.he-promo-tag {
+  background: var(--sb-accent);
   color: #fff;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  align-self: flex-start;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.he-promo-big-text {
+  font-family: "Outfit", sans-serif;
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: var(--sb-text-main);
+  line-height: 0.9;
+  margin-bottom: 1rem;
+  background: linear-gradient(
+    to right,
+    var(--sb-text-main),
+    var(--sb-text-muted)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.he-promo-sub {
+  font-size: 1.2rem;
+  color: var(--sb-text-muted);
+  margin-bottom: 2.5rem;
+  max-width: 80%;
+}
+
+/* --- Right Box Styles (Timer) --- */
+.he-timer-wrap {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.he-timer-box {
+  text-align: center;
+}
+
+.he-timer-num {
+  font-family: "Outfit", sans-serif;
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--sb-text-main);
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.he-timer-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-top: 10px;
+}
+
+.he-timer-sep {
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.1);
+  margin-top: -30px;
+  font-weight: 300;
+}
+
+/* ==============================================
+   8. PROCESS SECTION (THE "HOW IT WORKS")
+============================================== */
+.he-process-section {
+  padding: 8rem 0;
+  background: var(--sb-bg-primary);
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--sb-card-border);
+}
+
+/* Dekorasi Cahaya di Belakang Kaca (PENTING UNTUK EFEK BLUR) */
+.he-process-blob {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0; /* Di belakang kartu */
+  opacity: 0.4;
+  pointer-events: none;
+}
+.he-proc-blob-1 {
+  top: -20%;
+  left: -10%;
+  background: radial-gradient(circle, var(--sb-accent) 0%, transparent 70%);
+}
+.he-proc-blob-2 {
+  bottom: -20%;
+  right: -10%;
+  background: radial-gradient(circle, var(--sb-accent) 0%, transparent 70%);
+}
+
+/* Container Kaca (Glass Card) */
+.he-process-glass-card {
+  position: relative;
+  z-index: 1; /* Di atas blob */
+
+  /* Efek Kaca yang Lebih Kuat */
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.15); /* Highlight atas */
+  border-left: 1px solid rgba(255, 255, 255, 0.15); /* Highlight kiri */
+
+  border-radius: 40px;
+  padding: 5rem 3rem;
+
+  /* Kunci Efek Blur */
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  margin: 0 auto;
+}
+
+.he-process-title {
+  font-family: "Outfit", sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--sb-text-main);
+  text-align: center;
+  margin-bottom: 5rem;
+  letter-spacing: -1px;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Item Process */
+.he-process-card {
+  text-align: center;
+  padding: 1rem;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+.he-process-card:hover {
+  transform: translateY(-5px);
+}
+
+.he-process-number {
+  font-family: "Outfit", sans-serif;
+  font-size: 8rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.05); /* Transparan di atas kaca */
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  line-height: 1;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.he-process-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--sb-accent), #1e40af);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-}
-.he-tech-list i {
-  color: var(--sb-accent);
-  margin-right: 15px;
-  font-size: 1.2rem;
-  text-shadow: 0 0 10px var(--sb-accent);
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+  color: var(--sb-text-main);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+  border: 4px solid var(--sb-bg-primary);
 }
 
-.he-btn-outline {
-  padding: 15px 40px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  text-transform: uppercase;
+.he-process-step {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.4rem;
   font-weight: 700;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: all 0.3s;
-  display: inline-block;
+  color: var(--sb-text-main);
+  margin-bottom: 0.8rem;
+  position: relative;
+  z-index: 1;
 }
-.he-btn-outline:hover {
-  border-color: var(--sb-accent);
-  color: var(--sb-accent);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+
+.he-process-desc {
+  color: var(--sb-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+  max-width: 280px;
+  margin: 0 auto;
 }
 
 /* ==============================================
@@ -735,19 +1401,3617 @@
     font-size: 3.5rem;
   }
 }
-
 @media (max-width: 768px) {
   .he-hero-headline {
     font-size: 2.5rem;
   }
-  .he-brand-text {
-    margin: 0 20px;
-    font-size: 1.2rem;
+  .he-brand-section {
+    padding: 1.5rem 0;
   }
   .he-popular-section,
   .he-services-section,
-  .he-tech-section {
+  .he-process-section,
+  .he-promo-section {
     padding: 5rem 0;
+  }
+  .he-quote-text {
+    font-size: 2rem;
+  }
+
+  /* UBAH DISINI: Tinggi kartu di mobile disesuaikan */
+  .he-store-card-wide {
+    height: 280px;
+  }
+
+  .he-process-glass-card {
+    padding: 3rem 1.5rem;
+  }
+  .he-timer-wrap {
+    gap: 1rem;
+  }
+  .he-timer-num {
+    font-size: 2.5rem;
+  }
+  .he-timer-sep {
+    font-size: 2rem;
+    margin-top: -20px;
+  }
+  .he-auth-card {
+    padding: 2rem;
+    width: 90%;
+  }
+  .he-auth-heading {
+    font-size: 1.5rem;
+  }
+}
+/* ==============================================
+   10. FOOTER (ARCHITECTURAL DARK)
+============================================== */
+
+/* Global Footer Override saat di Tema Elevate */
+footer {
+  background-color: var(--sb-bg-tertiary) !important;
+  color: var(--sb-text-main) !important;
+  border-top: 1px solid var(--sb-card-border) !important;
+  font-family: "Inter", sans-serif;
+}
+
+.logo-text {
+  font-family: "Outfit", sans-serif;
+  letter-spacing: -1px;
+}
+
+/* Judul Kolom Footer */
+footer h6 {
+  font-family: "Outfit", sans-serif;
+  letter-spacing: 2px;
+  font-size: 0.75rem;
+  color: var(--sb-text-main);
+  opacity: 0.9;
+}
+
+/* Link Footer */
+.footer-links li {
+  margin-bottom: 12px;
+}
+.footer-links a {
+  color: var(--sb-text-muted) !important;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  position: relative;
+  padding-left: 0;
+}
+.footer-links a:hover {
+  color: var(--sb-text-main) !important;
+  padding-left: 5px; /* Geser sedikit saat hover */
+}
+
+/* Tombol Social Media */
+.btn-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+}
+.btn-icon-circle:hover {
+  background: var(--sb-accent);
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Input Newsletter */
+.footer-form .form-control {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border-radius: 50px 0 0 50px; /* Pill shape kiri */
+  padding-left: 20px;
+}
+.footer-form .form-control:focus {
+  box-shadow: none;
+  border-color: var(--sb-accent) !important;
+}
+.footer-form .btn {
+  border-radius: 0 50px 50px 0; /* Pill shape kanan */
+  padding-left: 20px;
+  padding-right: 20px;
+  background: var(--sb-accent);
+  border: none;
+}
+
+/* ==============================================
+   11. ABOUT PAGE (EDITORIAL STYLE)
+============================================== */
+
+/* --- 1. HERO (MANIFESTO) --- */
+.he-about-hero {
+  position: relative;
+  min-height: 80vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 5rem 20px;
+  overflow: hidden;
+}
+
+.he-about-hero-label {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--sb-accent);
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.he-about-hero-title {
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(4rem, 10vw, 9rem); /* SANGAT BESAR */
+  font-weight: 900;
+  line-height: 0.9;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: -3px;
+  position: relative;
+  z-index: 2;
+}
+
+.he-about-hero-title span {
+  display: block;
+  background: linear-gradient(to bottom, #fff 30%, #666 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.he-about-hero-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  height: 60%;
+  object-fit: cover;
+  opacity: 0.3;
+  z-index: 1;
+  filter: grayscale(100%) contrast(1.2);
+  mask-image: radial-gradient(
+    circle,
+    black 40%,
+    transparent 80%
+  ); /* Fade edge */
+}
+
+/* --- 2. STORY SECTION (EDITORIAL LAYOUT) --- */
+.he-about-content-section {
+  padding: 8rem 0;
+  background: #050505;
+  position: relative;
+}
+
+.he-about-image-wrapper {
+  position: relative;
+  border-radius: 0; /* Kotak tajam lebih editorial */
+  overflow: hidden;
+  height: 600px;
+}
+
+.he-about-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+  filter: grayscale(20%);
+}
+
+.he-about-image-wrapper:hover img {
+  transform: scale(1.1);
+  filter: grayscale(0%);
+}
+
+/* Floating Badge di Gambar */
+.he-about-badge {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  background: #fff;
+  color: #000;
+  padding: 10px 20px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.he-about-text-block {
+  padding: 2rem;
+}
+
+.he-about-heading {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  color: #fff;
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+
+.he-about-desc {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+/* --- 3. STATS (NEON) --- */
+.he-about-stats-row {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4rem 0;
+  margin: 5rem 0;
+}
+
+.he-about-stat {
+  text-align: center;
+  flex: 1;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+.he-about-stat:last-child {
+  border-right: none;
+}
+
+.he-stat-num {
+  font-family: "Outfit", sans-serif;
+  font-size: 4rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 10px;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.he-stat-text {
+  font-size: 0.85rem;
+  color: var(--sb-accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+/* --- 4. VALUES (MINIMALIST) --- */
+.he-values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1px; /* Gap tipis untuk border effect */
+  background: rgba(255, 255, 255, 0.1); /* Warna garis */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.he-value-item {
+  background: #050505; /* Kembali ke hitam */
+  padding: 3rem;
+  transition: background 0.3s;
+}
+
+.he-value-item:hover {
+  background: #0a0a0a;
+}
+
+.he-value-icon {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+.he-value-item:hover .he-value-icon {
+  opacity: 1;
+  color: var(--sb-accent);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .he-about-hero-title {
+    font-size: 3.5rem;
+  }
+  .he-about-image-wrapper {
+    height: 400px;
+    margin-bottom: 2rem;
+  }
+  .he-about-stats-row {
+    flex-direction: column;
+    gap: 3rem;
+  }
+  .he-about-stat {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 2rem;
+  }
+  .he-about-stat:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
   }
 }
 
+/* ==============================================
+   12. STORE PAGE (SEARCH & FILTER)
+============================================== */
+/* Container Utama Kontrol */
+.he-store-controls {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 10px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Baris Atas: Search + Tombol Filter */
+.he-search-filter-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Search Wrapper (Mengisi sisa ruang) */
+.he-search-wrapper {
+  position: relative;
+  flex-grow: 1;
+}
+
+.he-search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.he-search-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  padding: 15px 15px 15px 50px;
+  border-radius: 50px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.he-search-input:focus {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: var(--sb-accent);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Tombol Filter */
+.he-filter-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 0 25px;
+  height: 54px; /* Samakan tinggi dengan input */
+  border-radius: 50px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.he-filter-btn:hover,
+.he-filter-btn.active {
+  background: var(--sb-accent);
+  border-color: var(--sb-accent);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Area Kategori (Drawer) */
+.he-category-drawer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.he-category-drawer.open {
+  max-height: 200px; /* Cukup untuk menampung pills */
+  padding-top: 15px;
+  padding-bottom: 5px;
+  opacity: 1;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 10px;
+}
+
+/* Category Pills Wrapper */
+.he-category-wrapper {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.he-category-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.he-category-pill:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.he-category-pill.active {
+  background: var(--sb-accent);
+  border-color: var(--sb-accent);
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .he-search-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .he-filter-btn {
+    justify-content: center;
+  }
+}
+
+/* ==============================================
+   13. CONTACT PAGE (PREMIUM FORM)
+============================================== */
+
+/* Wrapper Form Kontak */
+.he-contact-section {
+  padding: 8rem 0;
+  background: var(--sb-black);
+  position: relative;
+}
+
+/* Input Field Custom (Ghost Style) */
+.he-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.he-form-label {
+  font-family: "Outfit", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+  display: block;
+  letter-spacing: 1px;
+}
+
+.he-form-control {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px 20px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.he-form-control:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--sb-accent);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.he-form-control::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Kartu Info Kontak (Kiri) */
+.he-contact-info-card {
+  background: linear-gradient(145deg, #111, #0a0a0a);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 40px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.he-contact-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+}
+
+.he-contact-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--sb-accent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.he-contact-text h5 {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.he-contact-text p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Map Styling (Dark Mode Hack) */
+.he-map-container {
+  border-radius: 24px;
+  overflow: hidden;
+  height: 400px;
+  margin-top: 4rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  filter: grayscale(100%) invert(92%) contrast(0.83); /* Efek Peta Gelap */
+}
+
+/* ==============================================
+   14. AUTH PAGES (RE-DESIGN: CENTERED GLASS PORTAL)
+============================================== */
+.he-auth-portal-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  /* Background Gambar Premium */
+  background-image: url("https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-family: "Outfit", sans-serif;
+}
+
+/* Overlay Gelap untuk Readability */
+.he-auth-portal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75); /* Gelap 75% */
+  backdrop-filter: blur(
+    8px
+  ); /* Sedikit blur pada background agar fokus ke kartu */
+  z-index: 1;
+}
+
+/* KARTU LOGIN (TENGAH) */
+.he-auth-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 480px; /* Lebar ideal */
+
+  /* Efek Kaca Premium */
+  background: rgba(20, 20, 20, 0.65);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Highlight atas */
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); /* Bayangan dalam */
+
+  border-radius: 30px;
+  padding: 3.5rem 3rem;
+  text-align: center;
+
+  /* Animasi Muncul */
+  animation: floatUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes floatUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Elemen di dalam Kartu */
+.he-auth-logo-text {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -1px;
+  margin-bottom: 2rem;
+  display: inline-block;
+}
+
+.he-auth-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.he-auth-sub {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Input Field */
+.he-auth-field {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.he-auth-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.he-auth-input-glass {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.he-auth-input-glass:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--sb-accent);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+.he-auth-input-glass::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Tombol */
+.he-auth-submit-btn {
+  width: 100%;
+  background: #fff; /* Putih mencolok */
+  color: #000;
+  border: none;
+  padding: 16px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.he-auth-submit-btn:hover {
+  background: var(--sb-accent);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+  transform: translateY(-3px);
+}
+
+/* Footer Link */
+.he-auth-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.he-auth-link-bold {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  margin-left: 5px;
+  transition: color 0.3s;
+}
+.he-auth-link-bold:hover {
+  color: var(--sb-accent);
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .he-auth-card {
+    padding: 2rem;
+    width: 90%;
+  }
+  .he-auth-heading {
+    font-size: 1.5rem;
+  }
+}
+
+/* ==============================================
+   15. PAGINATION (PREMIUM DARK STYLE)
+============================================== */
+.he-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4rem;
+}
+
+.he-page-btn {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.he-page-btn:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+}
+
+.he-page-btn.active {
+  background: var(--sb-accent);
+  border-color: var(--sb-accent);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  transform: scale(1.1);
+}
+
+.he-page-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.he-page-btn i {
+  font-size: 0.8rem;
+}
+
+/* ==============================================
+   16. DASHBOARD (COMMAND CENTER)
+============================================== */
+
+/* Layout Dasar */
+.he-dashboard-wrapper {
+  min-height: 100vh;
+  background: #050505;
+  padding-top: 120px; /* Ruang untuk navbar fixed */
+  padding-bottom: 80px;
+  font-family: "Outfit", sans-serif;
+  color: #fff;
+}
+
+/* Sidebar Navigation */
+.he-dash-sidebar {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 30px 20px;
+  height: 100%;
+}
+
+.he-dash-user-profile {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.he-dash-avatar {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #222, #000);
+  color: #fff;
+}
+
+.he-dash-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  padding: 15px 20px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.he-dash-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  transform: translateX(5px);
+}
+
+.he-dash-nav-item.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--sb-accent);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.he-dash-nav-item i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Stats Cards */
+.he-stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.he-stat-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.he-stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.he-icon-blue {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--sb-accent);
+}
+.he-icon-green {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+.he-icon-gold {
+  background: rgba(251, 191, 36, 0.2);
+  color: var(--sb-gold);
+}
+
+/* Content Panel */
+.he-dash-content-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 30px;
+  backdrop-filter: blur(20px);
+}
+
+.he-dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Table Styles */
+.he-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.he-table th {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+}
+
+.he-table td {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 20px;
+  color: #fff;
+  font-size: 0.95rem;
+  border: none;
+}
+
+.he-table tr td:first-child {
+  border-radius: 12px 0 0 12px;
+}
+.he-table tr td:last-child {
+  border-radius: 0 12px 12px 0;
+}
+
+.he-table tr:hover td {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Badge Status */
+.he-badge {
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.he-badge-warning {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+}
+.he-badge-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.he-badge-info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+/* Filter Buttons */
+.he-filter-btn-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 5px;
+  border-radius: 12px;
+}
+.he-filter-btn-sm {
+  background: transparent;
+  border: none;
+  color: #888;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+.he-filter-btn-sm.active {
+  background: #fff;
+  color: #000;
+}
+
+/* Mobile Responsive */
+@media (max-width: 992px) {
+  .he-dashboard-wrapper {
+    padding-top: 100px;
+  }
+  .he-dash-sidebar {
+    margin-bottom: 30px;
+  }
+}
+
+/* --- [TAMBAHAN BARU] TOMBOL FLOATING THEME --- */
+.he-theme-fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--sb-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: var(--card-shadow);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.he-theme-fab:hover {
+  transform: scale(1.1) rotate(15deg);
+  background: var(--sb-accent);
+  border-color: var(--sb-accent);
+  color: #fff;
+  box-shadow: 0 0 30px var(--sb-accent-glow);
+}
+
+@media (max-width: 768px) {
+  .he-theme-fab {
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+  }
+}
+
+/* =================================================================
+   FINAL FORCE: LOCKED DARK MODE FOR HERO & TOP NAVBAR
+   Tujuan: Mencegah Hero Section & Navbar Atas berubah jadi hitam
+   saat Light Mode aktif.
+================================================================= */
+
+/* --- 1. HERO SECTION LOCK (SELALU TEKS PUTIH) --- */
+/* Kita override variabel warna KHUSUS di dalam .he-hero-section */
+[data-theme="light"] .he-hero-section {
+    --sb-text-main: #ffffff; /* Paksa variabel utama jadi putih kembali */
+    --sb-text-muted: rgba(255, 255, 255, 0.7); /* Paksa teks pudar jadi putih transparan */
+    color: #ffffff !important; /* Paksa warna dasar container */
+}
+
+/* Pastikan elemen spesifik di dalam Hero juga patuh */
+[data-theme="light"] .he-hero-section .he-hero-headline,
+[data-theme="light"] .he-hero-section h1,
+[data-theme="light"] .he-hero-section h2,
+[data-theme="light"] .he-hero-section h3,
+[data-theme="light"] .he-hero-section p,
+[data-theme="light"] .he-hero-section span,
+[data-theme="light"] .he-hero-section .he-btn-glass {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.3) !important; /* Untuk border tombol glass */
+}
+
+/* Fix khusus tombol highlight/gradient agar tetap menyala */
+[data-theme="light"] .he-hero-section .text-highlight {
+    background: linear-gradient(135deg, var(--sb-accent) 0%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.6));
+}
+
+/* --- 2. NAVBAR TOP LOCK (SELALU TEKS PUTIH SAAT DI ATAS) --- */
+/* Hanya berlaku saat navbar BELUM di-scroll (.scrolled tidak ada) */
+
+[data-theme="light"] .pe-navbar:not(.scrolled) .nav-link,
+[data-theme="light"] .pe-navbar:not(.scrolled) .navbar-brand,
+[data-theme="light"] .pe-navbar:not(.scrolled) .sb-profile-name {
+    color: #ffffff !important; /* Paksa Putih */
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5); /* Tambah bayangan agar terbaca */
+}
+
+/* Icon (Lonceng & User) saat di atas */
+[data-theme="light"] .pe-navbar:not(.scrolled) .sb-btn-icon,
+[data-theme="light"] .pe-navbar:not(.scrolled) .sb-btn-profile {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+}
+
+/* Tombol Login/Register saat di atas */
+[data-theme="light"] .pe-navbar:not(.scrolled) .he-btn-navbar {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* Hover Effect tetap Biru */
+[data-theme="light"] .pe-navbar:not(.scrolled) .nav-link:hover,
+[data-theme="light"] .pe-navbar:not(.scrolled) .he-btn-navbar:hover {
+    color: var(--sb-accent) !important; /* Biru */
+    background: rgba(255,255,255,0.1) !important;
+}
+/* =================================================================
+   FIX SUSULAN: WARNA NAVIGASI & TOMBOL FLOATING
+   (Letakkan di paling bawah file HomePageElevate.css)
+   ================================================================= */
+
+/* --- 1. PERBAIKAN TOMBOL FLOATING (KANAN BAWAH) --- */
+/* Target Class: .he-theme-fab (Sesuai App.jsx) */
+
+/* Default (Dark Mode): Tombol Putih, Ikon Hitam */
+.he-theme-fab {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Light Mode: Tombol Hitam, Ikon Putih */
+[data-theme="light"] .he-theme-fab {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Hover Effect */
+.he-theme-fab:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 0 30px var(--sb-accent) !important;
+}
+
+
+/* --- 2. PERBAIKAN NAVBAR SAAT LIGHT MODE (POSISI ATAS) --- */
+/* Target Class: .sb-navbar-transparent (Sesuai Navbar.jsx saat belum scroll) */
+
+/* Paksa Teks & Ikon menjadi PUTIH meskipun Light Mode */
+[data-theme="light"] .sb-navbar-transparent .nav-link,
+[data-theme="light"] .sb-navbar-transparent .navbar-brand,
+[data-theme="light"] .sb-navbar-transparent .sb-profile-name,
+[data-theme="light"] .sb-navbar-transparent i { 
+  color: #ffffff !important;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+}
+
+/* Paksa Tombol Bulat (Lonceng & User) menjadi Transparan Putih */
+[data-theme="light"] .sb-navbar-transparent .sb-btn-icon,
+[data-theme="light"] .sb-navbar-transparent .sb-btn-profile {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* Tombol Login/Register (Jika user belum login) */
+[data-theme="light"] .sb-navbar-transparent .he-btn-navbar {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* Hover Effect tetap Biru */
+[data-theme="light"] .sb-navbar-transparent .nav-link:hover {
+  color: var(--sb-accent) !important;
+}
+
+/* =================================================================
+   FIX 3: NAVBAR LIGHT MODE SAAT DISCROLL (WITH BLUE AMBIENCE)
+   (Gantikan blok kode sebelumnya di paling bawah file HomePageElevate.css)
+   ================================================================= */
+
+/* 1. Background Navbar Scrolled -> Putih dengan Glow Biru (Ambience) */
+[data-theme="light"] .sb-navbar-glass {
+    /* Latar Putih Kaca */
+    background: rgba(255, 255, 255, 0.9) !important;
+    
+    /* Garis bawah biru sangat tipis */
+    border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+    
+    /* INI KUNCINYA: Blue Ambience Glow (Bayangan Biru Halus) */
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.12) !important; 
+}
+
+/* 2. Warna Teks Menu & Logo -> Tetap Hitam Gelap (Agar Kontras) */
+[data-theme="light"] .sb-navbar-glass .nav-link,
+[data-theme="light"] .sb-navbar-glass .navbar-brand,
+[data-theme="light"] .sb-navbar-glass .sb-profile-name,
+[data-theme="light"] .sb-navbar-glass i { 
+    color: #111827 !important; /* Hitam (Slate-900) */
+    text-shadow: none !important; /* Hapus shadow putih */
+}
+
+/* 3. Warna Tombol Icon (Lonceng/User) -> Sentuhan Biru Pudar */
+[data-theme="light"] .sb-navbar-glass .sb-btn-icon,
+[data-theme="light"] .sb-navbar-glass .sb-btn-profile {
+    background: rgba(59, 130, 246, 0.05) !important; /* Biru sangat muda */
+    border: 1px solid rgba(59, 130, 246, 0.2) !important; /* Border biru tipis */
+    color: #111827 !important;
+}
+
+/* 4. Warna Tombol Login/Register -> Outline Biru Tipis */
+[data-theme="light"] .sb-navbar-glass .he-btn-navbar {
+    background: rgba(59, 130, 246, 0.05) !important;
+    border-color: rgba(59, 130, 246, 0.2) !important;
+    color: #111827 !important;
+}
+
+/* 5. Hover Effect Scrolled -> Glow Biru Lebih Kuat */
+[data-theme="light"] .sb-navbar-glass .nav-link:hover,
+[data-theme="light"] .sb-navbar-glass .he-btn-navbar:hover {
+    color: var(--sb-accent) !important;
+    /* Efek teks bersinar saat di-hover */
+    text-shadow: 0 0 15px rgba(59, 130, 246, 0.5) !important; 
+}
+
+[data-theme="light"] .sb-navbar-glass .sb-btn-icon:hover,
+[data-theme="light"] .sb-navbar-glass .sb-btn-profile:hover {
+    background: var(--sb-accent) !important;
+    color: #ffffff !important;
+    border-color: var(--sb-accent) !important;
+    /* Efek tombol bersinar */
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* =================================================================
+   FIX 4: WHITE-ON-WHITE ELEMENTS (LIGHT MODE FIXES)
+   (Letakkan di paling bawah file HomePageElevate.css)
+   ================================================================= */
+
+/* --- 1. TOMBOL 'VIEW ALL' (POPULAR STORES) --- */
+/* Masalah: Class 'btn-outline-light' tidak terlihat di background putih */
+[data-theme="light"] .he-popular-section .btn-outline-light {
+    color: var(--sb-accent) !important;      /* Ubah teks jadi Biru */
+    border-color: var(--sb-card-border) !important; /* Border abu tipis */
+    background: transparent !important;
+}
+
+[data-theme="light"] .he-popular-section .btn-outline-light:hover {
+    background: var(--sb-accent) !important; /* Background Biru saat hover */
+    color: #ffffff !important;               /* Teks Putih saat hover */
+    border-color: var(--sb-accent) !important;
+}
+
+/* --- 2. PROMO SECTION (TIMER & JUDUL) --- */
+/* Masalah: Inline style color: #fff di JSX dan gradient text */
+
+/* Paksa judul "Penawaran Berakhir Dalam" jadi hitam */
+/* Kita target h4 spesifik di dalam promo card */
+[data-theme="light"] .he-promo-section h4[style*="#fff"], 
+[data-theme="light"] .he-promo-section .he-section-label {
+    color: var(--sb-text-main) !important;
+    opacity: 1 !important;
+}
+
+/* Angka Timer (Jam/Menit) */
+[data-theme="light"] .he-promo-section .he-timer-num {
+    color: var(--sb-text-main) !important;
+    text-shadow: none !important; /* Hapus glow putih */
+}
+
+/* Label Timer (Days/Hours) & Pemisah (:) */
+[data-theme="light"] .he-promo-section .he-timer-label,
+[data-theme="light"] .he-promo-section .he-timer-sep {
+    color: var(--sb-text-muted) !important;
+}
+
+/* Judul Besar Diskon (50% OFF) */
+[data-theme="light"] .he-promo-section .he-promo-big-text {
+    /* Ulangi gradient dengan warna gelap */
+    background: linear-gradient(to right, var(--sb-text-main), var(--sb-text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- 3. PROCESS SECTION (ANGKA LATAR BELAKANG) --- */
+/* Masalah: Angka 01, 02, 03 adalah putih transparan */
+[data-theme="light"] .he-process-number {
+    color: rgba(0, 0, 0, 0.05) !important; /* Ubah jadi Hitam Transparan */
+}
+
+/* Judul Step (Find Store, dll) */
+[data-theme="light"] .he-process-step {
+    color: var(--sb-text-main) !important;
+}
+
+/* --- 4. LAYANAN & QUOTE (PEMBERSIHAN GLOW) --- */
+/* Menghapus text-shadow berlebih yang membuat teks terlihat kotor di mode terang */
+[data-theme="light"] .he-quote-text,
+[data-theme="light"] .he-service-title {
+    text-shadow: none !important;
+}
+
+/* Ikon Box Layanan di Light Mode */
+[data-theme="light"] .he-service-icon-box {
+    background: rgba(0, 0, 0, 0.05); /* Abu gelap tipis */
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--sb-accent);
+}
+
+/* =================================================================
+   STORE DETAIL PAGE (DESKTOP / BASE STYLES)
+   Missing styles restored here
+   ================================================================= */
+
+/* Wrapper Utama */
+.sd-atelier-wrapper {
+  background-color: var(--sb-bg-primary);
+  min-height: 100vh;
+  padding-bottom: 5rem;
+}
+
+/* --- TABS SYSTEM (DESKTOP) --- */
+.sd-showcase-tabs {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--sb-card-border);
+  padding-bottom: 1px;
+}
+
+.sd-showcase-tab {
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--sb-text-muted);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.sd-showcase-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--sb-accent);
+  transition: width 0.3s ease;
+}
+
+.sd-showcase-tab:hover {
+  color: var(--sb-text-main);
+}
+
+.sd-showcase-tab.active {
+  color: var(--sb-accent);
+}
+
+.sd-showcase-tab.active::after {
+  width: 100%;
+}
+
+/* --- BOOKING PANEL (KANAN) --- */
+.sd-booking-panel {
+  background: var(--sb-card-bg);
+  border: 1px solid var(--sb-card-border);
+  border-radius: 24px;
+  width: 450px;
+  padding: 30px;
+  position: relative;
+  box-shadow: var(--sb-card-shadow);
+  backdrop-filter: blur(20px);
+}
+
+/* Step Header (Angka 1, 2, 3) */
+.sd-step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.sd-step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: var(--sb-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid var(--sb-card-border);
+}
+
+.sd-step-number.bg-success {
+  background: #10b981 !important;
+  border-color: #10b981;
+  color: #fff;
+}
+
+.sd-step-title {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  color: var(--sb-text-main);
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Grid Pilihan Sepatu */
+.sd-option-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.sd-option-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--sb-card-border);
+  border-radius: 12px;
+  padding: 15px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sd-option-card:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-2px);
+}
+
+.sd-option-card.selected {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--sb-accent);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.sd-option-icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  color: var(--sb-text-muted);
+}
+
+.sd-option-card.selected .sd-option-icon {
+  color: var(--sb-accent);
+}
+
+/* Service List */
+.sd-service-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sd-service-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--sb-card-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sd-service-row:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.sd-service-row.selected {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--sb-accent);
+}
+
+/* Light Mode Fixes for Desktop Store Detail */
+[data-theme="light"] .sd-booking-panel {
+  background: #ffffff;
+}
+[data-theme="light"] .sd-option-card,
+[data-theme="light"] .sd-service-row {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+[data-theme="light"] .sd-option-card:hover,
+[data-theme="light"] .sd-service-row:hover {
+  background: #f1f5f9;
+}
+[data-theme="light"] .sd-step-number {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+/* =================================================================
+   MOBILE APP EXPERIENCE V6 (FINAL: SLIDING THEME DRAWER)
+   Target: Mobile Devices Only (< 992px)
+   ================================================================= */
+
+@media (max-width: 991px) {
+
+  /* --- 0. FIX PENTING: Sembunyikan Navbar Bawaan --- */
+  .mobile-header, 
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  /* --- 1. BASE LAYOUT --- */
+  body, html {
+    background-color: var(--sb-bg-secondary) !important;
+    overflow-x: hidden;
+  }
+
+  .he-mobile-wrapper h1, 
+  .he-mobile-wrapper h2, 
+  .he-mobile-wrapper h3, 
+  .he-mobile-wrapper h4, 
+  .he-mobile-wrapper h5, 
+  .he-mobile-wrapper h6,
+  .he-mobile-wrapper p,
+  .he-mobile-wrapper span,
+  .he-mobile-wrapper div,
+  .he-mobile-wrapper i {
+    color: var(--sb-text-main);
+  }
+
+  /* Perbaiki teks 'muted' (abu-abu) agar terbaca di background hitam */
+  .he-mobile-wrapper .text-muted,
+  .he-mobile-wrapper small {
+    color: var(--sb-text-muted) !important;
+  }
+
+  /* Khusus Search Box: Pastikan teks input/placeholder terlihat */
+  .he-mobile-search-box, 
+  .he-mobile-search-box input {
+    color: var(--sb-text-muted) !important;
+  }
+  
+  .he-mobile-search-box input::placeholder {
+    color: var(--sb-text-muted);
+    opacity: 0.7;
+  }
+
+  /* Pastikan Icon selalu mengikuti teks utamanya (kecuali yang punya warna khusus) */
+  .he-mobile-wrapper i:not(.text-danger):not(.text-warning):not(.text-success):not(.text-primary) {
+    color: inherit;
+  }
+
+  .he-mobile-wrapper {
+    padding-bottom: 40px; /* Ruang untuk Nav Bawah */
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    background-color: var(--sb-bg-secondary);
+    transition: background-color 0.3s ease;
+  }
+
+  /* Sembunyikan Elemen Desktop */
+  .he-hero-section, .he-popular-section, .he-services-section, footer, 
+  .he-about-hero, .pe-sidebar {
+    display: none !important;
+  }
+
+  /* --- 2. HEADER STICKY --- */
+  .he-mobile-header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: var(--sb-bg-secondary);
+    border-bottom: 1px solid var(--sb-card-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  .he-mobile-greeting small {
+    color: var(--sb-text-muted) !important;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .he-mobile-greeting h5 {
+    color: var(--sb-text-main) !important;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .he-mobile-search-box {
+    margin-top: 15px;
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--sb-text-muted);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--sb-card-shadow);
+  }
+
+  /* --- 3. BANNER LANDSCAPE --- */
+  .he-mobile-banner-card {
+    width: 100%;
+    height: 190px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--sb-card-shadow);
+    margin: 0 5px;
+    border: 1px solid var(--sb-card-border);
+  }
+  .he-mobile-banner-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* --- 4. SERVICES & PROMO --- */
+  .he-mobile-services-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 5px 20px 20px 5px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .he-mobile-services-scroll::-webkit-scrollbar { display: none; }
+
+  .he-mobile-service-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 70px;
+    text-decoration: none;
+  }
+
+  .he-mobile-service-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--sb-card-bg); 
+    border: 1px solid var(--sb-card-border);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--sb-accent);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .he-mobile-service-label {
+    font-size: 0.75rem;
+    color: var(--sb-text-main);
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .he-mobile-promo-card {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    border-radius: 20px;
+    padding: 25px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.25);
+    margin: 0 5px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .he-mobile-promo-card::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  .he-mobile-promo-card h4 {
+    color: #ffffff !important;
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin-bottom: 5px;
+    line-height: 1;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .he-mobile-promo-card p {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.85rem;
+    margin: 0;
+    font-weight: 500;
+  }
+  .he-mobile-promo-card .badge {
+    background: #FFC107 !important;
+    color: #000 !important;
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    border-radius: 50px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .he-mobile-promo-card .btn {
+    background: #ffffff !important;
+    color: #0d6efd !important;
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* --- 5. STORE LIST --- */
+  .he-mobile-store-card {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    gap: 15px;
+    text-decoration: none;
+    align-items: center;
+    box-shadow: var(--sb-card-shadow);
+    margin-bottom: 15px;
+  }
+  .he-mobile-store-img-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .he-mobile-store-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .he-mobile-store-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .he-mobile-store-name {
+    color: var(--sb-text-main);
+    font-family: "Outfit", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .he-mobile-store-loc {
+    color: var(--sb-text-muted);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* --- 6. BOTTOM NAVIGATION (Floating) --- */
+  .pe-mobile-bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 15px;
+    right: 15px;
+    height: 70px;
+    background: var(--glass-bg);
+    background-color: var(--sb-bg-secondary);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    padding: 0 5px;
+    transition: all 0.3s ease;
+  }
+
+  [data-theme="light"] .pe-mobile-bottom-nav {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(0,0,0,0.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .pe-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--sb-text-muted);
+    position: relative;
+    width: 60px;
+    transition: all 0.3s ease;
+  }
+  .pe-nav-icon {
+    font-size: 1.3rem;
+    margin-bottom: 3px;
+    transition: transform 0.2s;
+  }
+  .pe-nav-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    font-family: "Outfit", sans-serif;
+    letter-spacing: 0.5px;
+  }
+  .pe-nav-item.active {
+    color: var(--sb-accent) !important;
+  }
+  .pe-nav-item.active .pe-nav-icon {
+    transform: translateY(-2px);
+  }
+  
+  .pe-nav-item.highlight {
+    margin-top: -45px;
+  }
+  .pe-nav-icon-float {
+    width: 55px;
+    height: 55px;
+    background: var(--sb-accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+    border: 5px solid var(--sb-bg-secondary); 
+    transition: all 0.3s ease;
+  }
+.he-theme-control-group {
+    position: fixed;
+    bottom: 110px; /* Posisi di atas navbar bawah */
+    right: 0;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    
+    /* LOGIKA HIDDEN (Default): */
+    /* Geser ke kanan sampai habis, sisakan 32px untuk panah */
+    transform: translateX(calc(100% - 32px)); 
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* LOGIKA SHOWING (Saat class .open aktif): */
+  /* Geser kembali ke posisi normal */
+  .he-theme-control-group.open {
+    transform: translateX(-10px); /* Geser masuk, beri sedikit jarak margin */
+  }
+
+  /* 1. Tombol Panah (Pemicu/Trigger) */
+  .he-theme-arrow-trigger {
+    width: 32px;
+    height: 40px;
+    border-radius: 12px 0 0 12px; /* Lengkung hanya di kiri */
+    background: var(--sb-accent); /* Warna Biru */
+    color: #fff;
+    border: none;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    
+    /* Shadow di kiri agar terlihat mengambang */
+    box-shadow: -4px 0 10px rgba(0,0,0,0.15); 
+    cursor: pointer;
+    z-index: 2; /* Harus di atas tombol bulat secara visual */
+  }
+  
+  /* Ubah warna panah saat laci terbuka agar lebih kalem */
+  .he-theme-control-group.open .he-theme-arrow-trigger {
+    background: var(--sb-card-border);
+    color: var(--sb-text-muted);
+  }
+
+  /* 2. Tombol Theme FAB (Isi Drawer) */
+  .he-theme-fab {
+    position: relative !important; /* Reset posisi fixed desktop */
+    bottom: auto !important;
+    right: auto !important;
+    
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    
+    /* Visual Kaca Mewah */
+    background: var(--sb-card-bg) !important;
+    border: 1px solid var(--sb-card-border) !important;
+    color: var(--sb-text-main) !important;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2) !important;
+    
+    margin-left: 10px; /* Jarak antara panah dan tombol bulat */
+    z-index: 1;
+  }
+  
+  .he-theme-fab i {
+    font-size: 1.2rem;
+  }
+
+  .he-mobile-track-card {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-accent); /* Border berwarna aksen agar mencolok */
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .he-track-icon-box {
+    width: 40px;
+    height: 40px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--sb-accent);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+/* --- 5. SERVICES GRID (BLUE ACCENT VERSION) --- */
+  .he-mobile-services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px 10px;
+    justify-items: center;
+    align-items: start; 
+  }
+
+  .he-mobile-service-item-compact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  .he-mobile-service-icon-compact {
+    width: 60px;
+    height: 60px;
+    
+    /* Background: Sedikit sentuhan biru transparan agar menyatu */
+    background: rgba(59, 130, 246, 0.08); 
+    
+    /* Border: Biru halus (sesuai request) */
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    
+    /* Icon: Biru utama (Accent) */
+    color: var(--sb-accent);
+    
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15); /* Glow biru tipis */
+    transition: all 0.3s ease;
+  }
+
+  /* Efek Tekan */
+  .he-mobile-service-item-compact:active .he-mobile-service-icon-compact {
+    transform: scale(0.95);
+    background: var(--sb-accent); /* Jadi biru penuh saat ditekan */
+    color: #fff; /* Icon jadi putih */
+    border-color: var(--sb-accent);
+  }
+
+  /* LIGHT MODE OVERRIDE */
+  [data-theme="light"] .he-mobile-service-icon-compact {
+    background: #ffffff;
+    /* Tetap pertahankan border biru di light mode agar konsisten */
+    border-color: rgba(59, 130, 246, 0.3); 
+    color: var(--sb-accent);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.1);
+  }
+
+  .he-mobile-service-label-compact {
+    font-size: 0.7rem;
+    color: var(--sb-text-main) !important;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.4em;
+  }
+  /* --- [ADDITION] VOUCHER HORIZONTAL SCROLL --- */
+  .he-mobile-voucher-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 5px;
+    /* Sembunyikan scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .he-mobile-voucher-scroll::-webkit-scrollbar { display: none; }
+
+  .he-mobile-voucher-card {
+    min-width: 160px;
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 12px;
+    padding: 12px;
+    position: relative;
+    /* Efek kertas sobek ala kupon */
+    mask-image: radial-gradient(circle at left, transparent 6px, black 6.5px);
+    -webkit-mask-image: radial-gradient(circle at 6px center, transparent 6px, black 6.5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .he-voucher-code {
+    font-size: 0.65rem;
+    color: var(--sb-text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  
+  .he-voucher-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--sb-text-main);
+    line-height: 1.1;
+  }
+  
+  .he-voucher-desc {
+    font-size: 0.7rem;
+    color: var(--sb-text-muted);
+  }
+
+  /* --- [ADDITION] PROMO CARD DECORATION --- */
+  .he-promo-blob-1 {
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  .he-promo-blob-2 {
+    position: absolute;
+    bottom: -30px; left: -10px;
+    width: 80px; height: 80px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  
+  /* Update Store Card agar lebih padat */
+  .he-mobile-rating-badge {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    text-align: center;
+    padding: 2px 0;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fbbf24;
+  }
+
+  /* =========================================================
+     FASE 1: STORE PAGE REDESIGN (MOBILE LIST VIEW)
+     ========================================================= */
+
+  /* 1. STICKY SEARCH & CATEGORY CONTAINER */
+  .he-mobile-search-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1010; /* Di bawah navbar utama tapi di atas konten */
+    background: var(--sb-bg-secondary); /* Adaptif Light/Dark */
+    border-bottom: 1px solid var(--sb-card-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+    padding-top: 10px; /* Spacer dari header atas */
+  }
+
+  /* 2. HORIZONTAL CATEGORY PILLS */
+  .he-mobile-cat-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 5px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .he-mobile-cat-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .he-category-pill-mobile {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    color: var(--sb-text-muted);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .he-category-pill-mobile.active {
+    background: var(--sb-accent);
+    color: #fff;
+    border-color: var(--sb-accent);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+  }
+  
+  /* Fix Light Mode Pills */
+  [data-theme="light"] .he-category-pill-mobile {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #64748b;
+  }
+  [data-theme="light"] .he-category-pill-mobile.active {
+    color: #ffffff;
+    border-color: var(--sb-accent);
+    background: var(--sb-accent);
+  }
+
+  /* 3. NEW MOBILE LIST CARD (Horizontal Layout) */
+  .he-mobile-list-card {
+    display: flex;
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 16px;
+    overflow: hidden;
+    height: 120px; /* Tinggi Tetap */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+    margin-bottom: 5px; /* Jarak antar kartu */
+  }
+  
+  .he-mobile-list-card:active {
+    transform: scale(0.98);
+  }
+
+  /* Image Section (Kiri) */
+  .he-mobile-list-img {
+    width: 120px; /* Kotak Persegi */
+    height: 100%;
+    position: relative;
+    flex-shrink: 0;
+  }
+  
+  .he-mobile-list-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Rating Badge on Image */
+  .he-mobile-list-rating {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Content Section (Kanan) */
+  .he-mobile-list-content {
+    flex: 1;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0; /* Penting untuk text-truncate */
+  }
+
+  .he-mobile-list-title {
+    font-family: "Outfit", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--sb-text-main);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .he-mobile-list-loc {
+    font-size: 0.75rem;
+    color: var(--sb-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .he-mobile-list-tags {
+    display: flex;
+    gap: 5px;
+  }
+
+  .he-mini-tag {
+    font-size: 0.6rem;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--sb-accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .he-mobile-list-price {
+    font-size: 0.75rem;
+    color: var(--sb-text-muted);
+  }
+  
+  /* Fix Light Mode List Card */
+  [data-theme="light"] .he-mobile-list-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+  }
+  /* =========================================================
+     FASE 2: STORE DETAIL MOBILE (IMMERSIVE)
+     ========================================================= */
+
+  /* 1. HEADER BACK BUTTON (Floating on Image) */
+  .he-mobile-back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+    width: 40px;
+    height: 40px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  /* 2. GALLERY SWIPER */
+  .he-mobile-gallery-swiper {
+    width: 100%;
+    height: 300px; /* Tinggi gambar fixed */
+  }
+  .he-mobile-gallery-swiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .he-mobile-gallery-swiper .swiper-pagination-bullet {
+    background: #fff;
+    opacity: 0.5;
+  }
+  .he-mobile-gallery-swiper .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: var(--sb-accent);
+  }
+
+  /* 3. CONTENT CONTAINER (Overlapping Image) */
+  .he-mobile-detail-content {
+    margin-top: -30px; /* Naik ke atas menutupi gambar */
+    border-radius: 30px 30px 0 0;
+    background: var(--sb-bg-secondary); /* Warna background halaman */
+    padding: 30px 20px 100px; /* Padding bawah besar untuk footer */
+    position: relative;
+    z-index: 10;
+    min-height: 500px;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+  }
+
+  .he-mobile-detail-title {
+    font-family: "Outfit", sans-serif;
+    font-weight: 800;
+    font-size: 1.8rem;
+    line-height: 1.1;
+    color: var(--sb-text-main);
+    margin: 0;
+  }
+
+  .he-mobile-detail-loc {
+    color: var(--sb-text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* 4. TABS SEDERHANA */
+  .he-mobile-tabs {
+    display: flex;
+    gap: 20px;
+  }
+  .he-mobile-tab {
+    background: transparent;
+    border: none;
+    color: var(--sb-text-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding-bottom: 5px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+  }
+  .he-mobile-tab.active {
+    color: var(--sb-accent);
+    border-color: var(--sb-accent);
+  }
+
+  /* 5. SHOE TYPE CHIPS */
+  .he-mobile-type-chip {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    color: var(--sb-text-muted);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  
+  .he-mobile-type-chip.active {
+    background: var(--sb-accent);
+    color: #fff;
+    border-color: var(--sb-accent);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  }
+  
+  /* Fix Light Mode Chips */
+  [data-theme="light"] .he-mobile-type-chip {
+    background: #fff;
+    border-color: #cbd5e1;
+  }
+  [data-theme="light"] .he-mobile-type-chip.active {
+    background: var(--sb-accent);
+    border-color: var(--sb-accent);
+    color: #fff;
+  }
+
+  /* 6. SERVICE CARD LIST */
+  .he-mobile-service-card {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+  }
+  
+  .he-mobile-service-card.active {
+    border-color: var(--sb-accent);
+    background: rgba(59, 130, 246, 0.05); /* Biru sangat transparan */
+  }
+  
+  /* Fix Light Mode Service Card */
+  [data-theme="light"] .he-mobile-service-card {
+    background: #fff;
+    border-color: #e2e8f0;
+  }
+  [data-theme="light"] .he-mobile-service-card.active {
+    background: #eff6ff; /* Biru muda */
+    border-color: var(--sb-accent);
+  }
+
+  /* 7. STICKY FOOTER ACTION */
+.he-mobile-sticky-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1050; /* Pastikan di atas elemen lain */
+  
+  background: var(--sb-bg-secondary); /* Gunakan background solid sesuai tema */
+  border-top: 1px solid var(--sb-card-border);
+  
+  /* Padding bawah dilebihkan untuk Safe Area iPhone (garis home) */
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom)) 20px;
+  
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+  
+  /* Animasi Slide Up saat muncul */
+  animation: slideUpFooter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+  
+[data-theme="light"] .he-mobile-sticky-footer {
+  background: #ffffff !important;
+  border-top-color: #e2e8f0;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+}
+
+@keyframes slideUpFooter {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+  /* =========================================================
+     FASE 3: DASHBOARD MOBILE (NATIVE CARD STACK)
+     ========================================================= */
+
+  /* 1. HEADER PROFILE */
+  .he-mobile-dash-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-top: 20px; /* Spacer dari sticky header */
+  }
+
+  .he-mobile-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sb-accent), #2563eb);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+  }
+
+  .he-mobile-welcome {
+    font-size: 0.8rem;
+    color: var(--sb-text-muted);
+  }
+  .he-mobile-username {
+    font-family: "Outfit", sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--sb-text-main);
+  }
+
+  .he-mobile-logout-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--sb-card-border);
+    background: var(--sb-card-bg);
+    color: #ef4444; /* Merah */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 2. STATS SCROLL */
+  .he-mobile-stats-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 0 20px 20px;
+    scrollbar-width: none;
+  }
+  .he-mobile-stats-scroll::-webkit-scrollbar { display: none; }
+
+  .he-mobile-stat-card {
+    min-width: 110px;
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  
+  .he-mobile-stat-card .icon {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+  .he-mobile-stat-card.blue .icon { color: #3b82f6; }
+  .he-mobile-stat-card.gold .icon { color: #fbbf24; }
+  .he-mobile-stat-card.green .icon { color: #10b981; }
+
+  .he-mobile-stat-card .val {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--sb-text-main);
+  }
+  .he-mobile-stat-card .lbl {
+    font-size: 0.7rem;
+    color: var(--sb-text-muted);
+    text-transform: uppercase;
+  }
+
+  /* 3. PILL TABS */
+  .he-mobile-tabs-container {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  
+  .he-mobile-pill-tab {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    color: var(--sb-text-muted);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  
+  .he-mobile-pill-tab.active {
+    background: var(--sb-accent);
+    color: #fff;
+    border-color: var(--sb-accent);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+  }
+
+  /* 4. ORDER CARDS (STACK) */
+  .he-mobile-dash-content {
+    padding: 0 20px;
+  }
+
+  .he-mobile-order-card {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  
+  /* Fix Light Mode Card */
+  [data-theme="light"] .he-mobile-order-card,
+  [data-theme="light"] .he-mobile-stat-card {
+    background: #fff;
+    border-color: #e2e8f0;
+  }
+
+  .order-id {
+    font-size: 0.75rem;
+    color: var(--sb-text-muted);
+    letter-spacing: 1px;
+  }
+  .order-service {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--sb-text-main);
+  }
+  .order-meta {
+    font-size: 0.8rem;
+    color: var(--sb-text-muted);
+    line-height: 1.5;
+  }
+  
+  .text-main { color: var(--sb-text-main) !important; }
+  /* =========================================================
+     FASE 4: TRACKING PAGE MOBILE (VERTICAL TIMELINE)
+     ========================================================= */
+
+  /* 1. INFO CARD */
+  .he-mobile-track-info-card {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+
+  .he-track-store-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--sb-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .he-track-divider {
+    height: 1px;
+    background: var(--sb-card-border);
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  /* 2. TIMELINE STRUCTURE */
+  .he-mobile-timeline {
+    position: relative;
+    padding-left: 10px;
+  }
+
+  .he-timeline-item {
+    display: flex;
+    gap: 20px;
+    position: relative;
+    padding-bottom: 40px; /* Jarak antar item vertikal */
+  }
+
+  /* Garis Penghubung */
+  .he-timeline-line {
+    position: absolute;
+    left: 20px; /* Posisi tengah dot */
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: var(--sb-card-border);
+    transform: translateX(-50%);
+    z-index: 0;
+  }
+  
+  .he-timeline-line.active {
+    background: var(--sb-accent); /* Garis biru jika sudah lewat */
+    box-shadow: 0 0 10px var(--sb-accent);
+  }
+
+  /* DOT Indikator */
+  .he-timeline-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--sb-bg-secondary);
+    border: 2px solid var(--sb-card-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    color: var(--sb-text-muted);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  /* Style: Completed */
+  .he-timeline-item.completed .he-timeline-dot {
+    background: var(--sb-accent);
+    border-color: var(--sb-accent);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  }
+
+  /* Style: Current (Sedang Berjalan) */
+  .he-timeline-item.current .he-timeline-dot {
+    border-color: var(--sb-accent);
+    color: var(--sb-accent);
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); /* Ring effect */
+    animation: pulseDot 2s infinite;
+  }
+
+  /* Text Content */
+  .he-timeline-content {
+    padding-top: 8px;
+  }
+
+  /* Animasi Pulse untuk Status Aktif */
+  @keyframes pulseDot {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+  }
+  
+  /* Fix Light Mode Timeline */
+  [data-theme="light"] .he-timeline-line {
+    background: #e2e8f0;
+  }
+  [data-theme="light"] .he-timeline-dot {
+    background: #ffffff;
+    border-color: #cbd5e1;
+  }
+
+  /* =========================================================
+     FASE 5: DIGITAL RECEIPT (BOOKING CONFIRMATION MOBILE)
+     ========================================================= */
+.he-mobile-receipt-wrapper {
+  background-color: var(--sb-bg-secondary);
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+
+/* KARTU STRUK (Adaptif: Dark/Light) */
+.he-receipt-card {
+  /* Ganti hardcoded white menjadi variabel card background */
+  background: var(--sb-card-bg); 
+  border: 1px solid var(--sb-card-border);
+  position: relative;
+  margin: 20px auto;
+  width: 100%;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+}
+
+/* Isian Struk */
+.he-receipt-content {
+  padding: 30px 25px;
+  background: var(--sb-card-bg); /* Ikuti tema */
+  color: var(--sb-text-main);    /* Ikuti tema (Putih di Dark, Hitam di Light) */
+}
+
+/* Typography di dalam Struk */
+.he-receipt-content h5, 
+.he-receipt-content span, 
+.he-receipt-content div,
+.he-receipt-content p,
+.he-receipt-content .value {
+  color: var(--sb-text-main); /* FIX: Jangan dipaksa hitam */
+}
+
+.he-receipt-content .label {
+  color: var(--sb-text-muted);
+}
+.he-receipt-content .text-muted {
+  color: var(--sb-text-muted) !important;
+}
+.he-receipt-content .text-primary {
+  color: var(--sb-accent) !important;
+}
+.he-receipt-content .text-success {
+  color: #10b981 !important;
+}
+
+/* Baris Item Struk */
+.he-receipt-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+.he-receipt-row .value {
+  font-weight: 500;
+  text-align: right;
+}
+
+/* EFEK GERIGI (JAGGED EDGE) - Adaptif Warna */
+.he-receipt-edge {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  background-size: 20px 20px;
+  background-repeat: repeat-x;
+  z-index: 2;
+}
+
+.he-receipt-edge.top {
+  top: -11px;
+  /* Gunakan variabel background card untuk warnanya */
+  background: linear-gradient(45deg, transparent 33.333%, var(--sb-card-bg) 33.333%, var(--sb-card-bg) 66.667%, transparent 66.667%), 
+              linear-gradient(-45deg, transparent 33.333%, var(--sb-card-bg) 33.333%, var(--sb-card-bg) 66.667%, transparent 66.667%);
+  background-size: 12px 24px;
+  height: 12px;
+  transform: rotate(180deg); 
+}
+
+.he-receipt-edge.bottom {
+  bottom: -11px;
+  background: linear-gradient(45deg, transparent 33.333%, var(--sb-card-bg) 33.333%, var(--sb-card-bg) 66.667%, transparent 66.667%), 
+              linear-gradient(-45deg, transparent 33.333%, var(--sb-card-bg) 33.333%, var(--sb-card-bg) 66.667%, transparent 66.667%);
+  background-size: 12px 24px;
+  height: 12px;
+}
+
+/* --- NEW: GLASS INPUT STYLE (Untuk Promo Code) --- */
+.he-glass-input {
+  background: rgba(255, 255, 255, 0.05); /* Gelap transparan */
+  border: 1px solid var(--sb-card-border);
+  border-radius: 50px;
+  padding: 12px 15px 12px 45px; /* Padding kiri besar untuk icon */
+  color: var(--sb-text-main);    /* Ikuti tema */
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.he-glass-input::placeholder {
+  color: var(--sb-text-muted);
+  opacity: 0.5;
+}
+
+.he-glass-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--sb-accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Light Mode Override untuk Input */
+[data-theme="light"] .he-glass-input {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+/* --- FIX: STICKY FOOTER BUTTON TEXT COLOR --- */
+.he-mobile-sticky-footer .btn {
+  color: #ffffff !important; /* Paksa teks putih */
+}
+
+/* Khusus Light Mode: Pastikan background tombol tetap kontras (Biru Accent) */
+[data-theme="light"] .he-mobile-sticky-footer .btn {
+  background: var(--sb-accent) !important; 
+  border-color: var(--sb-accent) !important;
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3) !important;
+}
+
+  /* =========================================================
+     FASE 5-B: PAYMENT PAGES (GATEWAY & SUCCESS)
+     ========================================================= */
+
+  /* --- PAYMENT SIMULATION --- */
+  .he-mobile-payment-wrapper {
+    background-color: #111; /* Dark Background khusus Payment */
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* Timer Sticky Bar */
+  .he-mobile-timer-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: #b91c1c; /* Merah untuk urgensi */
+    padding: 10px 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  .he-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    width: 100%;
+  }
+
+  .he-mobile-qr-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  /* Accordion Item */
+  .he-mobile-accordion-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .he-accordion-btn {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: #fff;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .he-accordion-body {
+    padding: 0 15px 15px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  /* --- SUCCESS PAGE --- */
+  .he-mobile-success-wrapper {
+    background: var(--sb-accent); /* Full Blue Background */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .he-success-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Animasi Centang */
+  .he-success-icon-anim {
+    width: 100px;
+    height: 100px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--sb-accent);
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .he-mobile-success-ticket {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    width: 100%;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: left;
+  }
+
+  .he-divider-dashed {
+    border-top: 2px dashed #eee;
+    width: 100%;
+  }
+
+  /* =========================================================
+     FASE 6: NOTIFICATIONS FEED
+     ========================================================= */
+
+  .he-mobile-notif-wrapper {
+    background-color: var(--sb-bg-secondary);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  .he-notif-group-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--sb-text-muted);
+    margin-bottom: 15px;
+    padding-left: 5px;
+  }
+
+  /* Kartu Notifikasi */
+  .he-notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 16px;
+    padding: 15px;
+    position: relative;
+    /* transition: transform 0.2s; */
+  }
+  
+  .he-notif-item:active {
+    background: var(--sb-bg-tertiary);
+  }
+
+  /* Fix Light Mode Notif Card */
+  [data-theme="light"] .he-notif-item {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+
+  /* Ikon Bulat */
+  .he-notif-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .he-notif-content {
+    flex: 1;
+  }
+
+  .he-notif-time {
+    color: var(--sb-text-muted);
+    font-size: 0.75rem;
+  }
+
+  /* Indikator Belum Dibaca (Titik Merah) */
+  .he-notif-unread-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    margin-top: 5px;
+  }
+
+  /* Empty State Icon */
+  .he-notif-empty-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--sb-text-muted);
+    margin: 0 auto;
+  }
+
+  /* =========================================================
+     FASE 7: STATIC PAGES (ABOUT & FAQ)
+     ========================================================= */
+
+  /* --- ABOUT PAGE --- */
+  .he-mobile-about-fix {
+    padding-top: 0 !important;
+  }
+  
+  .he-about-hero {
+    height: 60vh; /* Lebih pendek di mobile */
+  }
+  
+  .he-about-hero-title {
+    font-size: 3rem;
+  }
+  
+  .stroke-text {
+    -webkit-text-stroke: 1px #fff;
+    color: transparent;
+  }
+  
+  .text-highlight-static {
+    color: var(--sb-accent);
+    font-style: italic;
+  }
+  
+  .he-about-stats-row {
+    flex-direction: column;
+    gap: 30px;
+    padding: 30px 0;
+    border-top: 1px solid var(--sb-card-border);
+    border-bottom: 1px solid var(--sb-card-border);
+  }
+  
+  .he-about-stat {
+    border-right: none;
+    border-bottom: 1px solid var(--sb-card-border);
+    padding-bottom: 20px;
+  }
+  .he-about-stat:last-child {
+    border-bottom: none;
+  }
+
+  /* --- FAQ PAGE --- */
+  .he-faq-wrapper {
+    min-height: 100vh;
+    background-color: var(--sb-bg-secondary);
+  }
+
+  /* Accordion Custom */
+  .he-accordion .accordion-item {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  
+  .he-accordion .accordion-button {
+    background: transparent;
+    color: var(--sb-text-main);
+    font-weight: 600;
+    padding: 20px;
+    box-shadow: none;
+  }
+  
+  .he-accordion .accordion-button:not(.collapsed) {
+    color: var(--sb-accent);
+    background: rgba(59, 130, 246, 0.05);
+  }
+  
+  .he-accordion .accordion-body {
+    color: var(--sb-text-muted);
+    padding: 0 20px 20px 20px;
+    line-height: 1.6;
+  }
+  
+  .he-faq-number {
+    color: var(--sb-accent);
+    font-family: "Outfit", sans-serif;
+    font-weight: 800;
+    margin-right: 15px;
+    opacity: 0.5;
+  }
+  
+  .he-faq-contact-card {
+    background: var(--sb-card-bg);
+    border: 1px solid var(--sb-card-border);
+  }
+  
+  /* Fix Light Mode Accordion */
+  [data-theme="light"] .he-accordion .accordion-item {
+    background: #fff;
+    border-color: #e2e8f0;
+  }
+}
+
+/* --- DESKTOP VIEW FIX (Agar Panah Tidak Muncul di Laptop) --- */
+@media (min-width: 992px) {
+ /* 1. JANGAN sembunyikan grup, tapi matikan efek 'drawer' mobile-nya */
+  .he-theme-control-group {
+    display: block !important;       /* Munculkan kembali */
+    position: static !important;     /* Hapus posisi fixed laci */
+    transform: none !important;      /* Hapus efek geser menyamping */
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+  }
+  
+  /* 2. Sembunyikan TOMBOL PANAH saja (karena desktop tidak butuh laci) */
+  .he-theme-arrow-trigger {
+    display: none !important;
+  }
+
+  /* 3. Atur ulang Tombol Theme (FAB) ke posisi pojok kanan bawah standar */
+  .he-theme-fab {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 9999;
+    
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    
+    /* Reset style mobile */
+    margin-left: 0 !important; 
+    
+    /* Style Visual Desktop */
+    background: var(--glass-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--sb-text-main) !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  /* Hover Effect Desktop */
+  .he-theme-fab:hover {
+    transform: scale(1.1) rotate(15deg);
+    background: var(--sb-accent) !important;
+    border-color: var(--sb-accent) !important;
+    color: #fff !important;
+    box-shadow: 0 0 20px var(--sb-accent) !important;
+  }
+}
+
+/* =========================================================
+   MODAL STYLES (REQUIRED FOR ADDRESS POPUP)
+   ========================================================= */
+
+.pe-modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.pe-modal-glass {
+  background: var(--sb-card-bg);
+  border: 1px solid var(--sb-card-border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 500px;
+  padding: 25px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  animation: slideUpModal 0.3s ease;
+}
+
+/* Fix Modal di Light Mode */
+[data-theme="light"] .pe-modal-glass {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.pe-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--sb-card-border);
+  padding-bottom: 15px;
+}
+
+.pe-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--sb-text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.pe-input-glass {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--sb-card-border);
+  border-radius: 12px;
+  padding: 12px 15px;
+  color: var(--sb-text-main);
+  outline: none;
+  transition: all 0.3s;
+}
+
+[data-theme="light"] .pe-input-glass {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.pe-input-glass:focus {
+  border-color: var(--sb-accent);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pe-action-btn {
+  background: var(--sb-accent);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.pe-action-btn:active {
+  transform: scale(0.98);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* =================================================================
+   FIX 5 (REVISI): POPULAR STORE CARDS (LIGHT MODE FIX)
+   Memastikan teks putih terbaca di atas kaca gelap, TAPI
+   ikon GPS tetap biru (Accent Color).
+   ================================================================= */
+
+/* 1. Paksa Nama Toko jadi Putih (Wajib terbaca) */
+.he-store-name-wide,
+[data-theme="light"] .he-store-name-wide {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* 2. Paksa Info Meta (Jarak/Kategori) jadi Putih Pudar */
+.he-store-meta-wide,
+[data-theme="light"] .he-store-meta-wide,
+[data-theme="light"] .he-store-meta-wide span {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* 3. PERBAIKAN UTAMA: Ikon GPS (Map Marker) Wajib Biru/Accent */
+/* Kita target class ikon spesifik (biasanya fa-map-marker-alt) */
+.he-store-meta-wide i,
+[data-theme="light"] .he-store-meta-wide i {
+    color: var(--sb-accent) !important; /* Paksa Biru */
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5)); /* Tambah Glow Biru */
+}
+
+/* 4. Jika ada ikon lain (selain GPS) yang ingin putih, bisa ditarget terpisah */
+/* Contoh: Ikon jam atau user */
+[data-theme="light"] .he-store-meta-wide i:not(.fa-map-marker-alt):not(.fa-location-dot) {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* 5. Tombol Panah Action */
+[data-theme="light"] .he-store-action-btn {
+    background: #ffffff;
+    color: #000000;
+}
+[data-theme="light"] .he-store-card-wide:hover .he-store-action-btn {
+    background: var(--sb-accent);
+    color: #ffffff;
+}
+
+/* 1. Glass Modal Content Wrapper */
+.pe-modal-glass-content {
+  background: rgba(20, 20, 30, 0.75) !important; /* Latar belakang ultra-transparan */
+  backdrop-filter: blur(25px) saturate(120%) !important; /* Efek kaca buram kuat */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Border tipis */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important; /* Bayangan lembut */
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+/* 2. Glass Modal Header */
+.pe-modal-glass-header {
+  background: rgba(255, 255, 255, 0.03); /* Sedikit lebih terang dari body */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pe-modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  background: linear-gradient(to right, #fff, var(--pe-text-muted));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.5px;
+}
+
+/* Custom Close Button for dark mode glass */
+.btn-close-glass {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+.btn-close-glass:hover {
+  opacity: 1;
+  transform: rotate(90deg);
+}
+
+/* 3. Glass Form Inputs & Selects */
+.pe-input-glass,
+.pe-select-glass {
+  background-color: rgba(255, 255, 255, 0.05) !important; /* Latar input transparan */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--pe-text-main) !important;
+  border-radius: 10px !important;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.pe-input-glass::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-weight: 400;
+}
+
+/* Efek saat input diklik/fokus */
+.pe-input-glass:focus,
+.pe-select-glass:focus {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--pe-accent) !important; /* Border menyala warna aksen */
+  box-shadow: 0 0 0 3px rgba(var(--pe-accent-rgb), 0.15) !important; /* Glow effect */
+  outline: none;
+}
+
+/* Fix untuk dropdown select di dark mode browser */
+.pe-select-glass option {
+  background-color: #1a1a2e; /* Warna solid gelap untuk opsi dropdown */
+  color: white;
+}
+
+/* Label Form */
+.pe-form-label {
+  color: var(--pe-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Tombol Submit dengan efek glow */
+.pe-btn-submit-glass {
+  background: var(--pe-accent);
+  border: none;
+  color: white;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 12px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 20px rgba(var(--pe-accent-rgb), 0.4);
+  transition: all 0.3s ease;
+}
+
+.pe-btn-submit-glass:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(var(--pe-accent-rgb), 0.6);
+}
+
+/* =========================================
+   FIX: NAVBAR LIGHT MODE
+   Memastikan Navbar bersih & putih di Light Mode
+   ========================================= */
+
+/* Default (Dark Mode) - Tetap gunakan Glass/Dark */
+.navbar {
+  background-color: var(--pe-sidebar-bg-glass) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--pe-card-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Force White on Light Mode */
+[data-theme="light"] .navbar,
+[data-theme="light"] .navbar.bg-dark, 
+[data-theme="light"] .navbar.navbar-dark {
+  background-color: #ffffff !important; /* Paksa Putih Solid */
+  border-bottom: 1px solid #e5e7eb !important; /* Border abu tipis */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Bayangan halus */
+}
+
+/* Pastikan Teks & Link Navbar menjadi Gelap di Light Mode */
+[data-theme="light"] .navbar .nav-link,
+[data-theme="light"] .navbar .navbar-brand,
+[data-theme="light"] .navbar i {
+  color: #111827 !important; /* Teks Hitam Pekat */
+}
+
+/* Hover State untuk Link di Light Mode */
+[data-theme="light"] .navbar .nav-link:hover {
+  color: var(--pe-accent) !important;
+  background-color: rgba(0, 0, 0, 0.03); /* Efek hover tipis */
+  border-radius: 8px;
+}
+/* =========================================
+   FIX: NAVBAR HOMEPAGE & SCROLL BEHAVIOR
+   ========================================= */
+
+/* 1. POSISI PALING ATAS (Transparent) 
+   Memaksa Navbar Transparan & Teks PUTIH di SEMUA MODE.
+*/
+[data-theme="light"] .sb-navbar-transparent,
+[data-theme="dark"] .sb-navbar-transparent,
+.sb-navbar-transparent {
+  background-color: transparent !important;
+  background: transparent !important;
+  border-bottom: 1px solid transparent !important;
+  box-shadow: none !important;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* A. TEKS MENU (Home, About, dll) - Force White */
+[data-theme="light"] .sb-navbar-transparent .nav-link,
+[data-theme="light"] .sb-navbar-transparent .navbar-brand,
+[data-theme="light"] .sb-navbar-transparent i,
+[data-theme="light"] .sb-navbar-transparent button,
+.sb-navbar-transparent .nav-link,
+.sb-navbar-transparent .navbar-brand,
+.sb-navbar-transparent i,
+.sb-navbar-transparent button {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* B. TOMBOL LOGIN / SIGNUP (Masalah Utama) - Force White 
+   Kita targetkan elemen <a>, <span>, dan <i> secara spesifik agar tidak "bocor"
+*/
+html[data-theme="light"] .sb-navbar-transparent .he-btn-navbar,
+html[data-theme="light"] .sb-navbar-transparent .he-btn-navbar span,
+html[data-theme="light"] .sb-navbar-transparent .he-btn-navbar i,
+.sb-navbar-transparent .he-btn-navbar,
+.sb-navbar-transparent .he-btn-navbar span,
+.sb-navbar-transparent .he-btn-navbar i {
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+  background: transparent !important; /* Pastikan background transparan */
+  text-shadow: none !important;
+}
+
+/* Hover Effect Tombol Login di Atas */
+html[data-theme="light"] .sb-navbar-transparent .he-btn-navbar:hover,
+.sb-navbar-transparent .he-btn-navbar:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+/* 2. POSISI SAAT DISCROLL (Glass/Solid) 
+   Kembali ke perilaku normal: Hitam di Light, Putih di Dark.
+*/
+.sb-navbar-glass {
+  background-color: var(--pe-sidebar-bg-glass) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--pe-card-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Light Mode: Semua Teks & Tombol Login jadi HITAM */
+[data-theme="light"] .sb-navbar-glass .nav-link,
+[data-theme="light"] .sb-navbar-glass .navbar-brand,
+[data-theme="light"] .sb-navbar-glass i,
+[data-theme="light"] .sb-navbar-glass button,
+html[data-theme="light"] .sb-navbar-glass .he-btn-navbar,      /* Target Link */
+html[data-theme="light"] .sb-navbar-glass .he-btn-navbar span, /* Target Teks Span */
+html[data-theme="light"] .sb-navbar-glass .he-btn-navbar i     /* Target Icon */
+{
+  color: #111827 !important;
+  border-color: #111827 !important;
+  text-shadow: none;
+}
+
+/* Dark Mode: Tetap Putih */
+[data-theme="dark"] .sb-navbar-glass .nav-link,
+[data-theme="dark"] .sb-navbar-glass .navbar-brand,
+[data-theme="dark"] .sb-navbar-glass .he-btn-navbar {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* =================================================================
+   FIX: HOW IT WORKS SECTION (LIGHT MODE ICONS)
+   Masalah: Ikon menjadi hitam (ikut tema) padahal backgroundnya tetap Biru.
+   Solusi: Paksa ikon tetap Putih di dalam lingkaran biru.
+   ================================================================= */
+
+[data-theme="light"] .he-process-icon {
+    /* 1. Paksa warna ikon menjadi PUTIH (agar kontras dengan background biru) */
+    color: #ffffff !important; 
+    
+    /* 2. Sesuaikan border luar agar menyatu dengan background putih halaman */
+    border-color: var(--sb-bg-primary); 
+
+    /* 3. Haluskan bayangan agar tidak terlalu keras di mode terang */
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Opsional: Jika ingin angka besar di latar belakang (01, 02) lebih terlihat */
+[data-theme="light"] .he-process-number {
+    color: rgba(0, 0, 0, 0.03) !important; /* Abu sangat tipis */
+}

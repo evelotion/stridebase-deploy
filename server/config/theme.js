@@ -1,4 +1,4 @@
-// File: server/config/theme.js (Lengkap)
+// File: server/config/theme.js
 
 import fs from "fs";
 import path from "path";
@@ -31,9 +31,12 @@ export async function loadThemeConfig() {
       : {};
 
     const mainTheme = mainThemeSetting ? mainThemeSetting.value : fileConfig;
+    
+    // [PERUBAHAN PENTING] Ubah default fallback menjadi 'elevate'
+    // Artinya: Jika tidak ada setting di DB, otomatis pakai tema Elevate
     const homePageTheme = homePageThemeSetting
       ? homePageThemeSetting.value
-      : "classic";
+      : "elevate"; 
 
     // Gabungkan keduanya menjadi satu objek konfigurasi
     currentThemeConfig = {
@@ -41,14 +44,16 @@ export async function loadThemeConfig() {
       homePageTheme: homePageTheme,
     };
 
-    console.log("🎨 Tema berhasil dimuat dan digabungkan.");
+    console.log(`🎨 Tema berhasil dimuat: ${currentThemeConfig.homePageTheme}`);
   } catch (error) {
     console.error("❌ Gagal memuat konfigurasi tema:", error);
     // Fallback jika database error, gunakan file lokal
     currentThemeConfig = fs.existsSync(themeConfigPath)
       ? JSON.parse(fs.readFileSync(themeConfigPath, "utf8"))
       : {};
-    currentThemeConfig.homePageTheme = "classic"; // Pastikan ada nilai default
+    
+    // [PERUBAHAN PENTING] Pastikan nilai default tetap 'elevate' saat error
+    currentThemeConfig.homePageTheme = "elevate"; 
   }
 }
 

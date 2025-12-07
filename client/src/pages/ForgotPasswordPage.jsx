@@ -1,17 +1,14 @@
-// File: client/src/pages/ForgotPasswordPage.jsx (Versi Desain Baru)
+// File: client/src/pages/ForgotPasswordPage.jsx
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { forgotPasswordUser } from "../services/apiService"; // Gunakan apiService
+import { forgotPasswordUser } from "../services/apiService";
+import "./HomePageElevate.css"; // Pastikan CSS Elevate terhubung
 
-const ForgotPasswordPage = ({ showMessage, theme }) => {
+const ForgotPasswordPage = ({ showMessage }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const imageUrl =
-    theme?.authPageTheme?.sidebarImageUrl ||
-    "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop";
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -19,7 +16,7 @@ const ForgotPasswordPage = ({ showMessage, theme }) => {
     try {
       await forgotPasswordUser({ email });
       showMessage(
-        "Jika email terdaftar, kami telah mengirimkan link untuk reset password.",
+        "Jika email terdaftar, kami telah mengirimkan link reset password.",
         "Success"
       );
     } catch (err) {
@@ -30,69 +27,82 @@ const ForgotPasswordPage = ({ showMessage, theme }) => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="he-auth-portal-wrapper">
       <Helmet>
-        <title>Lupa Password | StrideBase</title>
+        <title>Reset Password | StrideBase</title>
       </Helmet>
-      <div className="row g-0 vh-100">
-        {/* Kolom Kiri: Gambar Branding */}
-        <div
-          className="col-lg-7 d-none d-lg-flex auth-image-panel"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+
+      <div className="he-auth-portal-overlay"></div>
+
+      {/* COMPACT CENTERED CARD */}
+      <div
+        className="he-auth-card"
+        style={{ maxWidth: "400px", padding: "2.5rem 2rem" }}
+      >
+        <Link
+          to="/"
+          className="he-auth-logo-text"
+          style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}
         >
-          <div className="auth-image-overlay">
-            <h1 className="display-4 fw-bold text-white">Jangan Panik.</h1>
-            <p className="lead text-white-75">
-              Kami akan membantu Anda mendapatkan kembali akses ke akun Anda.
-            </p>
-          </div>
-        </div>
+          StrideBase.
+        </Link>
 
-        {/* Kolom Kanan: Form */}
-        <div className="col-lg-5 d-flex align-items-center justify-content-center auth-form-panel">
-          <div className="auth-form-container">
-            <div className="text-center mb-5">
-              <h3 className="fw-bold">Lupa Password Anda?</h3>
-              <p className="text-muted">
-                Masukkan email Anda, kami akan kirimkan tautan untuk mengatur
-                ulang password.
-              </p>
-            </div>
-            <form onSubmit={submitHandler}>
-              <div className="form-floating mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="name@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <label htmlFor="email">Alamat Email</label>
-              </div>
+        <h2 className="he-auth-heading" style={{ fontSize: "1.75rem" }}>
+          Forgot Password?
+        </h2>
+        <p
+          className="he-auth-sub"
+          style={{ fontSize: "0.9rem", marginBottom: "2rem" }}
+        >
+          Enter your email to receive reset instructions.
+        </p>
 
-              <div className="d-grid mt-4">
-                <button
-                  type="submit"
-                  className="btn btn-dark btn-lg"
-                  disabled={loading}
-                >
-                  {loading ? "Mengirim..." : "Kirim Tautan Reset"}
-                </button>
-              </div>
-              <p className="text-center mt-4">
-                Ingat password Anda? <Link to="/login">Kembali ke Login</Link>
-              </p>
-            </form>
+        <form onSubmit={submitHandler}>
+          <div className="he-auth-field" style={{ marginBottom: "1.5rem" }}>
+            <label className="he-auth-label" style={{ fontSize: "0.75rem" }}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              className="he-auth-input-glass"
+              style={{ padding: "12px 16px", fontSize: "0.95rem" }}
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
+
+          <button
+            type="submit"
+            className="he-auth-submit-btn"
+            style={{
+              padding: "12px",
+              fontSize: "0.95rem",
+              marginTop: "0.5rem",
+            }}
+            disabled={loading}
+          >
+            {loading ? "Sending Link..." : "Send Reset Link"}
+          </button>
+        </form>
+
+        <div
+          className="he-auth-footer"
+          style={{
+            marginTop: "1.5rem",
+            paddingTop: "1rem",
+            fontSize: "0.85rem",
+          }}
+        >
+          Remember your password?
+          <Link to="/login" className="he-auth-link-bold">
+            Back to Sign In
+          </Link>
         </div>
       </div>
     </div>
   );
 };
-
-// Tambahkan fungsi baru ini ke dalam apiService.js jika belum ada
-// export const forgotPasswordUser = (data) => apiRequest('/api/auth/forgot-password', 'POST', data);
 
 export default ForgotPasswordPage;

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Store" ADD COLUMN     "contractFee" DOUBLE PRECISION DEFAULT 0;

@@ -134,10 +134,11 @@ model Store {
   owner            User              @relation(fields: [ownerId], references: [id])
   ownerId          String
   storeStatus      StoreStatus       @default(pending)
-  billingType      String            @default("COMMISSION")
-  commissionRate   Float             @default(10)
-  subscriptionFee  Float?
-  tier             Tier              @default(BASIC)
+  billingType     String            @default("COMMISSION") // "COMMISSION" atau "CONTRACT"
+  commissionRate  Float             @default(10)           // Dipakai jika COMMISSION
+  contractFee     Float?            @default(0)            // Dipakai jika CONTRACT (Nilai tagihan bulanan)
+  subscriptionFee Float?            // (Legacy/Optional) Bisa dibiarkan atau dihapus nanti
+  tier            Tier              @default(BASIC)        // (Legacy)
   rating           Float             @default(0)
   photoLimit       Int               @default(5)
   createdAt        DateTime          @default(now())
@@ -258,8 +259,10 @@ model Booking {
 }
 model Payment {
   id              String   @id @default(cuid())
-  booking         Booking  @relation(fields: [bookingId], references: [id])
-  bookingId       String   @unique
+ booking         Booking? @relation(fields: [bookingId], references: [id])
+  bookingId       String?  @unique
+  invoice         Invoice? @relation(fields: [invoiceId], references: [id])
+  invoiceId       String?  @unique
   amount          Float
   status          String   @default("pending")
   midtransToken   String?
@@ -267,7 +270,6 @@ model Payment {
   paymentMethod   String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  invoice         Invoice?
 }
 
 model PlatformEarning {
@@ -384,9 +386,8 @@ model Invoice {
   notes         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  payment       Payment?  @relation(fields: [paymentId], references: [id])
-  paymentId     String?   @unique
-  issuedById    String?
+  payment       Payment?
+ issuedById    String?
   issuer        User?     @relation("InvoiceIssuer", fields: [issuedById], references: [id])
   store         Store     @relation(fields: [storeId], references: [id])
   storeId       String

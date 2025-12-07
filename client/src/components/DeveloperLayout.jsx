@@ -1,92 +1,150 @@
-  import React from "react";
-  import { NavLink, Outlet, useNavigate } from "react-router-dom";
-  import "../admin.css";
+// File: client/src/components/DeveloperLayout.jsx
 
-  const DeveloperLayout = () => {
-    const navigate = useNavigate();
+import React, { useState, useEffect } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import "../admin.css";
+import "../styles/ElevateDashboard.css";
 
-    const handleLogout = (e) => {
-      e.preventDefault();
-      if (confirm("Apakah Anda yakin ingin logout?")) {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        navigate("/");
-        window.location.reload();
-      }
-    };
+const DeveloperLayout = () => {
+  const navigate = useNavigate();
 
-    return (
-      <div className="d-flex" id="wrapper">
-        {/* --- Sidebar untuk Desktop --- */}
-        <aside id="sidebar-wrapper" className="d-none d-lg-flex">
-          <div className="sidebar-heading">
-            <NavLink className="navbar-brand" to="/developer/dashboard">
-              <span className="fs-5">👑 SuperUser Panel</span>
-            </NavLink>
-          </div>
-          <ul className="list-group list-group-flush">
-            <li className="list-group-item">
-              <NavLink to="/" className="nav-link-admin">
-                <i className="fas fa-home me-2"></i>Kembali ke Situs
-              </NavLink>
-            </li>
-            <hr className="m-0" />
-            <li className="list-group-item">
-              <NavLink to="/developer/dashboard" className="nav-link-admin">
-                <i className="fas fa-cogs me-2"></i>Global Config
-              </NavLink>
-            </li>
-            <li className="list-group-item logout mt-auto">
-              <a
-                href="#"
-                onClick={handleLogout}
-                className="nav-link-admin text-danger"
-              >
-                <i className="fas fa-sign-out-alt me-2"></i>Logout
-              </a>
-            </li>
-          </ul>
-        </aside>
+  // --- LOGIC TEMA (LIGHT/DARK) ---
+  const [isLightMode, setIsLightMode] = useState(() => {
+    const saved = localStorage.getItem("devTheme");
+    return saved === "light";
+  });
 
-        <main id="page-content-wrapper">
-          {/* --- Header Mobile Baru --- */}
-          <nav className="navbar navbar-light bg-light border-bottom d-lg-none admin-mobile-nav">
-            <div className="container-fluid">
-              <div className="dropdown">
-                <button
-                  className="btn"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i className="fas fa-bars"></i>
-                </button>
-                <ul className="dropdown-menu">
-                  <li>
-                    <NavLink className="dropdown-item" to="/developer/dashboard">
-                      Global Config
-                    </NavLink>
-                  </li>
-                  <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <NavLink className="dropdown-item" to="/">
-                      Kembali ke Situs
-                    </NavLink>
-                  </li>
-                </ul>
-              </div>
-              <span className="navbar-brand mb-0 h1">SuperUser</span>
-              <a href="#" onClick={handleLogout} className="btn text-danger">
-                <i className="fas fa-sign-out-alt"></i>
-              </a>
-            </div>
-          </nav>
-          <Outlet />
-        </main>
-      </div>
-    );
+  useEffect(() => {
+    const wrapper = document.getElementById("dev-elevate-wrapper");
+    if (wrapper) {
+      wrapper.setAttribute("data-theme", isLightMode ? "light" : "dark");
+    }
+    localStorage.setItem("devTheme", isLightMode ? "light" : "dark");
+  }, [isLightMode]);
+
+  const toggleTheme = () => {
+    setIsLightMode(!isLightMode);
   };
 
-  export default DeveloperLayout;
+  const handleLogout = (e) => {
+    e.preventDefault();
+    if (confirm("Apakah Anda yakin ingin logout?")) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      navigate("/");
+      window.location.reload();
+    }
+  };
+
+  return (
+    <div id="dev-elevate-wrapper" className="pe-layout-wrapper">
+      {/* --- SIDEBAR DEVELOPER --- */}
+      <aside
+        className="pe-sidebar"
+        style={{ borderRightColor: "var(--pe-accent-dev)" }}
+      >
+        <NavLink className="pe-sidebar-brand" to="/developer/dashboard">
+          <i
+            className="fas fa-crown me-2"
+            style={{ color: "var(--pe-accent-dev)" }}
+          ></i>
+          <span>
+            SuperUser
+            <span
+              className="pe-subtitle ms-1 fw-normal"
+              style={{ fontSize: "0.7rem" }}
+            >
+              PANEL
+            </span>
+          </span>
+        </NavLink>
+
+        <div className="pe-sidebar-menu">
+          <NavLink to="/" className="pe-nav-link mb-3" style={{ opacity: 0.7 }}>
+            <i className="fas fa-arrow-left"></i> Back to Site
+          </NavLink>
+
+          <NavLink
+            to="/developer/dashboard"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-cogs"></i> Global Config
+          </NavLink>
+
+          {/* Anda bisa menambahkan menu developer lain di sini nanti */}
+
+          <NavLink
+            to="/admin/dashboard"
+            className="pe-nav-link mt-3"
+            style={{ color: "var(--pe-info)" }}
+          >
+            <i className="fas fa-user-shield"></i> Switch to Admin
+          </NavLink>
+
+          <a
+            href="#"
+            onClick={handleLogout}
+            className="pe-nav-link mt-auto text-danger"
+          >
+            <i className="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
+      </aside>
+
+      {/* --- MAIN CONTENT --- */}
+      <main className="pe-main-content">
+        <nav className="pe-mobile-header d-lg-none">
+          <NavLink className="pe-mobile-brand fs-5" to="/developer/dashboard">
+            SuperUser Panel
+          </NavLink>
+          <div className="dropdown">
+            <button
+              className="btn btn-sm border-secondary pe-btn-action"
+              type="button"
+              data-bs-toggle="dropdown"
+            >
+              <i className="fas fa-bars"></i>
+            </button>
+            <ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-dark border-secondary">
+              <li>
+                <NavLink className="dropdown-item" to="/developer/dashboard">
+                  Global Config
+                </NavLink>
+              </li>
+              <li>
+                <hr className="dropdown-divider border-secondary" />
+              </li>
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="dropdown-item text-danger"
+                >
+                  Logout
+                </button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <Outlet />
+
+        <button
+          className="pe-theme-fab"
+          onClick={toggleTheme}
+          title="Toggle Theme"
+          style={{ borderColor: "var(--pe-accent-dev)" }}
+        >
+          {isLightMode ? (
+            <i className="fas fa-moon"></i>
+          ) : (
+            <i className="fas fa-sun"></i>
+          )}
+        </button>
+      </main>
+    </div>
+  );
+};
+
+export default DeveloperLayout;

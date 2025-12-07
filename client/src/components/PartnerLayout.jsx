@@ -1,17 +1,46 @@
-import React from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import "../admin.css"; // Menggunakan CSS yang sama dengan admin untuk konsistensi
+// File: client/src/components/PartnerLayout.jsx
+
+import React, { useState, useEffect } from "react";
+import {
+  NavLink,
+  Outlet,
+  useNavigate,
+  Link,
+  useLocation,
+} from "react-router-dom";
+import PartnerMobileBottomNav from "./PartnerMobileBottomNav"; // Import komponen baru
+import "../styles/ElevateDashboard.css";
+import "../pages/PartnerElevate.css";
 
 const PartnerLayout = ({ theme }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  // Menentukan apakah menu upgrade harus ditampilkan berdasarkan theme config
+  // --- LOGIC TEMA ---
+  const [isLightMode, setIsLightMode] = useState(() => {
+    const saved = localStorage.getItem("partnerTheme");
+    return saved === "light";
+  });
+
+  useEffect(() => {
+    const wrapper = document.getElementById("partner-elevate-wrapper");
+    if (wrapper) {
+      wrapper.setAttribute("data-theme", isLightMode ? "light" : "dark");
+    }
+    localStorage.setItem("partnerTheme", isLightMode ? "light" : "dark");
+  }, [isLightMode]);
+
+  const toggleTheme = () => {
+    setIsLightMode(!isLightMode);
+  };
+
   const showUpgradeMenu =
     theme?.featureFlags?.enableTierSystem &&
     theme?.featureFlags?.enableProTierUpgrade;
 
   const handleLogout = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (confirm("Apakah Anda yakin ingin logout?")) {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
@@ -20,164 +49,233 @@ const PartnerLayout = ({ theme }) => {
     }
   };
 
+  // Helper: Judul Halaman Mobile Dinamis
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path.includes("/dashboard")) return "Dashboard Mitra";
+    if (path.includes("/orders")) return "Pesanan Masuk";
+    if (path.includes("/services")) return "Layanan & Harga";
+    if (path.includes("/wallet")) return "Saldo Dompet";
+    if (path.includes("/settings")) return "Pengaturan Toko";
+    if (path.includes("/reviews")) return "Ulasan Pelanggan";
+    return "Partner Area";
+  };
+
+  const getInitials = (name) =>
+    name ? name.substring(0, 2).toUpperCase() : "P";
+
   return (
-    <div className="d-flex" id="wrapper">
-      {/* --- Sidebar untuk Desktop (d-none d-lg-flex) --- */}
-      <aside id="sidebar-wrapper" className="d-none d-lg-flex">
-        <div className="sidebar-heading">
-          <NavLink className="navbar-brand" to="/partner/dashboard">
-            <span className="fs-5">StrideBase Partner</span>
-          </NavLink>
-        </div>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">
-            <NavLink to="/" className="nav-link-admin">
-              <i className="fas fa-home me-2"></i>Kembali ke Situs
-            </NavLink>
-          </li>
-          <hr className="m-0" />
-          <li className="list-group-item">
-            <NavLink to="/partner/dashboard" className="nav-link-admin">
-              <i className="fas fa-tachometer-alt me-2"></i>Dashboard
-            </NavLink>
-          </li>
-          {showUpgradeMenu && (
-            <li className="list-group-item">
-              <NavLink
-                to="/partner/upgrade"
-                className="nav-link-admin text-info"
-              >
-                <i className="fas fa-crown me-2"></i>Upgrade ke PRO
-              </NavLink>
-            </li>
-          )}
-          <li className="list-group-item">
-            <NavLink to="/partner/orders" className="nav-link-admin">
-              <i className="fas fa-receipt me-2"></i>Pesanan Masuk
-            </NavLink>
-          </li>
-          {/* 👇 BARIS BARU DITAMBAHKAN DI SINI 👇 */}
-          <li className="list-group-item">
-            <NavLink to="/partner/wallet" className="nav-link-admin">
-              <i className="fas fa-wallet me-2"></i>Dompet & Penarikan
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/reviews" className="nav-link-admin">
-              <i className="fas fa-star me-2"></i>Ulasan Pelanggan
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/reports" className="nav-link-admin">
-              <i className="fas fa-chart-line me-2"></i>Laporan & Analitik
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/promos" className="nav-link-admin">
-              <i className="fas fa-tags me-2"></i>Manajemen Promo
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/services" className="nav-link-admin">
-              <i className="fas fa-concierge-bell me-2"></i>Layanan Saya
-            </NavLink>
-          </li>
-          <li className="list-group-item">
-            <NavLink to="/partner/settings" className="nav-link-admin">
-              <i className="fas fa-cog me-2"></i>Pengaturan Toko
-            </NavLink>
-          </li>
-          <li className="list-group-item logout mt-auto">
-            <a
-              href="#"
-              onClick={handleLogout}
-              className="nav-link-admin text-danger"
+    <div id="partner-elevate-wrapper" className="pe-layout-wrapper">
+      {/* --- DESKTOP SIDEBAR (TETAP SAMA) --- */}
+      <aside className="pe-sidebar">
+        <NavLink className="pe-sidebar-brand" to="/partner/dashboard">
+          <i className="fas fa-cube text-primary"></i>
+          <span>
+            StrideBase
+            <span
+              className="pe-subtitle ms-1 fw-normal"
+              style={{ fontSize: "0.8rem" }}
             >
-              <i className="fas fa-sign-out-alt me-2"></i>Logout
-            </a>
-          </li>
-        </ul>
+              Partner
+            </span>
+          </span>
+        </NavLink>
+
+        <div className="pe-sidebar-menu">
+          <NavLink to="/" className="pe-nav-link mb-3" style={{ opacity: 0.7 }}>
+            <i className="fas fa-arrow-left"></i> Back to Site
+          </NavLink>
+
+          <NavLink
+            to="/partner/dashboard"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-tachometer-alt"></i> Dashboard
+          </NavLink>
+
+          {showUpgradeMenu && (
+            <NavLink
+              to="/partner/upgrade"
+              className={({ isActive }) =>
+                `pe-nav-link upgrade-link ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="fas fa-crown"></i> Upgrade PRO
+            </NavLink>
+          )}
+
+          <NavLink
+            to="/partner/orders"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-receipt"></i> Orders
+          </NavLink>
+
+          <NavLink
+            to="/partner/wallet"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-wallet"></i> Wallet
+          </NavLink>
+
+          <NavLink
+            to="/partner/reviews"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-star"></i> Reviews
+          </NavLink>
+
+          <NavLink
+            to="/partner/reports"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-chart-line"></i> Reports
+          </NavLink>
+
+          <NavLink
+            to="/partner/promos"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-tags"></i> Promos
+          </NavLink>
+
+          <NavLink
+            to="/partner/services"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-concierge-bell"></i> Services
+          </NavLink>
+
+          <NavLink
+            to="/partner/settings"
+            className={({ isActive }) =>
+              `pe-nav-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className="fas fa-cog"></i> Settings
+          </NavLink>
+
+          <a
+            href="#"
+            onClick={handleLogout}
+            className="pe-nav-link logout-link mt-auto"
+          >
+            <i className="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
       </aside>
 
-      <main id="page-content-wrapper">
-        {/* --- Header Mobile Baru (d-lg-none) --- */}
-        <nav className="navbar navbar-light bg-light border-bottom d-lg-none admin-mobile-nav">
-          <div className="container-fluid">
+      {/* --- MAIN CONTENT --- */}
+      <main className="pe-main-content">
+        {/* MOBILE HEADER BARU (APP STYLE) */}
+        <nav className="pe-mobile-header d-lg-none">
+          <div className="d-flex align-items-center gap-2">
+            {/* Logo/Icon Kecil */}
+            <div
+              style={{
+                width: "32px",
+                height: "32px",
+                background: "var(--pe-accent)",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+              }}
+            >
+              <i className="fas fa-store" style={{ fontSize: "0.9rem" }}></i>
+            </div>
+            {/* Judul Halaman Dinamis */}
+            <span className="pe-title fs-6 fw-bold">{getPageTitle()}</span>
+          </div>
+
+          <div className="d-flex align-items-center gap-3">
+            {/* Theme Toggle Mini */}
+            <button
+              onClick={toggleTheme}
+              className="btn btn-sm border-0 p-0"
+              style={{ color: "var(--pe-text-muted)", fontSize: "1.1rem" }}
+            >
+              {isLightMode ? (
+                <i className="fas fa-moon"></i>
+              ) : (
+                <i className="fas fa-sun"></i>
+              )}
+            </button>
+
+            {/* Profile Dropdown */}
             <div className="dropdown">
-              <button
-                className="btn"
-                type="button"
+              <div
+                className="d-flex align-items-center justify-content-center fw-bold"
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  background:
+                    "linear-gradient(135deg, var(--pe-warning), #f59e0b)",
+                  color: "#000",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  fontSize: "0.85rem",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                }}
                 data-bs-toggle="dropdown"
-                aria-expanded="false"
               >
-                <i className="fas fa-bars"></i>
-              </button>
-              <ul className="dropdown-menu">
+                {getInitials(user?.name)}
+              </div>
+              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-adaptive mt-2">
                 <li>
-                  <NavLink className="dropdown-item" to="/partner/dashboard">
-                    Dashboard
-                  </NavLink>
-                </li>
-                {showUpgradeMenu && (
-                  <li>
-                    <NavLink className="dropdown-item" to="/partner/upgrade">
-                      Upgrade ke PRO
-                    </NavLink>
-                  </li>
-                )}
-                <li>
-                  <NavLink className="dropdown-item" to="/partner/orders">
-                    Pesanan Masuk
-                  </NavLink>
-                </li>
-                {/* 👇 BARIS BARU DITAMBAHKAN DI SINI 👇 */}
-                <li>
-                  <NavLink className="dropdown-item" to="/partner/wallet">
-                    Dompet & Penarikan
-                  </NavLink>
+                  <h6 className="dropdown-header">Mitra: {user?.name}</h6>
                 </li>
                 <li>
-                  <NavLink className="dropdown-item" to="/partner/reviews">
-                    Ulasan
-                  </NavLink>
+                  <hr className="dropdown-divider opacity-25" />
                 </li>
                 <li>
-                  <NavLink className="dropdown-item" to="/partner/reports">
-                    Laporan
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink className="dropdown-item" to="/partner/promos">
-                    Promo
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink className="dropdown-item" to="/partner/services">
-                    Layanan
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink className="dropdown-item" to="/partner/settings">
-                    Pengaturan
-                  </NavLink>
-                </li>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <NavLink className="dropdown-item" to="/">
-                    Kembali ke Situs
-                  </NavLink>
+                  <button
+                    onClick={handleLogout}
+                    className="dropdown-item text-danger"
+                  >
+                    Logout
+                  </button>
                 </li>
               </ul>
             </div>
-            <span className="navbar-brand mb-0 h1">Partner Panel</span>
-            <a href="#" onClick={handleLogout} className="btn text-danger">
-              <i className="fas fa-sign-out-alt"></i>
-            </a>
           </div>
         </nav>
-        <Outlet />
+
+        {/* PAGE CONTENT */}
+        <div style={{ minHeight: "100vh", position: "relative" }}>
+          <Outlet />
+        </div>
+
+        {/* FLOATING BOTTOM NAV (MOBILE) */}
+        <PartnerMobileBottomNav />
+
+        {/* FLOATING THEME BUTTON (DESKTOP) */}
+        <button
+          className="pe-theme-fab d-none d-lg-flex"
+          onClick={toggleTheme}
+          title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        >
+          {isLightMode ? (
+            <i className="fas fa-moon"></i>
+          ) : (
+            <i className="fas fa-sun"></i>
+          )}
+        </button>
       </main>
     </div>
   );

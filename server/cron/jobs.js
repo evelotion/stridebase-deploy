@@ -1,21 +1,21 @@
-// File: server/cron/jobs.js (Perbaikan Final)
-
+// File: server/cron/jobs.js
 import cron from 'node-cron';
 import prisma from '../config/prisma.js';
 import { createNotificationForUser, io } from '../socket.js';
 
-// Fungsi ini berisi logika untuk membersihkan booking yang kedaluwarsa
 export const cleanupExpiredBookings = async () => {
-    console.log('Running cron task: Checking for expired bookings...');
+    // HAPUS log ini agar tidak nyampah setiap 5 menit
+    // console.log('Running cron task: Checking for expired bookings...');
     
     try {
         const now = new Date();
         
+        // Cari booking yang pending DAN sudah lewat waktu expired-nya
         const expiredBookings = await prisma.booking.findMany({
             where: {
                 status: 'pending',
                 expiresAt: {
-                    lt: now,
+                    lt: now, // lt = less than (sebelum waktu sekarang)
                 },
             },
             include: {
@@ -24,13 +24,15 @@ export const cleanupExpiredBookings = async () => {
         });
 
         if (expiredBookings.length === 0) {
-            console.log('No expired bookings found.');
-            return;
+            return; // Diam saja jika tidak ada yang expired
         }
 
-        console.log(`Found ${expiredBookings.length} expired bookings to cancel.`);
+        // Log hanya muncul jika ada aksi
+        console.log(`[CRON] Ditemukan ${expiredBookings.length} pesanan kadaluwarsa. Membatalkan...`);
+        
         const bookingIdsToCancel = expiredBookings.map(b => b.id);
         
+        // Update status di database secara massal (Efisien)
         await prisma.booking.updateMany({
             where: {
                 id: { in: bookingIdsToCancel },
@@ -40,32 +42,34 @@ export const cleanupExpiredBookings = async () => {
             },
         });
 
+        // Kirim notifikasi satu per satu
         for (const booking of expiredBookings) {
-            const message = `Pesanan Anda #${booking.id.substring(0, 8)} telah dibatalkan karena melewati batas waktu pembayaran.`;
+            const message = `Pesanan #${booking.id.substring(0, 8)} dibatalkan otomatis karena batas waktu pembayaran habis.`;
             
-            createNotificationForUser(booking.userId, message, '/dashboard');
+            // Simpan notifikasi ke DB
+            await createNotificationForUser(booking.userId, message, '/dashboard');
             
-            // Pastikan 'io' ada sebelum digunakan
+            // Kirim notifikasi realtime via Socket
             if (io) {
-                io.emit('bookingUpdated', { 
+                io.to(booking.userId).emit('bookingUpdated', { 
                     id: booking.id, 
                     userId: booking.userId, 
-                    status: 'cancelled' 
+                    status: 'cancelled',
+                    message: message
                 });
             }
         }
 
-        console.log('Successfully cancelled expired bookings.');
+        console.log('[CRON] Berhasil membatalkan pesanan kadaluwarsa.');
 
     } catch (error) {
-        console.error('Error during cleanupExpiredBookings task:', error);
+        console.error('[CRON ERROR] Gagal membersihkan pesanan:', error);
     }
 };
 
-// Fungsi untuk memulai semua cron jobs di aplikasi Anda
+// Fungsi untuk memulai Cron Job
 export const startCronJobs = () => {
-    // Menjalankan tugas setiap 5 menit
+    // Jalankan setiap 5 menit
     cron.schedule('*/5 * * * *', cleanupExpiredBookings);
-    console.log('Cron jobs for booking cleanup has been started.');
-    // Anda bisa menambahkan cron.schedule lainnya di sini jika perlu
+    console.log('✅ Cron Jobs System Started (Check every 5 mins)');
 };

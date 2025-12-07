@@ -1,7 +1,8 @@
 // File: client/src/pages/LoginSuccessPage.jsx
 
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import "./HomePageElevate.css";
 
 const LoginSuccessPage = () => {
   const location = useLocation();
@@ -9,38 +10,48 @@ const LoginSuccessPage = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const token = params.get('token');
-    const userString = params.get('user');
+    const token = params.get("token");
+    const userString = params.get("user");
 
     if (token && userString) {
       const user = JSON.parse(decodeURIComponent(userString));
-      
-      // Simpan token dan data user ke localStorage
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
 
-      // Arahkan ke halaman yang sesuai berdasarkan peran
-      if (user.role === 'admin' || user.role === 'developer') {
-        navigate('/admin/dashboard');
-      } else if (user.role === 'mitra') {
-        navigate('/partner/dashboard');
-      } else {
-        navigate('/dashboard');
-      }
-      // Reload halaman untuk memastikan semua state terupdate
-      window.location.reload(); 
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect berdasarkan role
+      const target =
+        user.role === "admin" || user.role === "developer"
+          ? "/admin/dashboard"
+          : user.role === "mitra"
+          ? "/partner/dashboard"
+          : "/dashboard";
+
+      // Delay sedikit agar transisi terasa halus
+      setTimeout(() => {
+        navigate(target);
+        window.location.reload();
+      }, 800);
     } else {
-      // Jika tidak ada token, arahkan kembali ke halaman login
-      navigate('/login');
+      navigate("/login");
     }
   }, [location, navigate]);
 
   return (
-    <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-      <div className="spinner-border" role="status">
+    <div
+      className="home-elevate-wrapper d-flex flex-column justify-content-center align-items-center"
+      style={{ minHeight: "100vh", background: "#050505" }}
+    >
+      <div
+        className="spinner-border text-primary mb-3"
+        style={{ width: "3rem", height: "3rem" }}
+        role="status"
+      >
         <span className="visually-hidden">Loading...</span>
       </div>
-      <p className="ms-3">Finalizing login...</p>
+      <h5 className="text-white fw-light" style={{ letterSpacing: "1px" }}>
+        Memproses Login...
+      </h5>
     </div>
   );
 };

@@ -1,10 +1,10 @@
 // File: client/src/components/Navbar.jsx
 
-import React, { useState, useEffect } from "react";
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom"; // <--- TAMBAH useLocation
 import API_BASE_URL from "../apiConfig";
 
-// --- HELPER AVATAR ---
+// --- Helper Avatar ---
 const getInitials = (name) => {
   if (!name) return "?";
   const names = name.split(" ");
@@ -26,10 +26,8 @@ const getAvatarColor = (name) => {
     "#fd7e14",
     "#198754",
     "#0dcaf0",
-    "#20c997",
   ];
-  const index = Math.abs(hash % colors.length);
-  return colors[index];
+  return colors[Math.abs(hash % colors.length)];
 };
 
 const UserAvatar = ({ name, size = 32 }) => {
@@ -45,9 +43,7 @@ const UserAvatar = ({ name, size = 32 }) => {
     color: "white",
     textTransform: "uppercase",
     fontSize: `${size / 2.2}px`,
-    marginRight: size > 32 ? "0px" : "8px",
   };
-
   return (
     <div style={style} title={name}>
       {getInitials(name)}
@@ -61,89 +57,47 @@ const Navbar = ({
   unreadCount,
   setNotifications,
   setUnreadCount,
-  homePageTheme,
 }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useLocation(); // <--- INISIALISASI LOCATION
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Deteksi Tema Homepage
-  const isModernHome = location.pathname === "/" && homePageTheme === "modern";
-  const isElevateHome =
-    location.pathname === "/" && homePageTheme === "elevate";
-  const isDynamicHome = isModernHome || isElevateHome;
+  // State Desktop
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showNotifMenu, setShowNotifMenu] = useState(false);
 
+  // State Mobile
+  const [showMobileProfileMenu, setShowMobileProfileMenu] = useState(false);
+
+  const profileRef = useRef(null);
+  const notifRef = useRef(null);
+  const mobileProfileRef = useRef(null);
+
+  // Logika Scroll Global
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Handle klik di luar menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target))
+        setShowProfileMenu(false);
+      if (notifRef.current && !notifRef.current.contains(event.target))
+        setShowNotifMenu(false);
+      if (
+        mobileProfileRef.current &&
+        !mobileProfileRef.current.contains(event.target)
+      )
+        setShowMobileProfileMenu(false);
     };
-
-    if (isDynamicHome) {
-      handleScroll();
-      window.addEventListener("scroll", handleScroll);
-    } else {
-      setIsScrolled(true);
-    }
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [isDynamicHome, location.pathname]);
-
-  // --- LOGIKA KELAS CSS ---
-  const getNavClassName = () => {
-    const baseClasses =
-      "navbar navbar-expand-lg d-none d-lg-flex fixed-top transition-all";
-
-    // 1. MODERN THEME (Pink Style)
-    if (isModernHome) {
-      return `${baseClasses} navbar-dark ${isScrolled ? "shadow-sm" : ""}`;
-    }
-
-    // 2. ELEVATE THEME (Premium Dark Glass)
-    if (isElevateHome) {
-      // Gunakan 'navbar-dark' agar teks selalu putih/terang (cocok untuk background gelap/kaca)
-      if (isScrolled) {
-        return `${baseClasses} sb-navbar-glass navbar-dark`;
-      } else {
-        return `${baseClasses} sb-navbar-transparent navbar-dark`;
-      }
-    }
-
-    // 3. DEFAULT (Halaman Lain - Putih Bersih)
-    return `${baseClasses} navbar-light bg-white shadow-sm`;
-  };
-
-  const getNavStyle = () => {
-    const transitionStyle = {
-      transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-    };
-
-    if (isModernHome) {
-      if (isScrolled) {
-        return {
-          backgroundColor: "#e5446a",
-          borderColor: "transparent",
-          ...transitionStyle,
-        };
-      } else {
-        return {
-          backgroundColor: "transparent",
-          border: "none",
-          ...transitionStyle,
-        };
-      }
-    }
-
-    if (isElevateHome) {
-      return { ...transitionStyle }; // Warna diatur via CSS Class (HomePageElevate.css)
-    }
-
-    return {};
-  };
-
-  const isHomePage = location.pathname === "/";
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -153,24 +107,19 @@ const Navbar = ({
   };
 
   const handleOpenNotifications = async () => {
-    if (unreadCount > 0) {
+    setShowNotifMenu(!showNotifMenu);
+    setShowProfileMenu(false);
+    if (unreadCount > 0 && !showNotifMenu) {
       const token = localStorage.getItem("token");
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/user/notifications/mark-read`,
-          {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (response.ok) {
-          setUnreadCount(0);
-          setNotifications((prev) =>
-            prev.map((n) => ({ ...n, readStatus: true }))
-          );
-        }
+        await fetch(`${API_BASE_URL}/api/users/notifications/mark-read`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUnreadCount(0);
+        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       } catch (error) {
-        console.error("Gagal menandai notifikasi sebagai terbaca:", error);
+        console.error("Gagal update notifikasi:", error);
       }
     }
   };
@@ -185,80 +134,208 @@ const Navbar = ({
         />
       );
     }
-    return <span className="fs-4 fw-bold">StrideBase</span>;
+    // FIX: Gunakan variabel warna teks navbar agar terlihat di Light Mode
+    return (
+      <span className="fs-4 fw-bold" style={{ color: "var(--nav-text-color)" }}>
+        StrideBase
+      </span>
+    );
   };
 
-  const renderMobileLogo = () => {
-    if (theme?.branding?.logoUrl) {
-      return <img src={theme.branding.logoUrl} alt="StrideBase Logo" />;
-    }
-    return <span>StrideBase</span>;
-  };
+  // --- KOMPONEN DROPDOWN MENU ---
+  const UserDropdownMenu = ({ isMobile = false }) => (
+    <ul
+      className={`dropdown-menu dropdown-menu-end dropdown-menu-custom border-0 ${
+        isMobile ? "mt-2" : "mt-2"
+      } show`}
+      style={{
+        right: 0,
+        backgroundColor: "var(--sb-card-bg)",
+        borderColor: "var(--sb-card-border)",
+        boxShadow: "var(--sb-card-shadow)",
+        position: "absolute",
+        minWidth: "200px",
+        zIndex: 1050,
+      }}
+    >
+      <li className="px-3 py-2 border-bottom border-secondary border-opacity-10">
+        <span
+          className="d-block fw-bold"
+          style={{ color: "var(--sb-text-main)" }}
+        >
+          {user?.name}
+        </span>
+        <small
+          className="text-muted"
+          style={{ fontSize: "0.7rem", color: "var(--sb-text-muted)" }}
+        >
+          {user?.email}
+        </small>
+      </li>
+
+      {user.role === "developer" && (
+        <li>
+          <Link
+            to="/developer/dashboard"
+            className="dropdown-item py-2"
+            style={{ color: "var(--sb-text-main)" }}
+          >
+            <i className="fas fa-crown me-2 text-warning"></i>
+            SuperUser Panel
+          </Link>
+        </li>
+      )}
+
+      {user.role === "admin" && (
+        <li>
+          <Link
+            to="/admin/dashboard"
+            className="dropdown-item py-2"
+            style={{ color: "var(--sb-text-main)" }}
+          >
+            <i className="fas fa-user-shield me-2 text-primary"></i>
+            Admin Panel
+          </Link>
+        </li>
+      )}
+
+      {user.role === "mitra" && (
+        <li>
+          <Link
+            to="/partner/dashboard"
+            className="dropdown-item py-2"
+            style={{ color: "var(--sb-text-main)" }}
+          >
+            <i className="fas fa-store me-2 text-success"></i>
+            Panel Toko
+          </Link>
+        </li>
+      )}
+
+      <li>
+        <Link
+          to="/dashboard"
+          className="dropdown-item py-2"
+          style={{ color: "var(--sb-text-main)" }}
+        >
+          <i className="fas fa-tachometer-alt me-2 text-secondary"></i>
+          Dashboard User
+        </Link>
+      </li>
+
+      <li>
+        <hr
+          className="dropdown-divider my-1"
+          style={{ borderColor: "var(--sb-card-border)" }}
+        />
+      </li>
+
+      <li>
+        <button
+          onClick={handleLogout}
+          className="dropdown-item fw-bold py-2"
+          style={{ color: "var(--sb-accent, #dc3545)" }}
+        >
+          <i className="fas fa-sign-out-alt me-2"></i>Logout
+        </button>
+      </li>
+    </ul>
+  );
+
+  // LOGIKA UTAMA PERBAIKAN:
+  // 1. Cek apakah ini Homepage ("/")
+  // 2. Jika Homepage DAN belum discroll, gunakan 'sb-navbar-transparent'
+  // 3. Jika BUKAN Homepage, SELALU gunakan 'sb-navbar-glass' (agar aman di halaman putih)
+
+  const isHomePage = location.pathname === "/";
+
+  const navbarClass =
+    isHomePage && !isScrolled
+      ? "navbar navbar-expand-lg d-none d-lg-flex fixed-top transition-all sb-navbar-transparent"
+      : "navbar navbar-expand-lg d-none d-lg-flex fixed-top transition-all sb-navbar-glass";
+
+  // Helper style untuk link agar warnanya dinamis
+  const navLinkStyle = ({ isActive }) => ({
+    color: isActive ? "var(--pe-accent)" : "inherit", // Inherit agar mengikuti aturan CSS parent (Navbar)
+    fontWeight: "500",
+  });
 
   return (
     <>
       {/* NAVBAR DESKTOP */}
-      <nav className={getNavClassName()} style={getNavStyle()}>
+      <nav className={navbarClass}>
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
             {renderLogo()}
           </Link>
 
-          {/* LINKS MENU (Dipindah ke Kanan dengan ms-auto) */}
           <ul className="nav-menu-list list-unstyled d-flex mb-0 gap-4 ms-auto me-4 align-items-center">
             <li>
-              <NavLink to="/" className="nav-link fw-500">
+              <NavLink to="/" className="nav-link" style={navLinkStyle}>
                 Home
               </NavLink>
             </li>
             <li>
-              <NavLink to="/about" className="nav-link fw-500">
+              <NavLink to="/about" className="nav-link" style={navLinkStyle}>
                 About
               </NavLink>
             </li>
             <li>
-              <NavLink to="/store" className="nav-link fw-500">
+              <NavLink to="/store" className="nav-link" style={navLinkStyle}>
                 Services
               </NavLink>
             </li>
             <li>
-              <NavLink to="/contact" className="nav-link fw-500">
+              <NavLink to="/contact" className="nav-link" style={navLinkStyle}>
                 Contact
               </NavLink>
             </li>
           </ul>
 
-          {/* AUTH / USER ACTIONS */}
-          <div id="navbarAuth" className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3">
             {user ? (
               <>
-                {/* Notification */}
-                <div className="dropdown">
+                {/* Notifikasi Dropdown */}
+                <div className="dropdown" ref={notifRef}>
                   <button
-                    className="btn btn-icon-only position-relative"
+                    className={`sb-btn-icon position-relative ${
+                      showNotifMenu ? "show" : ""
+                    }`}
                     type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
                     onClick={handleOpenNotifications}
                     style={{
+                      color: "inherit", // Ikuti parent
                       border: "none",
                       background: "transparent",
-                      color: "inherit",
                     }}
                   >
                     <i className="fas fa-bell fs-5"></i>
                     {unreadCount > 0 && (
-                      <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                        <span className="visually-hidden">New alerts</span>
-                      </span>
+                      <span className="sb-notification-badge"></span>
                     )}
                   </button>
                   <ul
-                    className="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0"
-                    style={{ width: "350px" }}
+                    className={`dropdown-menu dropdown-menu-end dropdown-menu-custom border-0 ${
+                      showNotifMenu ? "show" : ""
+                    }`}
+                    style={{
+                      width: "350px",
+                      right: 0,
+                      backgroundColor: "var(--sb-card-bg)",
+                      borderColor: "var(--sb-card-border)",
+                      boxShadow: "var(--sb-card-shadow)",
+                    }}
                   >
-                    <li className="p-2 border-bottom">
-                      <h6 className="mb-0">Notifikasi</h6>
+                    <li
+                      className="p-2 border-bottom"
+                      style={{ borderColor: "var(--sb-card-border)" }}
+                    >
+                      <h6
+                        className="mb-0 ps-2"
+                        style={{ color: "var(--sb-text-main)" }}
+                      >
+                        Notifikasi
+                      </h6>
                     </li>
                     <div style={{ maxHeight: "300px", overflowY: "auto" }}>
                       {notifications && notifications.length > 0 ? (
@@ -266,195 +343,194 @@ const Navbar = ({
                           <li key={notif.id}>
                             <Link
                               to={notif.linkUrl || "#"}
-                              className="dropdown-item text-wrap"
+                              className="dropdown-item text-wrap py-2"
+                              style={{
+                                borderBottom: "1px solid var(--sb-card-border)",
+                              }}
                             >
-                              <small>{notif.message}</small>
-                              <div
-                                className="text-muted"
-                                style={{ fontSize: "0.75rem" }}
+                              <small
+                                className="d-block fw-bold"
+                                style={{ color: "var(--sb-text-main)" }}
                               >
-                                {new Date(notif.createdAt).toLocaleString(
-                                  "id-ID"
-                                )}
-                              </div>
+                                {notif.title || "Pesan Baru"}
+                              </small>
+                              <small
+                                className="d-block"
+                                style={{ color: "var(--sb-text-muted)" }}
+                              >
+                                {notif.message}
+                              </small>
                             </Link>
                           </li>
                         ))
                       ) : (
-                        <li className="p-3 text-center text-muted small">
+                        <li
+                          className="p-3 text-center small"
+                          style={{ color: "var(--sb-text-muted)" }}
+                        >
                           Tidak ada notifikasi baru.
                         </li>
                       )}
                     </div>
                     <li>
-                      <hr className="dropdown-divider my-1" />
+                      <hr
+                        className="dropdown-divider my-1"
+                        style={{ borderColor: "var(--sb-card-border)" }}
+                      />
                     </li>
                     <li>
                       <Link
                         to="/notifications"
-                        className="dropdown-item text-center small"
+                        className="dropdown-item text-center small py-2"
+                        style={{ color: "var(--sb-accent)", fontWeight: "600" }}
                       >
-                        Lihat Semua Notifikasi
+                        Lihat Semua
                       </Link>
                     </li>
                   </ul>
                 </div>
 
-                {/* User Profile */}
-                <div className="dropdown">
+                {/* Profile Dropdown Desktop */}
+                <div className="dropdown" ref={profileRef}>
                   <button
-                    className="btn d-flex align-items-center gap-2 p-1 pe-3 rounded-pill border-0"
+                    className={`sb-btn-profile ${
+                      showProfileMenu ? "show" : ""
+                    }`}
                     type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+                    onClick={() => {
+                      setShowProfileMenu(!showProfileMenu);
+                      setShowNotifMenu(false);
+                    }}
                     style={{
-                      background: "rgba(255,255,255,0.1)",
-                      color: "inherit",
+                      color: "inherit", // Ikuti parent
+                      display: "flex",
+                      alignItems: "center",
+                      border: "none",
+                      background: "transparent",
                     }}
                   >
                     <UserAvatar name={user.name} size={32} />
-                    <span className="fw-bold small d-none d-md-inline">
+                    <span className="sb-profile-name d-none d-md-inline ms-2">
                       {user.name.split(" ")[0]}
                     </span>
+                    <i
+                      className="fas fa-chevron-down ms-1"
+                      style={{ fontSize: "0.7rem", opacity: 0.7 }}
+                    ></i>
                   </button>
-                  <ul className="dropdown-menu dropdown-menu-end dropdown-menu-custom shadow-lg border-0 mt-2">
-                    {user.role === "developer" && (
-                      <li>
-                        <Link
-                          to="/developer/dashboard"
-                          className="dropdown-item"
-                        >
-                          <i className="fas fa-crown me-2"></i>SuperUser Panel
-                        </Link>
-                      </li>
-                    )}
-                    {user.role === "admin" && (
-                      <li>
-                        <Link to="/admin/dashboard" className="dropdown-item">
-                          <i className="fas fa-user-shield me-2"></i>Admin Panel
-                        </Link>
-                      </li>
-                    )}
-                    {user.role === "mitra" && (
-                      <li>
-                        <Link to="/partner/dashboard" className="dropdown-item">
-                          <i className="fas fa-store me-2"></i>Panel Toko Saya
-                        </Link>
-                      </li>
-                    )}
-                    <li>
-                      <Link to="/dashboard" className="dropdown-item">
-                        <i className="fas fa-tachometer-alt me-2"></i>Dashboard
-                        Pengguna
-                      </Link>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <button
-                        onClick={handleLogout}
-                        className="dropdown-item text-danger"
-                      >
-                        <i className="fas fa-sign-out-alt me-2"></i>Logout
-                      </button>
-                    </li>
-                  </ul>
+                  {showProfileMenu && <UserDropdownMenu />}
                 </div>
               </>
             ) : (
-              <Link
-                to="/login"
-                className="btn btn-primary rounded-pill px-4 fw-bold shadow-sm"
-              >
-                Login / Signup
+              <Link to="/login" className="he-btn-navbar">
+                <span>Login / Signup</span>
+                <i className="fas fa-arrow-right"></i>
               </Link>
             )}
+
+            <button
+              className="navbar-toggler d-lg-none ms-2"
+              type="button"
+              data-bs-toggle="collapse"
+              style={{ border: "none", color: "var(--nav-text-color)" }}
+            >
+              <i className="fas fa-bars fs-3"></i>
+            </button>
           </div>
         </div>
       </nav>
 
-      {/* MOBILE HEADER */}
-      {!isHomePage && (
-        <div className="mobile-header d-lg-none">
-          <div className="mobile-logo-container">
-            <Link className="navbar-brand" to="/">
-              {renderMobileLogo()}
-            </Link>
+      {/* MOBILE HEADER (FIXED) */}
+      <div
+        className="mobile-header d-lg-none"
+        style={{
+          backgroundColor: "var(--sb-card-bg)",
+          borderBottom: "1px solid var(--sb-card-border)",
+          padding: "1rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+        }}
+      >
+        <Link
+          className="navbar-brand"
+          to="/"
+          style={{ color: "var(--sb-text-main)" }}
+        >
+          {renderLogo()}
+        </Link>
+
+        {user ? (
+          <div className="position-relative" ref={mobileProfileRef}>
+            <div
+              onClick={() => setShowMobileProfileMenu(!showMobileProfileMenu)}
+              style={{ cursor: "pointer" }}
+            >
+              <UserAvatar name={user.name} size={36} />
+            </div>
+            {showMobileProfileMenu && <UserDropdownMenu isMobile={true} />}
           </div>
-          <div className="mobile-user-container">
-            {user ? (
-              <div className="dropdown">
-                <button
-                  className="btn btn-user-profile"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                >
-                  <UserAvatar name={user.name} size={40} />
-                </button>
-                <ul className="dropdown-menu dropdown-menu-end shadow">
-                  {user.role === "developer" && (
-                    <li>
-                      <Link to="/developer/dashboard" className="dropdown-item">
-                        SuperUser
-                      </Link>
-                    </li>
-                  )}
-                  {user.role === "admin" && (
-                    <li>
-                      <Link to="/admin/dashboard" className="dropdown-item">
-                        Admin Panel
-                      </Link>
-                    </li>
-                  )}
-                  {user.role === "mitra" && (
-                    <li>
-                      <Link to="/partner/dashboard" className="dropdown-item">
-                        Toko Saya
-                      </Link>
-                    </li>
-                  )}
-                  <li>
-                    <Link to="/dashboard" className="dropdown-item">
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="dropdown-item text-danger"
-                    >
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            ) : (
-              <Link to="/login" className="btn btn-primary btn-sm rounded-pill">
-                Login
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
+        ) : (
+          <Link to="/login" className="btn btn-primary btn-sm rounded-pill">
+            Login
+          </Link>
+        )}
+      </div>
 
       {/* MOBILE BOTTOM NAV */}
-      <div className="mobile-bottom-nav d-lg-none">
-        <NavLink to="/" className="nav-link">
-          <i className="fas fa-home"></i>
+      <div
+        className="mobile-bottom-nav d-lg-none"
+        style={{
+          backgroundColor: "var(--sb-card-bg)",
+          borderTop: "1px solid var(--sb-card-border)",
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-around",
+          padding: "10px 0",
+          zIndex: 1000,
+        }}
+      >
+        <NavLink
+          to="/"
+          className="nav-link d-flex flex-column align-items-center"
+          style={({ isActive }) => ({
+            color: isActive ? "var(--sb-accent)" : "var(--sb-text-muted)",
+            fontSize: "0.8rem",
+          })}
+        >
+          <i className="fas fa-home mb-1" style={{ fontSize: "1.2rem" }}></i>
           <span>Home</span>
         </NavLink>
-        <NavLink to="/store" className="nav-link">
-          <i className="fas fa-store"></i>
-          <span>Store</span>
+        <NavLink
+          to="/store"
+          className="nav-link d-flex flex-column align-items-center"
+          style={({ isActive }) => ({
+            color: isActive ? "var(--sb-accent)" : "var(--sb-text-muted)",
+            fontSize: "0.8rem",
+          })}
+        >
+          <i className="fas fa-store mb-1" style={{ fontSize: "1.2rem" }}></i>
+          <span>Services</span>
         </NavLink>
-        <NavLink to="/contact" className="nav-link">
-          <i className="fas fa-comments"></i>
-          <span>Contact</span>
-        </NavLink>
-        <NavLink to="/dashboard" className="nav-link">
-          <i className="fas fa-user"></i>
-          <span>Akun</span>
+
+        <NavLink
+          to={user ? "/dashboard" : "/login"}
+          className="nav-link d-flex flex-column align-items-center"
+          style={({ isActive }) => ({
+            color: isActive ? "var(--sb-accent)" : "var(--sb-text-muted)",
+            fontSize: "0.8rem",
+          })}
+        >
+          <i
+            className={`fas ${user ? "fa-user" : "fa-sign-in-alt"} mb-1`}
+            style={{ fontSize: "1.2rem" }}
+          ></i>
+          <span>{user ? "Account" : "Login"}</span>
         </NavLink>
       </div>
     </>

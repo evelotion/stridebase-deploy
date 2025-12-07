@@ -1,12 +1,12 @@
-// File: client/src/pages/RegisterPage.jsx (Versi Desain Baru)
+// File: client/src/pages/RegisterPage.jsx
 
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { registerUser } from "../services/apiService"; // Menggunakan service yang sudah ada
+import { registerUser } from "../services/apiService";
+import "./HomePageElevate.css"; // Pastikan CSS Elevate terhubung
 
-
-const RegisterPage = ({ showMessage, theme }) => {
+const RegisterPage = ({ showMessage }) => {
   const navigate = useNavigate();
   const { search } = useLocation();
   const redirectInUrl = new URLSearchParams(search).get("redirect");
@@ -18,11 +18,6 @@ const RegisterPage = ({ showMessage, theme }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Menggunakan gambar dari tema atau fallback yang berbeda dari login
-  const registerImageUrl =
-    theme?.authPageTheme?.sidebarImageUrl ||
-    "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2612&auto=format&fit=crop";
-
   const submitHandler = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -31,11 +26,8 @@ const RegisterPage = ({ showMessage, theme }) => {
     }
     setLoading(true);
     try {
-      const data = await registerUser({ name, email, password });
-      showMessage(
-        "Registrasi berhasil! Silakan cek email Anda untuk verifikasi.",
-        "Success"
-      );
+      await registerUser({ name, email, password });
+      showMessage("Registrasi berhasil! Silakan login.", "Success");
       navigate(`/login?redirect=${redirect}`);
     } catch (err) {
       showMessage(err.message, "Error");
@@ -52,98 +44,126 @@ const RegisterPage = ({ showMessage, theme }) => {
   }, [navigate, redirect]);
 
   return (
-    <div className="auth-container">
+    <div className="he-auth-portal-wrapper">
       <Helmet>
-        <title>Buat Akun Baru | StrideBase</title>
+        <title>Join Us | StrideBase</title>
       </Helmet>
-      <div className="row g-0 vh-100">
-        {/* Kolom Kiri: Gambar Branding */}
-        <div
-          className="col-lg-7 d-none d-lg-flex auth-image-panel"
-          style={{ backgroundImage: `url(${registerImageUrl})` }}
+
+      <div className="he-auth-portal-overlay"></div>
+
+      {/* COMPACT CENTERED CARD */}
+      <div
+        className="he-auth-card"
+        style={{ maxWidth: "400px", padding: "2.5rem 2rem" }}
+      >
+        <Link
+          to="/"
+          className="he-auth-logo-text"
+          style={{ fontSize: "1.5rem", marginBottom: "1.5rem" }}
         >
-          <div className="auth-image-overlay">
-            <h1 className="display-4 fw-bold text-white">
-              Bergabunglah dengan Revolusi Perawatan Sepatu.
-            </h1>
-            <p className="lead text-white-75">
-              Daftar sekarang dan jadilah bagian dari komunitas kami.
-            </p>
-          </div>
-        </div>
+          StrideBase.
+        </Link>
 
-        {/* Kolom Kanan: Form Register */}
-        <div className="col-lg-5 d-flex align-items-center justify-content-center auth-form-panel">
-          <div className="auth-form-container">
-            <div className="text-center mb-5">
-              <h3 className="fw-bold">Buat Akun Baru</h3>
-              <p className="text-muted">Gratis dan hanya butuh satu menit.</p>
-            </div>
-            <form onSubmit={submitHandler}>
-              <div className="form-floating mb-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="name"
-                  placeholder="Nama Lengkap Anda"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <label htmlFor="name">Nama Lengkap</label>
-              </div>
-              <div className="form-floating mb-3">
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="name@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <label htmlFor="email">Alamat Email</label>
-              </div>
-              <div className="form-floating mb-3">
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  placeholder="Password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <label htmlFor="password">Password</label>
-              </div>
-              <div className="form-floating mb-4">
-                <input
-                  type="password"
-                  className="form-control"
-                  id="confirmPassword"
-                  placeholder="Konfirmasi Password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <label htmlFor="confirmPassword">Konfirmasi Password</label>
-              </div>
+        <h2 className="he-auth-heading" style={{ fontSize: "1.75rem" }}>
+          Create Account
+        </h2>
+        <p
+          className="he-auth-sub"
+          style={{ fontSize: "0.9rem", marginBottom: "2rem" }}
+        >
+          Join the premium shoe care revolution.
+        </p>
 
-              <div className="d-grid">
-                <button
-                  type="submit"
-                  className="btn btn-dark btn-lg"
-                  disabled={loading}
-                >
-                  {loading ? "Memproses..." : "Daftar"}
-                </button>
-              </div>
-              <p className="text-center mt-4">
-                Sudah punya akun?{" "}
-                <Link to={`/login?redirect=${redirect}`}>Masuk di sini</Link>
-              </p>
-            </form>
+        <form onSubmit={submitHandler}>
+          <div className="he-auth-field" style={{ marginBottom: "1.2rem" }}>
+            <label className="he-auth-label" style={{ fontSize: "0.75rem" }}>
+              Full Name
+            </label>
+            <input
+              type="text"
+              className="he-auth-input-glass"
+              style={{ padding: "12px 16px", fontSize: "0.95rem" }}
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
           </div>
+
+          <div className="he-auth-field" style={{ marginBottom: "1.2rem" }}>
+            <label className="he-auth-label" style={{ fontSize: "0.75rem" }}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              className="he-auth-input-glass"
+              style={{ padding: "12px 16px", fontSize: "0.95rem" }}
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="he-auth-field" style={{ marginBottom: "1.2rem" }}>
+            <label className="he-auth-label" style={{ fontSize: "0.75rem" }}>
+              Password
+            </label>
+            <input
+              type="password"
+              className="he-auth-input-glass"
+              style={{ padding: "12px 16px", fontSize: "0.95rem" }}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="he-auth-field" style={{ marginBottom: "1.5rem" }}>
+            <label className="he-auth-label" style={{ fontSize: "0.75rem" }}>
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              className="he-auth-input-glass"
+              style={{ padding: "12px 16px", fontSize: "0.95rem" }}
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="he-auth-submit-btn"
+            style={{
+              padding: "12px",
+              fontSize: "0.95rem",
+              marginTop: "0.5rem",
+            }}
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Sign Up"}
+          </button>
+        </form>
+
+        <div
+          className="he-auth-footer"
+          style={{
+            marginTop: "1.5rem",
+            paddingTop: "1rem",
+            fontSize: "0.85rem",
+          }}
+        >
+          Already have an account?
+          <Link
+            to={`/login?redirect=${redirect}`}
+            className="he-auth-link-bold"
+          >
+            Sign In
+          </Link>
         </div>
       </div>
     </div>

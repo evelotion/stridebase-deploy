@@ -1,0 +1,325 @@
+/* File: client/src/pages/AboutPageElevate.css */
+
+/* --- THEME VARIABLES (BLUE DNA) --- */
+.luxury-blue-theme {
+  --lx-bg: #050505;
+  --lx-card-bg: #0f0f0f;
+  --lx-text: #ffffff;
+  --lx-text-muted: rgba(255, 255, 255, 0.5);
+  --lx-blue-primary: #3b82f6; /* Electric Blue */
+  --lx-blue-glow: rgba(59, 130, 246, 0.5);
+  --lx-font-display: "Outfit", sans-serif;
+  --lx-font-body: "Inter", sans-serif;
+
+  background-color: var(--lx-bg);
+  color: var(--lx-text);
+  font-family: var(--lx-font-body);
+  overflow-x: hidden;
+}
+
+/* Light Mode Override */
+[data-theme="light"] .luxury-blue-theme {
+  --lx-bg: #ffffff;
+  --lx-card-bg: #f8f9fa;
+  --lx-text: #111827;
+  --lx-text-muted: #6b7280;
+  --lx-blue-primary: #2563eb;
+  --lx-blue-glow: rgba(37, 99, 235, 0.2);
+}
+
+/* --- 1. HERO CLEAN (NO IMAGE, PURE AMBIENCE) --- */
+.lx-hero-clean {
+  position: relative;
+  height: 80vh; /* Tinggi pas, tidak terlalu full */
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Tambah padding atas agar tidak nabrak navbar */
+  padding-top: 100px;
+}
+
+/* AMBIENT ORBS (Kunci "Blue Ambience") */
+.lx-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.6;
+  z-index: 0;
+  animation: floatOrb 10s infinite ease-in-out alternate;
+}
+
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--lx-blue-primary);
+  top: -10%;
+  left: 20%;
+  opacity: 0.4;
+}
+
+.orb-2 {
+  width: 300px;
+  height: 300px;
+  background: #06b6d4; /* Cyan/Teal accent */
+  bottom: 10%;
+  right: 10%;
+  opacity: 0.3;
+  animation-delay: -5s;
+}
+
+[data-theme="light"] .lx-orb {
+  opacity: 0.15; /* Lebih tipis di light mode */
+  filter: blur(80px);
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(30px, 50px);
+  }
+}
+
+.lx-hero-badge {
+  font-family: var(--lx-font-body);
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  color: var(--lx-blue-primary);
+  margin-bottom: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid var(--lx-blue-glow);
+  padding: 8px 16px;
+  border-radius: 50px;
+  display: inline-block;
+  backdrop-filter: blur(5px);
+}
+
+.lx-hero-title-clean {
+  font-family: var(--lx-font-display);
+  font-size: 6rem; /* SUPER BESAR */
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -3px;
+  margin-bottom: 1.5rem;
+  color: var(--lx-text);
+  position: relative;
+  z-index: 1;
+}
+
+.lx-text-blue-gradient {
+  background: linear-gradient(135deg, #60a5fa 0%, var(--lx-blue-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Fallback color */
+  color: var(--lx-blue-primary);
+}
+
+.lx-hero-desc {
+  font-size: 1.25rem;
+  color: var(--lx-text-muted);
+  max-width: 500px;
+  font-weight: 300;
+}
+
+/* --- 2. MANIFESTO --- */
+.lx-quote {
+  font-family: var(--lx-font-display);
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--lx-text);
+}
+
+.lx-highlight-blue {
+  color: var(--lx-blue-primary);
+  position: relative;
+  display: inline-block;
+}
+/* Garis bawah biru */
+.lx-highlight-blue::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--lx-blue-primary);
+  opacity: 0.5;
+}
+
+/* --- 3. CRAFT CARDS (GLASS + GLOW) --- */
+.lx-feature-card {
+  background: var(--lx-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 60px 40px;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s ease;
+}
+[data-theme="light"] .lx-feature-card {
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.lx-feature-card:hover {
+  transform: translateY(-10px);
+}
+
+.lx-card-number {
+  font-size: 4rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.03); /* Sangat samar */
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-family: var(--lx-font-display);
+}
+[data-theme="light"] .lx-card-number {
+  color: rgba(0, 0, 0, 0.03);
+}
+
+.lx-card-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--lx-text);
+}
+
+.lx-card-text {
+  font-size: 1.1rem;
+  color: var(--lx-text-muted);
+  line-height: 1.6;
+}
+
+/* Hover Glow Effect */
+.lx-card-glow {
+  position: absolute;
+  bottom: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: var(--lx-blue-primary);
+  filter: blur(80px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.lx-feature-card:hover .lx-card-glow {
+  opacity: 0.4;
+}
+
+/* --- 4. STATS --- */
+.lx-stats-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.lx-stat-item {
+  text-align: center;
+}
+
+.lx-stat-val {
+  display: block;
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--lx-text); /* Teks putih di dark mode */
+  line-height: 1;
+}
+.lx-stat-label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--lx-blue-primary); /* Label biru */
+  font-weight: 600;
+}
+
+.lx-stat-divider {
+  width: 1px;
+  height: 60px;
+  background: rgba(128, 128, 128, 0.2);
+}
+
+/* --- 5. CTA BLUE --- */
+.lx-cta-section-blue {
+  padding: 120px 0;
+  position: relative;
+}
+
+.lx-cta-title {
+  font-family: var(--lx-font-display);
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--lx-text);
+}
+
+.lx-btn-primary-blue {
+  display: inline-block;
+  padding: 18px 45px;
+  background: var(--lx-blue-primary);
+  color: #ffffff; /* Selalu putih */
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 10px 30px var(--lx-blue-glow);
+  transition: all 0.3s;
+}
+.lx-btn-primary-blue:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px var(--lx-blue-glow);
+  color: #fff;
+}
+
+.lx-btn-outline-blue {
+  display: inline-block;
+  padding: 18px 45px;
+  background: transparent;
+  color: var(--lx-text);
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.lx-btn-outline-blue:hover {
+  border-color: var(--lx-blue-primary);
+  color: var(--lx-blue-primary);
+}
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 991px) {
+  .lx-hero-title-clean {
+    font-size: 3.5rem;
+  }
+  .lx-hero-desc {
+    font-size: 1rem;
+    padding: 0 20px;
+  }
+
+  .lx-quote {
+    font-size: 1.5rem;
+  }
+
+  .lx-stats-grid {
+    flex-direction: column;
+    gap: 30px;
+  }
+  .lx-stat-divider {
+    width: 60px;
+    height: 1px; /* Divider jadi horizontal */
+  }
+
+  .lx-cta-title {
+    font-size: 2.5rem;
+  }
+  .lx-btn-primary-blue,
+  .lx-btn-outline-blue {
+    width: 100%;
+    text-align: center;
+  }
+}

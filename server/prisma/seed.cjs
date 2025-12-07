@@ -1,250 +1,345 @@
-// File: server/prisma/seed.cjs
-
 const { PrismaClient } = require("@prisma/client");
+const { faker } = require("@faker-js/faker");
 const bcrypt = require("bcryptjs");
+
 const prisma = new PrismaClient();
 
+// Konfigurasi Jumlah Data
+const NUM_RANDOM_USERS = 1000;
+const NUM_STORES_TOTAL = 50; // Total toko yang diinginkan
+const NUM_SERVICES_PER_STORE = 5;
+const NUM_BOOKINGS = 1000;
+
 async function main() {
-  console.log("🚀 [SEED] Memulai proses seeding ke Database Neon Baru...");
+  console.log("🌱 Starting seeding process...");
 
-  // --- 1. BERSIHKAN DATA LAMA (Urutan Wajib: Anak dulu baru Induk) ---
-  console.log("🔥 [SEED] Membersihkan database...");
+  // --------------------------------------------------------
+  // 0. BERSIHKAN DATA LAMA
+  // --------------------------------------------------------
+  console.log("🧹 Cleaning old data...");
 
-  // Hapus data transaksi & detail
-  await prisma.ledgerEntry.deleteMany();
+  // Level 1
   await prisma.walletTransaction.deleteMany();
-  await prisma.platformEarning.deleteMany();
-  await prisma.payment.deleteMany();
-  await prisma.invoice.deleteMany(); // Invoice bergantung pada Payment/Store
-  
-  // Hapus interaksi & notifikasi
-  await prisma.review.deleteMany();
+  await prisma.ledgerEntry.deleteMany();
+  await prisma.securityLog.deleteMany();
   await prisma.notification.deleteMany();
-  
-  // Hapus Booking (Data Transaksi Utama)
-  await prisma.booking.deleteMany();
+  await prisma.platformEarning.deleteMany();
 
-  // Hapus Data Relasi Toko
+  // Level 2
+  await prisma.payoutRequest.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.invoice.deleteMany();
+
+  // Level 3
+  await prisma.storeWallet.deleteMany();
   await prisma.storePromo.deleteMany();
-  await prisma.promo.deleteMany();
+  await prisma.approvalRequest.deleteMany();
+  await prisma.review.deleteMany();
+
+  // Level 4
+  await prisma.booking.deleteMany();
   await prisma.service.deleteMany();
   await prisma.storeSchedule.deleteMany();
-  await prisma.payoutRequest.deleteMany(); // Payout bergantung pada Wallet
-  await prisma.storeWallet.deleteMany();   // Wallet bergantung pada Store
-  await prisma.approvalRequest.deleteMany();
-  
-  // Hapus Toko
+
+  // Level 5
   await prisma.store.deleteMany();
-
-  // Hapus Data Relasi User
-  await prisma.address.deleteMany();
-  await prisma.loyaltyPoint.deleteMany();
-  await prisma.securityLog.deleteMany();
-
-  // Hapus Konfigurasi Global
-  await prisma.banner.deleteMany();
-  await prisma.globalSetting.deleteMany();
-
-  // Terakhir: Hapus User
   await prisma.user.deleteMany();
 
-  console.log("✅ [SEED] Database bersih.");
+  console.log("✨ Old data cleaned successfully.");
 
-  // --- 2. MEMBUAT USER ---
-  console.log("👤 [SEED] Membuat user...");
+  // --------------------------------------------------------
+  // 1. CREATE USERS
+  // --------------------------------------------------------
+  console.log(`👤 Creating users...`);
   const passwordHash = await bcrypt.hash("password123", 10);
 
-  const dev = await prisma.user.create({
-    data: {
+  // A. Akun Utama (Fixed Accounts untuk Login)
+  const fixedUsers = [
+    {
       email: "developer@stridebase.com",
-      name: "Developer Stride",
-      password: passwordHash,
+      name: "Super Developer",
       role: "developer",
-      isEmailVerified: true,
-      phone: "08111111111"
+      phone: "081111111111",
     },
-  });
-
-  const admin = await prisma.user.create({
-    data: {
+    {
       email: "admin@stridebase.com",
       name: "Super Admin",
-      password: passwordHash,
       role: "admin",
-      isEmailVerified: true,
-      phone: "08222222222"
+      phone: "082222222222",
     },
-  });
-
-  const mitra1 = await prisma.user.create({
-    data: {
-      email: "budi.clean@example.com",
-      name: "Budi Santoso",
-      password: passwordHash,
+    {
+      email: "mitra@stridebase.com",
+      name: "Mitra Utama",
       role: "mitra",
-      isEmailVerified: true,
-      phone: "08333333333"
+      phone: "083333333333",
     },
-  });
-
-  const mitra2 = await prisma.user.create({
-    data: {
-      email: "citra.shine@example.com",
-      name: "Citra Lestari",
-      password: passwordHash,
-      role: "mitra",
-      isEmailVerified: true,
-      phone: "08444444444"
-    },
-  });
-
-  const cust1 = await prisma.user.create({
-    data: {
-      email: "siti.rahayu@example.com",
-      name: "Siti Rahayu",
-      password: passwordHash,
+    {
+      email: "customer@stridebase.com",
+      name: "Andi Customer",
       role: "customer",
-      isEmailVerified: true,
-      phone: "08555555555"
+      phone: "084444444444",
     },
-  });
+  ];
 
-  // --- 3. MEMBUAT ALAMAT ---
-  await prisma.address.create({
-    data: {
-      userId: cust1.id,
-      label: "Rumah",
-      recipientName: "Siti Rahayu",
-      phoneNumber: "08555555555",
-      street: "Jl. Melati No. 123",
-      city: "Jakarta Timur",
-      province: "DKI Jakarta",
-      postalCode: "13450",
-      country: "Indonesia",
-      isPrimary: true,
-    },
-  });
+  // Map data fixed users agar punya struktur lengkap
+  const fixedUsersData = fixedUsers.map((u) => ({
+    ...u,
+    password: passwordHash,
+    isEmailVerified: true,
+    createdAt: new Date(),
+  }));
 
-  // --- 4. MEMBUAT TOKO ---
-  console.log("🏪 [SEED] Membuat toko...");
+  // B. Random Users
+  // Kita butuh (NUM_STORES_TOTAL - 1) mitra tambahan (karena 1 sudah di fixed)
+  const numRandomMitras = NUM_STORES_TOTAL - 1;
+  const numRandomCustomers = NUM_RANDOM_USERS - numRandomMitras;
+
+  const randomMitras = Array.from({ length: numRandomMitras }).map(() => ({
+    email: faker.internet.email(),
+    name: faker.person.fullName(),
+    password: passwordHash,
+    role: "mitra",
+    phone: faker.phone.number(),
+    isEmailVerified: true,
+    createdAt: faker.date.past(),
+  }));
+
+  const randomCustomers = Array.from({ length: numRandomCustomers }).map(() => ({
+    email: faker.internet.email(),
+    name: faker.person.fullName(),
+    password: passwordHash,
+    role: "customer",
+    phone: faker.phone.number(),
+    isEmailVerified: true,
+    createdAt: faker.date.past(),
+  }));
+
+  // Gabungkan semua user & Insert
+  const allUsersData = [...fixedUsersData, ...randomMitras, ...randomCustomers];
+  await prisma.user.createMany({ data: allUsersData });
+
+  console.log(`✅ ${allUsersData.length} Users created.`);
+
+  // --------------------------------------------------------
+  // 2. CREATE STORES (Hanya untuk Role Mitra)
+  // --------------------------------------------------------
   
-  const store1 = await prisma.store.create({
-    data: {
-      name: "CleanStep Express (PRO)",
-      location: "Mall Grand Indonesia, Jakarta Pusat",
-      description: "Layanan cuci sepatu premium dengan teknologi modern.",
-      ownerId: mitra1.id,
-      storeStatus: "active",
-      tier: "PRO",
-      subscriptionFee: 99000,
-      rating: 4.8,
-      headerImageUrl: "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=870&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
-      ],
-      wallet: { create: { balance: 0 } },
-    },
-  });
-
-  const store2 = await prisma.store.create({
-    data: {
-      name: "Citra Shine Shoes",
-      location: "Jl. Pahlawan No. 45, Bandung",
-      description: "Perawatan sepatu suede dan kulit terbaik di Bandung.",
-      ownerId: mitra2.id,
-      storeStatus: "active",
-      tier: "BASIC",
-      commissionRate: 15,
-      rating: 4.5,
-      headerImageUrl: "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
-      images: [
-        "https://images.unsplash.com/photo-1608231387042-89d0ac7c7895?q=80&w=870&auto=format&fit=crop",
-      ],
-      wallet: { create: { balance: 0 } },
-    },
-  });
-
-  // --- 5. MEMBUAT LAYANAN ---
-  console.log("🧼 [SEED] Membuat layanan...");
+  // Ambil semua user dengan role 'mitra' yang baru saja dibuat
+  const mitras = await prisma.user.findMany({ where: { role: "mitra" } });
   
-  await prisma.service.createMany({
-    data: [
-      {
-        name: "Fast Clean Sneakers",
-        description: "Pembersihan cepat.",
-        price: 50000,
-        shoeType: "sneakers",
-        duration: 60,
-        storeId: store1.id,
+  console.log(`🏪 Creating stores for ${mitras.length} partners...`);
+
+  for (const mitra of mitras) {
+    // Nama toko sedikit beda untuk akun fixed agar mudah dikenali
+    const isFixedMitra = mitra.email === "mitra@stridebase.com";
+    const storeName = isFixedMitra 
+      ? "StrideBase Official Partner" 
+      : `${faker.company.name()} Shoes Care`;
+
+    await prisma.store.create({
+      data: {
+        name: storeName,
+        location: faker.location.city(),
+        description: faker.lorem.paragraph(),
+        ownerId: mitra.id,
+        storeStatus: "active",
+        rating: faker.number.float({ min: 3.5, max: 5.0, precision: 0.1 }),
+        headerImageUrl:
+          "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=2070&auto=format&fit=crop",
+        images: [
+          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+          "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=800",
+        ],
+        wallet: {
+          create: {
+            balance: faker.number.int({ min: 100000, max: 5000000 }),
+          },
+        },
+        services: {
+          create: Array.from({ length: NUM_SERVICES_PER_STORE }).map(() => ({
+            name: faker.helpers.arrayElement([
+              "Deep Clean",
+              "Fast Clean",
+              "Unyellowing",
+              "Repaint",
+              "Repair",
+            ]),
+            description: faker.lorem.sentence(),
+            price: faker.number.float({
+              min: 30000,
+              max: 250000,
+              precision: 1000,
+            }),
+            shoeType: "All Types",
+            duration: faker.number.int({ min: 30, max: 120 }),
+          })),
+        },
+        schedules: {
+          create: [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ].map((day) => ({
+            dayOfWeek: day,
+            openTime: "08:00",
+            closeTime: "21:00",
+            isClosed: day === "Sunday",
+          })),
+        },
       },
-      {
-        name: "Deep Clean Sneakers",
-        description: "Pembersihan total.",
-        price: 85000,
-        shoeType: "sneakers",
-        duration: 90,
-        storeId: store1.id,
-      },
-      {
-        name: "Leather Care & Polish",
-        description: "Perawatan khusus kulit.",
-        price: 95000,
-        shoeType: "kulit",
-        duration: 120,
-        storeId: store1.id,
-      },
-      {
-        name: "Suede & Nubuck Treatment",
-        description: "Pembersihan kering suede.",
-        price: 90000,
-        shoeType: "suede",
-        duration: 120,
-        storeId: store2.id,
-      },
-      {
-        name: "Standard Clean",
-        description: "Pembersihan standar.",
-        price: 40000,
-        shoeType: "lainnya",
-        duration: 60,
-        storeId: store2.id,
-      },
-    ],
+    });
+  }
+  console.log("✅ Stores, Services & Wallets created.");
+
+  // --------------------------------------------------------
+  // 3. CREATE BOOKINGS
+  // --------------------------------------------------------
+  console.log(`📅 Creating ${NUM_BOOKINGS} bookings...`);
+
+  // Ambil semua customer (kecuali admin/developer/mitra)
+  const customers = await prisma.user.findMany({ where: { role: "customer" } });
+  const allStores = await prisma.store.findMany({
+    include: { services: true },
   });
 
-  // --- 6. MEMBUAT BANNER (Penting untuk Hero Section) ---
-  console.log("🖼️ [SEED] Membuat banner...");
-  
-  await prisma.banner.createMany({
-    data: [
-      {
-        title: "Premium Care for Your Kicks",
-        description: "Experience the best shoe cleaning service in town.",
-        imageUrl: "https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1920&auto=format&fit=crop",
-        linkUrl: "/store",
-        status: "active"
-      },
-      {
-        title: "Restoration Experts",
-        description: "Bring your old shoes back to life.",
-        imageUrl: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1920&auto=format&fit=crop",
-        linkUrl: "/about",
-        status: "active"
-      }
-    ]
-  });
+  for (let i = 0; i < NUM_BOOKINGS; i++) {
+    const randomUser = faker.helpers.arrayElement(customers);
+    const randomStore = faker.helpers.arrayElement(allStores);
 
-  // --- 7. SETTING GLOBAL ---
-  await prisma.globalSetting.create({
-    data: {
-      key: "homePageTheme",
-      value: "elevate", // Default tema ke Elevate sesuai request
-      description: "Pilihan tema untuk Homepage: 'classic', 'modern', atau 'elevate'.",
+    if (!randomStore.services || randomStore.services.length === 0) continue;
+
+    const randomService = faker.helpers.arrayElement(randomStore.services);
+    const status = faker.helpers.arrayElement([
+      "pending",
+      "confirmed",
+      "completed",
+      "cancelled",
+    ]);
+    const isCompleted = status === "completed";
+
+    await prisma.booking.create({
+      data: {
+        userId: randomUser.id,
+        storeId: randomStore.id,
+        serviceId: randomService.id,
+        serviceName: randomService.name,
+        deliveryOption: "pickup",
+        totalPrice: randomService.price,
+        status: status,
+        workStatus: isCompleted ? "completed" : "in_progress",
+        scheduleDate: faker.date.future(),
+
+        payment: {
+          create: {
+            amount: randomService.price,
+            status: isCompleted ? "paid" : "pending",
+            paymentMethod: "bank_transfer",
+            midtransOrderId: `ORDER-${faker.string.nanoid(10)}`,
+          },
+        },
+
+        review:
+          isCompleted && Math.random() > 0.3
+            ? {
+                create: {
+                  userId: randomUser.id,
+                  userName: randomUser.name,
+                  storeId: randomStore.id,
+                  rating: faker.number.int({ min: 3, max: 5 }),
+                  comment: faker.lorem.sentence(),
+                },
+              }
+            : undefined,
+      },
+    });
+  }
+
+  console.log("✅ Bookings, Payments, & Reviews created.");
+
+  // --------------------------------------------------------
+  // 4. CREATE PROMOS (Data Dummy Baru)
+  // --------------------------------------------------------
+  console.log(`🎟️ Creating Promos...`);
+
+  const promoData = [
+    {
+      code: "BARU2025",
+      description: "Diskon pengguna baru tahun 2025",
+      discountType: "PERCENTAGE", // Sesuai dengan tipe String di schema
+      value: 20, // 20%
+      minTransaction: 50000,
+      forNewUser: true,
     },
-  });
+    {
+      code: "FLAT10K",
+      description: "Potongan langsung 10rb",
+      discountType: "FIXED_AMOUNT",
+      value: 10000,
+      minTransaction: 100000,
+      forNewUser: false,
+    },
+    {
+      code: "LEBARAN",
+      description: "Promo spesial lebaran cuci sepatu",
+      discountType: "PERCENTAGE",
+      value: 50,
+      minTransaction: 0,
+      forNewUser: false,
+    },
+  ];
 
-  console.log("🎉 [SEED] Selesai! Data siap digunakan.");
+  for (const p of promoData) {
+    // 1. Buat Master Promo
+    const createdPromo = await prisma.promo.create({
+      data: {
+        code: p.code,
+        description: p.description,
+        discountType: p.discountType,
+        value: p.value,
+        startDate: faker.date.recent(), // Mulai beberapa hari lalu
+        endDate: faker.date.future(),   // Berakhir di masa depan
+        usageLimit: 100,
+        usageCount: faker.number.int({ min: 0, max: 50 }),
+        minTransaction: p.minTransaction,
+        forNewUser: p.forNewUser,
+        status: "active",
+      },
+    });
+
+    // 2. Hubungkan Promo ke Beberapa Toko Acak (StorePromo)
+    // Misalnya setiap promo berlaku di 5 toko acak
+    const randomStoresForPromo = faker.helpers.arrayElements(allStores, 5);
+    
+    for (const store of randomStoresForPromo) {
+      await prisma.storePromo.create({
+        data: {
+          storeId: store.id,
+          promoId: createdPromo.id,
+          redeemed: faker.number.int({ min: 0, max: 20 }),
+        },
+      });
+    }
+  }
+  
+  console.log("✅ Promos & StorePromos created.");
+  
+  // --------------------------------------------------------
+  // SUMMARY LOGIN
+  // --------------------------------------------------------
+  console.log("\n=============================================");
+  console.log("🚀 SEEDING SELESAI! SILAKAN LOGIN DENGAN:");
+  console.log("---------------------------------------------");
+  console.log("🔑 PASSWORD SEMUA AKUN: password123");
+  console.log("---------------------------------------------");
+  console.log("1. DEVELOPER : developer@stridebase.com");
+  console.log("2. ADMIN     : admin@stridebase.com");
+  console.log("3. MITRA     : mitra@stridebase.com");
+  console.log("4. CUSTOMER  : customer@stridebase.com");
+  console.log("=============================================\n");
 }
 
 main()

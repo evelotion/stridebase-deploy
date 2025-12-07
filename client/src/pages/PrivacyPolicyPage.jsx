@@ -1,58 +1,84 @@
-// File: stridebase-app-render/client/src/pages/PrivacyPolicyPage.jsx
+// File: client/src/pages/PrivacyPolicyPage.jsx
 
 import React from "react";
+import { Fade } from "react-awesome-reveal";
+import "./HomePageElevate.css";
 
 const PrivacyPolicyPage = () => {
   return (
-    <div className="container py-5 mt-5">
-      <div className="text-center mb-5">
-        <h1 className="display-4 fw-bold">Kebijakan Privasi</h1>
-        <p className="lead text-muted">
-          Terakhir diperbarui: 12 Agustus 2025
-        </p>
+    <div
+      className="home-elevate-wrapper"
+      style={{ minHeight: "100vh", paddingTop: "100px" }}
+    >
+      {/* Header Dokumen */}
+      <div className="bg-dark border-bottom border-secondary border-opacity-25 py-5 mb-5">
+        <div className="container text-center">
+          <Fade direction="down" triggerOnce>
+            <h1 className="fw-bold text-white mb-2">Kebijakan Privasi</h1>
+            <p className="text-white-50 mb-0">
+              Terakhir diperbarui: 25 November 2025
+            </p>
+          </Fade>
+        </div>
       </div>
 
-      <div className="legal-content-card">
-        <h5>1. Informasi yang Kami Kumpulkan</h5>
-        <p>
-          Kami mengumpulkan informasi yang Anda berikan langsung kepada kami
-          saat Anda mendaftar, melakukan pemesanan, atau berkomunikasi dengan
-          kami. Ini termasuk nama, alamat email, nomor telepon, dan alamat
-          pengiriman. Kami juga dapat mengumpulkan informasi teknis seperti
-          alamat IP dan data penjelajahan untuk meningkatkan layanan kami.
-        </p>
+      {/* Konten Dokumen */}
+      <div className="container pb-5" style={{ maxWidth: "800px" }}>
+        <Fade direction="up" cascade damping={0.1} triggerOnce>
+          <div
+            className="he-doc-content text-white-50"
+            style={{ fontSize: "1.05rem", lineHeight: "1.8" }}
+          >
+            <section className="mb-5">
+              <h4 className="text-white fw-bold mb-3">1. Pendahuluan</h4>
+              <p>
+                StrideBase ("kami") menghargai privasi Anda. Kebijakan Privasi
+                ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan
+                melindungi informasi pribadi Anda saat menggunakan platform
+                kami.
+              </p>
+            </section>
 
-        <h5>2. Bagaimana Kami Menggunakan Informasi Anda</h5>
-        <p>
-          Informasi Anda digunakan untuk memproses transaksi, mengelola akun
-          Anda, mengirimkan notifikasi terkait pesanan, dan menyediakan
-          dukungan pelanggan. Kami juga dapat menggunakannya untuk tujuan
-          pemasaran internal dan analisis untuk meningkatkan platform
-          StrideBase.
-        </p>
+            <section className="mb-5">
+              <h4 className="text-white fw-bold mb-3">
+                2. Data yang Kami Kumpulkan
+              </h4>
+              <ul className="ps-3">
+                <li className="mb-2">
+                  <strong>Informasi Akun:</strong> Nama, alamat email, nomor
+                  telepon, dan password terenkripsi.
+                </li>
+                <li className="mb-2">
+                  <strong>Data Transaksi:</strong> Detail booking, riwayat
+                  pembayaran, dan alamat penjemputan/pengiriman.
+                </li>
+                <li className="mb-2">
+                  <strong>Data Teknis:</strong> Alamat IP, jenis perangkat, dan
+                  data penggunaan aplikasi untuk tujuan analitik.
+                </li>
+              </ul>
+            </section>
 
-        <h5>3. Pembagian Informasi</h5>
-        <p>
-          Kami tidak menjual atau menyewakan informasi pribadi Anda kepada
-          pihak ketiga. Kami hanya membagikan informasi yang diperlukan kepada
-          mitra toko (misalnya, nama dan detail pesanan) untuk memenuhi
-          layanan yang Anda pesan.
-        </p>
+            <section className="mb-5">
+              <h4 className="text-white fw-bold mb-3">3. Penggunaan Data</h4>
+              <p>
+                Kami menggunakan data Anda semata-mata untuk memproses pesanan,
+                menghubungkan Anda dengan mitra toko, dan meningkatkan kualitas
+                layanan. Kami <strong>tidak akan pernah</strong> menjual data
+                pribadi Anda kepada pihak ketiga.
+              </p>
+            </section>
 
-        <h5>4. Keamanan Data</h5>
-        <p>
-          Kami menerapkan langkah-langkah keamanan yang wajar untuk melindungi
-          informasi Anda dari akses, penggunaan, atau pengungkapan yang tidak
-          sah. Namun, tidak ada metode transmisi melalui internet atau metode
-          penyimpanan elektronik yang 100% aman.
-        </p>
-
-        <h5>5. Perubahan pada Kebijakan Ini</h5>
-        <p>
-          Kami dapat memperbarui kebijakan privasi ini dari waktu ke waktu.
-          Kami akan memberitahu Anda tentang perubahan apa pun dengan
-          memposting kebijakan baru di halaman ini.
-        </p>
+            <section className="mb-5">
+              <h4 className="text-white fw-bold mb-3">4. Keamanan</h4>
+              <p>
+                Kami menerapkan standar keamanan industri (enkripsi SSL, hashing
+                password) untuk melindungi data Anda dari akses yang tidak sah.
+                Namun, tidak ada metode transmisi internet yang 100% aman.
+              </p>
+            </section>
+          </div>
+        </Fade>
       </div>
     </div>
   );

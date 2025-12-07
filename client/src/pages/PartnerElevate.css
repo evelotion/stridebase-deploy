@@ -1,0 +1,632 @@
+/* File: client/src/pages/PartnerElevate.css */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap");
+
+/* --- DEFINISI VARIABEL (DEFAULT: DARK / OBSIDIAN) --- */
+:root {
+  /* Base Colors */
+  --pe-bg: #050505;
+  --pe-sidebar-bg: rgba(15, 15, 15, 0.95);
+
+  /* Card & Glass */
+  --pe-card-bg: rgba(20, 20, 20, 0.6);
+  --pe-card-border: rgba(255, 255, 255, 0.08);
+  --pe-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+  /* Typography */
+  --pe-text-main: #ffffff;
+  --pe-text-muted: rgba(255, 255, 255, 0.5);
+  --pe-text-inverse: #000000;
+
+  /* Accents */
+  --pe-accent: #3b82f6; /* Electric Blue */
+  --pe-accent-glow: rgba(59, 130, 246, 0.15);
+
+  /* Status Colors */
+  --pe-success: #10b981;
+  --pe-warning: #f59e0b;
+  --pe-danger: #ef4444;
+
+  /* Table Elements */
+  --pe-table-row-bg: rgba(255, 255, 255, 0.03);
+  --pe-table-row-hover: rgba(255, 255, 255, 0.06);
+}
+
+/* --- LIGHT MODE OVERRIDE (PORCELAIN EDITION) --- */
+[data-theme="light"] {
+  /* Base Colors: Putih Abu-abu Halus */
+  --pe-bg: #f3f4f6;
+  --pe-sidebar-bg: rgba(255, 255, 255, 0.85);
+
+  /* Card & Glass: White Frosted */
+  --pe-card-bg: rgba(255, 255, 255, 0.7);
+  --pe-card-border: rgba(0, 0, 0, 0.05);
+  --pe-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+  /* Typography */
+  --pe-text-main: #111827;
+  --pe-text-muted: #6b7280;
+  --pe-text-inverse: #ffffff;
+
+  /* Table Elements */
+  --pe-table-row-bg: rgba(255, 255, 255, 0.5);
+  --pe-table-row-hover: rgba(255, 255, 255, 0.9);
+}
+
+/* --- 1. BASE LAYOUT --- */
+.pe-dashboard-wrapper {
+  background-color: var(--pe-bg);
+  min-height: 100vh;
+  color: var(--pe-text-main);
+  font-family: "Inter", sans-serif;
+  padding-bottom: 50px;
+  position: relative;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Background Gradients (Ambiance) */
+.pe-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  opacity: 0.4;
+  pointer-events: none;
+}
+[data-theme="light"] .pe-blob {
+  opacity: 0.25;
+  mix-blend-mode: multiply;
+}
+
+.pe-blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--pe-accent) 0%, transparent 70%);
+}
+.pe-blob-2 {
+  bottom: 10%;
+  right: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--pe-warning) 0%, transparent 70%);
+  opacity: 0.15;
+}
+
+/* --- 2. TYPOGRAPHY --- */
+.pe-title {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--pe-text-main);
+}
+.pe-subtitle {
+  color: var(--pe-text-muted);
+  font-size: 0.9rem;
+}
+
+/* --- 3. CARDS (GLASS) --- */
+.pe-card {
+  background: var(--pe-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--pe-card-border);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(--pe-card-shadow);
+}
+
+.pe-card:hover {
+  border-color: var(--pe-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.1);
+}
+
+/* Stat Card Specifics */
+.pe-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+.pe-icon-blue {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--pe-accent);
+}
+.pe-icon-green {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--pe-success);
+}
+.pe-icon-gold {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--pe-warning);
+}
+.pe-icon-red {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--pe-danger);
+}
+
+/* --- 4. DATA TABLES --- */
+.pe-table-wrapper {
+  overflow-x: auto;
+}
+.pe-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+.pe-table th {
+  text-align: left;
+  color: var(--pe-text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 20px;
+  font-weight: 600;
+}
+.pe-table td {
+  background: var(--pe-table-row-bg);
+  color: var(--pe-text-main);
+  padding: 16px 20px;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--pe-card-border);
+  border-bottom: 1px solid var(--pe-card-border);
+  transition: background 0.2s;
+}
+.pe-table td:first-child {
+  border-left: 1px solid var(--pe-card-border);
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.pe-table td:last-child {
+  border-right: 1px solid var(--pe-card-border);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.pe-table tr:hover td {
+  background: var(--pe-table-row-hover);
+}
+
+/* Badges */
+.pe-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+.pe-badge-success {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--pe-success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.pe-badge-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--pe-warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.pe-badge-danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--pe-danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* --- 5. BUTTONS --- */
+.pe-btn-action {
+  background: var(--pe-card-bg);
+  color: var(--pe-text-main);
+  border: 1px solid var(--pe-card-border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.pe-btn-action:hover {
+  background: var(--pe-accent);
+  color: #fff;
+  border-color: var(--pe-accent);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+/* --- 6. PARTNER LAYOUT (SIDEBAR & NAV) --- */
+.pe-layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--pe-bg);
+  transition: background-color 0.3s ease;
+}
+
+/* SIDEBAR */
+.pe-sidebar {
+  width: 280px;
+  background: var(--pe-sidebar-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--pe-card-border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 1000;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.pe-sidebar-brand {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--pe-text-main);
+  text-decoration: none;
+  margin-bottom: 3rem;
+  padding-left: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.5px;
+}
+
+.pe-sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* Scroll Fix */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  margin-right: -8px;
+  padding-bottom: 20px;
+}
+
+/* Custom Scrollbar Sidebar */
+.pe-sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+.pe-sidebar-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pe-sidebar-menu::-webkit-scrollbar-thumb {
+  background: var(--pe-card-border);
+  border-radius: 10px;
+}
+.pe-sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--pe-text-muted);
+}
+
+.pe-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: var(--pe-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  border: 1px solid transparent;
+}
+
+.pe-nav-link i {
+  width: 24px;
+  text-align: center;
+  margin-right: 12px;
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.pe-nav-link:hover {
+  color: var(--pe-text-main);
+  background: rgba(128, 128, 128, 0.1);
+  transform: translateX(4px);
+}
+
+.pe-nav-link.active {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--pe-accent);
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+}
+.pe-nav-link.active i {
+  color: var(--pe-accent);
+  transform: scale(1.1);
+}
+
+/* Special Links */
+.pe-nav-link.upgrade-link {
+  background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), transparent);
+  color: var(--pe-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  margin-bottom: 1rem;
+}
+.pe-nav-link.logout-link {
+  margin-top: auto;
+  color: var(--pe-danger);
+}
+.pe-nav-link.logout-link:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* MAIN CONTENT */
+.pe-main-content {
+  flex-grow: 1;
+  margin-left: 280px;
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--pe-bg);
+  transition: background-color 0.3s ease;
+}
+
+/* MOBILE HEADER */
+.pe-mobile-header {
+  display: none;
+  padding: 1rem 1.5rem;
+  background: var(--pe-sidebar-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--pe-card-border);
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+.pe-mobile-brand {
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  color: var(--pe-text-main);
+  text-decoration: none;
+}
+
+/* Dropdown Dark/Light Adaptive */
+.dropdown-menu-adaptive {
+  background: var(--pe-card-bg) !important;
+  border: 1px solid var(--pe-card-border) !important;
+  box-shadow: var(--pe-card-shadow) !important;
+  backdrop-filter: blur(20px);
+}
+.dropdown-menu-adaptive .dropdown-item {
+  color: var(--pe-text-muted) !important;
+}
+.dropdown-menu-adaptive .dropdown-item:hover {
+  background: var(--pe-accent) !important;
+  color: #fff !important;
+}
+
+/* RESPONSIVE */
+@media (max-width: 991px) {
+  .pe-sidebar {
+    display: none;
+  }
+  .pe-main-content {
+    margin-left: 0;
+  }
+  .pe-mobile-header {
+    display: flex;
+  }
+}
+
+/* --- 7. FLOATING THEME TOGGLE (FAB) --- */
+.pe-theme-fab {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+
+  /* Glassmorphism Style */
+  background: var(--pe-card-bg);
+  border: 1px solid var(--pe-card-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  color: var(--pe-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1100;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pe-theme-fab:hover {
+  transform: scale(1.1) rotate(15deg);
+  background: var(--pe-accent);
+  border-color: var(--pe-accent);
+  color: #fff;
+  box-shadow: 0 0 30px var(--pe-accent-glow);
+}
+
+.pe-theme-fab:active {
+  transform: scale(0.9);
+}
+
+@media (max-width: 768px) {
+  .pe-theme-fab {
+    bottom: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+  }
+}
+
+/* =================================================================
+   🔥 FASE MOBILE: PARTNER APP EXPERIENCE
+   ================================================================= */
+
+@media (max-width: 991px) {
+  /* 1. GLOBAL MOBILE FIXES */
+  body {
+    overscroll-behavior-y: none;
+    background-color: var(--pe-bg);
+  }
+  .pe-main-content {
+    margin-left: 0 !important;
+    padding-bottom: 110px !important; /* Space untuk Bottom Dock */
+    width: 100%;
+  }
+
+  /* 2. MOBILE HEADER (Glassmorphism Sticky) */
+  .pe-mobile-header {
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    background: var(--pe-sidebar-bg); /* Menggunakan var transparan */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--pe-card-border);
+    padding: 15px 20px;
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  /* 3. MOBILE BOTTOM DOCK (Floating) */
+  .pe-mobile-dock {
+    position: fixed;
+    bottom: 20px;
+    left: 15px;
+    right: 15px;
+    height: 70px;
+    background: var(--pe-sidebar-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--pe-card-border);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1050;
+    padding: 0 5px;
+    animation: slideUpDock 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .pe-dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--pe-text-muted);
+    width: 60px;
+    transition: all 0.3s ease;
+  }
+
+  .pe-dock-icon {
+    font-size: 1.3rem;
+    margin-bottom: 3px;
+    transition: transform 0.2s;
+  }
+
+  .pe-dock-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    font-family: "Outfit", sans-serif;
+  }
+
+  .pe-dock-item.active {
+    color: var(--pe-accent);
+  }
+  .pe-dock-item.active .pe-dock-icon {
+    transform: translateY(-2px);
+  }
+
+  /* CENTER FAB (FOCUS: ORDERS) */
+  .pe-dock-fab-wrapper {
+    position: relative;
+    top: -25px;
+  }
+  .pe-dock-fab {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--pe-accent), #2563eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5rem;
+    border: 5px solid var(--pe-bg); /* Border agar terpisah dari content */
+    box-shadow: 0 8px 20px var(--pe-accent-glow);
+    transition: transform 0.2s;
+  }
+  .pe-dock-fab:active {
+    transform: scale(0.95);
+  }
+  [data-theme="light"] .pe-dock-fab {
+    border-color: #f3f4f6; /* Warna bg light mode */
+  }
+
+  /* 4. STORE STATUS TOGGLE (Dashboard Widget) */
+  .pe-store-status-card {
+    background: linear-gradient(135deg, rgba(20,20,20,0.8), rgba(10,10,10,0.9));
+    border: 1px solid var(--pe-card-border);
+    border-radius: 16px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  [data-theme="light"] .pe-store-status-card {
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+
+  .pe-toggle-switch {
+    width: 50px;
+    height: 28px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50px;
+    position: relative;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .pe-toggle-switch.active {
+    background: var(--pe-success);
+  }
+  .pe-toggle-thumb {
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .pe-toggle-switch.active .pe-toggle-thumb {
+    left: 24px;
+  }
+}
+
+@keyframes slideUpDock {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

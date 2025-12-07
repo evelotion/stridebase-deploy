@@ -1,4 +1,4 @@
-// File: client/src/App.jsx (Sesuai file Anda + Rute LoginSuccessPage)
+// File: client/src/App.jsx
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
@@ -9,15 +9,146 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
+
+import "./pages/HomePageElevate.css";
+
 import { io } from "socket.io-client";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 
+// --- FIX IMPORT: Gunakan path yang valid sesuai struktur folder ---
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import GlobalAnnouncement from "./components/GlobalAnnouncement";
-import Notification from "./components/Notification";
+import MobileBottomNav from "./components/MobileBottomNav";
+// import Notification from "./components/Notification"; // <-- Jika file ini belum ada/error, komentari dulu atau pastikan path benar
 import API_BASE_URL from "./apiConfig";
 
+// --- FUNGSI NOTIFIKASI SEDERHANA (INLINE) ---
+// Jika Notification.jsx bermasalah, gunakan versi sederhana ini sementara
+const Notification = ({ notification, onClose }) => {
+  // 1. Logika Timer Otomatis (Auto-Close)
+  useEffect(() => {
+    if (notification) {
+      // Pasang timer 5 detik (5000ms)
+      const timer = setTimeout(() => {
+        onClose();
+      }, 5000);
+
+      // Bersihkan timer jika komponen di-unmount atau notifikasi berubah
+      // (Penting agar tidak error saat user menutup manual sebelum 5 detik)
+      return () => clearTimeout(timer);
+    }
+  }, [notification, onClose]);
+
+  // Jika tidak ada notifikasi, jangan render apa-apa
+  if (!notification) return null;
+
+  // 2. Deteksi Error agar warna berbeda
+  const isError = 
+    notification.title?.toLowerCase().includes("gagal") || 
+    notification.title?.toLowerCase().includes("error") || 
+    notification.message?.toLowerCase().includes("salah") ||
+    notification.message?.toLowerCase().includes("failed");
+
+  return (
+    <div
+      className="pe-notification-toast" // Class opsional jika ingin styling via CSS
+      style={{
+        position: "fixed",
+        top: "24px",
+        right: "24px",
+        // Theme Variables (Otomatis Dark/Light)
+        background: "var(--sb-card-bg, rgba(20, 20, 20, 0.95))", 
+        color: "var(--sb-text-main, #ffffff)",
+        borderLeft: isError ? "4px solid #ef4444" : "4px solid #3b82f6", // Border kiri berwarna
+        border: "1px solid var(--sb-card-border, rgba(255,255,255,0.1))",
+        
+        // Glass Effect
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        
+        // Layout & Animasi
+        padding: "16px 20px",
+        borderRadius: "12px",
+        boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
+        zIndex: 99999,
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "15px",
+        maxWidth: "380px",
+        minWidth: "300px",
+        animation: "slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
+      }}
+    >
+      {/* Icon */}
+      <div 
+        style={{ 
+          fontSize: "1.2rem", 
+          color: isError ? "#ef4444" : "#3b82f6",
+          marginTop: "2px"
+        }}
+      >
+        {isError ? <i className="fas fa-exclamation-circle"></i> : <i className="fas fa-check-circle"></i>}
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1 }}>
+        <h6 
+          style={{ 
+            margin: "0 0 4px 0", 
+            fontWeight: "700", 
+            fontFamily: "'Outfit', sans-serif",
+            fontSize: "0.95rem",
+            color: "inherit" 
+          }}
+        >
+          {notification.title}
+        </h6>
+        <p 
+          style={{ 
+            margin: 0, 
+            fontSize: "0.85rem", 
+            lineHeight: "1.4",
+            opacity: 0.8 // Agar teks isi sedikit lebih pudar tapi tetap terbaca
+          }}
+        >
+          {notification.message}
+        </p>
+      </div>
+
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        style={{
+          background: "transparent",
+          border: "none",
+          color: "inherit",
+          opacity: 0.5,
+          fontSize: "1.2rem",
+          cursor: "pointer",
+          padding: "0",
+          marginLeft: "5px",
+          transition: "opacity 0.2s"
+        }}
+        onMouseOver={(e) => e.target.style.opacity = 1}
+        onMouseOut={(e) => e.target.style.opacity = 0.5}
+      >
+        &times;
+      </button>
+
+      {/* Inject Keyframe Animasi Slide-In */}
+      <style>
+        {`
+          @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+          }
+        `}
+      </style>
+    </div>
+  );
+};
 // Lazy load all page components
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));
@@ -44,12 +175,12 @@ const DashboardPage = React.lazy(() => import("./pages/DashboardPage"));
 const NotFoundPage = React.lazy(() => import("./pages/NotFoundPage"));
 const PaymentFinishPage = React.lazy(() => import("./pages/PaymentFinishPage"));
 const PaymentConfirmMobilePage = React.lazy(() =>
-  import("./pages/PaymentConfirmMobilePage.jsx")
+  import("./pages/PaymentConfirmMobilePage")
 );
 const TrackOrderPage = React.lazy(() => import("./pages/TrackOrderPage"));
 const NotificationsPage = React.lazy(() => import("./pages/NotificationsPage"));
 const MaintenanceNoticePage = React.lazy(() =>
-  import("./pages/MaintenanceNoticePage.jsx")
+  import("./pages/MaintenanceNoticePage")
 );
 const AdminLayout = React.lazy(() => import("./components/AdminLayout"));
 const AdminDashboardPage = React.lazy(() =>
@@ -109,18 +240,16 @@ const ForgotPasswordPage = React.lazy(() =>
 );
 const ResetPasswordPage = React.lazy(() => import("./pages/ResetPasswordPage"));
 const PaymentSimulationPage = React.lazy(() =>
-  import("./pages/PaymentSimulationPage.jsx")
+  import("./pages/PaymentSimulationPage")
 );
 const PaymentSuccessPage = React.lazy(() =>
-  import("./pages/PaymentSuccessPage.jsx")
+  import("./pages/PaymentSuccessPage")
 );
-// --- Impor halaman baru untuk Google Login ---
 const LoginSuccessPage = React.lazy(() => import("./pages/LoginSuccessPage"));
-// --- Akhir ---
 
 let socket;
 
-// --- PERBAIKAN UTAMA ADA DI FUNGSI INI ---
+// --- FUNGSI HELPER: TERAPKAN TEMA ---
 const applyTheme = (theme) => {
   if (!theme) return;
   const root = document.documentElement;
@@ -130,7 +259,6 @@ const applyTheme = (theme) => {
     favicon.href = `${theme.branding.faviconUrl}`;
   }
 
-  // Cek jika 'colors' ada sebelum menggunakannya
   if (theme.colors) {
     root.style.setProperty(
       "--primary-color",
@@ -142,7 +270,6 @@ const applyTheme = (theme) => {
     );
     root.style.setProperty("--accent-color", theme.colors.accent || "#FFC107");
 
-    // Cek jika 'button' di dalam 'colors' ada
     if (theme.colors.button) {
       root.style.setProperty(
         "--button-background-color",
@@ -160,7 +287,6 @@ const applyTheme = (theme) => {
     }
   }
 
-  // Cek jika 'typography' ada
   if (theme.typography) {
     if (theme.typography.fontFamily) {
       const fontFamilyValue = theme.typography.fontFamily;
@@ -206,7 +332,6 @@ const applyTheme = (theme) => {
     );
   }
 
-  // Cek jika 'background' ada
   if (theme.background) {
     if (theme.background.type === "image" && theme.background.imageUrl) {
       document.body.style.backgroundImage = `url(${theme.background.imageUrl})`;
@@ -221,6 +346,7 @@ const applyTheme = (theme) => {
   }
 };
 
+// --- KOMPONEN WRAPPER MAINTENANCE ---
 const PageStatusWrapper = ({ children, path, theme }) => {
   const isEnabled = theme?.featureFlags?.pageStatus?.[path] ?? true;
   if (isEnabled) {
@@ -229,7 +355,9 @@ const PageStatusWrapper = ({ children, path, theme }) => {
   return <MaintenanceNoticePage />;
 };
 
-// Layout untuk halaman-halaman utama (dengan Navbar dan Footer)
+// --- LAYOUT USER (NAVBAR + FOOTER) ---
+// Di dalam client/src/App.jsx
+
 const UserLayout = ({
   theme,
   children,
@@ -239,7 +367,21 @@ const UserLayout = ({
   setUnreadCount,
   isAnnouncementVisible,
   setAnnouncementVisible,
+  isLightMode,
+  toggleTheme,
 }) => {
+  const [isThemeDrawerOpen, setIsThemeDrawerOpen] = useState(false);
+  
+  // 1. LOGIC MENYEMBUNYIKAN NAVBAR
+  const location = useLocation();
+  // Daftar path yang TIDAK BOLEH ada navbar bawah
+  const hideNavPaths = ["/store/", "/booking-confirmation", "/payment"];
+  
+  // Cek apakah URL saat ini mengandung salah satu path di atas
+  const shouldHideNav = hideNavPaths.some((path) => 
+    location.pathname.includes(path) && location.pathname !== "/store" // Kecuali halaman utama store list
+  );
+
   useEffect(() => {
     document.body.classList.add("is-user-layout");
     return () => {
@@ -248,17 +390,16 @@ const UserLayout = ({
   }, []);
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Navbar
         theme={theme}
         notifications={notifications}
         unreadCount={unreadCount}
         setNotifications={setNotifications}
         setUnreadCount={setUnreadCount}
-        homePageTheme="modern"
+        homePageTheme="elevate"
       />
+      
       {theme?.featureFlags?.enableGlobalAnnouncement &&
         theme?.globalAnnouncement && (
           <div className="d-none d-lg-block">
@@ -269,13 +410,36 @@ const UserLayout = ({
             />
           </div>
         )}
+
       <main style={{ flex: 1 }}>{children}</main>
-      <Footer />
+      
+      <div className="d-none d-lg-block">
+        <Footer />
+      </div>
+
+      {/* 2. RENDER KONDISIONAL: Hanya tampilkan jika TIDAK di halaman detail/booking */}
+      {!shouldHideNav && <MobileBottomNav />}
+
+      <div className={`he-theme-control-group ${isThemeDrawerOpen ? 'open' : ''}`}>
+        <button 
+          className="he-theme-arrow-trigger"
+          onClick={() => setIsThemeDrawerOpen(!isThemeDrawerOpen)}
+        >
+          <i className={`fas fa-chevron-${isThemeDrawerOpen ? 'right' : 'left'}`}></i>
+        </button>
+        <button
+          className="he-theme-fab"
+          onClick={toggleTheme}
+          title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        >
+          {isLightMode ? <i className="fas fa-moon"></i> : <i className="fas fa-sun"></i>}
+        </button>
+      </div>
     </div>
   );
 };
 
-// Layout baru untuk halaman otentikasi (tanpa Navbar dan Footer)
+// --- LAYOUT AUTH (TANPA NAVBAR/FOOTER) ---
 const AuthLayout = () => {
   useEffect(() => {
     document.body.classList.add("auth-layout");
@@ -291,11 +455,46 @@ const AuthLayout = () => {
   );
 };
 
-const ProtectedRoute = ({ children, role }) => {
+// --- KOMPONEN PROTECTED ROUTE (UPDATED: ROLE HIERARCHY) ---
+const ProtectedRoute = ({ children, requiredRole }) => {
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || user.role !== role) {
+  const token = localStorage.getItem("token");
+
+  if (!user || !token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // --- LOGIKA HIRARKI PERAN ---
+  let isAllowed = false;
+
+  // 1. Developer (Superuser) -> Akses Segalanya (Kecuali logic khusus jika ada)
+  if (user.role === "developer") {
+    isAllowed = true;
+  }
+  // 2. Admin -> Akses Admin saja
+  else if (user.role === "admin") {
+    if (requiredRole === "admin") isAllowed = true;
+  }
+  // 3. Mitra -> Akses Mitra saja
+  else if (user.role === "mitra") {
+    if (requiredRole === "mitra") isAllowed = true;
+  }
+  // 4. Customer -> Akses Customer saja
+  else {
+    if (requiredRole === "customer") isAllowed = true;
+  }
+
+  // --- PENGECUALIAN PENTING ---
+  // Admin TIDAK BOLEH masuk ke panel Developer
+  if (requiredRole === "developer" && user.role !== "developer") {
+    isAllowed = false;
+  }
+
+  if (!isAllowed) {
+    // Redirect jika tidak punya izin
     return <Navigate to="/" replace />;
   }
+
   return children;
 };
 
@@ -318,6 +517,24 @@ function AppContent() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [isAnnouncementVisible, setAnnouncementVisible] = useState(true);
   const navigate = useNavigate();
+
+  // --- LOGIKA TEMA (LIGHT/DARK) ---
+  const [isLightMode, setIsLightMode] = useState(() => {
+    const saved = localStorage.getItem("elevateTheme");
+    return saved === "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "data-theme",
+      isLightMode ? "light" : "dark"
+    );
+    localStorage.setItem("elevateTheme", isLightMode ? "light" : "dark");
+  }, [isLightMode]);
+
+  const toggleTheme = () => {
+    setIsLightMode((prev) => !prev);
+  };
 
   const showMessage = (message, title = "Pemberitahuan") => {
     const finalTitle = message === "Login berhasil!" ? "Login Berhasil" : title;
@@ -372,19 +589,18 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
+    // FIX: Gunakan API_BASE_URL untuk socket jika tidak di production
+    // atau gunakan logika manual jika API_BASE_URL kosong
     const socketUrl = import.meta.env.PROD
-      ? import.meta.env.VITE_API_PRODUCTION_URL
-      : "/";
+      ? "https://stridebase-server-wqdw.onrender.com"
+      : "http://localhost:5000";
 
     if (user && user.id) {
       socket = io(socketUrl, { query: { userId: user.id } });
       socket.on("connect", () => {
-        console.log(
-          `✅ Terhubung ke server Socket.IO dengan ID: ${socket.id} untuk user ${user.id}`
-        );
+        console.log(`✅ Terhubung ke Socket.IO: ${socket.id}`);
       });
       socket.on("new_notification", (notification) => {
-        console.log("Menerima notifikasi baru:", notification);
         setNotifications((prev) => [notification, ...prev]);
         setUnreadCount((prev) => prev + 1);
         showMessage(`Notifikasi Baru: ${notification.message}`);
@@ -393,7 +609,7 @@ function AppContent() {
       const fetchNotifications = async () => {
         const token = localStorage.getItem("token");
         try {
-          const res = await fetch(`${API_BASE_URL}/api/user/notifications`, {
+          const res = await fetch(`${API_BASE_URL}/api/users/notifications`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
@@ -410,7 +626,6 @@ function AppContent() {
 
     const themeSocket = io(socketUrl);
     themeSocket.on("themeUpdated", (newThemeConfig) => {
-      console.log("Menerima pembaruan tema secara real-time:", newThemeConfig);
       setTheme(newThemeConfig);
       applyTheme(newThemeConfig);
       showMessage("Tampilan tema telah diperbarui oleh administrator.");
@@ -435,11 +650,13 @@ function AppContent() {
     <Suspense fallback={<LoadingFallback />}>
       <Notification notification={notification} onClose={hideMessage} />
       <Routes>
-        {/* Rute untuk Admin, Partner, dan Developer */}
+        {/* --- RUTE PANEL ADMIN/MITRA/DEV (Protected with Role Hierarchy) --- */}
+
+        {/* Developer: Hanya untuk Developer */}
         <Route
           path="/developer/*"
           element={
-            <ProtectedRoute role="developer">
+            <ProtectedRoute requiredRole="developer">
               <DeveloperLayout />
             </ProtectedRoute>
           }
@@ -449,10 +666,12 @@ function AppContent() {
             element={renderWithProps(DeveloperDashboardPage)}
           />
         </Route>
+
+        {/* Mitra: Hanya untuk Mitra */}
         <Route
           path="/partner/*"
           element={
-            <ProtectedRoute role="mitra">
+            <ProtectedRoute requiredRole="mitra">
               <PartnerLayout theme={theme} />
             </ProtectedRoute>
           }
@@ -477,10 +696,12 @@ function AppContent() {
           <Route path="wallet" element={renderWithProps(PartnerWalletPage)} />
           <Route path="reports" element={renderWithProps(PartnerReportsPage)} />
         </Route>
+
+        {/* Admin: Untuk Admin DAN Developer */}
         <Route
           path="/admin/*"
           element={
-            <ProtectedRoute role="admin">
+            <ProtectedRoute requiredRole="admin">
               <AdminLayout />
             </ProtectedRoute>
           }
@@ -517,7 +738,7 @@ function AppContent() {
           <Route path="invoice/print/preview" element={<InvoicePrintPage />} />
         </Route>
 
-        {/* Rute Baru: Halaman otentikasi dengan layout khusus */}
+        {/* --- RUTE AUTH (Login/Register) --- */}
         <Route element={<AuthLayout />}>
           <Route
             path="/login"
@@ -527,9 +748,7 @@ function AppContent() {
             path="/register"
             element={<RegisterPage theme={theme} showMessage={showMessage} />}
           />
-          {/* --- RUTE BARU DITAMBAHKAN DI SINI --- */}
           <Route path="/login-success" element={<LoginSuccessPage />} />
-          {/* --- AKHIR PENAMBAHAN --- */}
           <Route
             path="/forgot-password"
             element={renderWithProps(ForgotPasswordPage, { theme })}
@@ -541,7 +760,7 @@ function AppContent() {
           <Route path="/email-verified" element={<EmailVerifiedPage />} />
         </Route>
 
-        {/* Rute Lama: Halaman utama dan lainnya dengan layout standar */}
+        {/* --- RUTE PUBLIK (User Layout dengan Theme Toggle) --- */}
         <Route
           path="/*"
           element={
@@ -553,6 +772,8 @@ function AppContent() {
               setUnreadCount={setUnreadCount}
               isAnnouncementVisible={isAnnouncementVisible}
               setAnnouncementVisible={setAnnouncementVisible}
+              isLightMode={isLightMode}
+              toggleTheme={toggleTheme}
             >
               <Outlet />
             </UserLayout>
@@ -560,16 +781,16 @@ function AppContent() {
         >
           <Route
             index
-              element={
-                <HomePage
-                  theme={theme}
-                  user={user}
-                  notifications={notifications}
-                  unreadCount={unreadCount}
-                  handleLogout={handleLogout}
-                  homePageTheme={theme?.homePageTheme || "classic"}
-                />
-              }
+            element={
+              <HomePage
+                theme={theme}
+                user={user}
+                notifications={notifications}
+                unreadCount={unreadCount}
+                handleLogout={handleLogout}
+                homePageTheme={theme?.homePageTheme || "classic"}
+              />
+            }
           />
           <Route
             path="about"

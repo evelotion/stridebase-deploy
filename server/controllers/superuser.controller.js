@@ -1,14 +1,13 @@
-// File: server/controllers/superuser.controller.js (Penyempurnaan Final)
+// File: server/controllers/superuser.controller.js
 
 import prisma from "../config/prisma.js";
-import { exec } from "child_process";
 import { loadThemeConfig, getTheme } from "../config/theme.js";
 import {
   broadcastThemeUpdate,
   createNotificationForUser,
-  io,
 } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
+import bcrypt from "bcryptjs"; // Pastikan import bcrypt untuk hashing password seed
 
 export const getGlobalConfig = async (req, res, next) => {
   try {
@@ -39,15 +38,32 @@ export const updateGlobalConfig = async (req, res, next) => {
 
 export const getApprovalRequests = async (req, res, next) => {
   try {
-    const requests = await prisma.approvalRequest.findMany({
-      include: {
-        requestedBy: { select: { name: true, email: true } },
-        reviewedBy: { select: { name: true } },
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [requests, total] = await prisma.$transaction([
+      prisma.approvalRequest.findMany({
+        skip,
+        take: limit,
+        include: {
+          requestedBy: { select: { name: true, email: true } },
+          reviewedBy: { select: { name: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.approvalRequest.count(),
+    ]);
+
+    res.json({
+      data: requests,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
-      orderBy: { createdAt: "desc" },
-      take: 50,
     });
-    res.json(requests);
   } catch (error) {
     next(error);
   }
@@ -72,7 +88,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
         .json({ message: "Permintaan ini sudah diproses." });
     }
 
-    // --- LOGIKA PENGHAPUSAN PENGGUNA YANG DISEMPURNAKAN ---
+    // Logika penghapusan (User Deletion)
     if (request.requestType === "USER_DELETION" && resolution === "APPROVED") {
       const userIdToDelete = request.details.userId;
       if (userIdToDelete) {
@@ -94,8 +110,8 @@ export const resolveApprovalRequest = async (req, res, next) => {
         ]);
       }
     }
-    // --- AKHIR PENYEMPURNAAN ---
 
+    // Logika Perubahan Bisnis
     if (
       request.requestType === "BUSINESS_MODEL_CHANGE" &&
       resolution === "APPROVED"
@@ -111,9 +127,11 @@ export const resolveApprovalRequest = async (req, res, next) => {
       });
     }
 
+    // Logika Penghapusan Toko
     if (request.requestType === "STORE_DELETION" && resolution === "APPROVED") {
       const { storeId } = request;
       if (storeId) {
+        // Hapus dependensi toko
         await prisma.$transaction([
           prisma.review.deleteMany({ where: { storeId } }),
           prisma.platformEarning.deleteMany({ where: { storeId } }),
@@ -131,6 +149,8 @@ export const resolveApprovalRequest = async (req, res, next) => {
           prisma.storeWallet.deleteMany({ where: { storeId } }),
           prisma.store.delete({ where: { id: storeId } }),
         ]);
+        
+        // Hapus notifikasi terkait
         await prisma.notification.deleteMany({
           where: {
             bookingId: null,
@@ -152,6 +172,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
     let notificationMessage = `Permintaan Anda (${
       request.requestType
     }) untuk "${targetName}" telah di-${resolution.toLowerCase()} oleh developer.`;
+    
     if (resolution === "APPROVED") {
       if (request.requestType === "USER_DELETION") {
         notificationMessage = `Pengguna "${targetName}" telah berhasil dihapus secara permanen.`;
@@ -172,29 +193,111 @@ export const resolveApprovalRequest = async (req, res, next) => {
   }
 };
 
-export const reseedDatabase = (req, res, next) => {
-  exec("npx prisma db seed", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return res
-        .status(500)
-        .json({ message: "Gagal menjalankan seeder.", error: stderr });
-    }
-    res.json({
-      message: "Database berhasil di-reset dan di-seed ulang.",
-      output: stdout,
+// --- REFACTORED: Programmatic Reseed (Lebih Aman & Stabil) ---
+export const reseedDatabase = async (req, res, next) => {
+  try {
+    // 1. Hapus data lama (Urutan penting karena Foreign Key!)
+    await prisma.$transaction([
+      prisma.notification.deleteMany(),
+      prisma.securityLog.deleteMany(),
+      prisma.invoice.deleteMany(),
+      prisma.payment.deleteMany(),
+      prisma.platformEarning.deleteMany(),
+      prisma.walletTransaction.deleteMany(),
+      prisma.payoutRequest.deleteMany(),
+      prisma.ledgerEntry.deleteMany(),
+      prisma.review.deleteMany(),
+      prisma.approvalRequest.deleteMany(),
+      prisma.booking.deleteMany(),
+      prisma.storeSchedule.deleteMany(),
+      prisma.storePromo.deleteMany(),
+      prisma.promo.deleteMany(),
+      prisma.service.deleteMany(),
+      prisma.storeWallet.deleteMany(),
+      prisma.store.deleteMany(),
+      prisma.address.deleteMany(),
+      prisma.loyaltyPoint.deleteMany(),
+      prisma.user.deleteMany(), 
+      // Jangan hapus GlobalSetting agar konfigurasi tema tidak hilang
+    ]);
+
+    // 2. Buat Data Default (Developer & Admin)
+    const hashedPassword = await bcrypt.hash("password123", 10);
+
+    await prisma.user.create({
+      data: {
+        name: "Developer Utama",
+        email: "dev@stridebase.com",
+        password: hashedPassword,
+        role: "developer",
+        isEmailVerified: true,
+        status: "active",
+      },
     });
-  });
+
+    await prisma.user.create({
+      data: {
+        name: "Admin StrideBase",
+        email: "admin@stridebase.com",
+        password: hashedPassword,
+        role: "admin",
+        isEmailVerified: true,
+        status: "active",
+      },
+    });
+
+    await prisma.user.create({
+      data: {
+        name: "User Demo",
+        email: "user@stridebase.com",
+        password: hashedPassword,
+        role: "customer",
+        isEmailVerified: true,
+        status: "active",
+      },
+    });
+
+    // Log aktivitas ini
+    console.log("Database reseeded programmatically via Developer Console.");
+
+    res.json({
+      message: "Database berhasil di-reset. Akun default (dev/admin/user) telah dibuat ulang.",
+      output: "Success: Tables cleaned and essential users recreated.",
+    });
+  } catch (error) {
+    console.error("Reseed Error:", error);
+    res.status(500).json({ 
+      message: "Gagal melakukan reseed database.", 
+      error: error.message 
+    });
+  }
 };
 
 export const getSecurityLogs = async (req, res, next) => {
   try {
-    const logs = await prisma.securityLog.findMany({
-      take: 100,
-      orderBy: { timestamp: "desc" },
-      include: { user: { select: { name: true, email: true } } },
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20; 
+    const skip = (page - 1) * limit;
+
+    const [logs, total] = await prisma.$transaction([
+      prisma.securityLog.findMany({
+        skip,
+        take: limit,
+        orderBy: { timestamp: "desc" },
+        include: { user: { select: { name: true, email: true } } },
+      }),
+      prisma.securityLog.count(),
+    ]);
+
+    res.json({
+      data: logs,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     });
-    res.json(logs);
   } catch (error) {
     next(error);
   }
@@ -231,7 +334,7 @@ export const uploadDeveloperAsset = async (req, res, next) => {
     let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
     const result = await cloudinary.uploader.upload(dataURI, {
-      folder: "stridebase/developer-assets", // Folder khusus untuk developer
+      folder: "stridebase/developer-assets",
       public_id: `dev-asset-${Date.now()}`,
     });
 

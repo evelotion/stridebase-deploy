@@ -1,73 +1,101 @@
+// File: client/src/pages/BookingSuccessPage.jsx
+
 import React, { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Fade, Zoom } from "react-awesome-reveal";
+import "./HomePageElevate.css";
 
 const BookingSuccessPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const bookingData = location.state?.bookingData;
 
-  // Gunakan useEffect untuk memeriksa data setelah render
   useEffect(() => {
-    // Jika tidak ada data booking setelah komponen dimuat,
-    // kembalikan pengguna ke halaman utama untuk mencegah error.
     if (!bookingData) {
-      console.error(
-        "Tidak ada data booking yang diterima di halaman sukses. Mengarahkan kembali..."
-      );
       navigate("/");
     }
   }, [bookingData, navigate]);
 
-  // Tampilkan loading atau fallback jika data belum siap,
-  // ini mencegah error 'toLocaleString' of undefined
-  if (!bookingData) {
-    return (
-      <div className="container py-5 text-center">
-        <p>Memuat hasil booking...</p>
-      </div>
-    );
-  }
+  if (!bookingData) return null;
 
   return (
-    <main className="container success-container d-flex align-items-center justify-content-center">
-      <div className="success-box text-center">
-        <div className="success-icon-wrapper">
-          <i className="fas fa-check-circle"></i>
-        </div>
-        <h2 className="success-title">Pemesanan Berhasil!</h2>
-        <p className="success-details mb-4">
-          Terima kasih! Pesanan Anda telah kami konfirmasi dan teruskan ke toko.
-        </p>
+    // [FIX] Gunakan class he-centered-page-fix
+    <div className="home-elevate-wrapper he-centered-page-fix">
+      <div className="text-center p-4" style={{ maxWidth: "600px" }}>
+        <Zoom triggerOnce>
+          <div
+            className="d-inline-flex align-items-center justify-content-center rounded-circle mb-4 shadow-lg"
+            style={{
+              width: 100,
+              height: 100,
+              background: "var(--sb-accent)",
+              color: "#fff",
+              fontSize: "3rem",
+            }}
+          >
+            <i className="fas fa-check"></i>
+          </div>
+        </Zoom>
 
-        <div className="booking-recap">
-          <h6 className="recap-title">Ringkasan Pesanan</h6>
-          <ul className="list-group text-start">
-            <li className="list-group-item">
-              <i className="fas fa-store me-2 text-muted"></i>
-              <strong>Toko:</strong> {bookingData.storeName}
-            </li>
-            <li className="list-group-item">
-              <i className="fas fa-calendar-alt me-2 text-muted"></i>
-              <strong>Jadwal:</strong> {bookingData.schedule}
-            </li>
-            <li className="list-group-item">
-              <i className="fas fa-receipt me-2 text-muted"></i>
-              <strong>Total Bayar:</strong> Rp{" "}
-              {bookingData.totalPrice.toLocaleString("id-ID")}
-            </li>
-          </ul>
-        </div>
+        <Fade direction="up" triggerOnce delay={200}>
+          <h1 className="he-section-title mb-3">Pemesanan Diterima!</h1>
+          <p className="he-service-desc mb-5">
+            Terima kasih! Pesanan Anda sedang diproses oleh toko.
+          </p>
 
-        <div className="d-flex justify-content-center gap-2 mt-4">
-          <Link to="/dashboard" className="btn btn-dark btn-rounded">
-            Lihat Dashboard
-          </Link>
-          <Link to="/" className="btn btn-outline-secondary btn-rounded">
-            Kembali ke Beranda
-          </Link>
-        </div>
+          <div
+            className="p-4 rounded-4 text-start mb-5 shadow-sm"
+            style={{
+              background: "var(--sb-card-bg)",
+              border: "1px solid var(--sb-card-border)",
+            }}
+          >
+            {/* Konten Detail... (Kode sama seperti sebelumnya) */}
+            <div className="d-flex justify-content-between mb-2">
+              <span className="text-muted small">Toko</span>
+              <span
+                className="fw-bold"
+                style={{ color: "var(--sb-text-main)" }}
+              >
+                {bookingData.storeName}
+              </span>
+            </div>
+            <div className="d-flex justify-content-between mb-2">
+              <span className="text-muted small">Layanan</span>
+              <span
+                className="fw-bold"
+                style={{ color: "var(--sb-text-main)" }}
+              >
+                {bookingData.serviceName}
+              </span>
+            </div>
+            <div className="border-top border-secondary opacity-25 my-2"></div>
+            <div className="d-flex justify-content-between align-items-center">
+              <span className="text-muted small">Total Estimasi</span>
+              <span className="fw-bold fs-5 text-primary">
+                Rp {bookingData.totalPrice.toLocaleString("id-ID")}
+              </span>
+            </div>
+          </div>
+
+          <div className="d-flex gap-3 justify-content-center">
+            <Link
+              to="/dashboard"
+              className="btn btn-primary rounded-pill px-4 py-2 fw-bold"
+              style={{ background: "var(--sb-accent)", border: "none" }}
+            >
+              Lihat Dashboard <i className="fas fa-arrow-right ms-2"></i>
+            </Link>
+            <Link
+              to="/"
+              className="btn btn-outline-light rounded-pill px-4 py-2"
+            >
+              Kembali ke Beranda
+            </Link>
+          </div>
+        </Fade>
       </div>
-    </main>
+    </div>
   );
 };
 

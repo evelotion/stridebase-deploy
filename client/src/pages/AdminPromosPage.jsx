@@ -1,698 +1,475 @@
-import React, { useState, useEffect } from "react";
-import API_BASE_URL from '../apiConfig';
+// File: client/src/pages/AdminPromosPage.jsx
+
+import React, { useState, useEffect, useCallback } from "react";
+import { Fade } from "react-awesome-reveal";
+import { getAllPromos, createPromo, deletePromo } from "../services/apiService";
+import "../styles/ElevateDashboard.css";
 
 const AdminPromosPage = ({ showMessage }) => {
   const [promos, setPromos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
-  // State untuk modal Tambah
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newPromoData, setNewPromoData] = useState({
+  // Mobile Sheet State
+  const [selectedPromo, setSelectedPromo] = useState(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Form State
+  const [formData, setFormData] = useState({
     code: "",
     description: "",
-    discountType: "percentage",
-    value: "",
-    startDate: "",
-    endDate: "",
-    usageLimit: "",
-    minTransaction: "",
-    forNewUser: false,
+    discountType: "PERCENTAGE",
+    value: 0,
+    usageLimit: 100,
   });
 
-  // State untuk modal Edit
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingPromo, setEditingPromo] = useState(null);
-
-  useEffect(() => {
-    fetchPromos();
-  }, []);
-
-  const fetchPromos = async () => {
+  const fetchPromos = useCallback(async () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/promos`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        throw new Error("Gagal mengambil data promo.");
-      }
-      const data = await response.json();
+      const data = await getAllPromos();
       setPromos(data);
-    } catch (error) {
-      console.error(error);
-      showMessage(error.message);
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [showMessage]);
 
-  const handleShowAddModal = () => setShowAddModal(true);
-  const handleCloseAddModal = () => {
-    setShowAddModal(false);
-    setNewPromoData({
-      code: "",
-      description: "",
-      discountType: "percentage",
-      value: "",
-      startDate: "",
-      endDate: "",
-      usageLimit: "",
-      minTransaction: "",
-      forNewUser: false,
-    });
-  };
+  useEffect(() => {
+    fetchPromos();
+  }, [fetchPromos]);
 
-  const handleAddFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setNewPromoData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleSaveNewPromo = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    const payload = {
-      ...newPromoData,
-      value: parseInt(newPromoData.value, 10),
-      usageLimit: newPromoData.usageLimit
-        ? parseInt(newPromoData.usageLimit, 10)
-        : null,
-      minTransaction: newPromoData.minTransaction
-        ? parseInt(newPromoData.minTransaction, 10)
-        : null,
-      startDate: newPromoData.startDate || null,
-      endDate: newPromoData.endDate || null,
-    };
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/promos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
+      await createPromo(formData);
+      if (showMessage) showMessage("Promo berhasil dibuat!", "Success");
+      setShowModal(false);
+      setFormData({
+        code: "",
+        description: "",
+        discountType: "PERCENTAGE",
+        value: 0,
+        usageLimit: 100,
       });
-      const createdPromo = await response.json();
-      if (!response.ok) {
-        throw new Error(
-          createdPromo.message || "Gagal menambahkan promo baru."
-        );
-      }
-      handleCloseAddModal();
       fetchPromos();
-      showMessage(`Promo "${createdPromo.code}" berhasil ditambahkan.`);
-    } catch (error) {
-      showMessage(error.message);
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
     }
   };
 
-  const handleShowEditModal = (promo) => {
-    const formattedPromo = {
-      ...promo,
-      startDate: promo.startDate
-        ? new Date(promo.startDate).toISOString().split("T")[0]
-        : "",
-      endDate: promo.endDate
-        ? new Date(promo.endDate).toISOString().split("T")[0]
-        : "",
-    };
-    setEditingPromo(formattedPromo);
-    setShowEditModal(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setShowEditModal(false);
-    setEditingPromo(null);
-  };
-
-  const handleEditFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setEditingPromo((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const handleUpdatePromo = async (e) => {
-    e.preventDefault();
-    if (!editingPromo) return;
-    const token = localStorage.getItem("token");
-    const payload = {
-      ...editingPromo,
-      value: parseInt(editingPromo.value, 10),
-      usageLimit: editingPromo.usageLimit
-        ? parseInt(editingPromo.usageLimit, 10)
-        : null,
-      minTransaction: editingPromo.minTransaction
-        ? parseInt(editingPromo.minTransaction, 10)
-        : null,
-      startDate: editingPromo.startDate || null,
-      endDate: editingPromo.endDate || null,
-    };
+  const handleDelete = async (id) => {
+    if (!window.confirm("Hapus promo ini?")) return;
     try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/promos/${editingPromo.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      const updatedPromo = await response.json();
-      if (!response.ok) {
-        throw new Error(updatedPromo.message || "Gagal memperbarui promo.");
-      }
-      handleCloseEditModal();
+      await deletePromo(id);
+      if (showMessage) showMessage("Promo dihapus.", "Success");
+      setIsSheetOpen(false);
       fetchPromos();
-      showMessage(`Promo "${updatedPromo.code}" berhasil diperbarui.`);
-    } catch (error) {
-      showMessage(error.message);
+    } catch (err) {
+      if (showMessage) showMessage(err.message, "Error");
     }
   };
 
-  const handleStatusChange = async (promoId, currentStatus) => {
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
-    const actionText =
-      newStatus === "active" ? "mengaktifkan" : "menonaktifkan";
-    if (!confirm(`Apakah Anda yakin ingin ${actionText} promo ini?`)) return;
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/promos/${promoId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newStatus }),
-      });
-      const updatedPromo = await response.json();
-      if (!response.ok) {
-        throw new Error(updatedPromo.message || "Gagal mengubah status promo.");
-      }
-      fetchPromos();
-      showMessage(`Promo berhasil di-${actionText}.`);
-    } catch (error) {
-      showMessage(error.message);
-    }
+  const openSheet = (promo) => {
+    setSelectedPromo(promo);
+    setIsSheetOpen(true);
+  };
+  const closeSheet = () => {
+    setIsSheetOpen(false);
+    setTimeout(() => setSelectedPromo(null), 300);
   };
 
-  const handleDeletePromo = async (promoId) => {
-    if (
-      !confirm("Apakah Anda yakin ingin menghapus promo ini secara permanen?")
-    )
-      return;
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/admin/promos/${promoId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Gagal menghapus promo.");
-      }
-      fetchPromos();
-      showMessage(data.message);
-    } catch (error) {
-      showMessage(error.message);
-    }
-  };
+  if (loading)
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center vh-100"
+        style={{ background: "var(--pe-bg)" }}
+      >
+        <div className="spinner-border text-primary"></div>
+      </div>
+    );
 
-  const getStatusBadge = (status) => {
-    return status === "active" ? "bg-success" : "bg-secondary";
-  };
-
-  const renderRuleType = (promo) => {
-    const rules = [];
-    if (promo.forNewUser) rules.push("Pengguna Baru");
-    if (promo.minTransaction)
-      rules.push(
-        `Min. Belanja Rp ${promo.minTransaction.toLocaleString("id-ID")}`
-      );
-    if (rules.length === 0) return "Umum";
-    return rules.join(", ");
-  };
-
-  const renderValidityPeriod = (promo) => {
-    if (promo.startDate && promo.endDate) {
-      const start = new Date(promo.startDate).toLocaleDateString("id-ID");
-      const end = new Date(promo.endDate).toLocaleDateString("id-ID");
-      return `${start} - ${end}`;
-    }
-    return "Selamanya";
-  };
-
-  const renderQuota = (promo) => {
-    if (promo.usageLimit) {
-      return `${promo.usageCount} / ${promo.usageLimit}`;
-    }
-    return "Tidak Terbatas";
-  };
-
-  if (loading) return <div className="p-4">Memuat data promo...</div>;
-
-  return (
-    <>
-      <div className="container-fluid px-4">
-        <div className="d-flex justify-content-between align-items-center m-4">
-          <h2 className="fs-2 mb-0">Manajemen Promo</h2>
-          <button className="btn btn-primary" onClick={handleShowAddModal}>
-            <i className="fas fa-plus me-2"></i>Tambah Promo Baru
+  const renderMobileView = () => (
+    <div className="d-lg-none pb-5">
+      <div
+        className="sticky-top px-3 py-3"
+        style={{
+          background: "var(--pe-bg)",
+          zIndex: 1020,
+          borderBottom: "1px solid var(--pe-card-border)",
+        }}
+      >
+        <div className="d-flex justify-content-between align-items-center">
+          <h2 className="pe-title mb-0 fs-4">Kode Promo</h2>
+          <button
+            onClick={() => setShowModal(true)}
+            className="btn btn-sm btn-primary rounded-pill px-3 fw-bold"
+          >
+            <i className="fas fa-plus me-1"></i> Baru
           </button>
-        </div>
-
-        <div className="table-card p-3 shadow-sm">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle">
-              <thead className="table-light">
-                <tr>
-                  <th>Kode</th>
-                  <th>Deskripsi</th>
-                  <th>Status</th>
-                  <th>Tipe Aturan</th>
-                  <th>Masa Berlaku</th>
-                  <th>Kuota</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {promos.map((promo) => (
-                  <tr key={promo.id}>
-                    <td>
-                      <span className="fw-bold">{promo.code}</span>
-                      <small className="d-block text-muted">
-                        {promo.discountType === "percentage"
-                          ? `${promo.value}%`
-                          : `Rp ${promo.value.toLocaleString("id-ID")}`}
-                      </small>
-                    </td>
-                    <td>{promo.description}</td>
-                    <td>
-                      <span className={`badge ${getStatusBadge(promo.status)}`}>
-                        {promo.status}
-                      </span>
-                    </td>
-                    <td>{renderRuleType(promo)}</td>
-                    <td>{renderValidityPeriod(promo)}</td>
-                    <td>{renderQuota(promo)}</td>
-                    <td>
-                      <div className="btn-group">
-                        <button
-                          className="btn btn-sm btn-outline-secondary"
-                          title="Edit"
-                          onClick={() => handleShowEditModal(promo)}
-                        >
-                          <i className="fas fa-edit"></i>
-                        </button>
-                        <button
-                          className={`btn btn-sm ${
-                            promo.status === "active"
-                              ? "btn-outline-warning"
-                              : "btn-outline-success"
-                          }`}
-                          title={
-                            promo.status === "active"
-                              ? "Nonaktifkan"
-                              : "Aktifkan"
-                          }
-                          onClick={() =>
-                            handleStatusChange(promo.id, promo.status)
-                          }
-                        >
-                          <i
-                            className={`fas ${
-                              promo.status === "active"
-                                ? "fa-power-off"
-                                : "fa-check-circle"
-                            }`}
-                          ></i>
-                        </button>
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          title="Hapus"
-                          onClick={() => handleDeletePromo(promo.id)}
-                        >
-                          <i className="fas fa-trash-alt"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
 
-      {showAddModal && (
-        <div
-          className="modal fade show"
-          style={{ display: "block" }}
-          tabIndex="-1"
-        >
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Tambah Promo Baru</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseAddModal}
-                ></button>
+      <div className="px-3 py-3">
+        {promos.length > 0 ? (
+          promos.map((promo) => (
+            <div
+              className="pe-card mb-3 p-0 position-relative overflow-hidden"
+              key={promo.id}
+              onClick={() => openSheet(promo)}
+            >
+              <div
+                className="position-absolute top-0 bottom-0 start-0 d-flex align-items-center justify-content-center text-white fw-bold"
+                style={{
+                  width: "80px",
+                  background:
+                    "linear-gradient(135deg, var(--pe-accent), #2563eb)",
+                  borderRight: "2px dashed rgba(255,255,255,0.3)",
+                }}
+              >
+                <div
+                  style={{
+                    writingMode: "vertical-rl",
+                    transform: "rotate(180deg)",
+                    letterSpacing: "2px",
+                  }}
+                >
+                  {promo.discountType === "PERCENTAGE"
+                    ? `${promo.value}%`
+                    : "Rp"}
+                </div>
               </div>
-              <form onSubmit={handleSaveNewPromo}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label htmlFor="code" className="form-label">
-                      Kode Promo
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="code"
-                      name="code"
-                      value={newPromoData.code}
-                      onChange={handleAddFormChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="description" className="form-label">
-                      Deskripsi
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="description"
-                      name="description"
-                      value={newPromoData.description}
-                      onChange={handleAddFormChange}
-                      required
-                    />
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="discountType" className="form-label">
-                        Tipe Diskon
-                      </label>
-                      <select
-                        className="form-select"
-                        id="discountType"
-                        name="discountType"
-                        value={newPromoData.discountType}
-                        onChange={handleAddFormChange}
-                      >
-                        <option value="percentage">Persentase (%)</option>
-                        <option value="fixed">Potongan Tetap (Rp)</option>
-                      </select>
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="value" className="form-label">
-                        Nilai
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="value"
-                        name="value"
-                        value={newPromoData.value}
-                        onChange={handleAddFormChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="startDate" className="form-label">
-                        Tanggal Mulai (Opsional)
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        id="startDate"
-                        name="startDate"
-                        value={newPromoData.startDate}
-                        onChange={handleAddFormChange}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="endDate" className="form-label">
-                        Tanggal Berakhir (Opsional)
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        id="endDate"
-                        name="endDate"
-                        value={newPromoData.endDate}
-                        onChange={handleAddFormChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="usageLimit" className="form-label">
-                        Kuota Penggunaan (Opsional)
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="usageLimit"
-                        name="usageLimit"
-                        placeholder="Contoh: 100"
-                        value={newPromoData.usageLimit}
-                        onChange={handleAddFormChange}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="minTransaction" className="form-label">
-                        Min. Transaksi (Rp) (Opsional)
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="minTransaction"
-                        name="minTransaction"
-                        placeholder="Contoh: 50000"
-                        value={newPromoData.minTransaction}
-                        onChange={handleAddFormChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="forNewUser"
-                      name="forNewUser"
-                      checked={newPromoData.forNewUser}
-                      onChange={handleAddFormChange}
-                    />
-                    <label className="form-check-label" htmlFor="forNewUser">
-                      Hanya untuk Pengguna Baru
-                    </label>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={handleCloseAddModal}
-                  >
-                    Batal
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Simpan Promo
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {showEditModal && editingPromo && (
-        <div
-          className="modal fade show"
-          style={{ display: "block" }}
-          tabIndex="-1"
-        >
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Edit Promo: {editingPromo.code}</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseEditModal}
-                ></button>
+              <div className="p-3" style={{ marginLeft: "80px" }}>
+                <div className="d-flex justify-content-between align-items-start mb-1">
+                  <h5 className="mb-0 fw-bold font-monospace text-primary">
+                    {promo.code}
+                  </h5>
+                  <span
+                    className={`badge ${
+                      promo.status === "active"
+                        ? "bg-success bg-opacity-25 text-success"
+                        : "bg-secondary"
+                    }`}
+                    style={{ fontSize: "0.6rem" }}
+                  >
+                    {promo.status || "Active"}
+                  </span>
+                </div>
+                {/* FIX: Warna Deskripsi */}
+                <p
+                  className="small mb-2 text-truncate"
+                  style={{ color: "var(--pe-text-muted)" }}
+                >
+                  {promo.description}
+                </p>
+                <div className="d-flex align-items-center gap-3">
+                  {/* FIX: Warna Usage Count */}
+                  <small
+                    style={{
+                      fontSize: "0.7rem",
+                      color: "var(--pe-text-muted)",
+                    }}
+                  >
+                    <i className="fas fa-users me-1"></i> {promo.usageCount} /{" "}
+                    {promo.usageLimit}
+                  </small>
+                </div>
               </div>
-              <form onSubmit={handleUpdatePromo}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label htmlFor="edit-code" className="form-label">
-                      Kode Promo
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="edit-code"
-                      name="code"
-                      value={editingPromo.code}
-                      onChange={handleEditFormChange}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="edit-description" className="form-label">
-                      Deskripsi
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="edit-description"
-                      name="description"
-                      value={editingPromo.description}
-                      onChange={handleEditFormChange}
-                      required
-                    />
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="edit-discountType" className="form-label">
-                        Tipe Diskon
-                      </label>
-                      <select
-                        className="form-select"
-                        id="edit-discountType"
-                        name="discountType"
-                        value={editingPromo.discountType}
-                        onChange={handleEditFormChange}
-                      >
-                        <option value="percentage">Persentase (%)</option>
-                        <option value="fixed">Potongan Tetap (Rp)</option>
-                      </select>
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="edit-value" className="form-label">
-                        Nilai
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="edit-value"
-                        name="value"
-                        value={editingPromo.value}
-                        onChange={handleEditFormChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="edit-startDate" className="form-label">
-                        Tanggal Mulai (Opsional)
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        id="edit-startDate"
-                        name="startDate"
-                        value={editingPromo.startDate}
-                        onChange={handleEditFormChange}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="edit-endDate" className="form-label">
-                        Tanggal Berakhir (Opsional)
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        id="edit-endDate"
-                        name="endDate"
-                        value={editingPromo.endDate}
-                        onChange={handleEditFormChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="edit-usageLimit" className="form-label">
-                        Kuota Penggunaan (Opsional)
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="edit-usageLimit"
-                        name="usageLimit"
-                        placeholder="Contoh: 100"
-                        value={editingPromo.usageLimit || ""}
-                        onChange={handleEditFormChange}
-                      />
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label
-                        htmlFor="edit-minTransaction"
-                        className="form-label"
-                      >
-                        Min. Transaksi (Rp) (Opsional)
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="edit-minTransaction"
-                        name="minTransaction"
-                        placeholder="Contoh: 50000"
-                        value={editingPromo.minTransaction || ""}
-                        onChange={handleEditFormChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="form-check form-switch mb-3">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="edit-forNewUser"
-                      name="forNewUser"
-                      checked={editingPromo.forNewUser}
-                      onChange={handleEditFormChange}
-                    />
-                    <label
-                      className="form-check-label"
-                      htmlFor="edit-forNewUser"
+            </div>
+          ))
+        ) : (
+          <div
+            className="text-center py-5"
+            style={{ color: "var(--pe-text-muted)" }}
+          >
+            Belum ada promo.
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Sheet */}
+      <div
+        className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
+          isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
+        }`}
+        style={{ zIndex: 2000, transition: "opacity 0.3s" }}
+        onClick={closeSheet}
+      ></div>
+
+      <div
+        className="position-fixed bottom-0 start-0 w-100 pe-card rounded-top-4 p-4"
+        style={{
+          zIndex: 2010,
+          transform: isSheetOpen ? "translateY(0)" : "translateY(100%)",
+          transition: "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)",
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+        }}
+      >
+        <div className="d-flex justify-content-center mb-4">
+          <div
+            style={{
+              width: "40px",
+              height: "4px",
+              background: "var(--pe-card-border)",
+              borderRadius: "2px",
+            }}
+          ></div>
+        </div>
+
+        {selectedPromo && (
+          <>
+            <div className="text-center mb-4">
+              <h2 className="fw-bold text-primary font-monospace mb-1">
+                {selectedPromo.code}
+              </h2>
+              <p className="small" style={{ color: "var(--pe-text-muted)" }}>
+                {selectedPromo.description}
+              </p>
+            </div>
+            <div className="d-grid gap-2">
+              <button
+                className="btn btn-outline-danger py-3 rounded-3"
+                onClick={() => handleDelete(selectedPromo.id)}
+              >
+                <i className="fas fa-trash-alt me-2"></i> Hapus Promo
+              </button>
+              <button
+                className="btn py-3 rounded-3 mt-2"
+                style={{
+                  background: "var(--pe-card-bg)",
+                  color: "var(--pe-text-main)",
+                  border: "1px solid var(--pe-card-border)",
+                }}
+                onClick={closeSheet}
+              >
+                Tutup
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      <div style={{ height: "80px" }}></div>
+    </div>
+  );
+
+  const renderDesktopView = () => (
+    <div className="d-none d-lg-block">
+      <div className="d-flex justify-content-between align-items-end mb-4">
+        <Fade direction="down" triggerOnce>
+          <div>
+            <h6 className="pe-subtitle text-uppercase tracking-widest mb-1">
+              Marketing
+            </h6>
+            <h2 className="pe-title mb-0">Kode Promo</h2>
+          </div>
+        </Fade>
+        <button className="pe-btn-action" onClick={() => setShowModal(true)}>
+          <i className="fas fa-plus me-2"></i> Buat Promo
+        </button>
+      </div>
+
+      <Fade triggerOnce>
+        <div className="pe-card">
+          <table className="pe-table">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Deskripsi</th>
+                <th>Tipe</th>
+                <th>Nilai</th>
+                <th>Terpakai</th>
+                <th className="text-end">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {promos.map((p) => (
+                <tr key={p.id}>
+                  <td className="fw-bold font-monospace text-primary">
+                    {p.code}
+                  </td>
+                  <td style={{ color: "var(--pe-text-main)" }}>
+                    {p.description}
+                  </td>
+                  <td>
+                    <span className="pe-badge pe-badge-info">
+                      {p.discountType}
+                    </span>
+                  </td>
+                  <td
+                    className="fw-bold"
+                    style={{ color: "var(--pe-text-main)" }}
+                  >
+                    {p.discountType === "PERCENTAGE"
+                      ? `${p.value}%`
+                      : `Rp ${p.value.toLocaleString()}`}
+                  </td>
+                  <td style={{ color: "var(--pe-text-muted)" }}>
+                    {p.usageCount} / {p.usageLimit}
+                  </td>
+                  <td className="text-end">
+                    <button
+                      className="pe-btn-action text-danger p-2"
+                      onClick={() => handleDelete(p.id)}
                     >
-                      Hanya untuk Pengguna Baru
-                    </label>
-                  </div>
-                </div>
-                <div className="modal-footer">
+                      <i className="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Fade>
+    </div>
+  );
+
+  return (
+    <div className="container-fluid px-4 py-4 position-relative z-1">
+      <div className="pe-blob pe-blob-1 pe-blob-admin"></div>
+
+      {renderMobileView()}
+      {renderDesktopView()}
+
+      {/* --- MODAL FORM --- */}
+      {showModal && (
+        <>
+          <div
+            className="modal fade show d-flex align-items-center"
+            style={{ zIndex: 1060 }}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content pe-modal-glass-content border-0">
+                <div className="pe-modal-glass-header">
+                  <h5 className="pe-modal-title mb-0 fs-5">Buat Promo Baru</h5>
                   <button
                     type="button"
-                    className="btn btn-secondary"
-                    onClick={handleCloseEditModal}
-                  >
-                    Batal
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Simpan Perubahan
-                  </button>
+                    className="btn-close btn-close-glass"
+                    onClick={() => setShowModal(false)}
+                  ></button>
                 </div>
-              </form>
+
+                <form onSubmit={handleSubmit} className="p-4">
+                  <div className="mb-4">
+                    <label className="pe-form-label">Kode Promo</label>
+                    <input
+                      type="text"
+                      className="form-control pe-input-glass"
+                      required
+                      value={formData.code}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          code: e.target.value.toUpperCase(),
+                        })
+                      }
+                      placeholder="MISAL: DISKON50"
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="pe-form-label">Deskripsi</label>
+                    <input
+                      type="text"
+                      className="form-control pe-input-glass"
+                      required
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      placeholder="Potongan harga spesial..."
+                    />
+                  </div>
+
+                  <div className="row g-3 mb-4">
+                    <div className="col-6">
+                      <label className="pe-form-label">Tipe Diskon</label>
+                      <select
+                        className="form-select pe-select-glass"
+                        value={formData.discountType}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            discountType: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="PERCENTAGE">Persentase (%)</option>
+                        <option value="FIXED_AMOUNT">Nominal (Rp)</option>
+                      </select>
+                    </div>
+                    <div className="col-6">
+                      <label className="pe-form-label">Nilai</label>
+                      <input
+                        type="number"
+                        className="form-control pe-input-glass"
+                        required
+                        min="1"
+                        value={formData.value}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            value: parseFloat(e.target.value),
+                          })
+                        }
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="pe-form-label">
+                      Batas Penggunaan (Kuota)
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control pe-input-glass"
+                      required
+                      min="1"
+                      value={formData.usageLimit}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          usageLimit: parseInt(e.target.value),
+                        })
+                      }
+                      placeholder="Contoh: 100"
+                    />
+                  </div>
+
+                  <div className="d-flex justify-content-end mt-5">
+                    <button
+                      type="button"
+                      className="btn btn-link text-muted text-decoration-none me-3 fw-bold"
+                      onClick={() => setShowModal(false)}
+                      style={{ letterSpacing: "1px" }}
+                    >
+                      Batal
+                    </button>
+                    <button type="submit" className="pe-btn-submit-glass w-50">
+                      BUAT PROMO
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
+          <div
+            className="modal-backdrop fade show"
+            style={{
+              zIndex: 1050,
+              backgroundColor: "rgba(0,0,0,0.7)",
+              backdropFilter: "blur(8px)",
+            }}
+          ></div>
+        </>
       )}
-
-      {(showAddModal || showEditModal) && (
-        <div className="modal-backdrop fade show"></div>
-      )}
-    </>
+    </div>
   );
 };
 
