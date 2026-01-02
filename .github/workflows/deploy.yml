@@ -23,7 +23,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: indraadwii
-          password: dckr_pat_ZH6yrPS-jp8sBJlW2voTLg3yItA
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Langkah 3: Build dan Push Docker image untuk Server (Backend)
       - name: Build and push server image

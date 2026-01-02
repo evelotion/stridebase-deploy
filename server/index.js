@@ -56,7 +56,7 @@ app.use(checkMaintenanceMode);
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/stores', storeRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/partner', partnerRoutes);

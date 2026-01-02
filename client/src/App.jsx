@@ -609,7 +609,7 @@ function AppContent() {
       const fetchNotifications = async () => {
         const token = localStorage.getItem("token");
         try {
-          const res = await fetch(`${API_BASE_URL}/api/users/notifications`, {
+          const res = await fetch(`${API_BASE_URL}/api/user/notifications`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await res.json();
@@ -788,7 +788,7 @@ function AppContent() {
                 notifications={notifications}
                 unreadCount={unreadCount}
                 handleLogout={handleLogout}
-                homePageTheme={theme?.homePageTheme || "classic"}
+               homePageTheme={theme?.homePageTheme || "elevate"}
               />
             }
           />

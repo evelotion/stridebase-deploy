@@ -199,10 +199,12 @@ const LogDetails = ({ details }) => {
         <pre
           className="mb-0 p-2 rounded small"
           style={{
-            maxHeight: "100px",
-            overflow: "auto",
-            background: "rgba(0,0,0,0.3)", // Fix background contrast
-            color: "var(--pe-text-main)", // Fix text contrast
+            maxHeight: "150px", // Sedikit dipertinggi agar lebih nyaman
+            overflowY: "auto", // Scroll vertikal saja
+            whiteSpace: "pre-wrap", // <--- TAMBAHKAN INI: Agar teks turun ke bawah
+            wordBreak: "break-word", // <--- TAMBAHKAN INI: Agar kata panjang dipotong
+            background: "rgba(0,0,0,0.3)",
+            color: "var(--pe-text-main)",
             border: "1px solid var(--pe-card-border)",
           }}
         >
@@ -1209,7 +1211,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                             {req.requestedBy?.email}
                           </small>
                         </td>
-                        <td>
+                        <td style={{ maxWidth: "350px", minWidth: "250px" }}>
                           <LogDetails details={req.details} />
                         </td>
                         <td>

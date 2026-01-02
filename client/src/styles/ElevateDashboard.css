@@ -314,7 +314,7 @@ body,
    8. LAYOUT STRUCTURE (SIDEBAR & MAIN)
    ========================================= */
 .pe-layout-wrapper {
-  display: flex;
+display: block;
   min-height: 100vh;
   background-color: var(--pe-bg);
   transition: background-color 0.3s ease;
