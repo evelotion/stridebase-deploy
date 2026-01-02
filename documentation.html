@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi Teknis StrideBase</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --sidebar-width: 280px;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--text-color); background: var(--bg-color); display: flex; min-height: 100vh; }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+        .sidebar h1 { font-size: 1.5rem; color: var(--primary-color); margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
+        .nav-links a { display: block; padding: 0.75rem 0; color: #64748b; text-decoration: none; font-weight: 500; border-bottom: 1px solid #f1f5f9; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--primary-color); padding-left: 5px; }
+        .nav-sub { margin-left: 1rem; font-size: 0.9rem; border-left: 2px solid #e2e8f0; padding-left: 0.8rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        .nav-sub a { border-bottom: none; padding: 0.4rem 0; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 1200px;
+        }
+
+        /* Typography & Components */
+        h2 { font-size: 2rem; color: #0f172a; margin-top: 3rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.5rem; color: #1e293b; margin-top: 2rem; margin-bottom: 1rem; }
+        h4 { font-size: 1.1rem; color: #334155; margin-top: 1.5rem; font-weight: 700; }
+        p { line-height: 1.7; margin-bottom: 1rem; }
+        ul { margin-left: 1.5rem; margin-bottom: 1.5rem; line-height: 1.7; }
+        li { margin-bottom: 0.5rem; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; font-weight: 600; color: #475569; }
+        tr:last-child td { border-bottom: none; }
+
+        /* Code Blocks */
+        pre { background: var(--code-bg); color: var(--code-text); padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1.5rem 0; font-family: 'Consolas', monospace; font-size: 0.9rem; }
+        code { font-family: 'Consolas', monospace; background: #e2e8f0; color: #0f172a; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+        pre code { background: transparent; color: inherit; padding: 0; }
+        
+        .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .badge-get { background: #dcfce7; color: #166534; }
+        .badge-post { background: #dbeafe; color: #1e40af; }
+        .badge-put { background: #ffedd5; color: #9a3412; }
+        .badge-delete { background: #fee2e2; color: #991b1b; }
+
+        .note { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1.5rem 0; border-radius: 0 4px 4px 0; }
+
+        footer { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 0.9rem; text-align: center; }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; z-index: 1000; }
+            .main-content { margin-left: 0; padding: 2rem; }
+            .sidebar.active { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <h1>👟 StrideBase <span style="font-size:0.8rem; color:#94a3b8; margin-left:auto;">Docs</span></h1>
+        <div class="nav-links">
+            <a href="#overview">Ringkasan Project</a>
+            <a href="#tech-stack">Teknologi & Stack</a>
+            <a href="#getting-started">Memulai (Instalasi)</a>
+            <div class="nav-sub">
+                <a href="#prerequisites">Persyaratan Sistem</a>
+                <a href="#env-vars">Environment Variables</a>
+                <a href="#run-local">Jalan di Local</a>
+                <a href="#run-docker">Jalan dengan Docker</a>
+            </div>
+            <a href="#database">Database Schema</a>
+            <div class="nav-sub">
+                <a href="#db-models">Model Utama</a>
+                <a href="#db-enums">Enums & Status</a>
+            </div>
+            <a href="#api-reference">API Reference</a>
+            <div class="nav-sub">
+                <a href="#api-auth">Auth & Users</a>
+                <a href="#api-store">Store & Services</a>
+                <a href="#api-booking">Booking & Orders</a>
+            </div>
+            <a href="#project-structure">Struktur Folder</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+
+        <section id="overview">
+            <h2>Ringkasan Project</h2>
+            <p><strong>StrideBase</strong> (Blueprint Code: <code>blue-print-shoes-01</code>) adalah platform web <em>full-stack</em> marketplace layanan perawatan sepatu. Aplikasi ini menghubungkan pemilik sepatu dengan mitra laundry (Toko). Sistem ini mencakup manajemen booking end-to-end, pembayaran digital (Midtrans), manajemen toko mitra, dan dashboard admin.</p>
+            <p>Fitur kunci meliputi:</p>
+            <ul>
+                <li><strong>Multi-role System:</strong> Customer, Mitra (Pemilik Toko), Admin, Developer.</li>
+                <li><strong>Sistem Booking Canggih:</strong> Tracking status real-time (Jemput, Proses, Selesai).</li>
+                <li><strong>Keuangan:</strong> Integrasi Wallet, Payout Request, dan Laporan Keuangan (Ledger).</li>
+                <li><strong>Teknologi:</strong> Dibangun dengan PERN Stack modern dan ter-Dockerisasi.</li>
+            </ul>
+        </section>
+
+        <section id="tech-stack">
+            <h2>Teknologi & Stack</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <h3>Backend</h3>
+                    <ul>
+                        <li><strong>Runtime:</strong> Node.js (v18+)</li>
+                        <li><strong>Framework:</strong> Express.js</li>
+                        <li><strong>Database:</strong> PostgreSQL 15</li>
+                        <li><strong>ORM:</strong> Prisma (Skema Relasional)</li>
+                        <li><strong>Auth:</strong> Passport.js (Google OAuth) & JWT</li>
+                        <li><strong>Queue:</strong> BullMQ & Redis</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li><strong>Build Tool:</strong> Vite</li>
+                        <li><strong>Framework:</strong> React.js</li>
+                        <li><strong>Styling:</strong> Bootstrap 5 & Custom CSS</li>
+                        <li><strong>State:</strong> Redux / Context API</li>
+                        <li><strong>Http Client:</strong> Axios</li>
+                        <li><strong>Charts:</strong> Chart.js (Dashboard Data)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Services / Infra</h3>
+                    <ul>
+                        <li><strong>Container:</strong> Docker & Docker Compose</li>
+                        <li><strong>Images:</strong> Cloudinary</li>
+                        <li><strong>Payment:</strong> Midtrans Snap API</li>
+                        <li><strong>Real-time:</strong> Socket.io</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="getting-started">
+            <h2>Memulai (Instalasi)</h2>
+            
+            <h3 id="prerequisites">1. Persyaratan Sistem</h3>
+            <p>Pastikan machine Anda sudah terinstall:</p>
+            <ul>
+                <li>Node.js v18 atau lebih baru</li>
+                <li>Docker Desktop (Disarankan untuk setup database & redis mudah)</li>
+                <li>Git</li>
+            </ul>
+
+            <h3 id="env-vars">2. Konfigurasi Environment (.env)</h3>
+            <p>Anda perlu membuat dua file <code>.env</code>. Satu di folder <code>server/</code> dan satu di <code>client/</code>.</p>
+
+            <h4>Backend (server/.env)</h4>
+            <pre><code>PORT=5000
+DATABASE_URL="postgresql://user:pass@localhost:5432/stridebase_db"
+JWT_SECRET="rahasia_super_aman"
+
+# Cloudinary (Gambar)
+CLOUDINARY_CLOUD_NAME="nama_cloud"
+CLOUDINARY_API_KEY="api_key"
+CLOUDINARY_API_SECRET="api_secret"
+
+# Midtrans (Payment)
+MIDTRANS_SERVER_KEY="SB-Mid-server-xxxx"
+MIDTRANS_CLIENT_KEY="SB-Mid-client-xxxx"
+MIDTRANS_IS_PRODUCTION=false
+
+# Google OAuth
+GOOGLE_CLIENT_ID="xxxx"
+GOOGLE_CLIENT_SECRET="xxxx"
+
+# Redis
+REDIS_URL="redis://localhost:6379"</code></pre>
+
+            <h4>Frontend (client/.env)</h4>
+            <pre><code>VITE_API_BASE_URL=http://localhost:5000
+VITE_MIDTRANS_CLIENT_KEY="SB-Mid-client-xxxx" # Harus sama dengan server
+VITE_APP_TITLE="StrideBase Dev"</code></pre>
+
+            <h3 id="run-local">3. Menjalankan Manual (Local)</h3>
+            <p><strong>Terminal 1 - Backend:</strong></p>
+            <pre><code>cd server
+npm install
+npx prisma generate
+npx prisma db push  # Migrasi DB
+npm run dev</code></pre>
+
+            <p><strong>Terminal 2 - Frontend:</strong></p>
+            <pre><code>cd client
+npm install
+npm run dev</code></pre>
+
+            <h3 id="run-docker">4. Menjalankan dengan Docker (Rekomendasi)</h3>
+            <p>Cara termudah menjalankan seluruh stack (DB, Redis, API, Frontend):</p>
+            <pre><code># Di root folder stridebase-app-render/
+docker-compose up --build</code></pre>
+            <p>Akses aplikasi di:</p>
+            <ul>
+                <li>Frontend: <code>http://localhost:5173</code> (atau port yang dimapping di docker-compose)</li>
+                <li>Backend: <code>http://localhost:5000</code></li>
+            </ul>
+        </section>
+
+        <section id="database">
+            <h2>Database Schema (Prisma)</h2>
+            <p>Aplikasi menggunakan PostgreSQL dengan relasi yang kompleks. Berikut adalah entitas utamanya.</p>
+
+            <h3 id="db-models">Model Utama</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Deskripsi</th>
+                        <th>Relasi Kunci</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>User</code></td>
+                        <td>Data pengguna aplikasi (Customer, Mitra, Admin).</td>
+                        <td>Memiliki banyak <code>Booking</code>, <code>Store</code> (jika mitra), <code>Address</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>Store</code></td>
+                        <td>Profil toko mitra laundry.</td>
+                        <td>Milik <code>User</code>, Memiliki <code>Service</code>, <code>StoreSchedule</code>, <code>StoreWallet</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>Booking</code></td>
+                        <td>Transaksi pemesanan layanan.</td>
+                        <td>Relasi ke <code>User</code>, <code>Store</code>, <code>Service</code>, <code>Payment</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>Service</code></td>
+                        <td>Layanan spesifik yang ditawarkan toko (misal: Deep Clean).</td>
+                        <td>Milik <code>Store</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>LedgerEntry</code></td>
+                        <td>Pencatatan akuntansi untuk setiap pergerakan uang.</td>
+                        <td>Terkait <code>Store</code>, <code>Booking</code>, atau <code>PayoutRequest</code>.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 id="db-enums">Status Penting (Enums)</h3>
+            <ul>
+                <li><strong>UserRole:</strong> <code>customer</code>, <code>mitra</code>, <code>admin</code>, <code>developer</code></li>
+                <li><strong>BookingStatus:</strong> <code>pending</code>, <code>confirmed</code>, <code>in_progress</code>, <code>completed</code>, <code>cancelled</code></li>
+                <li><strong>PaymentStatus:</strong> <code>pending</code>, <code>paid</code>, <code>failed</code></li>
+            </ul>
+        </section>
+
+        <section id="api-reference">
+            <h2>API Reference</h2>
+            <p>Semua endpoint diawali dengan <code>/api</code> (sesuai konfigurasi di <code>index.js</code>). Berikut adalah ringkasan rute yang tersedia berdasarkan file routes.</p>
+
+            <h3 id="api-auth">Authentication (<code>/auth</code>)</h3>
+            <table>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/auth/register</code></td>
+                    <td>Mendaftar pengguna baru.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/auth/login</code></td>
+                    <td>Login dan mendapatkan JWT.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/auth/google</code></td>
+                    <td>Login menggunakan Google OAuth.</td>
+                </tr>
+            </table>
+
+            <h3 id="api-store">Store & Partner (<code>/stores</code>)</h3>
+            <table>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/stores</code></td>
+                    <td>Mendapatkan daftar semua toko (bisa difilter).</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/stores/:id</code></td>
+                    <td>Detail toko spesifik.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/stores/:id/services</code></td>
+                    <td>Daftar layanan dari toko tersebut.</td>
+                </tr>
+            </table>
+
+            <h3 id="api-booking">Booking (<code>/bookings</code>)</h3>
+            <p class="note">Sebagian besar rute ini membutuhkan Header: <code>Authorization: Bearer [TOKEN]</code></p>
+            <table>
+                <tr>
+                    <td><span class="badge badge-post">POST</span></td>
+                    <td><code>/bookings</code></td>
+                    <td>Membuat pesanan baru.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/bookings/user/me</code></td>
+                    <td>History pesanan user yang sedang login.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-get">GET</span></td>
+                    <td><code>/bookings/active/latest</code></td>
+                    <td>Mengambil status pesanan aktif (untuk fitur Live Activity).</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-put">PUT</span></td>
+                    <td><code>/bookings/:id/cancel</code></td>
+                    <td>Membatalkan pesanan.</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="project-structure">
+            <h2>Struktur Folder</h2>
+            <pre><code>stridebase/
+├── client/                 # Frontend React App
+│   ├── src/
+│   │   ├── components/     # UI Reusable (Navbar, Footer, Cards)
+│   │   ├── pages/          # Halaman (Dashboard, HomePage, Login)
+│   │   ├── services/       # Integrasi API (Axios)
+│   │   └── styles/         # CSS Files
+│   ├── Dockerfile
+│   └── vite.config.ts
+│
+├── server/                 # Backend Express App
+│   ├── config/             # Config DB, Passport, Midtrans
+│   ├── controllers/        # Logika Bisnis (Handler)
+│   ├── middleware/         # Auth Token, Error Handling
+│   ├── prisma/             # Schema & Migrations
+│   ├── routes/             # Definisi Endpoint API
+│   ├── uploads/            # Penyimpanan file sementara
+│   ├── Dockerfile
+│   └── index.js            # Entry Point
+│
+├── docker-compose.yml      # Orkestrasi Docker
+└── README.md</code></pre>
+        </section>
+
+    </main>
+
+    <script>
+        // Simple script for smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
