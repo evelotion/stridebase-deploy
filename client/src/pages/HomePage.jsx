@@ -203,7 +203,7 @@ const HomePage = ({
 
   // --- INISIALISASI CAROUSEL ---
   useEffect(() => {
-    if (banners.length > 0) {
+   if (banners.length > 1) {
       const carouselElement = document.getElementById("elevateCarousel");
       if (carouselElement) {
         new Carousel(carouselElement, {
@@ -717,7 +717,7 @@ const HomePage = ({
               spaceBetween={12}
               slidesPerView={1.08}
               centeredSlides={true}
-              loop={true}
+             loop={banners.length > 1}
               autoplay={{ delay: 4000 }}
               pagination={{ clickable: true, dynamicBullets: true }}
               className="he-mobile-banner-swiper px-1"
