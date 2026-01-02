@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Fade, Slide } from "react-awesome-reveal";
-import "./HomePageElevate.css"; // Pastikan CSS Elevate terhubung
+import "./HomePageElevate.css";
 
 const ContactPage = ({ showMessage }) => {
   const [formData, setFormData] = useState({
@@ -22,7 +22,6 @@ const ContactPage = ({ showMessage }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulasi pengiriman pesan
     setTimeout(() => {
       setIsSubmitting(false);
       if (showMessage)
@@ -35,12 +34,17 @@ const ContactPage = ({ showMessage }) => {
   };
 
   return (
-    // WRAPPER UTAMA: Background Hitam Pekat dengan Aksen Glow
+    // UBAH 1: Background pakai variabel --pe-bg
     <div
       className="home-elevate-wrapper position-relative overflow-hidden"
-      style={{ minHeight: "100vh", background: "#050505" }}
+      style={{
+        minHeight: "100vh",
+        background: "var(--pe-bg, #050505)",
+        color: "var(--pe-text-main, #fff)",
+        transition: "background 0.3s ease, color 0.3s ease",
+      }}
     >
-      {/* BACKGROUND DECORATIONS (BLOBS) */}
+      {/* Background Blobs */}
       <div
         className="he-glow-blob"
         style={{
@@ -49,6 +53,8 @@ const ContactPage = ({ showMessage }) => {
           width: "800px",
           height: "800px",
           opacity: 0.3,
+          background:
+            "radial-gradient(circle, var(--sb-primary, #3b82f6) 0%, transparent 70%)",
         }}
       ></div>
       <div
@@ -58,12 +64,13 @@ const ContactPage = ({ showMessage }) => {
           right: "-10%",
           width: "600px",
           height: "600px",
-          background: "radial-gradient(circle, #fbbf24 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, var(--sb-accent, #fbbf24) 0%, transparent 70%)",
           opacity: 0.15,
         }}
       ></div>
 
-      {/* 1. HERO SECTION (TYPOGRAPHIC CENTERED) */}
+      {/* Hero Section */}
       <section
         className="d-flex flex-column justify-content-center align-items-center text-center position-relative"
         style={{ minHeight: "50vh", paddingTop: "100px" }}
@@ -71,132 +78,130 @@ const ContactPage = ({ showMessage }) => {
         <Fade direction="up" cascade damping={0.2} triggerOnce>
           <span
             className="he-section-label mb-3"
-            style={{ letterSpacing: "5px" }}
+            style={{ letterSpacing: "5px", color: "var(--sb-accent, #fbbf24)" }}
           >
             GET IN TOUCH
           </span>
           <h1
-            className="display-1 fw-bold text-white mb-4"
+            className="display-1 fw-bold mb-4"
             style={{
               fontFamily: "Outfit, sans-serif",
               letterSpacing: "-2px",
-              textShadow: "0 0 40px rgba(59, 130, 246, 0.4)",
+              color: "var(--pe-text-main, #fff)",
             }}
           >
             Let's Start a <br />
             <span
               style={{
                 color: "transparent",
-                WebkitTextStroke: "2px var(--sb-accent)",
+                WebkitTextStroke: "2px var(--sb-accent, #fbbf24)",
               }}
             >
               Conversation.
             </span>
           </h1>
-          <p className="text-white-50 fs-5" style={{ maxWidth: "600px" }}>
+          <p
+            className="fs-5"
+            style={{
+              maxWidth: "600px",
+              color: "var(--pe-text-secondary, rgba(255,255,255,0.6))",
+            }}
+          >
             Punya pertanyaan tentang layanan atau ingin bermitra? Kami siap
             mendengar cerita sepatu Anda.
           </p>
         </Fade>
       </section>
 
-      {/* 2. OVERLAPPING CONTENT SECTION */}
+      {/* Form Section */}
       <section className="position-relative" style={{ paddingBottom: "8rem" }}>
         <div className="container">
           <div className="row g-0 justify-content-center">
-            {/* KARTU FORM (GLASS CENTER) */}
             <div className="col-lg-10 position-relative z-2">
               <Slide direction="up" triggerOnce>
                 <div
                   className="he-promo-card p-0 overflow-hidden border-0"
                   style={{
                     backdropFilter: "blur(30px)",
-                    background: "rgba(255,255,255,0.02)",
+                    background: "var(--pe-card-bg, rgba(255,255,255,0.02))",
                     borderRadius: "30px",
-                    boxShadow: "0 40px 80px rgba(0,0,0,0.5)",
+                    boxShadow: "0 40px 80px rgba(0,0,0,0.1)",
+                    border: "1px solid var(--pe-border, rgba(255,255,255,0.1))",
                   }}
                 >
                   <div className="row g-0">
-                    {/* KOLOM KIRI: INFO KONTAK (DARKER GLASS) */}
+                    {/* Left Column: Info */}
                     <div
                       className="col-lg-5 p-5 d-flex flex-column justify-content-between position-relative"
-                      style={{ background: "rgba(0,0,0,0.4)" }}
+                      style={{
+                        background: "var(--pe-sidebar-bg, rgba(0,0,0,0.2))",
+                        borderRight:
+                          "1px solid var(--pe-border, rgba(255,255,255,0.1))",
+                      }}
                     >
                       <div>
-                        <h3 className="text-white fw-bold mb-5">
+                        <h3
+                          className="fw-bold mb-5"
+                          style={{ color: "var(--pe-text-main, #fff)" }}
+                        >
                           Contact Info
                         </h3>
 
-                        <div className="mb-4 d-flex gap-3">
-                          <div
-                            className="he-service-icon-box"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              fontSize: "1.2rem",
-                              marginBottom: 0,
-                            }}
-                          >
-                            <i className="fas fa-map-marker-alt"></i>
+                        {[
+                          {
+                            icon: "map-marker-alt",
+                            title: "Visit Us",
+                            desc: "Grand Indonesia, East Mall Lv 3A<br/>Jakarta Pusat, 10310",
+                          },
+                          {
+                            icon: "envelope",
+                            title: "Email Us",
+                            desc: "support@stridebase.com",
+                          },
+                          {
+                            icon: "phone-alt",
+                            title: "Call Us",
+                            desc: "+62 21 5555 0199",
+                          },
+                        ].map((item, idx) => (
+                          <div className="mb-4 d-flex gap-3" key={idx}>
+                            <div
+                              className="he-service-icon-box"
+                              style={{
+                                width: "50px",
+                                height: "50px",
+                                fontSize: "1.2rem",
+                                marginBottom: 0,
+                                background: "var(--pe-card-bg)",
+                                color: "var(--sb-accent)",
+                                border: "1px solid var(--pe-border)",
+                              }}
+                            >
+                              <i className={`fas fa-${item.icon}`}></i>
+                            </div>
+                            <div>
+                              <h6
+                                className="fw-bold mb-1"
+                                style={{ color: "var(--pe-text-main)" }}
+                              >
+                                {item.title}
+                              </h6>
+                              <p
+                                className="small mb-0"
+                                style={{ color: "var(--pe-text-secondary)" }}
+                                dangerouslySetInnerHTML={{ __html: item.desc }}
+                              />
+                            </div>
                           </div>
-                          <div>
-                            <h6 className="text-white fw-bold mb-1">
-                              Visit Us
-                            </h6>
-                            <p className="text-white-50 small mb-0">
-                              Grand Indonesia, East Mall Lv 3A
-                              <br />
-                              Jakarta Pusat, 10310
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mb-4 d-flex gap-3">
-                          <div
-                            className="he-service-icon-box"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              fontSize: "1.2rem",
-                              marginBottom: 0,
-                            }}
-                          >
-                            <i className="fas fa-envelope"></i>
-                          </div>
-                          <div>
-                            <h6 className="text-white fw-bold mb-1">
-                              Email Us
-                            </h6>
-                            <p className="text-white-50 small mb-0">
-                              support@stridebase.com
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mb-4 d-flex gap-3">
-                          <div
-                            className="he-service-icon-box"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              fontSize: "1.2rem",
-                              marginBottom: 0,
-                            }}
-                          >
-                            <i className="fas fa-phone-alt"></i>
-                          </div>
-                          <div>
-                            <h6 className="text-white fw-bold mb-1">Call Us</h6>
-                            <p className="text-white-50 small mb-0">
-                              +62 21 5555 0199
-                            </p>
-                          </div>
-                        </div>
+                        ))}
                       </div>
 
-                      {/* Social Media Links */}
+                      {/* Social Media */}
                       <div className="mt-5">
-                        <h6 className="text-uppercase text-white-50 small mb-3 fw-bold">
+                        <h6
+                          className="text-uppercase small mb-3 fw-bold"
+                          style={{ color: "var(--pe-text-secondary)" }}
+                        >
                           Follow Our Journey
                         </h6>
                         <div className="d-flex gap-3">
@@ -210,6 +215,8 @@ const ContactPage = ({ showMessage }) => {
                                   width: "40px",
                                   height: "40px",
                                   borderRadius: "12px",
+                                  color: "var(--pe-text-main)",
+                                  border: "1px solid var(--pe-border)",
                                 }}
                               >
                                 <i className={`fab fa-${social}`}></i>
@@ -218,78 +225,71 @@ const ContactPage = ({ showMessage }) => {
                           )}
                         </div>
                       </div>
-
-                      {/* Dekorasi Garis */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          right: 0,
-                          bottom: 0,
-                          width: "1px",
-                          background:
-                            "linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)",
-                        }}
-                      ></div>
                     </div>
 
-                    {/* KOLOM KANAN: FORMULIR */}
+                    {/* Right Column: Form */}
                     <div className="col-lg-7 p-5">
                       <form onSubmit={handleSubmit}>
                         <div className="row g-4">
-                          <div className="col-md-6">
-                            <label className="he-form-label text-xs tracking-widest text-white-50 mb-2">
-                              FULL NAME
-                            </label>
-                            <input
-                              type="text"
-                              name="name"
-                              className="he-form-control bg-transparent border-bottom rounded-0 px-0 py-2"
-                              style={{
-                                borderTop: "none",
-                                borderLeft: "none",
-                                borderRight: "none",
-                                borderColor: "rgba(255,255,255,0.2)",
-                              }}
-                              placeholder="John Doe"
-                              value={formData.name}
-                              onChange={handleChange}
-                              required
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <label className="he-form-label text-xs tracking-widest text-white-50 mb-2">
-                              EMAIL ADDRESS
-                            </label>
-                            <input
-                              type="email"
-                              name="email"
-                              className="he-form-control bg-transparent border-bottom rounded-0 px-0 py-2"
-                              style={{
-                                borderTop: "none",
-                                borderLeft: "none",
-                                borderRight: "none",
-                                borderColor: "rgba(255,255,255,0.2)",
-                              }}
-                              placeholder="john@example.com"
-                              value={formData.email}
-                              onChange={handleChange}
-                              required
-                            />
-                          </div>
+                          {[
+                            {
+                              label: "FULL NAME",
+                              name: "name",
+                              type: "text",
+                              placeholder: "John Doe",
+                            },
+                            {
+                              label: "EMAIL ADDRESS",
+                              name: "email",
+                              type: "email",
+                              placeholder: "john@example.com",
+                            },
+                          ].map((field) => (
+                            <div className="col-md-6" key={field.name}>
+                              <label
+                                className="he-form-label text-xs tracking-widest mb-2"
+                                style={{ color: "var(--pe-text-secondary)" }}
+                              >
+                                {field.label}
+                              </label>
+                              <input
+                                type={field.type}
+                                name={field.name}
+                                className="he-form-control bg-transparent border-bottom rounded-0 px-0 py-2"
+                                style={{
+                                  borderTop: "none",
+                                  borderLeft: "none",
+                                  borderRight: "none",
+                                  borderBottom:
+                                    "1px solid var(--pe-border, rgba(255,255,255,0.2))",
+                                  color: "var(--pe-text-main)",
+                                  boxShadow: "none",
+                                }}
+                                placeholder={field.placeholder}
+                                value={formData[field.name]}
+                                onChange={handleChange}
+                                required
+                              />
+                            </div>
+                          ))}
+
                           <div className="col-12">
-                            <label className="he-form-label text-xs tracking-widest text-white-50 mb-2">
+                            <label
+                              className="he-form-label text-xs tracking-widest mb-2"
+                              style={{ color: "var(--pe-text-secondary)" }}
+                            >
                               SUBJECT
                             </label>
                             <select
                               name="subject"
-                              className="he-form-control bg-transparent border-bottom rounded-0 px-0 py-2 text-white"
+                              className="he-form-control bg-transparent border-bottom rounded-0 px-0 py-2"
                               style={{
                                 borderTop: "none",
                                 borderLeft: "none",
                                 borderRight: "none",
-                                borderColor: "rgba(255,255,255,0.2)",
-                                appearance: "auto",
+                                borderBottom:
+                                  "1px solid var(--pe-border, rgba(255,255,255,0.2))",
+                                color: "var(--pe-text-main)",
                               }}
                               value={formData.subject}
                               onChange={handleChange}
@@ -309,8 +309,12 @@ const ContactPage = ({ showMessage }) => {
                               </option>
                             </select>
                           </div>
+
                           <div className="col-12">
-                            <label className="he-form-label text-xs tracking-widest text-white-50 mb-2">
+                            <label
+                              className="he-form-label text-xs tracking-widest mb-2"
+                              style={{ color: "var(--pe-text-secondary)" }}
+                            >
                               MESSAGE
                             </label>
                             <textarea
@@ -320,7 +324,9 @@ const ContactPage = ({ showMessage }) => {
                                 borderTop: "none",
                                 borderLeft: "none",
                                 borderRight: "none",
-                                borderColor: "rgba(255,255,255,0.2)",
+                                borderBottom:
+                                  "1px solid var(--pe-border, rgba(255,255,255,0.2))",
+                                color: "var(--pe-text-main)",
                               }}
                               rows="4"
                               placeholder="Tell us more about your inquiry..."
@@ -329,6 +335,7 @@ const ContactPage = ({ showMessage }) => {
                               required
                             ></textarea>
                           </div>
+
                           <div className="col-12 mt-4">
                             <button
                               type="submit"
@@ -352,17 +359,21 @@ const ContactPage = ({ showMessage }) => {
         </div>
       </section>
 
-      {/* 3. MAP SECTION (FULL WIDTH DARK) */}
+      {/* Map Section */}
       <section
         className="position-relative"
         style={{
           height: "400px",
-          borderTop: "1px solid rgba(255,255,255,0.1)",
+          borderTop: "1px solid var(--pe-border, rgba(255,255,255,0.1))",
         }}
       >
         <div
           className="he-map-container h-100 rounded-0 mt-0"
-          style={{ filter: "grayscale(100%) invert(90%) contrast(90%)" }}
+          style={{
+            // UBAH 2: Map jadi normal (tidak invert) saat light mode
+            filter:
+              "grayscale(100%) var(--pe-map-filter, invert(90%) contrast(90%))",
+          }}
         >
           <iframe
             title="Lokasi Kantor"
@@ -375,24 +386,24 @@ const ContactPage = ({ showMessage }) => {
           ></iframe>
         </div>
 
-        {/* Map Overlay Text */}
         <div
           className="position-absolute top-50 start-50 translate-middle text-center pointer-events-none"
           style={{
-            background: "rgba(0,0,0,0.8)",
+            background: "var(--pe-card-bg, rgba(0,0,0,0.8))",
             padding: "20px 40px",
             borderRadius: "50px",
             backdropFilter: "blur(5px)",
-            border: "1px solid rgba(255,255,255,0.2)",
+            border: "1px solid var(--pe-border, rgba(255,255,255,0.2))",
+            color: "var(--pe-text-main)",
           }}
         >
           <h4
-            className="text-white fw-bold mb-0"
+            className="fw-bold mb-0"
             style={{ fontFamily: "Outfit, sans-serif" }}
           >
             JAKARTA HQ
           </h4>
-          <small className="text-white-50">
+          <small style={{ color: "var(--pe-text-secondary)" }}>
             Open in Maps <i className="fas fa-external-link-alt ms-1"></i>
           </small>
         </div>

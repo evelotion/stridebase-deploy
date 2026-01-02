@@ -5015,3 +5015,34 @@ html[data-theme="light"] .sb-navbar-glass .he-btn-navbar i     /* Target Icon */
 [data-theme="light"] .he-process-number {
     color: rgba(0, 0, 0, 0.03) !important; /* Abu sangat tipis */
 }
+/* =================================================================
+   FIX: COMPATIBILITY FOR CONTACT PAGE (MAPPING VARIABLES)
+   Menghubungkan variabel --pe (Page Elevate) ke --sb (StrideBase)
+   agar halaman Contact bisa berubah Putih/Hitam mengikuti tema.
+   ================================================================= */
+
+:root {
+  /* Mapping Default (Dark Mode) */
+  --pe-bg: var(--sb-bg-primary);         /* Hitam */
+  --pe-text-main: var(--sb-text-main);   /* Putih */
+  --pe-text-secondary: var(--sb-text-muted);
+  --pe-card-bg: var(--sb-card-bg);
+  --pe-border: var(--sb-card-border);
+  --pe-sidebar-bg: rgba(255, 255, 255, 0.03); /* Sidebar contact gelap */
+  
+  /* Map Filter Default (Dark Mode = Invert jadi gelap) */
+  --pe-map-filter: invert(90%) contrast(90%);
+}
+
+[data-theme="light"] {
+  /* Mapping Light Mode */
+  --pe-bg: var(--sb-bg-primary);         /* Otomatis jadi Putih */
+  --pe-text-main: var(--sb-text-main);   /* Otomatis jadi Hitam */
+  --pe-text-secondary: var(--sb-text-muted);
+  --pe-card-bg: #ffffff;
+  --pe-border: var(--sb-card-border);
+  --pe-sidebar-bg: #f8fafc;              /* Sidebar contact terang */
+  
+  /* Map Filter Light Mode (Normal / Tidak Invert) */
+  --pe-map-filter: none;
+}
