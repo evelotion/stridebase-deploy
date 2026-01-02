@@ -1,9 +1,7 @@
 // File: client/src/apiConfig.ts
 
-// Hapus atau komentari semua kode lama
-// const API_BASE_URL = "http://localhost:5000"; <--- INI BIANG KEROKNYA
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
-// Ganti menjadi string kosong:
-const API_BASE_URL = ""; 
+console.log("🔗 API Base URL:", API_BASE_URL); // Debugging: Cek ini muncul apa di Console Browser
 
 export default API_BASE_URL;

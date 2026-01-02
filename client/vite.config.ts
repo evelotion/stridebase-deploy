@@ -8,9 +8,9 @@ export default defineConfig(({ command }) => {
   return {
     plugins: [react()],
     
-    define: {
-      'process.env': {}, 
-    },
+    // define: {
+    //   'process.env': {}, 
+    // },
 
     server: {
       host: true, 
