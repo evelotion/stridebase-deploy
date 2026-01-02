@@ -21,6 +21,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import GlobalAnnouncement from "./components/GlobalAnnouncement";
 import MobileBottomNav from "./components/MobileBottomNav";
+import DemoPage from './pages/DemoPage';
 // import Notification from "./components/Notification"; // <-- Jika file ini belum ada/error, komentari dulu atau pastikan path benar
 import API_BASE_URL from "./apiConfig";
 
@@ -666,6 +667,8 @@ function AppContent() {
             element={renderWithProps(DeveloperDashboardPage)}
           />
         </Route>
+
+        <Route path="/demo" element={<DemoPage />} />
 
         {/* Mitra: Hanya untuk Mitra */}
         <Route
