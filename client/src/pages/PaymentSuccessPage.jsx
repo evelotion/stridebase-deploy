@@ -1,160 +1,309 @@
 // File: client/src/pages/PaymentSuccessPage.jsx
 
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getBookingDetails } from "../services/apiService";
+import React, { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import API_BASE_URL from "../apiConfig";
+import { Fade } from "react-awesome-reveal";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
-import { Fade, Zoom } from "react-awesome-reveal";
+import autoTable from "jspdf-autotable";
 import "./HomePageElevate.css";
 
-const PaymentSuccessPage = ({ showMessage }) => {
-  const { bookingId } = useParams();
+const PaymentSuccessPage = () => {
+  const [searchParams] = useSearchParams();
+  // Ambil ID dari URL (tergantung return url dari midtrans, biasanya ?order_id=...)
+  // Atau jika pake route param, sesuaikan logic ini.
+  const bookingId = searchParams.get("order_id") || searchParams.get("id");
+
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBookingReceipt = async () => {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
+    const fetchBooking = async () => {
+      if (!bookingId) return;
       try {
-        const data = await getBookingDetails(bookingId);
-        setBooking(data);
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok) setBooking(data);
       } catch (error) {
-        console.error(error);
+        console.error("Gagal load booking", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchBookingReceipt();
+    fetchBooking();
   }, [bookingId]);
 
-  const generatePDF = () => {
+  // --- PREMIUM CUSTOMER RECEIPT GENERATOR ---
+  const handleDownloadReceipt = () => {
     if (!booking) return;
-    const doc = new jsPDF();
-    doc.text("StrideBase Receipt", 14, 22);
-    doc.text(`Order ID: #${booking.id}`, 14, 32);
-    doc.text(`Total: Rp ${booking.totalPrice.toLocaleString("id-ID")}`, 14, 44);
-    doc.save(`receipt.pdf`);
-  };
 
-  if (loading)
-    return (
-      <div
-        className="home-elevate-wrapper d-flex justify-content-center align-items-center"
-        style={{ minHeight: "100vh" }}
-      >
-        <div className="spinner-border text-primary"></div>
-      </div>
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+
+    // Brand Colors
+    const primaryBlue = [13, 110, 253]; // StrideBase Blue
+    const darkText = [33, 37, 41];
+    const lightText = [108, 117, 125];
+    const bgLight = [248, 249, 250];
+
+    // 1. HEADER BRANDING
+    // Blue geometric shape at top left
+    doc.setFillColor(...primaryBlue);
+    doc.circle(0, 0, 40, "F");
+
+    // Brand Name
+    doc.setFontSize(22);
+    doc.setTextColor(...primaryBlue);
+    doc.setFont("helvetica", "bold");
+    doc.text("StrideBase.", 20, 25);
+
+    doc.setFontSize(10);
+    doc.setTextColor(...lightText);
+    doc.setFont("helvetica", "normal");
+    doc.text("Premium Shoe Care Service", 20, 30);
+
+    // Title & ID
+    doc.setFontSize(16);
+    doc.setTextColor(...darkText);
+    doc.setFont("helvetica", "bold");
+    doc.text("OFFICIAL RECEIPT", pageWidth - 20, 25, { align: "right" });
+
+    doc.setFontSize(10);
+    doc.setTextColor(...lightText);
+    doc.setFont("courier", "normal");
+    doc.text(
+      `#${booking.id.substring(0, 8).toUpperCase()}`,
+      pageWidth - 20,
+      31,
+      { align: "right" }
     );
 
-  /* --- RENDER DESKTOP (SIMPLE CENTER) --- */
-  const renderDesktop = () => (
+    // 2. STATUS BADGE
+    doc.setFillColor(209, 231, 221); // Light Green
+    doc.roundedRect(pageWidth - 50, 36, 30, 8, 3, 3, "F");
+    doc.setTextColor(25, 135, 84); // Dark Green
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.text("PAID", pageWidth - 35, 41, { align: "center" });
+
+    // 3. CUSTOMER & DATE SECTION (Side by Side)
+    const startY = 55;
+
+    // Left: Customer
+    doc.setFontSize(9);
+    doc.setTextColor(...lightText);
+    doc.setFont("helvetica", "bold");
+    doc.text("CUSTOMER INFO", 20, startY);
+
+    doc.setFontSize(11);
+    doc.setTextColor(...darkText);
+    doc.setFont("helvetica", "normal");
+    doc.text(booking.user.name, 20, startY + 6);
+    doc.setFontSize(10);
+    doc.setTextColor(...lightText);
+    doc.text(booking.user.email, 20, startY + 11);
+
+    // Right: Transaction Details
+    doc.setFontSize(9);
+    doc.setTextColor(...lightText);
+    doc.setFont("helvetica", "bold");
+    doc.text("TRANSACTION DETAILS", pageWidth - 20, startY, { align: "right" });
+
+    doc.setFontSize(10);
+    doc.setTextColor(...darkText);
+    doc.setFont("helvetica", "normal");
+    const dateStr = new Date(booking.createdAt).toLocaleString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    doc.text(dateStr, pageWidth - 20, startY + 6, { align: "right" });
+
+    // Payment Method (Safe check)
+    const method = booking.payment?.paymentMethod || "Online Payment";
+    doc.text(
+      method.toUpperCase().replace("_", " "),
+      pageWidth - 20,
+      startY + 11,
+      { align: "right" }
+    );
+
+    // 4. SERVICE TICKET (The "Card" Look)
+    // Draw a box for the service details
+    doc.setDrawColor(230, 230, 230);
+    doc.setFillColor(...bgLight);
+    doc.roundedRect(20, startY + 25, pageWidth - 40, 35, 3, 3, "FD");
+
+    // Inside the box
+    doc.setFontSize(14);
+    doc.setTextColor(...primaryBlue);
+    doc.setFont("helvetica", "bold");
+    doc.text(booking.serviceName, 30, startY + 38); // Service Name
+
+    doc.setFontSize(10);
+    doc.setTextColor(...darkText);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      `Shoe Type: ${booking.service?.shoeType || "General"}`,
+      30,
+      startY + 45
+    );
+    doc.text(
+      `Duration: ${booking.service?.duration || "-"} Minutes`,
+      30,
+      startY + 50
+    );
+
+    // Price inside box
+    doc.setFontSize(14);
+    doc.setTextColor(...darkText);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      `Rp ${booking.totalPrice.toLocaleString("id-ID")}`,
+      pageWidth - 30,
+      startY + 45,
+      { align: "right" }
+    );
+
+    // 5. TOTAL SECTION
+    const totalY = startY + 75;
+    doc.setDrawColor(200);
+    doc.line(20, totalY, pageWidth - 20, totalY); // Divider
+
+    doc.setFontSize(10);
+    doc.setTextColor(...lightText);
+    doc.setFont("helvetica", "normal");
+    doc.text("Total Paid", pageWidth - 70, totalY + 10);
+
+    doc.setFontSize(16);
+    doc.setTextColor(...primaryBlue);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      `Rp ${booking.totalPrice.toLocaleString("id-ID")}`,
+      pageWidth - 20,
+      totalY + 10,
+      { align: "right" }
+    );
+
+    // 6. FOOTER / TRACKING INFO
+    const footerY = 250;
+
+    // Visual "Tracking Box" (Placeholder for QR Code logic if needed later)
+    doc.setDrawColor(...primaryBlue);
+    doc.setLineWidth(0.5);
+    doc.rect(20, footerY, 170, 25);
+
+    doc.setFontSize(9);
+    doc.setTextColor(...darkText);
+    doc.setFont("helvetica", "bold");
+    doc.text("TRACK YOUR ORDER", 30, footerY + 8);
+
+    doc.setFontSize(9);
+    doc.setTextColor(...lightText);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      "Scan QR Code or visit stridebase.com/track-order",
+      30,
+      footerY + 15
+    );
+    doc.text(`Tracking ID: ${booking.id}`, 30, footerY + 20);
+
+    doc.save(`Receipt-${booking.id.substring(0, 8)}.pdf`);
+  };
+
+  return (
     <div
-      className="home-elevate-wrapper d-none d-lg-flex justify-content-center align-items-center"
+      className="home-elevate-wrapper d-flex align-items-center justify-content-center p-4"
       style={{ minHeight: "100vh" }}
     >
-      <div
-        className="text-center p-5 rounded-5 shadow-lg"
-        style={{
-          background: "var(--sb-card-bg)",
-          border: "1px solid var(--sb-card-border)",
-          maxWidth: "500px",
-        }}
-      >
-        <Zoom triggerOnce>
-          <div
-            className="d-inline-flex align-items-center justify-content-center rounded-circle mb-4 shadow-lg"
-            style={{
-              width: 100,
-              height: 100,
-              background: "#10b981",
-              color: "#fff",
-              fontSize: "3rem",
-            }}
-          >
-            <i className="fas fa-check"></i>
-          </div>
-        </Zoom>
-        <h2 className="fw-bold text-white mb-2">Pembayaran Berhasil!</h2>
-        <p className="text-muted mb-4">
-          Pesanan Anda sedang diproses oleh toko.
-        </p>
-        <div className="d-flex gap-2 justify-content-center">
-          <button
-            onClick={generatePDF}
-            className="btn btn-outline-light rounded-pill"
-          >
-            Download PDF
-          </button>
-          <Link to="/dashboard" className="btn btn-primary rounded-pill">
-            Ke Dashboard
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-
-  /* --- RENDER MOBILE (CELEBRATION SCREEN) --- */
-  const renderMobile = () => (
-    <div className="he-mobile-success-wrapper d-lg-none">
-      <div className="he-success-content">
-        <div className="he-success-icon-anim">
-          <i className="fas fa-check"></i>
-        </div>
-
-        <h2 className="fw-bold text-white mt-4 mb-2">Hore! Berhasil</h2>
-        <p className="text-white-50 mb-5 px-4">
-          Pembayaran Anda telah diterima. Mitra kami akan segera memproses
-          pesanan Anda.
-        </p>
-
-        {/* Ticket Summary */}
-        <div className="he-mobile-success-ticket">
-          <div className="d-flex justify-content-between mb-2">
-            <span className="text-muted small">Total Bayar</span>
-            <span className="fw-bold text-dark">
-              Rp {booking.totalPrice.toLocaleString("id-ID")}
-            </span>
-          </div>
-          <div className="d-flex justify-content-between mb-2">
-            <span className="text-muted small">Metode</span>
-            <span className="fw-bold text-dark">QRIS</span>
-          </div>
-          <div className="he-divider-dashed my-3"></div>
-          <div className="text-center">
-            <Link
-              to={`/track/${booking.id}`}
-              className="text-primary fw-bold text-decoration-none small"
+      <Fade>
+        <div
+          className="text-center bg-white p-5 rounded-4 shadow-lg"
+          style={{
+            maxWidth: "500px",
+            width: "100%",
+            borderTop: "5px solid var(--sb-primary)",
+          }}
+        >
+          {/* Success Icon Animation */}
+          <div className="mb-4">
+            <div
+              className="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10"
+              style={{ width: "80px", height: "80px" }}
             >
-              Lacak Pesanan #{booking.id.slice(-4)}
+              <i className="fas fa-check fa-3x text-success"></i>
+            </div>
+          </div>
+
+          <h2 className="fw-bold mb-2 text-dark">Pembayaran Berhasil!</h2>
+          <p className="text-muted mb-4">
+            Terima kasih! Pesanan Anda telah terkonfirmasi. Mitra kami akan
+            segera memproses sepatu kesayangan Anda.
+          </p>
+
+          {/* Booking Summary Card */}
+          {loading ? (
+            <div
+              className="spinner-border text-primary mb-4"
+              role="status"
+            ></div>
+          ) : booking ? (
+            <div className="bg-light p-3 rounded-3 mb-4 text-start border border-secondary border-opacity-10">
+              <div className="d-flex justify-content-between mb-2">
+                <span className="text-muted small">Order ID</span>
+                <span className="fw-bold small text-dark">
+                  #{booking.id.substring(0, 8).toUpperCase()}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between mb-2">
+                <span className="text-muted small">Layanan</span>
+                <span className="fw-bold small text-dark">
+                  {booking.serviceName}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between border-top pt-2 mt-2">
+                <span className="fw-bold text-dark">Total Bayar</span>
+                <span className="fw-bold text-primary">
+                  Rp {booking.totalPrice.toLocaleString("id-ID")}
+                </span>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="d-grid gap-3">
+            <button
+              onClick={handleDownloadReceipt}
+              disabled={loading || !booking}
+              className="btn btn-outline-dark rounded-pill py-2 fw-bold"
+            >
+              <i className="fas fa-file-invoice me-2"></i> Download E-Receipt
+            </button>
+
+            <Link
+              to={booking ? `/track-order/${booking.id}` : "/dashboard"}
+              className="btn btn-primary rounded-pill py-3 fw-bold shadow-sm"
+              style={{ background: "var(--sb-accent)", border: "none" }}
+            >
+              Lacak Pesanan Saya <i className="fas fa-arrow-right ms-2"></i>
+            </Link>
+          </div>
+
+          <div className="mt-4">
+            <Link
+              to="/dashboard"
+              className="text-muted text-decoration-none small"
+            >
+              Kembali ke Beranda
             </Link>
           </div>
         </div>
-      </div>
-
-      <div
-        className="he-mobile-sticky-footer"
-        style={{ background: "transparent", border: "none", boxShadow: "none" }}
-      >
-        <Link
-          to="/dashboard"
-          className="btn btn-light w-100 rounded-pill py-3 fw-bold shadow-lg"
-          style={{ color: "var(--sb-accent)" }}
-        >
-          Kembali ke Beranda
-        </Link>
-      </div>
+      </Fade>
     </div>
-  );
-
-  return (
-    <>
-      {renderDesktop()}
-      {renderMobile()}
-    </>
   );
 };
 
