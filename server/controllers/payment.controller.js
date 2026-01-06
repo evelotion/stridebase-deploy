@@ -160,10 +160,17 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
 
 /**
  * @desc    Konfirmasi Pembayaran Simulasi
- * @route   POST /api/payment/confirm-simulation/:id
+ * @route   POST /api/payment/confirm-simulation/:bookingId
  */
 export const confirmPaymentSimulation = async (req, res, next) => {
-  const { id } = req.params; // ID bisa Booking ID atau Invoice ID
+  // --- [MODIFIED START] ---
+  // Fix: Mengambil 'bookingId' dari params karena route definisinya /:bookingId
+  const { bookingId } = req.params; 
+  
+  // Mapping ke variabel 'id' supaya logika di bawah tetap jalan tanpa ubah banyak kode
+  const id = bookingId; 
+  // --- [MODIFIED END] ---
+
   const { type } = req.body; // "booking" atau "invoice"
 
   try {
