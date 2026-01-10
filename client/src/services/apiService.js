@@ -264,3 +264,4 @@ export const reseedDatabase = () =>
 export const getSecurityLogs = () => apiRequest("/api/superuser/security-logs");
 export const uploadDeveloperAsset = (formData) =>
   apiRequest("/api/superuser/upload-asset", "POST", formData, true);
+export const getDeveloperMetrics = () => apiRequest("/api/superuser/metrics");

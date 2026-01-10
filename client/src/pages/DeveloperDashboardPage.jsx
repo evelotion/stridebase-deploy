@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Fade, Slide } from "react-awesome-reveal"; // Tambahan animasi
-import { Line, Bar } from "react-chartjs-2"; // Tambahan Chart
+import { Fade, Slide } from "react-awesome-reveal";
+import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,6 +23,7 @@ import {
   resolveApprovalRequest,
   reseedDatabase,
   uploadDeveloperAsset,
+  getDeveloperMetrics, // Pastikan ini ada di apiService.js
 } from "../services/apiService";
 
 import API_BASE_URL from "../apiConfig";
@@ -128,30 +129,6 @@ const DebouncedRangeInput = ({ label, value, min, max, onChange }) => {
 };
 
 // --- HELPER: GOOGLE FONTS ---
-const googleFonts = [
-  "Outfit",
-  "Inter",
-  "Poppins",
-  "Roboto",
-  "Open Sans",
-  "Lato",
-  "Montserrat",
-  "Nunito",
-  "Playfair Display",
-  "Merriweather",
-  "Raleway",
-  "Oswald",
-  "Quicksand",
-  "Work Sans",
-  "Rubik",
-  "Barlow",
-  "Lora",
-  "DM Sans",
-  "Space Grotesk",
-  "Syne",
-  "Urbanist",
-];
-
 const loadGoogleFont = (fontFamily) => {
   if (!fontFamily) return;
   const fontName = fontFamily.split(",")[0].replace(/['"]/g, "").trim();
@@ -327,6 +304,17 @@ const ThemePreview = ({ config }) => {
 const DeveloperDashboardPage = ({ showMessage }) => {
   const [config, setConfig] = useState(null);
   const [initialConfig, setInitialConfig] = useState(null);
+  
+  // State Monitoring Realtime
+  const [metrics, setMetrics] = useState({
+    uptime: "00:00:00",
+    avgLatency: 0,
+    errorRate: 0,
+    memory: { used: 0, osUsagePercent: 0 },
+    cpu: { usage: 0 },
+    traffic: [0, 0, 0, 0, 0, 0, 0],
+  });
+
   const [approvalRequests, setApprovalRequests] = useState([]);
   const [approvalsMeta, setApprovalsMeta] = useState({
     page: 1,
@@ -338,17 +326,17 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview"); // Default ke Overview untuk Stats
+  const [activeTab, setActiveTab] = useState("overview"); // Default ke Overview
   const [uploadingStatus, setUploadingStatus] = useState({});
   const navigate = useNavigate();
 
-  // --- DUMMY DATA FOR CHARTS ---
+  // --- CHART DATA (REALTIME LINKED) ---
   const apiTrafficData = {
-    labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "23:59"],
+    labels: ["-6m", "-5m", "-4m", "-3m", "-2m", "-1m", "Now"],
     datasets: [
       {
         label: "API Requests (RPM)",
-        data: [120, 80, 450, 1200, 1500, 900, 300],
+        data: metrics.traffic, // Gunakan data dari metrics
         fill: true,
         backgroundColor: "rgba(244, 63, 94, 0.1)",
         borderColor: "#f43f5e",
@@ -361,18 +349,19 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   };
 
   const serverHealthData = {
-    labels: ["CPU-1", "CPU-2", "RAM", "Disk", "Net-In", "Net-Out"],
+    labels: ["CPU Load", "RAM (OS)", "Node Mem"],
     datasets: [
       {
-        label: "Usage %",
-        data: [45, 52, 78, 30, 65, 40],
+        label: "Usage % / Load",
+        data: [
+          metrics.cpu.usage * 10,
+          metrics.memory.osUsagePercent,
+          (metrics.memory.used / 2048) * 100, // Asumsi 2GB
+        ],
         backgroundColor: [
-          "#3b82f6",
           "#3b82f6",
           "#f59e0b",
           "#10b981",
-          "#8b5cf6",
-          "#f43f5e",
         ],
         borderRadius: 6,
       },
@@ -385,7 +374,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      x: { grid: { display: false }, ticks: { color: "#9ca3af" } }, // FIX: #9ca3af terlihat di Light/Dark
+      x: { grid: { display: false }, ticks: { color: "#9ca3af" } }, // FIX: Warna netral
       y: {
         grid: { color: "rgba(128, 128, 128, 0.1)" },
         ticks: { color: "#9ca3af" },
@@ -397,6 +386,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const fetchConfig = async () => {
     try {
       const configData = await getSuperUserConfig();
+      // Default theme 'elevate' jika belum diset
       if (!configData.homePageTheme || configData.homePageTheme !== "elevate") {
         configData.homePageTheme = "elevate";
       }
@@ -447,6 +437,15 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     }
   };
 
+  const fetchMetrics = async () => {
+    try {
+      const data = await getDeveloperMetrics();
+      if (data) setMetrics(data);
+    } catch (error) {
+      console.error("Failed to fetch metrics", error);
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -455,10 +454,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         navigate("/login");
         return;
       }
-      await Promise.all([fetchConfig(), fetchApprovals(1), fetchLogs(1)]);
+      await Promise.all([fetchConfig(), fetchApprovals(1), fetchLogs(1), fetchMetrics()]);
       setLoading(false);
     };
     init();
+
+    // Polling Metrics setiap 5 detik
+    const interval = setInterval(fetchMetrics, 5000);
+    return () => clearInterval(interval);
   }, [navigate]);
 
   useEffect(() => {
@@ -592,28 +595,28 @@ const DeveloperDashboardPage = ({ showMessage }) => {
             {[
               {
                 l: "API Uptime",
-                v: "99.98%",
+                v: metrics.uptime, // Real Data
                 i: "fa-server",
                 c: "pe-icon-green",
                 s: "Operational",
               },
               {
                 l: "Avg Latency",
-                v: "42ms",
+                v: `${metrics.avgLatency}ms`, // Real Data
                 i: "fa-bolt",
                 c: "pe-icon-gold",
-                s: "Fast",
+                s: metrics.avgLatency < 100 ? "Fast" : "Slow",
               },
               {
                 l: "Error Rate",
-                v: "0.05%",
+                v: `${metrics.errorRate}%`, // Real Data
                 i: "fa-exclamation-triangle",
                 c: "pe-icon-red",
-                s: "Low",
+                s: metrics.errorRate < 1 ? "Healthy" : "Check Logs",
               },
               {
                 l: "Active Nodes",
-                v: "8/8",
+                v: "8/8", // Static for now
                 i: "fa-network-wired",
                 c: "pe-icon-blue",
                 s: "Healthy",
@@ -626,7 +629,9 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                       <div className={`pe-stat-icon ${m.c} mb-0`}>
                         <i className={`fas ${m.i}`}></i>
                       </div>
-                      <span className="pe-badge pe-badge-success">{m.s}</span>
+                      <span className={`pe-badge ${m.s === "Check Logs" || m.s === "Slow" ? "pe-badge-danger" : "pe-badge-success"}`}>
+                        {m.s}
+                      </span>
                     </div>
                     <h3 className="pe-title mb-1">{m.v}</h3>
                     <p className="pe-subtitle small mb-0">{m.l}</p>
@@ -681,7 +686,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 <h5 className="pe-title mb-4 border-bottom border-secondary pb-3">
                   Global Theme Settings
                 </h5>
-                {/* Branding & Assets Section (Sama seperti kode asli lo) */}
+                {/* Branding & Assets Section */}
                 <div className="row g-5">
                   <div className="col-md-6">
                     <h6 className="pe-subtitle text-uppercase mb-3 fw-bold text-info">
@@ -783,26 +788,75 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         )
                       }
                     >
-                      {googleFonts.map((font) => (
-                        <option
-                          key={font}
-                          value={font}
-                          style={{ color: "#000" }}
-                        >
+                      <option value="" disabled>
+                        Select Font Family
+                      </option>
+                      {[
+                        "Outfit",
+                        "Inter",
+                        "Poppins",
+                        "Roboto",
+                        "Open Sans",
+                        "Lato",
+                        "Montserrat",
+                      ].map((font) => (
+                        <option key={font} value={font}>
                           {font}
                         </option>
                       ))}
                     </select>
                   </div>
                 </div>
+
+                {/* SLIDERS */}
+                <div className="mt-4 pt-4 border-top border-secondary">
+                  <h6 className="pe-subtitle text-uppercase mb-3 fw-bold text-warning">
+                    Dimensions
+                  </h6>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <DebouncedRangeInput
+                        label="Border Radius (px)"
+                        value={parseInt(config.borderRadius || 8)}
+                        min={0}
+                        max={30}
+                        onChange={(val) =>
+                          handleSliderUpdate(val, "borderRadius")
+                        }
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <DebouncedRangeInput
+                        label="Spacing Unit (px)"
+                        value={parseInt(config.spacing || 16)}
+                        min={4}
+                        max={40}
+                        onChange={(val) => handleSliderUpdate(val, "spacing")}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
             <div className="col-lg-4">
-              <div
-                className="pe-card mb-4 position-sticky"
-                style={{ top: "20px", zIndex: 10 }}
-              >
+              <div className="sticky-top" style={{ top: "100px" }}>
                 <ThemePreview config={config} />
+                <div className="pe-card mt-4">
+                  <h6 className="pe-subtitle mb-3 text-info">Raw JSON Data</h6>
+                  <pre
+                    className="p-3 rounded small mb-0"
+                    style={{
+                      background: "rgba(0,0,0,0.3)",
+                      color: "var(--pe-text-muted)",
+                      maxHeight: "300px",
+                      overflowY: "auto",
+                      fontSize: "0.7rem",
+                    }}
+                  >
+                    {JSON.stringify(config, null, 2)}
+                  </pre>
+                </div>
               </div>
             </div>
           </div>
@@ -811,24 +865,15 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       case "approvals":
         return (
           <div className="pe-card">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h5 className="pe-title">Pending Requests</h5>
-              <button
-                className="pe-btn-action"
-                onClick={() => fetchApprovals(approvalsMeta.page)}
-              >
-                <i className="fas fa-sync-alt"></i>
-              </button>
-            </div>
-            <div className="pe-table-wrapper">
+            <h5 className="pe-title mb-4">Pending Approvals</h5>
+            <div className="table-responsive">
               <table className="pe-table">
                 <thead>
                   <tr>
-                    <th>Date</th>
                     <th>Type</th>
                     <th>Requester</th>
                     <th>Details</th>
-                    <th>Status</th>
+                    <th>Date</th>
                     <th className="text-end">Action</th>
                   </tr>
                 </thead>
@@ -836,58 +881,48 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   {approvalRequests.length > 0 ? (
                     approvalRequests.map((req) => (
                       <tr key={req.id}>
-                        <td className="text-muted small">
-                          {new Date(req.createdAt).toLocaleDateString()}
-                        </td>
                         <td>
-                          <span className="pe-badge pe-badge-info">
+                          <span className="pe-badge pe-badge-warning">
                             {req.requestType}
                           </span>
                         </td>
                         <td>
-                          <div className="fw-bold">{req.requestedBy?.name}</div>
+                          <div className="fw-bold">
+                            {safeRender(req.requestedBy?.name)}
+                          </div>
+                          <small className="text-muted">
+                            {safeRender(req.requestedBy?.email)}
+                          </small>
                         </td>
-                        <td style={{ maxWidth: "350px" }}>
+                        <td style={{ maxWidth: "300px" }}>
                           <LogDetails details={req.details} />
                         </td>
                         <td>
-                          <span
-                            className={`pe-badge ${
-                              req.status === "PENDING"
-                                ? "pe-badge-warning"
-                                : "pe-badge-success"
-                            }`}
-                          >
-                            {req.status}
-                          </span>
+                          {new Date(req.createdAt).toLocaleDateString("id-ID")}
                         </td>
                         <td className="text-end">
-                          {req.status === "PENDING" && (
-                            <div className="d-flex justify-content-end gap-2">
-                              <button
-                                className="pe-btn-action text-success"
-                                onClick={() =>
-                                  handleResolveRequest(req.id, "APPROVED")
-                                }
-                              >
-                                <i className="fas fa-check"></i>
-                              </button>
-                              <button
-                                className="pe-btn-action text-danger"
-                                onClick={() =>
-                                  handleResolveRequest(req.id, "REJECTED")
-                                }
-                              >
-                                <i className="fas fa-times"></i>
-                              </button>
-                            </div>
-                          )}
+                          <button
+                            className="pe-btn-action pe-btn-sm me-2 text-success border-success"
+                            onClick={() =>
+                              handleResolveRequest(req.id, "APPROVED")
+                            }
+                          >
+                            <i className="fas fa-check"></i>
+                          </button>
+                          <button
+                            className="pe-btn-action pe-btn-sm text-danger border-danger"
+                            onClick={() =>
+                              handleResolveRequest(req.id, "REJECTED")
+                            }
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" className="text-center text-muted py-5">
+                      <td colSpan="5" className="text-center py-5 text-muted">
                         No pending requests.
                       </td>
                     </tr>
@@ -898,7 +933,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
             <PaginationControls
               currentPage={approvalsMeta.page}
               totalPages={approvalsMeta.totalPages}
-              onPageChange={fetchApprovals}
+              onPageChange={(p) => fetchApprovals(p)}
               loading={loading}
             />
           </div>
@@ -907,57 +942,62 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       case "security":
         return (
           <div className="pe-card">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h5 className="pe-title">System Audit Logs</h5>
-              <button
-                className="pe-btn-action"
-                onClick={() => fetchLogs(logsMeta.page)}
-              >
-                <i className="fas fa-sync-alt"></i>
-              </button>
-            </div>
-            <div className="pe-table-wrapper">
+            <h5 className="pe-title mb-4">System Security Logs</h5>
+            <div className="table-responsive">
               <table className="pe-table">
                 <thead>
                   <tr>
-                    <th>Time</th>
-                    <th>Actor</th>
-                    <th>Action</th>
-                    <th>IP</th>
-                    <th>Payload</th>
+                    <th>Level</th>
+                    <th>Event</th>
+                    <th>User</th>
+                    <th>IP / Details</th>
+                    <th className="text-end">Time</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {securityLogs.map((log) => (
-                    <tr key={log.id}>
-                      <td className="text-muted small">
-                        {new Date(log.timestamp).toLocaleString()}
+                  {securityLogs.length > 0 ? (
+                    securityLogs.map((log) => (
+                      <tr key={log.id}>
+                        <td>
+                          <span
+                            className={`pe-badge ${
+                              log.level === "CRITICAL" || log.level === "ERROR"
+                                ? "pe-badge-danger"
+                                : log.level === "WARN"
+                                ? "pe-badge-warning"
+                                : "pe-badge-info"
+                            }`}
+                          >
+                            {log.level}
+                          </span>
+                        </td>
+                        <td className="fw-bold text-info">{log.action}</td>
+                        <td>{safeRender(log.user?.email, "System")}</td>
+                        <td style={{ maxWidth: "300px" }}>
+                          <div className="small font-monospace text-muted mb-1">
+                            {log.ipAddress}
+                          </div>
+                          <LogDetails details={log.details} />
+                        </td>
+                        <td className="text-end text-muted small">
+                          {new Date(log.timestamp).toLocaleString("id-ID")}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center py-5 text-muted">
+                        No logs found.
                       </td>
-                      <td>{log.user?.name || "System"}</td>
-                      <td>
-                        <span
-                          className={
-                            log.action.includes("FAILURE")
-                              ? "text-danger fw-bold"
-                              : "text-success"
-                          }
-                        >
-                          {log.action}
-                        </span>
-                      </td>
-                      <td className="font-monospace small text-muted">
-                        {log.ipAddress}
-                      </td>
-                      <td>{safeRender(log.details)}</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
             <PaginationControls
               currentPage={logsMeta.page}
               totalPages={logsMeta.totalPages}
-              onPageChange={fetchLogs}
+              onPageChange={(p) => fetchLogs(p)}
               loading={loading}
             />
           </div>
@@ -965,32 +1005,52 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
       case "maintenance":
         return (
-          <div className="row">
+          <div className="row g-4">
             <div className="col-md-6">
-              <div
-                className="pe-card border-danger h-100"
-                style={{ borderColor: "rgba(239, 68, 68, 0.3)" }}
-              >
-                <h5 className="pe-title text-danger mb-3">
-                  <i className="fas fa-skull-crossbones me-2"></i>Danger Zone
-                </h5>
-                <p className="text-muted small">
-                  Tindakan ini destruktif dan tidak dapat dibatalkan.
+              <div className="pe-card h-100 border-danger">
+                <h5 className="pe-title text-danger mb-3">Danger Zone</h5>
+                <p className="text-muted small mb-4">
+                  Actions here are irreversible. Proceed with caution.
                 </p>
-                <div className="mt-4 p-3 border border-danger border-opacity-25 rounded bg-danger bg-opacity-10">
-                  <h6 className="text-danger fw-bold">Reset Database</h6>
+                <div className="d-grid gap-3">
                   <button
-                    className="btn btn-danger btn-sm mt-2"
+                    className="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2 py-3"
                     onClick={handleReseed}
                     disabled={isSeeding}
                   >
-                    <i
-                      className={`fas ${
-                        isSeeding ? "fa-spinner fa-spin" : "fa-trash"
-                      } me-2`}
-                    ></i>
-                    {isSeeding ? "Resetting..." : "Execute Reset"}
+                    {isSeeding ? (
+                      <div className="spinner-border spinner-border-sm"></div>
+                    ) : (
+                      <i className="fas fa-database"></i>
+                    )}
+                    RESET DATABASE (RESEED)
                   </button>
+                  <button
+                    className="btn btn-outline-warning d-flex align-items-center justify-content-center gap-2 py-3"
+                    onClick={() => alert("Fitur flush cache belum aktif.")}
+                  >
+                    <i className="fas fa-broom"></i>
+                    FLUSH REDIS CACHE
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="pe-card h-100">
+                <h5 className="pe-title mb-3">System Utilities</h5>
+                <div className="list-group list-group-flush bg-transparent">
+                  <div className="list-group-item bg-transparent text-muted d-flex justify-content-between align-items-center">
+                    <span>Node Version</span>
+                    <span className="text-info font-monospace">v18.17.0</span>
+                  </div>
+                  <div className="list-group-item bg-transparent text-muted d-flex justify-content-between align-items-center">
+                    <span>Database Status</span>
+                    <span className="text-success">Connected</span>
+                  </div>
+                  <div className="list-group-item bg-transparent text-muted d-flex justify-content-between align-items-center">
+                    <span>Server Uptime</span>
+                    <span className="text-white">{metrics.uptime}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1003,43 +1063,46 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   };
 
   return (
-    <div className="pe-dashboard-wrapper container-fluid px-4 py-4 position-relative z-1">
+    <div className="container-fluid px-4 py-4 position-relative z-1">
+      {/* Background Blobs khusus Dev */}
       <div className="pe-blob pe-blob-1 pe-blob-dev"></div>
       <div className="pe-blob pe-blob-2"></div>
 
       {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-5">
+      <div className="d-flex justify-content-between align-items-end mb-5">
         <div>
-          <h6 className="pe-subtitle text-uppercase tracking-widest mb-1">
-            <i className="fas fa-code-branch me-2"></i>Root Access
-          </h6>
-          <h2 className="pe-title display-6 mb-0">Developer Console</h2>
+          <Fade direction="down" triggerOnce>
+            <h6 className="pe-subtitle text-uppercase tracking-widest mb-1">
+              System Console <span className="text-success small ms-2">● Live</span>
+            </h6>
+            <h2 className="pe-title display-6 mb-0">Developer Dashboard</h2>
+          </Fade>
         </div>
-        <div className="d-flex gap-3">
+
+        <div className="d-flex gap-2">
+          {hasChanges && (
+            <button
+              className="pe-btn-action bg-warning text-dark border-warning"
+              onClick={handleConfigSave}
+              disabled={isSaving}
+            >
+              <i
+                className={`fas ${
+                  isSaving ? "fa-spinner fa-spin" : "fa-save"
+                } me-2`}
+              ></i>
+              {isSaving ? "Saving..." : "Save Config"}
+            </button>
+          )}
           <button
             className="pe-btn-action"
             onClick={() => navigate("/admin/dashboard")}
-            style={{ borderColor: "var(--pe-info)", color: "var(--pe-info)" }}
-          >
-            <i className="fas fa-user-shield me-2"></i> Switch to Admin
-          </button>
-          <button
-            className="pe-btn-action"
-            onClick={handleConfigSave}
-            disabled={isSaving || !hasChanges}
             style={{
-              background: hasChanges ? "var(--pe-accent-dev)" : "transparent",
-              borderColor: "var(--pe-accent-dev)",
-              color: hasChanges ? "#fff" : "var(--pe-accent-dev)",
-              opacity: isSaving || !hasChanges ? 0.7 : 1,
+              borderColor: "var(--pe-accent-admin)",
+              color: "var(--pe-accent-admin)",
             }}
           >
-            <i
-              className={`fas ${
-                isSaving ? "fa-spinner fa-spin" : "fa-save"
-              } me-2`}
-            ></i>
-            {isSaving ? "Saving..." : "Save Config"}
+            <i className="fas fa-user-shield me-2"></i> Switch to Admin
           </button>
         </div>
       </div>
@@ -1047,7 +1110,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       {/* NAVIGATION TABS */}
       <div className="d-flex gap-2 mb-4 overflow-auto pb-2">
         {[
-          { id: "overview", label: "Overview", icon: "fa-chart-line" }, // TAB BARU
+          { id: "overview", label: "Overview", icon: "fa-chart-line" },
           { id: "theme", label: "Theme Engine", icon: "fa-palette" },
           { id: "approvals", label: "Approval Queue", icon: "fa-list-alt" },
           { id: "security", label: "Audit Logs", icon: "fa-shield-alt" },
@@ -1067,7 +1130,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 : { opacity: 0.8 }
             }
           >
-            <i className={`fas ${tab.icon} me-2`}></i> {tab.label}
+            <i className={`fas ${tab.icon} me-2`}></i>
+            {tab.label}
           </button>
         ))}
       </div>

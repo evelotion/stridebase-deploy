@@ -14,6 +14,7 @@ import {
   getSecurityLogs,
   updateHomePageTheme,
   uploadDeveloperAsset,
+  getDeveloperMetrics
 } from "../controllers/superuser.controller.js";
 import multer from "multer"; // <-- IMPOR MULTER
 
@@ -44,5 +45,7 @@ router.post("/maintenance/reseed-database", reseedDatabase);
 router.put("/settings/homepage-theme", updateHomePageTheme);
 
 router.post("/upload-asset", upload.single("asset"), uploadDeveloperAsset);
+
+router.get("/metrics", authenticateToken, authorizeRole("developer"), getDeveloperMetrics);
 
 export default router;
