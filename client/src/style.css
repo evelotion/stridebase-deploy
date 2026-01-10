@@ -96,12 +96,6 @@ p,
   color: var(--sb-text-muted) !important;
 }
 
-[data-theme="light"] .text-white {
-  color: var(--override-text-color) !important;
-}
-[data-theme="light"] .text-white-50 {
-  color: var(--sb-text-muted) !important;
-}
 
 html {
   scroll-behavior: smooth;
@@ -4863,3 +4857,12 @@ body.has-global-announcement .filter-panel-top {
   padding-bottom: 2rem;
 }
 
+.text-adaptive {
+  color: var(--sb-text-main) !important;
+  transition: color 0.3s ease;
+}
+
+.text-adaptive-muted {
+  color: var(--sb-text-muted) !important;
+  transition: color 0.3s ease;
+}

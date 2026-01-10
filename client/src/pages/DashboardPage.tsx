@@ -20,7 +20,7 @@ import API_BASE_URL from "../apiConfig";
 import "./HomePageElevate.css";
 
 // --- HELPER: SAFE RENDER ---
-const safeRender = (data, fallback = "-") => {
+const safeRender = (data: any, fallback: string | number = "-") => {
   if (data === null || data === undefined) return fallback;
   if (typeof data === "object") {
     if (data.count !== undefined) return data.count;
@@ -31,23 +31,23 @@ const safeRender = (data, fallback = "-") => {
 };
 
 // --- HELPER AVATAR ---
-const getInitials = (name) => {
+const getInitials = (name: string) => {
   if (!name) return "?";
   const names = name.split(" ");
   const initials = names.map((n) => n[0]).join("");
   return initials.slice(0, 2).toUpperCase();
 };
 
-const DashboardPage = ({ showMessage }) => {
-  const [user, setUser] = useState(null);
-  const [bookings, setBookings] = useState([]);
-  const [addresses, setAddresses] = useState([]);
-  const [loyaltyData, setLoyaltyData] = useState({
+const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: string) => void }) => {
+  const [user, setUser] = useState<any>(null);
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [loyaltyData, setLoyaltyData] = useState<any>({
     points: 0,
     transactions: [],
   });
-  const [redeemedPromos, setRedeemedPromos] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [redeemedPromos, setRedeemedPromos] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -56,7 +56,7 @@ const DashboardPage = ({ showMessage }) => {
   const [bookingFilter, setBookingFilter] = useState("all");
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [reviewingBooking, setReviewingBooking] = useState(null);
+  const [reviewingBooking, setReviewingBooking] = useState<any>(null);
 
   // Form States
   const [newAddress, setNewAddress] = useState({
@@ -70,7 +70,7 @@ const DashboardPage = ({ showMessage }) => {
   const [profileData, setProfileData] = useState({ name: "" });
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [reviewImageUrl, setReviewImageUrl] = useState(null);
+  const [reviewImageUrl, setReviewImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   // Pagination
@@ -101,7 +101,7 @@ const DashboardPage = ({ showMessage }) => {
       setLoyaltyData(loyalty || { points: 0, transactions: [] });
       setRedeemedPromos(Array.isArray(promos) ? promos : []);
       setStats(statsRes);
-    } catch (error) {
+    } catch (error: any) {
       if (error.message?.includes("401")) {
         localStorage.clear();
         navigate("/login");
@@ -112,11 +112,12 @@ const DashboardPage = ({ showMessage }) => {
   };
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (!userData) {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) {
       navigate("/login");
       return;
     }
+    const userData = JSON.parse(userStr);
     setUser(userData);
     setProfileData({ name: userData.name });
     setNewAddress((prev) => ({ ...prev, recipientName: userData.name }));
@@ -126,50 +127,52 @@ const DashboardPage = ({ showMessage }) => {
       import.meta.env.PROD ? import.meta.env.VITE_API_PRODUCTION_URL : "/",
       { query: { userId: userData.id } }
     );
-    socket.on("bookingUpdated", (updated) =>
+    socket.on("bookingUpdated", (updated: any) =>
       setBookings((prev) =>
         prev.map((b) =>
           b.id === updated.id ? { ...b, status: updated.status } : b
         )
       )
     );
-    return () => socket.disconnect();
+    return () => {
+      socket.disconnect();
+    };
   }, [navigate]);
 
   // --- HANDLERS ---
-  const handleContinuePayment = (id) => navigate(`/payment-simulation/${id}`);
+  const handleContinuePayment = (id: string) => navigate(`/payment-simulation/${id}`);
   const handleRedeemPoints = async () => {
     if (!confirm("Tukarkan 100 poin?")) return;
     try {
       const data = await redeemLoyaltyPoints(100);
       showMessage(data.message);
       fetchDashboardData();
-    } catch (e) {
+    } catch (e: any) {
       showMessage(e.message, "Error");
     }
   };
-  const handleAddressSubmit = async (e) => {
+  const handleAddressSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const data = await addUserAddress(newAddress);
       setAddresses([data, ...addresses]);
       setShowAddressModal(false);
       showMessage("Alamat tersimpan!");
-    } catch (e) {
+    } catch (e: any) {
       showMessage(e.message, "Error");
     }
   };
-  const handleDeleteAddress = async (id) => {
+  const handleDeleteAddress = async (id: string) => {
     if (!confirm("Hapus?")) return;
     try {
       await deleteUserAddress(id);
       setAddresses(addresses.filter((a) => a.id !== id));
       showMessage("Dihapus.");
-    } catch (e) {
+    } catch (e: any) {
       showMessage(e.message, "Error");
     }
   };
-  const handleReviewSubmit = async (e) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await createReview({
@@ -182,11 +185,11 @@ const DashboardPage = ({ showMessage }) => {
       showMessage("Ulasan terkirim!");
       setShowReviewModal(false);
       fetchDashboardData();
-    } catch (e) {
+    } catch (e: any) {
       showMessage(e.message, "Error");
     }
   };
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsUploading(true);
@@ -195,20 +198,20 @@ const DashboardPage = ({ showMessage }) => {
       fd.append("image", file);
       const res = await uploadImage(fd);
       setReviewImageUrl(res.imageUrl);
-    } catch (e) {
+    } catch (e: any) {
       showMessage(e.message, "Error");
     } finally {
       setIsUploading(false);
     }
   };
-  const handleProfileUpdate = async (e) => {
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const data = await updateUserProfile(profileData);
       localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
       showMessage("Profil diperbarui!");
-    } catch (e) {
+    } catch (e: any) {
       showMessage(e.message, "Error");
     }
   };
@@ -251,8 +254,10 @@ const DashboardPage = ({ showMessage }) => {
                   <div className="he-dash-avatar">
                     {getInitials(user?.name)}
                   </div>
-                  <h5 className="fw-bold mb-1 text-white">{user?.name}</h5>
-                  <p className="text-white-50 small mb-0">{user?.email}</p>
+                  {/* UPDATE 1: Ganti text-white jadi text-adaptive */}
+                  <h5 className="fw-bold mb-1 text-adaptive">{user?.name}</h5>
+                  {/* UPDATE 2: Ganti text-white-50 jadi text-adaptive-muted */}
+                  <p className="text-adaptive-muted small mb-0">{user?.email}</p>
                 </div>
 
                 <button
@@ -312,10 +317,12 @@ const DashboardPage = ({ showMessage }) => {
                       <i className="fas fa-shopping-bag"></i>
                     </div>
                     <div>
-                      <div className="text-white-50 small text-uppercase">
+                      {/* UPDATE 3: text-adaptive-muted */}
+                      <div className="text-adaptive-muted small text-uppercase">
                         Total Orders
                       </div>
-                      <h3 className="mb-0 fw-bold text-white">
+                      {/* UPDATE 4: text-adaptive */}
+                      <h3 className="mb-0 fw-bold text-adaptive">
                         {safeRender(stats?.totalOrders, bookings.length)}
                       </h3>
                     </div>
@@ -327,10 +334,10 @@ const DashboardPage = ({ showMessage }) => {
                       <i className="fas fa-wallet"></i>
                     </div>
                     <div>
-                      <div className="text-white-50 small text-uppercase">
+                      <div className="text-adaptive-muted small text-uppercase">
                         Spent
                       </div>
-                      <h3 className="mb-0 fw-bold text-white">
+                      <h3 className="mb-0 fw-bold text-adaptive">
                         Rp{" "}
                         {safeRender(stats?.totalSpent, 0).toLocaleString(
                           "id-ID"
@@ -345,9 +352,10 @@ const DashboardPage = ({ showMessage }) => {
                       <i className="fas fa-crown"></i>
                     </div>
                     <div>
-                      <div className="text-white-50 small text-uppercase">
+                      <div className="text-adaptive-muted small text-uppercase">
                         Points
                       </div>
+                      {/* Note: text-warning is colored (yellow/gold), so we keep it. */}
                       <h3 className="mb-0 fw-bold text-warning">
                         {safeRender(loyaltyData?.points, 0)}
                       </h3>
@@ -361,7 +369,8 @@ const DashboardPage = ({ showMessage }) => {
                 {activeTab === "history" && (
                   <>
                     <div className="he-dash-header">
-                      <h4 className="fw-bold mb-0 text-white">Order History</h4>
+                      {/* UPDATE 5: text-adaptive */}
+                      <h4 className="fw-bold mb-0 text-adaptive">Order History</h4>
                       <div className="he-filter-btn-group">
                         {["all", "pending", "processing", "completed"].map(
                           (f) => (
@@ -393,14 +402,15 @@ const DashboardPage = ({ showMessage }) => {
                           {currentBookings.length > 0 ? (
                             currentBookings.map((b) => (
                               <tr key={b.id}>
-                                <td className="text-white-50">
+                                {/* UPDATE 6: text-adaptive-muted inside table */}
+                                <td className="text-adaptive-muted">
                                   #{b.id.slice(-4)}
                                 </td>
                                 <td>
                                   <div className="fw-bold">
                                     {safeRender(b.service)}
                                   </div>
-                                  <small className="text-white-50">
+                                  <small className="text-adaptive-muted">
                                     {safeRender(b.storeName)}
                                   </small>
                                 </td>
@@ -456,8 +466,8 @@ const DashboardPage = ({ showMessage }) => {
                           ) : (
                             <tr>
                               <td
-                                colSpan="5"
-                                className="text-center py-5 text-white-50"
+                                colSpan={5}
+                                className="text-center py-5 text-adaptive-muted"
                               >
                                 No orders found.
                               </td>
@@ -468,11 +478,10 @@ const DashboardPage = ({ showMessage }) => {
                     </div>
                   </>
                 )}
-                {/* ... (Other tabs logic same as before but rendered for desktop) ... */}
                 {activeTab === "addresses" && (
                   <>
                     <div className="he-dash-header">
-                      <h4 className="fw-bold mb-0 text-white">
+                      <h4 className="fw-bold mb-0 text-adaptive">
                         Saved Addresses
                       </h4>
                       <button
@@ -490,11 +499,12 @@ const DashboardPage = ({ showMessage }) => {
                               <span className="he-badge he-badge-info">
                                 {a.label}
                               </span>
-                              <span className="fw-bold text-white">
+                              {/* UPDATE 7: Address text */}
+                              <span className="fw-bold text-adaptive">
                                 {a.recipientName}
                               </span>
                             </div>
-                            <p className="mb-0 text-white-50 small">
+                            <p className="mb-0 text-adaptive-muted small">
                               {a.fullAddress}, {a.city}
                             </p>
                           </div>
@@ -694,7 +704,8 @@ const DashboardPage = ({ showMessage }) => {
                       <span className="he-badge he-badge-info mb-1">
                         {a.label}
                       </span>
-                      <div className="fw-bold text-main">{a.recipientName}</div>
+                      {/* FIX: Ganti text-main (mungkin custom class) jadi text-adaptive */}
+                      <div className="fw-bold text-adaptive">{a.recipientName}</div>
                       <div className="text-muted small">{a.fullAddress}</div>
                     </div>
                     <button

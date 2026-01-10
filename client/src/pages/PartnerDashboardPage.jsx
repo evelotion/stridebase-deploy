@@ -3,25 +3,17 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Fade } from "react-awesome-reveal";
-// PERBAIKAN: Gunakan updatePartnerStoreStatus agar tidak bentrok dengan fungsi admin
 import {
   getPartnerStats,
   updatePartnerStoreStatus,
 } from "../services/apiService";
 import "../pages/PartnerElevate.css"; // Gunakan CSS Partner
 
-// Swiper untuk Mobile Cards
-import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/free-mode";
-
 const PartnerDashboardPage = ({ showMessage }) => {
   const [stats, setStats] = useState(null);
   const [storeStatus, setStoreStatus] = useState("open"); // open/closed
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  // const user = JSON.parse(localStorage.getItem("user")); // (Optional jika butuh data user)
 
   useEffect(() => {
     // Fetch Data Real dari API
@@ -100,7 +92,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
     );
 
   /* =========================================
-     RENDER: MOBILE VIEW (MERCHANT APP STYLE)
+      RENDER: MOBILE VIEW (MERCHANT APP STYLE)
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
@@ -114,17 +106,29 @@ const PartnerDashboardPage = ({ showMessage }) => {
               }`}
               style={{ width: 40, height: 40 }}
             >
+              {/* FIX: Pakai style color #ffffff agar icon selalu putih (di dark/light mode) karena backgroundnya berwarna */}
               <i
                 className={`fas ${
                   storeStatus === "open" ? "fa-store" : "fa-store-slash"
-                } text-white`}
+                }`}
+                style={{ color: "#ffffff" }}
               ></i>
             </div>
             <div>
-              <h6 className="text-white fw-bold mb-0">
+              {/* FIX: Pakai var(--pe-text-main) agar adaptif (Putih di Dark, Hitam di Light) */}
+              <h6
+                className="fw-bold mb-0"
+                style={{ color: "var(--pe-text-main)" }}
+              >
                 {storeStatus === "open" ? "Toko Buka" : "Toko Tutup"}
               </h6>
-              <small className="text-white-50" style={{ fontSize: "0.7rem" }}>
+              {/* FIX: Pakai var(--pe-text-muted) agar adaptif */}
+              <small
+                style={{
+                  color: "var(--pe-text-muted)",
+                  fontSize: "0.7rem",
+                }}
+              >
                 {storeStatus === "open"
                   ? "Menerima pesanan"
                   : "Tidak menerima pesanan"}
@@ -255,7 +259,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
           </Link>
         </div>
 
-        {/* List Pesanan (Bisa diambil dari stats.recentOrders jika ada, atau dummy fallback) */}
+        {/* List Pesanan */}
         <div className="d-flex flex-column gap-2">
           {!stats?.recentOrders || stats.recentOrders.length === 0 ? (
             <div className="text-center text-muted py-3 small">
@@ -289,7 +293,11 @@ const PartnerDashboardPage = ({ showMessage }) => {
                   <span className="pe-badge pe-badge-warning mb-1">
                     {order.status || "Baru"}
                   </span>
-                  <small className="d-block text-white fw-bold">
+                  {/* FIX: Harga adaptif (Putih/Hitam), bukan hardcode text-white */}
+                  <small
+                    className="d-block fw-bold"
+                    style={{ color: "var(--pe-text-main)" }}
+                  >
                     {formatCurrency(order.totalPrice || 0)}
                   </small>
                 </div>
@@ -304,7 +312,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
   );
 
   /* =========================================
-     RENDER: DESKTOP VIEW (DASHBOARD GRID)
+      RENDER: DESKTOP VIEW (DASHBOARD GRID)
      ========================================= */
   const renderDesktopView = () => (
     <div className="d-none d-lg-block container-fluid px-4 py-4">
@@ -373,8 +381,6 @@ const PartnerDashboardPage = ({ showMessage }) => {
           </div>
         ))}
       </div>
-
-      {/* Tambahan: Grafik atau Tabel Singkat Desktop bisa ditambahkan di sini jika ada */}
     </div>
   );
 

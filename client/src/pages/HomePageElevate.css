@@ -97,9 +97,6 @@ p,
   color: var(--sb-text-muted) !important;
 }
 
-[data-theme="light"] .text-white {
-  color: var(--override-text-color) !important;
-}
 [data-theme="light"] .text-white-50 {
   color: var(--sb-text-muted) !important;
 }

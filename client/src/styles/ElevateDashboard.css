@@ -9,7 +9,18 @@
    2. DEFINISI VARIABEL (THEME TOKENS)
    ========================================= */
 :root {
-  /* Base Colors (Obsidian Dark - Default) */
+  /* --- MAPPING KE GLOBAL VARIABEL (Inherit dari style.css) --- */
+
+  /* Typography */
+  --pe-text-main: var(--sb-text-main, #ffffff);
+  --pe-text-muted: var(--sb-text-muted, rgba(255, 255, 255, 0.6));
+  --pe-text-inverse: var(--sb-text-inverse, #000000);
+
+  /* Brand Accents */
+  --pe-accent: var(--sb-accent, #3b82f6); /* Electric Blue */
+  --pe-accent-glow: rgba(59, 130, 246, 0.3);
+
+  /* --- DASHBOARD SPECIFIC COLORS (Obsidian Dark - Default) --- */
   --pe-bg: #050505;
   --pe-sidebar-bg: #0f0f0f; /* Solid dark untuk dropdown/sidebar aman */
   --pe-sidebar-bg-glass: rgba(15, 15, 15, 0.95);
@@ -24,15 +35,6 @@
   --pe-card-border: rgba(255, 255, 255, 0.1);
   --pe-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   --pe-glass-blur: blur(20px);
-
-  /* Typography */
-  --pe-text-main: #ffffff;
-  --pe-text-muted: rgba(255, 255, 255, 0.6);
-  --pe-text-inverse: #000000;
-
-  /* Brand Accents */
-  --pe-accent: #3b82f6; /* Electric Blue */
-  --pe-accent-glow: rgba(59, 130, 246, 0.3);
 
   /* Role Specific Accents */
   --pe-accent-admin: #8b5cf6; /* Violet */
@@ -51,6 +53,12 @@
 
 /* --- LIGHT MODE OVERRIDE (Porcelain Theme) --- */
 [data-theme="light"] {
+  /* Inherit dari style.css light mode */
+  --pe-text-main: var(--sb-text-main, #111827);
+  --pe-text-muted: var(--sb-text-muted, #6b7280);
+  --pe-text-inverse: var(--sb-text-inverse, #ffffff);
+
+  /* Dashboard Specific Light Mode Colors */
   --pe-bg: #f8f9fa;
   --pe-sidebar-bg: #ffffff;
   --pe-sidebar-bg-glass: rgba(255, 255, 255, 0.95);
@@ -58,10 +66,6 @@
   --pe-card-bg: #ffffff;
   --pe-card-border: #e5e7eb;
   --pe-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-
-  --pe-text-main: #111827;
-  --pe-text-muted: #6b7280;
-  --pe-text-inverse: #ffffff;
 
   --pe-table-row-bg: #ffffff;
   --pe-table-row-hover: #f3f4f6;
@@ -231,7 +235,7 @@ body,
 }
 .pe-btn-action:hover {
   background: var(--pe-accent);
-  color: #fff;
+  color: #fff; /* Button action hover selalu teks putih agar kontras */
   border-color: var(--pe-accent);
   box-shadow: 0 0 15px var(--pe-accent-glow);
 }
@@ -314,7 +318,7 @@ body,
    8. LAYOUT STRUCTURE (SIDEBAR & MAIN)
    ========================================= */
 .pe-layout-wrapper {
-display: block;
+  display: block;
   min-height: 100vh;
   background-color: var(--pe-bg);
   transition: background-color 0.3s ease;
@@ -490,7 +494,7 @@ display: block;
    untuk patuh pada tema Elevate (Dark/Light Mode) secara otomatis.
    ================================================================= */
 
-/* 1. TEXT COLORS: Paksa teks mengikuti variabel, kecuali ada override spesifik */
+/* 1. TEXT COLORS: Paksa teks mengikuti variabel */
 body,
 h1,
 h2,
@@ -504,15 +508,17 @@ li,
 div {
   color: var(--pe-text-main);
 }
+
 .text-muted,
 .text-secondary,
 .small {
   color: var(--pe-text-muted) !important;
 }
-.text-white {
-  /* Di Light mode, class 'text-white' Bootstrap sering bikin teks hilang. Kita override. */
-  color: var(--pe-text-main) !important;
-}
+
+/* --- [PENTING] JANGAN OVERRIDE .text-white SECARA PAKSA DI LIGHT MODE --- */
+/* Biarkan .text-white tetap putih (untuk badge/tombol). 
+   Gunakan var(--pe-text-main) di elemen HTML jika ingin teks adaptif. */
+
 .text-dark {
   color: var(--pe-text-main) !important;
 }
@@ -545,21 +551,24 @@ div {
 .modal-content {
   background-color: var(
     --pe-sidebar-bg
-  ); /* Solid background agar tidak tembus pandang aneh */
+  ) !important; /* Adaptif: Hitam (Dark) / Putih (Light) */
   border: 1px solid var(--pe-card-border);
-  color: var(--pe-text-main);
+  color: var(--pe-text-main) !important;
   border-radius: 16px;
 }
 .modal-header,
 .modal-footer {
-  border-color: var(--pe-card-border);
+  border-color: var(--pe-card-border) !important;
+}
+.modal-title {
+  color: var(--pe-text-main) !important;
 }
 .btn-close {
   /* Invert warna tombol X di Dark Mode agar terlihat */
   filter: invert(1) grayscale(100%) brightness(200%);
 }
 [data-theme="light"] .btn-close {
-  filter: none;
+  filter: none !important; /* Kembalikan ke normal di Light Mode */
 }
 
 /* 5. DROPDOWNS: Masalah klasik "Putih di atas Putih" */
@@ -588,10 +597,17 @@ textarea {
   border: 1px solid var(--pe-card-border) !important;
   color: var(--pe-text-main) !important;
 }
-[data-theme="light"] .form-control {
-  background-color: #fff !important;
-  color: #000 !important;
+
+/* Light Mode Input Fixes */
+[data-theme="light"] .form-control,
+[data-theme="light"] .form-select,
+[data-theme="light"] textarea,
+[data-theme="light"] input {
+  background-color: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important; /* Teks Hitam Pekat */
 }
+
 /* Focus State */
 .form-control:focus,
 .form-select:focus {
@@ -627,11 +643,11 @@ input:-webkit-autofill:active {
 }
 .table-striped > tbody > tr:nth-of-type(odd) > * {
   color: var(--pe-text-main);
-  box-shadow: inset 0 0 0 9999px rgba(128, 128, 128, 0.05); /* Striped effect yang aman */
+  background-color: var(--pe-table-row-bg) !important;
 }
 .table-hover > tbody > tr:hover > * {
   color: var(--pe-text-main);
-  box-shadow: inset 0 0 0 9999px rgba(59, 130, 246, 0.1); /* Hover effect biru tipis */
+  background-color: var(--pe-table-row-hover) !important;
 }
 
 /* 8. LIST GROUPS (Biasanya di Sidebar Filter) */
@@ -641,13 +657,23 @@ input:-webkit-autofill:active {
   color: var(--pe-text-main);
 }
 
-/* 9. NAVBAR MOBILE FIX */
+/* 9. DATE PICKER ICON FILTER */
+::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Putihkan ikon kalender hitam */
+  opacity: 0.6;
+  cursor: pointer;
+}
+[data-theme="light"] ::-webkit-calendar-picker-indicator {
+  filter: none; /* Kembalikan ke hitam di light mode */
+}
+
+/* 10. NAVBAR MOBILE FIX */
 @media (max-width: 991px) {
   .navbar-toggler {
     border-color: var(--pe-text-muted);
   }
   .navbar-toggler-icon {
-    filter: invert(1); /* Sesuaikan icon hamburger */
+    filter: invert(1);
   }
   [data-theme="light"] .navbar-toggler-icon {
     filter: none;
@@ -657,7 +683,6 @@ input:-webkit-autofill:active {
   body {
     padding-bottom: 100px !important;
   }
-
   /* Sembunyikan Footer di Mobile (App-like feel) */
   footer {
     display: none !important;
@@ -672,7 +697,6 @@ input:-webkit-autofill:active {
 @media (max-width: 991px) {
   /* 1. LAYOUT DASAR */
   body {
-    /* Mencegah scroll horizontal & overscroll putih di iOS */
     overscroll-behavior-y: none;
     background-color: var(--pe-bg);
   }
@@ -680,8 +704,7 @@ input:-webkit-autofill:active {
   .pe-main-content {
     margin-left: 0 !important;
     width: 100%;
-    /* Padding bawah ekstra agar konten paling bawah tidak tertutup nav */
-    padding-bottom: 120px !important; 
+    padding-bottom: 120px !important;
   }
 
   /* 2. MOBILE HEADER (Glassmorphism Sticky) */
@@ -694,10 +717,10 @@ input:-webkit-autofill:active {
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--pe-card-border);
     padding: 15px 20px;
-    display: flex !important; /* Paksa muncul di mobile */
+    display: flex !important;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
   }
 
@@ -712,7 +735,7 @@ input:-webkit-autofill:active {
   /* 3. MOBILE BOTTOM NAV (Floating Glass Dock) */
   .pe-mobile-dock {
     position: fixed;
-    bottom: 25px; /* Melayang dari bawah */
+    bottom: 25px;
     left: 15px;
     right: 15px;
     height: 75px;
@@ -720,8 +743,8 @@ input:-webkit-autofill:active {
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 1px solid var(--pe-card-border);
-    border-radius: 24px; /* Sudut sangat bulat */
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3); /* Bayangan dalam */
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -761,7 +784,7 @@ input:-webkit-autofill:active {
   .pe-dock-item.active {
     color: var(--pe-accent);
   }
-  
+
   .pe-dock-item.active .pe-dock-icon {
     transform: translateY(-3px);
     filter: drop-shadow(0 0 8px var(--pe-accent-glow));
@@ -783,7 +806,7 @@ input:-webkit-autofill:active {
     justify-content: center;
     color: #fff;
     font-size: 1.5rem;
-    border: 5px solid var(--pe-bg); /* Border tebal warna background agar terlihat terpisah */
+    border: 5px solid var(--pe-bg);
     box-shadow: 0 10px 20px var(--pe-accent-glow);
     transition: transform 0.2s ease;
     text-decoration: none;
@@ -792,7 +815,7 @@ input:-webkit-autofill:active {
   .pe-dock-fab:active {
     transform: scale(0.95);
   }
-  
+
   /* Fix untuk Light Mode agar border FAB menyatu */
   [data-theme="light"] .pe-dock-fab {
     border-color: var(--pe-bg); /* Pastikan border mengikuti background light */
@@ -802,143 +825,12 @@ input:-webkit-autofill:active {
 
 /* Animasi Masuk */
 @keyframes slideUpDock {
-  from { transform: translateY(100px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* =================================================================
-   🔥 GLOBAL FIX: FORM & MODAL CONTRAST (LIGHT & DARK MODE)
-   Tambahkan kode ini di bagian paling bawah file untuk menimpa semuanya
-   ================================================================= */
-
-/* 1. MODAL CONTENT FIX */
-.modal-content {
-  background-color: var(--pe-sidebar-bg) !important; /* Putih di Light, Hitam di Dark */
-  color: var(--pe-text-main) !important;
-  border: 1px solid var(--pe-card-border);
-}
-
-.modal-header,
-.modal-footer {
-  border-color: var(--pe-card-border) !important;
-}
-
-.modal-title {
-  color: var(--pe-text-main) !important;
-}
-
-.btn-close {
-  /* Di Dark Mode, tombol X harus di-invert agar terlihat putih */
-  filter: invert(1) grayscale(100%) brightness(200%);
-}
-
-/* 2. FORM INPUTS (GLOBAL OVERRIDE) */
-.form-control,
-.form-select,
-textarea,
-input[type="text"],
-input[type="email"],
-input[type="number"],
-input[type="password"],
-input[type="date"],
-input[type="datetime-local"] {
-  background-color: rgba(255, 255, 255, 0.05) !important; /* Default Dark Mode: Transparan */
-  border: 1px solid var(--pe-card-border) !important;
-  color: var(--pe-text-main) !important;
-}
-
-.form-control:focus,
-.form-select:focus {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-color: var(--pe-accent) !important;
-  color: var(--pe-text-main) !important;
-  box-shadow: 0 0 0 2px var(--pe-accent-glow) !important;
-}
-
-/* Label Form */
-label, .form-label {
-  color: var(--pe-text-main) !important; /* Pastikan label selalu kontras */
-  font-weight: 500;
-}
-
-/* 3. LIGHT MODE SPECIFIC OVERRIDES (CRITICAL FIX) */
-[data-theme="light"] .modal-content {
-  background-color: #ffffff !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-}
-
-[data-theme="light"] .btn-close {
-  filter: none !important; /* Kembalikan tombol X jadi hitam */
-}
-
-/* Input di Light Mode: Beri sedikit background abu agar beda dengan modal putih */
-[data-theme="light"] .form-control,
-[data-theme="light"] .form-select,
-[data-theme="light"] textarea,
-[data-theme="light"] input {
-  background-color: #f9fafb !important; 
-  border-color: #d1d5db !important;
-  color: #111827 !important; /* Teks Hitam Pekat */
-}
-
-[data-theme="light"] .form-control:focus,
-[data-theme="light"] .form-select:focus {
-  background-color: #ffffff !important;
-  border-color: var(--pe-accent) !important;
-}
-
-[data-theme="light"] .text-muted {
-  color: #6b7280 !important; /* Abu medium, bukan abu sangat muda */
-}
-
-/* 4. TABLE STRIPED FIX */
-[data-theme="light"] .table-striped > tbody > tr:nth-of-type(odd) > * {
-  color: #111827 !important;
-  background-color: rgba(0, 0, 0, 0.02) !important;
-}
-[data-theme="light"] .table-hover > tbody > tr:hover > * {
-  color: #111827 !important;
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-
-/* =================================================================
-   🔥 GLOBAL FIX: DROPDOWN OPTIONS (THEMA SELECT)
-   Masalah: Option background seringkali putih default browser
-   Solusi: Paksa warna background solid untuk opsi
-   ================================================================= */
-
-/* 1. DARK MODE (DEFAULT) */
-select option, 
-.form-select option {
-  background-color: #1a1a1a !important; /* Hitam Abu Solid */
-  color: #ffffff !important;
-  padding: 10px;
-}
-
-/* 2. LIGHT MODE OVERRIDE */
-[data-theme="light"] select option, 
-[data-theme="light"] .form-select option {
-  background-color: #ffffff !important;
-  color: #111827 !important;
-}
-
-/* 3. AUTOFILL FIX (Chrome/Edge sering merusak warna input saat autofill) */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px var(--pe-sidebar-bg) inset !important;
-  -webkit-text-fill-color: var(--pe-text-main) !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-/* 4. DATE PICKER ICON FILTER (Agar ikon kalender terlihat di dark mode) */
-::-webkit-calendar-picker-indicator {
-  filter: invert(1); /* Putihkan ikon kalender hitam */
-  opacity: 0.6;
-  cursor: pointer;
-}
-
-[data-theme="light"] ::-webkit-calendar-picker-indicator {
-  filter: none; /* Kembalikan ke hitam di light mode */
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

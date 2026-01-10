@@ -70,13 +70,15 @@ const AdminDashboardPage = ({ showMessage }) => {
         backgroundColor: "rgba(139, 92, 246, 0.1)",
         borderColor: "#8b5cf6",
         tension: 0.4,
-        pointBackgroundColor: "#050505",
+        // Update: Gunakan warna ungu solid agar aman di light/dark mode
+        pointBackgroundColor: "#8b5cf6",
         pointBorderColor: "#8b5cf6",
         pointBorderWidth: 2,
       },
     ],
   };
 
+  // FIX CHART COLOR: Gunakan warna abu-abu netral (#9ca3af)
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -84,11 +86,14 @@ const AdminDashboardPage = ({ showMessage }) => {
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: "rgba(255,255,255,0.5)" },
+        // FIX: Warna netral (terlihat di dark & light)
+        ticks: { color: "#9ca3af" },
       },
       y: {
-        grid: { color: "rgba(255,255,255,0.05)" },
-        ticks: { color: "rgba(255,255,255,0.5)" },
+        // FIX: Grid transparan netral
+        grid: { color: "rgba(128, 128, 128, 0.1)" },
+        // FIX: Warna netral
+        ticks: { color: "#9ca3af" },
       },
     },
   };
@@ -101,7 +106,7 @@ const AdminDashboardPage = ({ showMessage }) => {
     );
   if (error) return <div className="p-4 text-danger">Error: {error}</div>;
 
-  // Data KPI Stats (Digunakan di kedua view)
+  // Data KPI Stats
   const kpiItems = [
     {
       title: "Total Pengguna",
@@ -142,7 +147,7 @@ const AdminDashboardPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* 1. GREETING CARD (Pengganti Header Lama) */}
+      {/* 1. GREETING CARD */}
       <div className="mb-4 pt-3 px-1">
         <div
           className="pe-card p-3 d-flex align-items-center justify-content-between"
@@ -154,7 +159,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         >
           <div>
             <small
-              className="text-muted d-block"
+              className="text-adaptive-muted d-block"
               style={{
                 fontSize: "0.75rem",
                 textTransform: "uppercase",
@@ -176,7 +181,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 2. KPI SWIPER (HORIZONTAL SCROLL) */}
+      {/* 2. KPI SWIPER */}
       <div className="mb-4">
         <Swiper
           slidesPerView={1.25}
@@ -251,17 +256,16 @@ const AdminDashboardPage = ({ showMessage }) => {
             <i className="fas fa-store-alt"></i>
           </div>
           <div className="flex-grow-1">
-            <h6
-              className="mb-0 fw-bold fs-6"
-              style={{ color: "var(--pe-text-main)" }}
+            {/* FIX: Adaptive Text */}
+            <h6 className="mb-0 fw-bold fs-6 text-adaptive">Verifikasi Toko</h6>
+            <small
+              className="text-adaptive-muted"
+              style={{ fontSize: "0.75rem" }}
             >
-              Verifikasi Toko
-            </h6>
-            <small className="text-muted" style={{ fontSize: "0.75rem" }}>
               Tinjau pendaftaran baru
             </small>
           </div>
-          <i className="fas fa-chevron-right text-muted opacity-50 small"></i>
+          <i className="fas fa-chevron-right text-adaptive-muted opacity-50 small"></i>
         </div>
 
         {/* Task Card: Payout Pending */}
@@ -277,17 +281,18 @@ const AdminDashboardPage = ({ showMessage }) => {
             <i className="fas fa-hand-holding-usd"></i>
           </div>
           <div className="flex-grow-1">
-            <h6
-              className="mb-0 fw-bold fs-6"
-              style={{ color: "var(--pe-text-main)" }}
-            >
+            {/* FIX: Adaptive Text */}
+            <h6 className="mb-0 fw-bold fs-6 text-adaptive">
               Permintaan Payout
             </h6>
-            <small className="text-muted" style={{ fontSize: "0.75rem" }}>
+            <small
+              className="text-adaptive-muted"
+              style={{ fontSize: "0.75rem" }}
+            >
               Cek penarikan dana mitra
             </small>
           </div>
-          <i className="fas fa-chevron-right text-muted opacity-50 small"></i>
+          <i className="fas fa-chevron-right text-adaptive-muted opacity-50 small"></i>
         </div>
       </div>
 
@@ -300,94 +305,51 @@ const AdminDashboardPage = ({ showMessage }) => {
           SHORTCUTS
         </h6>
         <div className="row g-2">
-          <div className="col-3">
-            <div
-              className="d-flex flex-column align-items-center gap-2"
-              onClick={() => navigate("/admin/users")}
-            >
+          {[
+            { l: "User", i: "fa-user-plus", c: "text-info", u: "/admin/users" },
+            { l: "Promo", i: "fa-tags", c: "text-danger", u: "/admin/promos" },
+            {
+              l: "Laporan",
+              i: "fa-chart-line",
+              c: "text-success",
+              u: "/admin/reports",
+            },
+            {
+              l: "Config",
+              i: "fa-sliders-h",
+              c: "text-secondary",
+              u: "/admin/settings",
+            },
+          ].map((sc, i) => (
+            <div className="col-3" key={i}>
               <div
-                className="pe-card d-flex align-items-center justify-content-center"
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: "16px",
-                  marginBottom: 0,
-                }}
+                className="d-flex flex-column align-items-center gap-2"
+                onClick={() => navigate(sc.u)}
+                style={{ cursor: "pointer" }}
               >
-                <i className="fas fa-user-plus text-info fs-5"></i>
+                <div
+                  className="pe-card d-flex align-items-center justify-content-center"
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: "16px",
+                    marginBottom: 0,
+                  }}
+                >
+                  <i className={`fas ${sc.i} ${sc.c} fs-5`}></i>
+                </div>
+                <span
+                  className="small text-adaptive-muted"
+                  style={{ fontSize: "0.7rem" }}
+                >
+                  {sc.l}
+                </span>
               </div>
-              <span className="small text-muted" style={{ fontSize: "0.7rem" }}>
-                User
-              </span>
             </div>
-          </div>
-          <div className="col-3">
-            <div
-              className="d-flex flex-column align-items-center gap-2"
-              onClick={() => navigate("/admin/promos")}
-            >
-              <div
-                className="pe-card d-flex align-items-center justify-content-center"
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: "16px",
-                  marginBottom: 0,
-                }}
-              >
-                <i className="fas fa-tags text-danger fs-5"></i>
-              </div>
-              <span className="small text-muted" style={{ fontSize: "0.7rem" }}>
-                Promo
-              </span>
-            </div>
-          </div>
-          <div className="col-3">
-            <div
-              className="d-flex flex-column align-items-center gap-2"
-              onClick={() => navigate("/admin/reports")}
-            >
-              <div
-                className="pe-card d-flex align-items-center justify-content-center"
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: "16px",
-                  marginBottom: 0,
-                }}
-              >
-                <i className="fas fa-chart-line text-success fs-5"></i>
-              </div>
-              <span className="small text-muted" style={{ fontSize: "0.7rem" }}>
-                Laporan
-              </span>
-            </div>
-          </div>
-          <div className="col-3">
-            <div
-              className="d-flex flex-column align-items-center gap-2"
-              onClick={() => navigate("/admin/settings")}
-            >
-              <div
-                className="pe-card d-flex align-items-center justify-content-center"
-                style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: "16px",
-                  marginBottom: 0,
-                }}
-              >
-                <i className="fas fa-sliders-h text-secondary fs-5"></i>
-              </div>
-              <span className="small text-muted" style={{ fontSize: "0.7rem" }}>
-                Config
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Spacer Extra untuk Floating Dock */}
       <div style={{ height: "100px" }}></div>
     </div>
   );
