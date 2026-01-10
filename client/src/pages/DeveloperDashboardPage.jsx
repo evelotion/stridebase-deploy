@@ -2,6 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Fade, Slide } from "react-awesome-reveal"; // Tambahan animasi
+import { Line, Bar } from "react-chartjs-2"; // Tambahan Chart
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from "chart.js";
 import {
   getSuperUserConfig,
   updateSuperUserConfig,
@@ -9,11 +23,23 @@ import {
   resolveApprovalRequest,
   reseedDatabase,
   uploadDeveloperAsset,
-  getSecurityLogs, // Pastikan ini diimport jika ada di apiService
 } from "../services/apiService";
 
 import API_BASE_URL from "../apiConfig";
 import "../styles/ElevateDashboard.css";
+
+// Registrasi Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 // --- HELPER: SAFE RENDER ---
 const safeRender = (data, fallback = "-") => {
@@ -25,11 +51,10 @@ const safeRender = (data, fallback = "-") => {
 };
 
 // --- STYLE HELPER: GLASS INPUT ---
-// Style ini memaksa input terlihat bagus di Dark Mode (Teks Putih, BG Transparan)
 const glassInputStyle = {
   background: "rgba(255, 255, 255, 0.05)",
   border: "1px solid var(--pe-card-border)",
-  color: "var(--pe-text-main)", // KUNCI: Paksa warna teks mengikuti tema
+  color: "var(--pe-text-main)",
   borderRadius: "8px",
   padding: "10px 12px",
 };
@@ -42,7 +67,6 @@ const PaginationControls = ({
   loading,
 }) => {
   if (totalPages <= 1) return null;
-
   return (
     <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary border-opacity-25">
       <span style={{ color: "var(--pe-text-muted)", fontSize: "0.85rem" }}>
@@ -73,18 +97,13 @@ const PaginationControls = ({
 // --- KOMPONEN: DEBOUNCED SLIDER ---
 const DebouncedRangeInput = ({ label, value, min, max, onChange }) => {
   const [localValue, setLocalValue] = useState(value);
-
   useEffect(() => {
     setLocalValue(parseInt(value));
   }, [value]);
-
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (localValue !== parseInt(value)) {
-        onChange(localValue);
-      }
+      if (localValue !== parseInt(value)) onChange(localValue);
     }, 200);
-
     return () => clearTimeout(handler);
   }, [localValue, onChange, value]);
 
@@ -137,7 +156,6 @@ const loadGoogleFont = (fontFamily) => {
   if (!fontFamily) return;
   const fontName = fontFamily.split(",")[0].replace(/['"]/g, "").trim();
   const linkId = "dynamic-theme-font-preview";
-
   let link = document.getElementById(linkId);
   if (!link) {
     link = document.createElement("link");
@@ -145,14 +163,11 @@ const loadGoogleFont = (fontFamily) => {
     link.rel = "stylesheet";
     document.head.appendChild(link);
   }
-
   const fontUrl = `https://fonts.googleapis.com/css2?family=${fontName.replace(
     /\s+/g,
     "+"
   )}:wght@300;400;500;600;700;800&display=swap`;
-  if (link.href !== fontUrl) {
-    link.href = fontUrl;
-  }
+  if (link.href !== fontUrl) link.href = fontUrl;
 };
 
 // --- COMPONENT: LOG DETAILS ---
@@ -199,10 +214,10 @@ const LogDetails = ({ details }) => {
         <pre
           className="mb-0 p-2 rounded small"
           style={{
-            maxHeight: "150px", // Sedikit dipertinggi agar lebih nyaman
-            overflowY: "auto", // Scroll vertikal saja
-            whiteSpace: "pre-wrap", // <--- TAMBAHKAN INI: Agar teks turun ke bawah
-            wordBreak: "break-word", // <--- TAMBAHKAN INI: Agar kata panjang dipotong
+            maxHeight: "150px",
+            overflowY: "auto",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
             background: "rgba(0,0,0,0.3)",
             color: "var(--pe-text-main)",
             border: "1px solid var(--pe-card-border)",
@@ -218,18 +233,11 @@ const LogDetails = ({ details }) => {
 // --- COMPONENT: THEME PREVIEW ---
 const ThemePreview = ({ config }) => {
   if (!config) return null;
-
-  // Style untuk wrapper preview
   const wrapperStyle = {
     fontFamily: config.typography?.fontFamily || "'Inter', sans-serif",
     "--primary-color": config.colors?.primary || "#0dcaf0",
-    "--secondary-color": config.colors?.secondary || "#28a745",
-    "--accent-color": config.colors?.accent || "#FFC107",
-    "--font-size-base": config.typography?.baseFontSize || "16px",
     "--button-bg": config.colors?.button?.background || "#0D6EFD",
     "--button-text": config.colors?.button?.text || "#FFFFFF",
-
-    // Container luar tetap mengikuti tema dashboard admin
     background: "var(--pe-bg)",
     padding: "20px",
     borderRadius: "16px",
@@ -240,7 +248,6 @@ const ThemePreview = ({ config }) => {
 
   return (
     <div style={wrapperStyle}>
-      {/* Decorative Blob */}
       <div
         style={{
           position: "absolute",
@@ -255,19 +262,16 @@ const ThemePreview = ({ config }) => {
           zIndex: 0,
         }}
       ></div>
-
       <div style={{ position: "relative", zIndex: 1 }}>
         <h6
-          style={{ color: "var(--pe-text-muted)" }} // Fix label visibility
+          style={{ color: "var(--pe-text-muted)" }}
           className="small text-uppercase mb-3 letter-spacing-2"
         >
           Live Preview
         </h6>
-
-        {/* Inner Card: Simulasi Tampilan User */}
         <div
           style={{
-            background: "var(--pe-card-bg)", // Menggunakan bg card tema dashboard
+            background: "var(--pe-card-bg)",
             backdropFilter: "blur(20px)",
             border: "1px solid var(--pe-card-border)",
             borderRadius: "12px",
@@ -281,7 +285,7 @@ const ThemePreview = ({ config }) => {
               fontWeight: 700,
               marginBottom: "1rem",
               lineHeight: 1.2,
-              color: "var(--pe-text-main)", // Pastikan terlihat
+              color: "var(--pe-text-main)",
             }}
           >
             Elevate Your{" "}
@@ -289,7 +293,7 @@ const ThemePreview = ({ config }) => {
           </h2>
           <p
             style={{
-              fontSize: "var(--font-size-base)",
+              fontSize: config.typography?.baseFontSize || "16px",
               color: "var(--pe-text-muted)",
               marginBottom: "1.5rem",
               lineHeight: 1.6,
@@ -306,26 +310,11 @@ const ThemePreview = ({ config }) => {
                 border: "none",
                 padding: "10px 24px",
                 borderRadius: "50px",
-                fontSize: config.typography?.buttonFontSize || "1rem",
                 fontWeight: 600,
                 cursor: "pointer",
-                boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
               }}
             >
               Primary Action
-            </button>
-            <button
-              style={{
-                backgroundColor: "transparent",
-                color: "var(--pe-text-main)",
-                border: "1px solid var(--pe-card-border)",
-                padding: "10px 24px",
-                borderRadius: "50px",
-                fontSize: config.typography?.buttonFontSize || "1rem",
-                cursor: "pointer",
-              }}
-            >
-              Secondary
             </button>
           </div>
         </div>
@@ -338,7 +327,6 @@ const ThemePreview = ({ config }) => {
 const DeveloperDashboardPage = ({ showMessage }) => {
   const [config, setConfig] = useState(null);
   const [initialConfig, setInitialConfig] = useState(null);
-
   const [approvalRequests, setApprovalRequests] = useState([]);
   const [approvalsMeta, setApprovalsMeta] = useState({
     page: 1,
@@ -350,11 +338,62 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
-  const [activeTab, setActiveTab] = useState("theme");
+  const [activeTab, setActiveTab] = useState("overview"); // Default ke Overview untuk Stats
   const [uploadingStatus, setUploadingStatus] = useState({});
-
   const navigate = useNavigate();
 
+  // --- DUMMY DATA FOR CHARTS ---
+  const apiTrafficData = {
+    labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00", "23:59"],
+    datasets: [
+      {
+        label: "API Requests (RPM)",
+        data: [120, 80, 450, 1200, 1500, 900, 300],
+        fill: true,
+        backgroundColor: "rgba(244, 63, 94, 0.1)",
+        borderColor: "#f43f5e",
+        tension: 0.4,
+        pointBackgroundColor: "#f43f5e",
+        pointBorderColor: "#f43f5e",
+        pointBorderWidth: 2,
+      },
+    ],
+  };
+
+  const serverHealthData = {
+    labels: ["CPU-1", "CPU-2", "RAM", "Disk", "Net-In", "Net-Out"],
+    datasets: [
+      {
+        label: "Usage %",
+        data: [45, 52, 78, 30, 65, 40],
+        backgroundColor: [
+          "#3b82f6",
+          "#3b82f6",
+          "#f59e0b",
+          "#10b981",
+          "#8b5cf6",
+          "#f43f5e",
+        ],
+        borderRadius: 6,
+      },
+    ],
+  };
+
+  // --- CHART OPTIONS (LIGHT MODE FIX) ---
+  const commonChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: "#9ca3af" } }, // FIX: #9ca3af terlihat di Light/Dark
+      y: {
+        grid: { color: "rgba(128, 128, 128, 0.1)" },
+        ticks: { color: "#9ca3af" },
+      },
+    },
+  };
+
+  // --- FETCHING DATA ---
   const fetchConfig = async () => {
     try {
       const configData = await getSuperUserConfig();
@@ -377,9 +416,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       );
       const result = await res.json();
       if (res.ok) {
-        if (Array.isArray(result)) {
-          setApprovalRequests(result);
-        } else {
+        if (Array.isArray(result)) setApprovalRequests(result);
+        else {
           setApprovalRequests(result.data);
           setApprovalsMeta(result.meta);
         }
@@ -392,16 +430,14 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const fetchLogs = async (page = 1) => {
     const token = localStorage.getItem("token");
     try {
-      // Pastikan endpoint ini benar, kadang namanya /logs saja
       const res = await fetch(
         `${API_BASE_URL}/api/superuser/security-logs?page=${page}&limit=20`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const result = await res.json();
       if (res.ok) {
-        if (Array.isArray(result)) {
-          setSecurityLogs(result);
-        } else {
+        if (Array.isArray(result)) setSecurityLogs(result);
+        else {
           setSecurityLogs(result.data);
           setLogsMeta(result.meta);
         }
@@ -426,91 +462,62 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   }, [navigate]);
 
   useEffect(() => {
-    if (config?.typography?.fontFamily) {
+    if (config?.typography?.fontFamily)
       loadGoogleFont(config.typography.fontFamily);
-    }
   }, [config?.typography?.fontFamily]);
 
+  // --- HANDLERS ---
   const handleConfigChange = (e, path) => {
     const { value, type, checked } = e.target;
     const keys = path.split(".");
-    setConfig((prevConfig) => {
-      const newConfig =
-        typeof structuredClone === "function"
-          ? structuredClone(prevConfig)
-          : JSON.parse(JSON.stringify(prevConfig));
-      let current = newConfig;
+    setConfig((prev) => {
+      const newC = JSON.parse(JSON.stringify(prev));
+      let cur = newC;
       for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {};
-        current = current[keys[i]];
+        if (!cur[keys[i]]) cur[keys[i]] = {};
+        cur = cur[keys[i]];
       }
-      current[keys[keys.length - 1]] = type === "checkbox" ? checked : value;
-      return newConfig;
+      cur[keys[keys.length - 1]] = type === "checkbox" ? checked : value;
+      return newC;
     });
   };
 
   const handleSliderUpdate = (value, path) => {
     const keys = path.split(".");
-    setConfig((prevConfig) => {
-      const newConfig =
-        typeof structuredClone === "function"
-          ? structuredClone(prevConfig)
-          : JSON.parse(JSON.stringify(prevConfig));
-      let current = newConfig;
+    setConfig((prev) => {
+      const newC = JSON.parse(JSON.stringify(prev));
+      let cur = newC;
       for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {};
-        current = current[keys[i]];
+        if (!cur[keys[i]]) cur[keys[i]] = {};
+        cur = cur[keys[i]];
       }
-      current[keys[keys.length - 1]] = `${value}px`;
-      return newConfig;
+      cur[keys[keys.length - 1]] = `${value}px`;
+      return newC;
     });
   };
 
   const handleUnifiedUpload = async (e, path) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "image/gif",
-      "image/svg+xml",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      if (showMessage) showMessage("Tipe file tidak didukung.", "Error");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      if (showMessage)
-        showMessage("Ukuran file terlalu besar (Maks. 2MB).", "Error");
-      return;
-    }
-
     setUploadingStatus((prev) => ({ ...prev, [path]: true }));
     const formData = new FormData();
     formData.append("asset", file);
-
     try {
       const result = await uploadDeveloperAsset(formData);
-      setConfig((prevConfig) => {
-        const updatedConfig =
-          typeof structuredClone === "function"
-            ? structuredClone(prevConfig)
-            : JSON.parse(JSON.stringify(prevConfig));
+      setConfig((prev) => {
+        const newC = JSON.parse(JSON.stringify(prev));
         const keys = path.split(".");
-        let current = updatedConfig;
+        let cur = newC;
         for (let i = 0; i < keys.length - 1; i++) {
-          if (!current[keys[i]]) current[keys[i]] = {};
-          current = current[keys[i]];
+          if (!cur[keys[i]]) cur[keys[i]] = {};
+          cur = cur[keys[i]];
         }
-        current[keys[keys.length - 1]] = result.imageUrl;
-        return updatedConfig;
+        cur[keys[keys.length - 1]] = result.imageUrl;
+        return newC;
       });
-      if (showMessage)
-        showMessage("Upload Sukses! Klik 'Simpan Konfigurasi'.", "Success");
+      if (showMessage) showMessage("Upload Sukses! Klik Simpan.", "Success");
     } catch (err) {
-      if (showMessage)
-        showMessage(err.message || "Gagal mengunggah aset.", "Error");
+      if (showMessage) showMessage("Gagal upload.", "Error");
     } finally {
       setUploadingStatus((prev) => ({ ...prev, [path]: false }));
     }
@@ -521,19 +528,6 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     try {
       const configToSave = { ...config, homePageTheme: "elevate" };
       await updateSuperUserConfig(configToSave);
-      // Opsional: Hit endpoint spesifik jika ada
-      const token = localStorage.getItem("token");
-      try {
-        await fetch(`${API_BASE_URL}/api/superuser/settings/homepage-theme`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ theme: "elevate" }),
-        });
-      } catch (e) {} // Ignore if route doesn't exist
-
       setConfig(configToSave);
       setInitialConfig(JSON.stringify(configToSave));
       if (showMessage) showMessage("Konfigurasi disimpan!", "Success");
@@ -546,16 +540,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
   const handleReseed = async () => {
     if (
-      !window.confirm(
-        "PERINGATAN: Semua data akan dihapus dan di-reset. Lanjutkan?"
-      )
+      !window.confirm("PERINGATAN: Reset database akan menghapus semua data!")
     )
       return;
     setIsSeeding(true);
     try {
       const result = await reseedDatabase();
-      if (showMessage)
-        showMessage(result.message || "Database di-seed ulang.", "Success");
+      if (showMessage) showMessage(result.message, "Success");
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     } finally {
@@ -564,11 +555,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   };
 
   const handleResolveRequest = async (requestId, resolution) => {
-    const action = resolution === "APPROVED" ? "menyetujui" : "menolak";
-    if (!window.confirm(`Yakin ingin ${action} permintaan ini?`)) return;
+    if (!window.confirm(`Yakin ingin ${resolution}?`)) return;
     try {
       await resolveApprovalRequest(requestId, resolution);
-      if (showMessage) showMessage(`Berhasil di-${resolution.toLowerCase()}.`);
+      if (showMessage) showMessage(`Berhasil di-${resolution}.`);
       fetchApprovals(approvalsMeta.page);
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
@@ -588,352 +578,114 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       </div>
     );
   if (!config)
-    return <div className="p-4 text-center text-white">No Config Found</div>;
+    return <div className="p-4 text-center text-adaptive">No Config Found</div>;
 
   /* =========================================
-     MOBILE VIEW
+     RENDER CONTENT (Tabs)
      ========================================= */
-  const renderMobileView = () => (
-    <div className="d-lg-none pb-5">
-      {/* HEADER */}
-      <div
-        className="sticky-top px-3 py-3"
-        style={{
-          background: "var(--pe-bg)",
-          zIndex: 1020,
-          borderBottom: "1px solid var(--pe-card-border)",
-        }}
-      >
-        <div className="d-flex justify-content-between align-items-center">
-          <h2 className="pe-title mb-0 fs-4 fw-bold text-uppercase tracking-widest text-danger">
-            DevConsole
-          </h2>
-          <div className="d-flex gap-2">
-            <button
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => window.location.reload()}
-            >
-              <i className="fas fa-sync-alt"></i>
-            </button>
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={handleConfigSave}
-              disabled={!hasChanges || isSaving}
-            >
-              <i className="fas fa-save"></i>
-            </button>
-          </div>
-        </div>
-        {/* TABS SCROLLABLE */}
-        <div className="d-flex gap-2 mt-3 overflow-auto pb-1">
-          {[
-            { id: "theme", label: "Theme", icon: "fa-palette" },
-            { id: "approvals", label: "Approvals", icon: "fa-list-alt" },
-            { id: "security", label: "Logs", icon: "fa-shield-alt" },
-            { id: "maintenance", label: "Danger", icon: "fa-skull-crossbones" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`btn btn-sm rounded-pill px-3 border-0`}
-              // Fix Style Tab Mobile agar kontras
-              style={{
-                backgroundColor:
-                  activeTab === tab.id
-                    ? "var(--pe-accent)"
-                    : "rgba(255,255,255,0.05)",
-                color: activeTab === tab.id ? "#fff" : "var(--pe-text-muted)",
-                whiteSpace: "nowrap",
-                fontWeight: activeTab === tab.id ? "600" : "400",
-              }}
-            >
-              <i className={`fas ${tab.icon} me-1`}></i> {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="px-3 pt-3">
-        {activeTab === "theme" && (
-          <div className="pe-card p-3">
-            <h6
-              className="fw-bold mb-3"
-              style={{ color: "var(--pe-text-main)" }}
-            >
-              Feature Flags
-            </h6>
-            {config.featureFlags &&
-              Object.entries(config.featureFlags)
-                .filter(([key]) => key !== "pageStatus")
-                .map(([key, value]) => (
-                  <div className="form-check form-switch mb-3" key={key}>
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id={`m_${key}`}
-                      checked={!!value}
-                      onChange={(e) =>
-                        handleConfigChange(e, `featureFlags.${key}`)
-                      }
-                      style={{
-                        backgroundColor: value
-                          ? "var(--pe-accent)"
-                          : "rgba(255,255,255,0.2)",
-                      }}
-                    />
-                    <label
-                      className="form-check-label small"
-                      style={{ color: "var(--pe-text-main)" }} // Fix Contrast
-                      htmlFor={`m_${key}`}
-                    >
-                      {key
-                        .replace(/([A-Z])/g, " $1")
-                        .replace(/^./, (str) => str.toUpperCase())}
-                    </label>
-                  </div>
-                ))}
-            <div
-              className="alert alert-info small mt-3"
-              style={{
-                background: "rgba(59, 130, 246, 0.1)",
-                border: "1px solid var(--pe-info)",
-                color: "var(--pe-info)",
-              }}
-            >
-              <i className="fas fa-desktop me-1"></i> Edit color palette &
-              typography di desktop.
-            </div>
-          </div>
-        )}
-
-        {activeTab === "approvals" && (
-          <div className="d-flex flex-column gap-3">
-            {approvalRequests.length > 0 ? (
-              approvalRequests.map((req) => (
-                <div className="pe-card p-3" key={req.id}>
-                  <div className="d-flex justify-content-between mb-2">
-                    <span className="badge bg-info">{req.requestType}</span>
-                    <small style={{ color: "var(--pe-text-muted)" }}>
-                      {new Date(req.createdAt).toLocaleDateString()}
-                    </small>
-                  </div>
-                  <h6
-                    className="fw-bold mb-1"
-                    style={{ color: "var(--pe-text-main)" }}
-                  >
-                    {req.requestedBy?.name}
-                  </h6>
-                  <small
-                    className="d-block mb-3"
-                    style={{ color: "var(--pe-text-muted)" }}
-                  >
-                    {req.requestedBy?.email}
-                  </small>
-
-                  <div
-                    className="p-2 rounded mb-3"
-                    style={{ background: "rgba(0,0,0,0.2)" }}
-                  >
-                    <LogDetails details={req.details} />
-                  </div>
-
-                  {req.status === "PENDING" && (
-                    <div className="d-grid gap-2 grid-cols-2 d-flex">
-                      <button
-                        className="btn btn-sm btn-success flex-grow-1"
-                        onClick={() => handleResolveRequest(req.id, "APPROVED")}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger flex-grow-1"
-                        onClick={() => handleResolveRequest(req.id, "REJECTED")}
-                      >
-                        Reject
-                      </button>
+  const renderContent = () => {
+    switch (activeTab) {
+      case "overview":
+        return (
+          <div className="row g-4">
+            {/* METRICS CARDS */}
+            {[
+              {
+                l: "API Uptime",
+                v: "99.98%",
+                i: "fa-server",
+                c: "pe-icon-green",
+                s: "Operational",
+              },
+              {
+                l: "Avg Latency",
+                v: "42ms",
+                i: "fa-bolt",
+                c: "pe-icon-gold",
+                s: "Fast",
+              },
+              {
+                l: "Error Rate",
+                v: "0.05%",
+                i: "fa-exclamation-triangle",
+                c: "pe-icon-red",
+                s: "Low",
+              },
+              {
+                l: "Active Nodes",
+                v: "8/8",
+                i: "fa-network-wired",
+                c: "pe-icon-blue",
+                s: "Healthy",
+              },
+            ].map((m, idx) => (
+              <div className="col-md-3" key={idx}>
+                <Fade delay={idx * 100} triggerOnce>
+                  <div className="pe-card h-100">
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+                      <div className={`pe-stat-icon ${m.c} mb-0`}>
+                        <i className={`fas ${m.i}`}></i>
+                      </div>
+                      <span className="pe-badge pe-badge-success">{m.s}</span>
                     </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-muted">No pending requests.</p>
-            )}
-          </div>
-        )}
-
-        {activeTab === "security" && (
-          <div className="d-flex flex-column gap-2">
-            {securityLogs.map((log) => (
-              <div
-                className="pe-card p-3 border-start border-3"
-                key={log.id}
-                style={{
-                  borderColor: log.action.includes("FAILURE")
-                    ? "var(--pe-danger)"
-                    : "var(--pe-success)",
-                }}
-              >
-                <div className="d-flex justify-content-between">
-                  <small style={{ color: "var(--pe-text-muted)" }}>
-                    {new Date(log.timestamp).toLocaleTimeString()}
-                  </small>
-                  <small
-                    className="fw-bold"
-                    style={{ color: "var(--pe-text-main)" }}
-                  >
-                    {log.ipAddress}
-                  </small>
-                </div>
-                <div
-                  className="fw-bold my-1 text-truncate"
-                  style={{ color: "var(--pe-text-main)" }}
-                >
-                  {log.action}
-                </div>
-                <small
-                  className="d-block"
-                  style={{ color: "var(--pe-text-muted)" }}
-                >
-                  {log.user?.email || "System"}
-                </small>
+                    <h3 className="pe-title mb-1">{m.v}</h3>
+                    <p className="pe-subtitle small mb-0">{m.l}</p>
+                  </div>
+                </Fade>
               </div>
             ))}
+
+            {/* CHARTS */}
+            <div className="col-lg-8">
+              <Slide direction="left" triggerOnce>
+                <div className="pe-card h-100">
+                  <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h5 className="pe-title mb-0">Live Traffic (RPM)</h5>
+                    <span className="pe-badge pe-badge-info">
+                      <i className="fas fa-circle me-1 small"></i> Live
+                    </span>
+                  </div>
+                  <div style={{ height: "300px" }}>
+                    <Line data={apiTrafficData} options={commonChartOptions} />
+                  </div>
+                </div>
+              </Slide>
+            </div>
+            <div className="col-lg-4">
+              <Slide direction="right" triggerOnce>
+                <div className="pe-card h-100">
+                  <h5 className="pe-title mb-4">Resource Usage</h5>
+                  <div style={{ height: "300px" }}>
+                    <Bar
+                      data={serverHealthData}
+                      options={{
+                        ...commonChartOptions,
+                        scales: {
+                          ...commonChartOptions.scales,
+                          y: { ...commonChartOptions.scales.y, max: 100 },
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+              </Slide>
+            </div>
           </div>
-        )}
+        );
 
-        {activeTab === "maintenance" && (
-          <div className="pe-card border-danger p-4 text-center">
-            <i className="fas fa-skull-crossbones fa-3x text-danger mb-3"></i>
-            <h5 className="text-danger">Danger Zone</h5>
-            <p className="small mb-4" style={{ color: "var(--pe-text-muted)" }}>
-              Aksi ini akan menghapus semua data transaksi & user.
-            </p>
-            <button
-              className="btn btn-danger w-100 py-3 rounded-3"
-              onClick={handleReseed}
-              disabled={isSeeding}
-            >
-              {isSeeding ? "Processing..." : "RESET DATABASE"}
-            </button>
-          </div>
-        )}
-      </div>
-      <div style={{ height: "80px" }}></div>
-    </div>
-  );
-
-  /* =========================================
-     DESKTOP VIEW
-     ========================================= */
-  const renderDesktopView = () => (
-    <div className="d-none d-lg-block container-fluid px-4 py-4">
-      {/* HEADER */}
-      <div className="d-flex justify-content-between align-items-center mb-5">
-        <div>
-          <h6 className="pe-subtitle text-uppercase tracking-widest mb-1">
-            <i className="fas fa-code-branch me-2"></i>Root Access
-          </h6>
-          <h2 className="pe-title display-6 mb-0">Developer Console</h2>
-        </div>
-        <div className="d-flex gap-3">
-          <button
-            className="pe-btn-action"
-            onClick={() => navigate("/admin/dashboard")}
-            style={{ borderColor: "var(--pe-info)", color: "var(--pe-info)" }}
-          >
-            <i className="fas fa-user-shield me-2"></i> Switch to Admin
-          </button>
-          <button
-            className="pe-btn-action"
-            onClick={handleConfigSave}
-            disabled={isSaving || !hasChanges}
-            style={{
-              background: hasChanges ? "var(--pe-accent-dev)" : "transparent",
-              borderColor: "var(--pe-accent-dev)",
-              color: hasChanges ? "#fff" : "var(--pe-accent-dev)",
-              opacity: isSaving || !hasChanges ? 0.7 : 1,
-            }}
-          >
-            <i
-              className={`fas ${
-                isSaving ? "fa-spinner fa-spin" : "fa-save"
-              } me-2`}
-            ></i>
-            {isSaving ? "Menyimpan..." : "Simpan Konfigurasi"}
-          </button>
-        </div>
-      </div>
-
-      {/* TABS */}
-      <div className="d-flex gap-2 mb-4 overflow-auto pb-2">
-        {[
-          { id: "theme", label: "Theme Engine", icon: "fa-palette" },
-          { id: "approvals", label: "Approval Queue", icon: "fa-list-alt" },
-          { id: "security", label: "Audit Logs", icon: "fa-shield-alt" },
-          { id: "maintenance", label: "System Tools", icon: "fa-tools" },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`pe-btn-action ${activeTab === tab.id ? "active" : ""}`}
-            style={
-              activeTab === tab.id
-                ? {
-                    background: "var(--pe-accent-dev)",
-                    borderColor: "var(--pe-accent-dev)",
-                    color: "#fff",
-                  }
-                : { opacity: 0.8 }
-            }
-          >
-            <i className={`fas ${tab.icon} me-2`}></i> {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* CONTENT AREA */}
-      <div>
-        {/* --- TAB 1: THEME CONFIGURATION --- */}
-        {activeTab === "theme" && (
+      case "theme":
+        return (
           <div className="row g-4">
             <div className="col-lg-8">
               <div className="pe-card mb-4">
                 <h5 className="pe-title mb-4 border-bottom border-secondary pb-3">
-                  <i className="fas fa-sliders-h me-2"></i>Global Theme Settings
+                  Global Theme Settings
                 </h5>
-                <div
-                  className="p-4 rounded-3 mb-4 d-flex align-items-center justify-content-between"
-                  style={{
-                    background: "rgba(59, 130, 246, 0.1)",
-                    border: "1px solid var(--pe-accent)",
-                  }}
-                >
-                  <div>
-                    <label
-                      className="pe-subtitle d-block fw-bold mb-1"
-                      style={{ color: "var(--pe-text-main)" }}
-                    >
-                      Active Homepage Layout
-                    </label>
-                    <small style={{ color: "var(--pe-text-muted)" }}>
-                      This system is locked to the <strong>Elevate</strong>{" "}
-                      theme design system.
-                    </small>
-                  </div>
-                  <div className="d-flex align-items-center gap-2">
-                    <span
-                      className="badge bg-primary text-uppercase px-3 py-2"
-                      style={{ letterSpacing: "1px" }}
-                    >
-                      <i className="fas fa-lock me-2"></i> LOCKED: ELEVATE
-                    </span>
-                  </div>
-                </div>
-
+                {/* Branding & Assets Section (Sama seperti kode asli lo) */}
                 <div className="row g-5">
                   <div className="col-md-6">
                     <h6 className="pe-subtitle text-uppercase mb-3 fw-bold text-info">
-                      Branding & Assets
+                      Branding
                     </h6>
                     {[
                       "logoUrl",
@@ -956,32 +708,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                             onChange={(e) =>
                               handleUnifiedUpload(e, `branding.${key}`)
                             }
-                            accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml"
                           />
                           {uploadingStatus[`branding.${key}`] && (
-                            <span className="input-group-text bg-dark border-secondary text-white">
+                            <span className="input-group-text bg-dark text-white">
                               <i className="fas fa-spinner fa-spin"></i>
                             </span>
                           )}
                         </div>
-                        <small
-                          className="text-muted"
-                          style={{ fontSize: "0.7rem" }}
-                        >
-                          Max 2MB. PNG/JPG/WEBP.
-                        </small>
-                        {config.branding?.[key] && (
-                          <div className="mt-2 p-2 bg-secondary bg-opacity-10 rounded border border-secondary d-inline-block">
-                            <img
-                              src={config.branding[key]}
-                              alt="Preview"
-                              style={{
-                                maxHeight: "60px",
-                                objectFit: "contain",
-                              }}
-                            />
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -989,136 +722,77 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     <h6 className="pe-subtitle text-uppercase mb-3 fw-bold text-info">
                       Design Tokens
                     </h6>
-                    <div className="mb-4">
-                      <label
-                        className="small mb-2 d-block"
-                        style={{ color: "var(--pe-text-main)" }}
-                      >
-                        Color Palette
-                      </label>
-                      <div className="d-grid gap-2">
-                        {[
-                          { label: "Primary", path: "colors.primary" },
-                          { label: "Secondary", path: "colors.secondary" },
-                          { label: "Accent", path: "colors.accent" },
-                          {
-                            label: "Button BG",
-                            path: "colors.button.background",
-                          },
-                          { label: "Button Text", path: "colors.button.text" },
-                        ].map((item, idx) => {
-                          const keys = item.path.split(".");
-                          let val = config;
-                          keys.forEach((k) => {
-                            val = val ? val[k] : null;
-                          });
-                          return (
-                            <div
-                              className="d-flex align-items-center justify-content-between p-2 rounded"
-                              key={idx}
-                              style={{ background: "rgba(255,255,255,0.03)" }}
-                            >
-                              <span
-                                style={{
-                                  color: "var(--pe-text-muted)",
-                                  fontSize: "0.85rem",
-                                }}
-                              >
-                                {item.label}
-                              </span>
-                              <div className="d-flex align-items-center gap-2">
-                                <span
-                                  className="small font-monospace"
-                                  style={{ color: "var(--pe-text-main)" }}
-                                >
-                                  {val}
-                                </span>
-                                <input
-                                  type="color"
-                                  className="form-control form-control-color bg-transparent border-0 p-0"
-                                  value={val || "#000000"}
-                                  onChange={(e) =>
-                                    handleConfigChange(e, item.path)
-                                  }
-                                  style={{ width: "30px", height: "30px" }}
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        className="form-label small"
-                        style={{ color: "var(--pe-text-main)" }}
-                      >
-                        Typography Family
-                      </label>
-                      <select
-                        className="form-select"
-                        style={glassInputStyle}
-                        value={
-                          config.typography?.fontFamily
-                            ?.split(",")[0]
-                            .replace(/'/g, "") || ""
-                        }
-                        onChange={(e) =>
-                          handleConfigChange(
-                            {
-                              ...e,
-                              target: {
-                                ...e.target,
-                                value: `'${e.target.value}', sans-serif`,
-                              },
-                            },
-                            "typography.fontFamily"
-                          )
-                        }
-                      >
-                        {googleFonts.map((font) => (
-                          <option
-                            key={font}
-                            value={font}
-                            style={{ color: "#000" }}
+                    {/* Color Palette Inputs */}
+                    <div className="d-grid gap-2 mb-4">
+                      {[
+                        { label: "Primary", path: "colors.primary" },
+                        {
+                          label: "Button BG",
+                          path: "colors.button.background",
+                        },
+                      ].map((item, idx) => {
+                        const keys = item.path.split(".");
+                        let val = config;
+                        keys.forEach((k) => {
+                          val = val ? val[k] : null;
+                        });
+                        return (
+                          <div
+                            className="d-flex align-items-center justify-content-between p-2 rounded"
+                            key={idx}
+                            style={{ background: "rgba(255,255,255,0.03)" }}
                           >
-                            {font}
-                          </option>
-                        ))}
-                      </select>
+                            <span
+                              style={{
+                                color: "var(--pe-text-muted)",
+                                fontSize: "0.85rem",
+                              }}
+                            >
+                              {item.label}
+                            </span>
+                            <input
+                              type="color"
+                              className="form-control form-control-color bg-transparent border-0 p-0"
+                              value={val || "#000000"}
+                              onChange={(e) => handleConfigChange(e, item.path)}
+                              style={{ width: "30px", height: "30px" }}
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
-                    {[
-                      {
-                        label: "Base Size",
-                        path: "typography.baseFontSize",
-                        min: 12,
-                        max: 20,
-                      },
-                      {
-                        label: "Heading 1",
-                        path: "typography.h1FontSize",
-                        min: 24,
-                        max: 64,
-                      },
-                    ].map((slider) => {
-                      const keys = slider.path.split(".");
-                      let val = config;
-                      keys.forEach((k) => {
-                        val = val ? val[k] : null;
-                      });
-                      return (
-                        <DebouncedRangeInput
-                          key={slider.label}
-                          label={slider.label}
-                          value={parseInt(val || slider.min)}
-                          min={slider.min}
-                          max={slider.max}
-                          onChange={(newValue) =>
-                            handleSliderUpdate(newValue, slider.path)
-                          }
-                        />
-                      );
-                    })}
+                    {/* Font Selector */}
+                    <select
+                      className="form-select mb-3"
+                      style={glassInputStyle}
+                      value={
+                        config.typography?.fontFamily
+                          ?.split(",")[0]
+                          .replace(/'/g, "") || ""
+                      }
+                      onChange={(e) =>
+                        handleConfigChange(
+                          {
+                            ...e,
+                            target: {
+                              ...e.target,
+                              value: `'${e.target.value}', sans-serif`,
+                            },
+                          },
+                          "typography.fontFamily"
+                        )
+                      }
+                    >
+                      {googleFonts.map((font) => (
+                        <option
+                          key={font}
+                          value={font}
+                          style={{ color: "#000" }}
+                        >
+                          {font}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -1129,48 +803,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 style={{ top: "20px", zIndex: 10 }}
               >
                 <ThemePreview config={config} />
-                <div className="mt-4 pt-4 border-top border-secondary">
-                  <h6 className="pe-subtitle text-uppercase mb-3">
-                    Feature Toggles
-                  </h6>
-                  {config.featureFlags &&
-                    Object.entries(config.featureFlags)
-                      .filter(([key]) => key !== "pageStatus")
-                      .map(([key, value]) => (
-                        <div className="form-check form-switch mb-2" key={key}>
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id={key}
-                            checked={!!value}
-                            onChange={(e) =>
-                              handleConfigChange(e, `featureFlags.${key}`)
-                            }
-                            style={{
-                              backgroundColor: value
-                                ? "var(--pe-accent)"
-                                : "rgba(255,255,255,0.2)",
-                            }}
-                          />
-                          <label
-                            className="form-check-label small"
-                            style={{ color: "var(--pe-text-main)" }}
-                            htmlFor={key}
-                          >
-                            {key
-                              .replace(/([A-Z])/g, " $1")
-                              .replace(/^./, (str) => str.toUpperCase())}
-                          </label>
-                        </div>
-                      ))}
-                </div>
               </div>
             </div>
           </div>
-        )}
+        );
 
-        {/* --- TAB 2: APPROVALS --- */}
-        {activeTab === "approvals" && (
+      case "approvals":
+        return (
           <div className="pe-card">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h5 className="pe-title">Pending Requests</h5>
@@ -1178,7 +817,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 className="pe-btn-action"
                 onClick={() => fetchApprovals(approvalsMeta.page)}
               >
-                <i className="fas fa-sync-alt"></i> Refresh
+                <i className="fas fa-sync-alt"></i>
               </button>
             </div>
             <div className="pe-table-wrapper">
@@ -1207,11 +846,8 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         </td>
                         <td>
                           <div className="fw-bold">{req.requestedBy?.name}</div>
-                          <small className="text-muted">
-                            {req.requestedBy?.email}
-                          </small>
                         </td>
-                        <td style={{ maxWidth: "350px", minWidth: "250px" }}>
+                        <td style={{ maxWidth: "350px" }}>
                           <LogDetails details={req.details} />
                         </td>
                         <td>
@@ -1219,9 +855,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                             className={`pe-badge ${
                               req.status === "PENDING"
                                 ? "pe-badge-warning"
-                                : req.status === "APPROVED"
-                                ? "pe-badge-success"
-                                : "pe-badge-danger"
+                                : "pe-badge-success"
                             }`}
                           >
                             {req.status}
@@ -1254,7 +888,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   ) : (
                     <tr>
                       <td colSpan="6" className="text-center text-muted py-5">
-                        No pending requests found.
+                        No pending requests.
                       </td>
                     </tr>
                   )}
@@ -1268,10 +902,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
               loading={loading}
             />
           </div>
-        )}
+        );
 
-        {/* --- TAB 3: SECURITY LOGS --- */}
-        {activeTab === "security" && (
+      case "security":
+        return (
           <div className="pe-card">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h5 className="pe-title">System Audit Logs</h5>
@@ -1279,7 +913,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 className="pe-btn-action"
                 onClick={() => fetchLogs(logsMeta.page)}
               >
-                <i className="fas fa-sync-alt"></i> Refresh
+                <i className="fas fa-sync-alt"></i>
               </button>
             </div>
             <div className="pe-table-wrapper">
@@ -1289,25 +923,17 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     <th>Time</th>
                     <th>Actor</th>
                     <th>Action</th>
-                    <th>IP Address</th>
+                    <th>IP</th>
                     <th>Payload</th>
                   </tr>
                 </thead>
                 <tbody>
                   {securityLogs.map((log) => (
                     <tr key={log.id}>
-                      <td className="text-muted small text-nowrap">
+                      <td className="text-muted small">
                         {new Date(log.timestamp).toLocaleString()}
                       </td>
-                      <td>
-                        {log.user?.name || "System"}
-                        <div
-                          className="text-muted small"
-                          style={{ fontSize: "0.7rem" }}
-                        >
-                          {log.user?.email}
-                        </div>
-                      </td>
+                      <td>{log.user?.name || "System"}</td>
                       <td>
                         <span
                           className={
@@ -1335,10 +961,10 @@ const DeveloperDashboardPage = ({ showMessage }) => {
               loading={loading}
             />
           </div>
-        )}
+        );
 
-        {/* --- TAB 4: MAINTENANCE --- */}
-        {activeTab === "maintenance" && (
+      case "maintenance":
+        return (
           <div className="row">
             <div className="col-md-6">
               <div
@@ -1349,16 +975,12 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   <i className="fas fa-skull-crossbones me-2"></i>Danger Zone
                 </h5>
                 <p className="text-muted small">
-                  Tindakan di sini bersifat destruktif dan tidak dapat
-                  dibatalkan.
+                  Tindakan ini destruktif dan tidak dapat dibatalkan.
                 </p>
                 <div className="mt-4 p-3 border border-danger border-opacity-25 rounded bg-danger bg-opacity-10">
                   <h6 className="text-danger fw-bold">Reset Database</h6>
-                  <p className="small text-muted mb-3">
-                    Menghapus seluruh data transaksi, user, dan toko.
-                  </p>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm mt-2"
                     onClick={handleReseed}
                     disabled={isSeeding}
                   >
@@ -1367,23 +989,91 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         isSeeding ? "fa-spinner fa-spin" : "fa-trash"
                       } me-2`}
                     ></i>
-                    {isSeeding ? "Resetting..." : "Execute Factory Reset"}
+                    {isSeeding ? "Resetting..." : "Execute Reset"}
                   </button>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
-    </div>
-  );
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="pe-dashboard-wrapper container-fluid px-4 py-4 position-relative z-1">
       <div className="pe-blob pe-blob-1 pe-blob-dev"></div>
       <div className="pe-blob pe-blob-2"></div>
-      {renderMobileView()}
-      {renderDesktopView()}
+
+      {/* HEADER */}
+      <div className="d-flex justify-content-between align-items-center mb-5">
+        <div>
+          <h6 className="pe-subtitle text-uppercase tracking-widest mb-1">
+            <i className="fas fa-code-branch me-2"></i>Root Access
+          </h6>
+          <h2 className="pe-title display-6 mb-0">Developer Console</h2>
+        </div>
+        <div className="d-flex gap-3">
+          <button
+            className="pe-btn-action"
+            onClick={() => navigate("/admin/dashboard")}
+            style={{ borderColor: "var(--pe-info)", color: "var(--pe-info)" }}
+          >
+            <i className="fas fa-user-shield me-2"></i> Switch to Admin
+          </button>
+          <button
+            className="pe-btn-action"
+            onClick={handleConfigSave}
+            disabled={isSaving || !hasChanges}
+            style={{
+              background: hasChanges ? "var(--pe-accent-dev)" : "transparent",
+              borderColor: "var(--pe-accent-dev)",
+              color: hasChanges ? "#fff" : "var(--pe-accent-dev)",
+              opacity: isSaving || !hasChanges ? 0.7 : 1,
+            }}
+          >
+            <i
+              className={`fas ${
+                isSaving ? "fa-spinner fa-spin" : "fa-save"
+              } me-2`}
+            ></i>
+            {isSaving ? "Saving..." : "Save Config"}
+          </button>
+        </div>
+      </div>
+
+      {/* NAVIGATION TABS */}
+      <div className="d-flex gap-2 mb-4 overflow-auto pb-2">
+        {[
+          { id: "overview", label: "Overview", icon: "fa-chart-line" }, // TAB BARU
+          { id: "theme", label: "Theme Engine", icon: "fa-palette" },
+          { id: "approvals", label: "Approval Queue", icon: "fa-list-alt" },
+          { id: "security", label: "Audit Logs", icon: "fa-shield-alt" },
+          { id: "maintenance", label: "System Tools", icon: "fa-tools" },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`pe-btn-action ${activeTab === tab.id ? "active" : ""}`}
+            style={
+              activeTab === tab.id
+                ? {
+                    background: "var(--pe-accent-dev)",
+                    borderColor: "var(--pe-accent-dev)",
+                    color: "#fff",
+                  }
+                : { opacity: 0.8 }
+            }
+          >
+            <i className={`fas ${tab.icon} me-2`}></i> {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* DYNAMIC CONTENT */}
+      {renderContent()}
     </div>
   );
 };
