@@ -19,16 +19,24 @@ const AdminLayout = () => {
 
   // --- LOGIC TEMA ---
   const [isLightMode, setIsLightMode] = useState(() => {
+    // Menggunakan 'adminTheme' agar preferensi admin tersimpan terpisah
     const saved = localStorage.getItem("adminTheme");
     return saved === "light";
   });
 
   useEffect(() => {
+    // PERBAIKAN UTAMA: Terapkan tema ke ROOT element (<html>)
+    // Ini memastikan CSS Variables di :root dan [data-theme] terbaca secara global
+    document.documentElement.setAttribute("data-theme", isLightMode ? "light" : "dark");
+    
+    // Simpan preferensi
+    localStorage.setItem("adminTheme", isLightMode ? "light" : "dark");
+
+    // Optional: Kita tetap set di wrapper jaga-jaga ada selector CSS spesifik
     const wrapper = document.getElementById("admin-elevate-wrapper");
     if (wrapper) {
       wrapper.setAttribute("data-theme", isLightMode ? "light" : "dark");
     }
-    localStorage.setItem("adminTheme", isLightMode ? "light" : "dark");
   }, [isLightMode]);
 
   const toggleTheme = () => {
@@ -297,7 +305,8 @@ const AdminLayout = () => {
 
         {/* --- DYNAMIC CONTENT --- */}
         <div style={{ minHeight: "100vh", position: "relative" }}>
-<Outlet context={{ isLightMode, toggleTheme }} />
+          {/* PERBAIKAN: Context dikirim agar child pages bisa akses state tema jika perlu */}
+          <Outlet context={{ isLightMode, toggleTheme }} />
         </div>
 
         {/* --- MOBILE BOTTOM NAV (FLOATING DOCK) --- */}
