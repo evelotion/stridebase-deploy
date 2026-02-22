@@ -97,7 +97,7 @@ const AdminBookingsPage = ({ showMessage }) => {
       const data = await getAllBookingsForAdmin();
       // Sort by terbaru (opsional, jika API belum sort)
       const sorted = data.sort(
-        (a, b) => new Date(b.bookingTime) - new Date(a.bookingTime)
+        (a, b) => new Date(b.bookingTime) - new Date(a.bookingTime),
       );
       setBookings(sorted);
     } catch (err) {
@@ -121,7 +121,7 @@ const AdminBookingsPage = ({ showMessage }) => {
     try {
       const result = await updateBookingStatusByAdmin(bookingId, newStatus);
       setBookings((prev) =>
-        prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b))
+        prev.map((b) => (b.id === bookingId ? { ...b, status: newStatus } : b)),
       );
       if (showMessage)
         showMessage(result.message || "Status berhasil diperbarui.", "Sukses");
@@ -191,7 +191,7 @@ const AdminBookingsPage = ({ showMessage }) => {
   const pageCount = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
   const currentBookings = filteredBookings.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   const handlePageChange = (newPage) => {
@@ -296,8 +296,8 @@ const AdminBookingsPage = ({ showMessage }) => {
                   booking.status === "completed"
                     ? "var(--pe-success)"
                     : booking.status === "cancelled"
-                    ? "var(--pe-danger)"
-                    : "var(--pe-accent)"
+                      ? "var(--pe-danger)"
+                      : "var(--pe-accent)"
                 }`,
               }}
             >
@@ -686,7 +686,7 @@ const AdminBookingsPage = ({ showMessage }) => {
                       </td>
                       <td style={{ color: "var(--pe-text-main)" }}>
                         {new Date(booking.bookingTime).toLocaleDateString(
-                          "id-ID"
+                          "id-ID",
                         )}
                       </td>
                       <td>
@@ -707,6 +707,8 @@ const AdminBookingsPage = ({ showMessage }) => {
                           <button
                             className="pe-btn-action py-1 px-2"
                             data-bs-toggle="dropdown"
+                            aria-expanded="false" // <-- Tambahkan ini
+                            data-bs-boundary="window" // <-- TAMBAHKAN INI (Biar gak kepotong tabel)
                             disabled={booking.status === "reviewed"}
                           >
                             <i className="fas fa-ellipsis-h"></i>
