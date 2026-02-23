@@ -1,4 +1,4 @@
-/* File: stridebase-app/client/src/invoice.css (REDESIGN V2) */
+
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 :root {
@@ -28,7 +28,7 @@ body {
   background-color: #fff;
 }
 
-/* Header */
+
 .invoice-header {
   display: flex;
   justify-content: space-between;
@@ -61,7 +61,7 @@ body {
   font-weight: 600;
 }
 
-/* Meta Info */
+
 .invoice-meta {
   display: flex;
   justify-content: space-between;
@@ -84,7 +84,7 @@ body {
   line-height: 1.5;
 }
 
-/* Items Table */
+
 .items-table {
   width: 100%;
   border-collapse: collapse;
@@ -112,7 +112,7 @@ body {
   text-align: right;
 }
 
-/* Summary & Totals */
+
 .invoice-summary {
   display: flex;
   justify-content: flex-end;
@@ -140,7 +140,7 @@ body {
   font-size: 1.2rem;
 }
 
-/* Notes & Footer */
+
 .invoice-notes {
   margin-top: 30px;
   padding: 15px;
@@ -155,42 +155,42 @@ body {
   padding-top: 20px;
 }
 
-/* Print Specific */
+
 @media print {
-  /* Langkah 1: Sembunyikan SEMUA elemen di halaman terlebih dahulu */
+  
   body * {
     visibility: hidden;
   }
 
-  /* Langkah 2: Tampilkan HANYA .invoice-box dan semua elemen di dalamnya */
+  
   .invoice-box, .invoice-box * {
     visibility: visible;
   }
 
-  /* Langkah 3: Pastikan .invoice-box mengisi seluruh halaman cetak */
+  
   .invoice-box {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     margin: 0;
-    padding: 20px; /* PERBAIKAN: Kurangi padding keseluruhan */
+    padding: 20px; 
     border: none;
     box-shadow: none;
-    font-size: 12px; /* PERBAIKAN: Kecilkan sedikit font dasar */
+    font-size: 12px; 
   }
 
-  /* PERBAIKAN: Atur ulang margin dan padding agar lebih rapat */
+  
   .invoice-header, .invoice-meta, .items-table {
-    margin-bottom: 20px; /* Kurangi jarak antar bagian */
+    margin-bottom: 20px; 
   }
 
   .invoice-header__details h1 {
-    font-size: 2rem; /* Kecilkan judul "INVOICE" */
+    font-size: 2rem; 
   }
   
   .items-table th, .items-table td, .total-row {
-    padding: 8px; /* Kecilkan padding di dalam tabel */
+    padding: 8px; 
   }
 
   .grand-total {
@@ -203,20 +203,20 @@ body {
     padding-top: 10px;
   }
 
-  /* Sembunyikan elemen admin secara eksplisit untuk jaminan ekstra */
+  
   #sidebar-wrapper, .admin-mobile-nav {
     display: none !important;
   }
 }
 
-/* =============================================== */
-/* === GAYA BARU: JEJAK AUDIT PENCETAKAN === */
-/* =============================================== */
+
+
+
 
 .invoice-footer .audit-trail {
-  font-size: 0.75rem; /* Ukuran font lebih kecil */
-  color: #a0a0a0; /* Warna abu-abu muda */
+  font-size: 0.75rem; 
+  color: #a0a0a0; 
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px dashed var(--invoice-border-color); /* Garis putus-putus sebagai pemisah */
+  border-bottom: 1px dashed var(--invoice-border-color); 
 }

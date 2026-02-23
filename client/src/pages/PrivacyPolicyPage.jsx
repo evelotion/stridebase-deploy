@@ -1,4 +1,4 @@
-// File: client/src/pages/PrivacyPolicyPage.jsx
+
 
 import React from "react";
 import { Fade } from "react-awesome-reveal";
@@ -10,7 +10,7 @@ const PrivacyPolicyPage = () => {
       className="home-elevate-wrapper"
       style={{ minHeight: "100vh", paddingTop: "100px" }}
     >
-      {/* Header Dokumen */}
+      {}
       <div className="bg-dark border-bottom border-secondary border-opacity-25 py-5 mb-5">
         <div className="container text-center">
           <Fade direction="down" triggerOnce>
@@ -22,7 +22,7 @@ const PrivacyPolicyPage = () => {
         </div>
       </div>
 
-      {/* Konten Dokumen */}
+      {}
       <div className="container pb-5" style={{ maxWidth: "800px" }}>
         <Fade direction="up" cascade damping={0.1} triggerOnce>
           <div

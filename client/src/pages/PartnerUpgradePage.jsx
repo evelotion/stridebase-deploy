@@ -1,25 +1,25 @@
-// File: client/src/pages/PartnerUpgradePage.jsx
+
 
 import React from "react";
 import { Fade, Slide } from "react-awesome-reveal";
 import "./PartnerElevate.css";
 
 const PartnerUpgradePage = () => {
-  // Fungsi simulasi upgrade (bisa dihubungkan ke payment gateway nantinya)
+ 
   const handleUpgrade = () => {
     alert("Fitur pembayaran upgrade akan segera tersedia via Midtrans.");
   };
 
   return (
     <div className="pe-dashboard-wrapper">
-      {/* Background Atmosphere */}
+      {}
       <div
         className="pe-blob pe-blob-1"
         style={{ top: "-20%", left: "50%", transform: "translateX(-50%)" }}
       ></div>
 
       <div className="container-fluid px-4 py-5 position-relative z-1">
-        {/* Header */}
+        {}
         <div className="text-center mb-5">
           <Fade direction="down" triggerOnce>
             <h6 className="pe-subtitle text-uppercase tracking-widest mb-2 text-warning">
@@ -38,9 +38,9 @@ const PartnerUpgradePage = () => {
           </Fade>
         </div>
 
-        {/* Pricing Cards */}
+        {}
         <div className="row justify-content-center g-4 align-items-center">
-          {/* BASIC PLAN (Current) */}
+          {}
           <div className="col-md-5 col-lg-4">
             <Fade direction="left" triggerOnce>
               <div
@@ -88,7 +88,7 @@ const PartnerUpgradePage = () => {
             </Fade>
           </div>
 
-          {/* PRO PLAN (Target) */}
+          {}
           <div className="col-md-6 col-lg-4">
             <Slide direction="up" triggerOnce>
               <div
@@ -101,7 +101,7 @@ const PartnerUpgradePage = () => {
                   transform: "scale(1.05)",
                 }}
               >
-                {/* Ribbon */}
+                {}
                 <div className="position-absolute top-0 end-0 bg-warning text-black fw-bold x-small px-3 py-1 rounded-bottom-start">
                   RECOMMENDED
                 </div>

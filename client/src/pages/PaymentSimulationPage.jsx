@@ -1,4 +1,4 @@
-// File: client/src/pages/PaymentSimulationPage.jsx
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
   const [timeLeft, setTimeLeft] = useState(300);
   const [activeInstruction, setActiveInstruction] = useState("qr");
 
-  // 1. Handle Timer Expired
+ 
   const handleCancelBooking = useCallback(async () => {
     const token = localStorage.getItem("token");
     try {
@@ -46,7 +46,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
     return () => clearInterval(intervalId);
   }, [timeLeft, handleCancelBooking]);
 
-  // 2. Fetch Data & Socket Listener
+ 
   useEffect(() => {
     const fetchBooking = async () => {
       setLoading(true);
@@ -109,7 +109,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
       </div>
     );
 
-  /* --- RENDER DESKTOP (REVISED: COLOR VARIABLES) --- */
+  
   const renderDesktop = () => (
     <div
       className="home-elevate-wrapper d-none d-lg-flex justify-content-center"
@@ -131,7 +131,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
             transform: "scale(0.95)",
           }}
         >
-          {/* Scanning Animation */}
+          {}
           <div
             className="position-absolute w-100 bg-primary opacity-50"
             style={{
@@ -144,9 +144,9 @@ const PaymentSimulationPage = ({ showMessage }) => {
           ></div>
           <style>{`@keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }`}</style>
 
-          {/* Header Ringkas */}
+          {}
           <div className="mb-3">
-            {/* FIX: Gunakan var text-main, bukan text-white */}
+            {}
             <h4
               className="fw-bold mb-1"
               style={{ color: "var(--sb-text-main)" }}
@@ -154,7 +154,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
               Scan QRIS
             </h4>
             <div className="d-flex justify-content-center align-items-center gap-2 mt-2">
-              {/* FIX: Gunakan var text-muted */}
+              {}
               <span className="small" style={{ color: "var(--sb-text-muted)" }}>
                 Sisa Waktu:
               </span>
@@ -172,7 +172,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
             </div>
           </div>
 
-          {/* QR Code */}
+          {}
           <div className="bg-white p-2 rounded-3 d-inline-block mb-3 shadow-lg position-relative">
             <img
               src={qrCodeUrl}
@@ -182,15 +182,15 @@ const PaymentSimulationPage = ({ showMessage }) => {
             />
           </div>
 
-          {/* Total Tagihan */}
+          {}
           <div
             className="p-2 rounded-3"
             style={{
-              background: "rgba(128, 128, 128, 0.1)", // Background netral
+              background: "rgba(128, 128, 128, 0.1)",
               border: "1px solid var(--sb-card-border)",
             }}
           >
-            {/* FIX: Warna Text */}
+            {}
             <small
               className="text-uppercase tracking-widest d-block mb-0"
               style={{ fontSize: "0.65rem", color: "var(--sb-text-muted)" }}
@@ -203,7 +203,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
           </div>
 
           <div className="mt-3">
-            {/* FIX: Warna Text */}
+            {}
             <small
               style={{ fontSize: "0.7rem", color: "var(--sb-text-muted)" }}
             >
@@ -215,9 +215,9 @@ const PaymentSimulationPage = ({ showMessage }) => {
     </div>
   );
 
-  /* --- RENDER MOBILE (REVISED: COLOR VARIABLES) --- */
+  
   const renderMobile = () => (
-    // FIX: Pastikan background wrapper mengikuti tema, jangan hardcode gelap
+   
     <div
       className="d-lg-none"
       style={{
@@ -226,7 +226,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
         paddingBottom: "80px",
       }}
     >
-      {/* Sticky Timer Header */}
+      {}
       <div className="he-mobile-timer-sticky">
         <div className="d-flex justify-content-between align-items-center">
           <span className="small text-white">Sisa Waktu</span>
@@ -237,13 +237,13 @@ const PaymentSimulationPage = ({ showMessage }) => {
       </div>
 
       <div className="container pt-4 pb-5 px-4">
-        {/* Total Amount Card */}
+        {}
         <div className="text-center mb-4">
-          {/* FIX: Warna Text */}
+          {}
           <p className="mb-1 small" style={{ color: "var(--sb-text-muted)" }}>
             Total Pembayaran
           </p>
-          {/* FIX: Warna Text Main */}
+          {}
           <h1 className="fw-bold mb-0" style={{ color: "var(--sb-text-main)" }}>
             Rp {booking.totalPrice.toLocaleString("id-ID")}
           </h1>
@@ -259,7 +259,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* QR Section */}
+        {}
         <div
           className="he-mobile-qr-card mb-4"
           style={{
@@ -279,9 +279,9 @@ const PaymentSimulationPage = ({ showMessage }) => {
           </p>
         </div>
 
-        {/* Instructions Accordion */}
+        {}
         <div className="he-mobile-instruction-list">
-          {/* FIX: Judul Cara Pembayaran */}
+          {}
           <h6 className="mb-3 fw-bold" style={{ color: "var(--sb-text-main)" }}>
             Cara Pembayaran
           </h6>
@@ -298,7 +298,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
               onClick={() =>
                 setActiveInstruction(activeInstruction === "qr" ? "" : "qr")
               }
-              // FIX: Teks Button Accordion
+             
               style={{ color: "var(--sb-text-main)" }}
             >
               <span>QRIS / E-Wallet</span>
@@ -313,7 +313,7 @@ const PaymentSimulationPage = ({ showMessage }) => {
                 className="he-accordion-body"
                 style={{ borderTopColor: "var(--sb-card-border)" }}
               >
-                {/* FIX: Teks List Instruksi */}
+                {}
                 <ol
                   className="ps-3 mb-0 small"
                   style={{ color: "var(--sb-text-muted)" }}

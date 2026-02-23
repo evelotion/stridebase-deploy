@@ -1,4 +1,4 @@
-// File: server/controllers/admin.controller.js (FULL VERSION)
+
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser, broadcastThemeUpdate } from "../socket.js";
@@ -7,7 +7,7 @@ import { loadThemeConfig, getTheme } from "../config/theme.js";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 
-// --- DASHBOARD & STATS ---
+
 
 export const getAdminStats = async (req, res, next) => {
   try {
@@ -15,7 +15,7 @@ export const getAdminStats = async (req, res, next) => {
     const totalStores = await prisma.store.count();
     const totalBookings = await prisma.booking.count();
 
-    // REVISI: Total Revenue diambil dari Ledger (Pendapatan Platform)
+   
     const totalRevenue = await prisma.ledgerEntry.aggregate({
       _sum: { amount: true },
       where: {
@@ -23,7 +23,7 @@ export const getAdminStats = async (req, res, next) => {
       },
     });
 
-    // Pendapatan kotor (Opsional, jika ingin melihat total uang yang berputar)
+   
     const totalGrossParams = await prisma.payment.aggregate({
       _sum: { amount: true },
       where: { status: "paid" },
@@ -57,14 +57,14 @@ export const getAdminStats = async (req, res, next) => {
 
 export const getReportData = async (req, res, next) => {
   try {
-    // Implementasi laporan sederhana atau placeholder
+   
     res.json({ message: "Report data endpoint ready" });
   } catch (error) {
     next(error);
   }
 };
 
-// --- USER MANAGEMENT ---
+
 
 export const getAllUsers = async (req, res, next) => {
   try {
@@ -218,7 +218,7 @@ export const requestUserDeletion = async (req, res, next) => {
   }
 };
 
-// --- STORE MANAGEMENT ---
+
 
 export const getAllStores = async (req, res, next) => {
   try {
@@ -235,16 +235,16 @@ export const getAllStores = async (req, res, next) => {
   }
 };
 
-// REVISI: Create Store dengan Model Bisnis Baru
+
 export const createStoreByAdmin = async (req, res, next) => {
   const {
     name,
     description,
     location,
     ownerId,
-    billingType, // "COMMISSION" atau "CONTRACT"
-    commissionRate, // Jika COMMISSION
-    contractFee, // Jika CONTRACT
+    billingType,
+    commissionRate,
+    contractFee,
   } = req.body;
 
   try {
@@ -256,14 +256,14 @@ export const createStoreByAdmin = async (req, res, next) => {
         owner: { connect: { id: ownerId } },
         storeStatus: "active",
 
-        // Model Bisnis Baru
+       
         billingType: billingType || "COMMISSION",
         commissionRate:
           billingType === "COMMISSION" ? parseFloat(commissionRate || 10) : 0,
         contractFee:
           billingType === "CONTRACT" ? parseFloat(contractFee || 0) : 0,
 
-        // Legacy
+       
         tier: "BASIC",
         subscriptionFee: 0,
       },
@@ -323,27 +323,27 @@ export const softDeleteUser = async (req, res, next) => {
 
     if (!user) return res.status(404).json({ message: "User tidak ditemukan." });
 
-    // 1. Cek Booking Aktif (Sebagai Customer)
+   
     if (user._count.bookings > 0) {
       return res.status(400).json({
         message: `Gagal hapus. User masih memiliki ${user._count.bookings} pesanan aktif.`,
       });
     }
 
-    // 2. Cek Toko Aktif (Sebagai Mitra)
+   
     if (user._count.stores > 0) {
       return res.status(400).json({
         message: `Gagal hapus. User masih memiliki ${user._count.stores} toko aktif. Nonaktifkan toko terlebih dahulu.`,
       });
     }
 
-    // Eksekusi Soft Delete (Ubah status jadi 'inactive' atau 'deleted')
+   
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
-        status: "deleted", // Menandai sebagai terhapus
-        email: `deleted_${Date.now()}_${user.email}`, // Opsional: Agar email bisa dipakai lagi
-        googleId: null, // Lepas kaitan Google
+        status: "deleted",
+        email: `deleted_${Date.now()}_${user.email}`,
+        googleId: null,
       },
     });
 
@@ -356,7 +356,7 @@ export const softDeleteUser = async (req, res, next) => {
   }
 };
 
-// Soft Delete Store (Menutup Toko)
+
 export const softDeleteStore = async (req, res, next) => {
   const { id } = req.params;
 
@@ -379,20 +379,20 @@ export const softDeleteStore = async (req, res, next) => {
 
     if (!store) return res.status(404).json({ message: "Toko tidak ditemukan." });
 
-    // 1. Cek Pesanan Berjalan
+   
     if (store._count.bookings > 0) {
       return res.status(400).json({
         message: `Gagal hapus. Toko masih memiliki ${store._count.bookings} pesanan yang belum selesai.`,
       });
     }
 
-    // 2. Cek Saldo Dompet (Opsional: Cegah hapus jika masih ada uang mengendap)
+   
     if (store.wallet && store.wallet.balance > 10000) {
-       // Bisa di-skip jika kebijakan membolehkan hangus, tapi baiknya diingatkan
-       // return res.status(400).json({ message: "Toko masih memiliki saldo > 10.000. Lakukan payout dulu." });
+      
+      
     }
 
-    // Eksekusi Soft Delete (Ubah status jadi 'inactive')
+   
     const updatedStore = await prisma.store.update({
       where: { id },
       data: {
@@ -409,7 +409,7 @@ export const softDeleteStore = async (req, res, next) => {
   }
 };
 
-// REVISI: Update Store dengan Model Bisnis Baru
+
 export const updateStoreSettingsByAdmin = async (req, res, next) => {
   const { storeId } = req.params;
   const {
@@ -420,7 +420,7 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
     billingType,
     commissionRate,
     contractFee,
-    schedule, // Opsional jika admin mau update jadwal
+    schedule,
   } = req.body;
 
   try {
@@ -430,7 +430,7 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
     if (!currentStore)
       return res.status(404).json({ message: "Toko tidak ditemukan." });
 
-    // Update Jadwal jika ada
+   
     if (schedule) {
       for (const day of Object.keys(schedule)) {
         const dayData = schedule[day];
@@ -472,7 +472,7 @@ export const updateStoreSettingsByAdmin = async (req, res, next) => {
       include: { owner: { select: { name: true } } },
     });
 
-    // Notifikasi Pindah Tangan
+   
     if (ownerId && currentStore.ownerId !== ownerId) {
       await createNotificationForUser(
         currentStore.ownerId,
@@ -497,13 +497,13 @@ export const updateStoreDetailsByAdmin = async (req, res, next) => {
   const { name, location, description, headerImageUrl, images } = req.body;
 
   try {
-    // Cek apakah toko ada
+   
     const existingStore = await prisma.store.findUnique({ where: { id } });
     if (!existingStore) {
       return res.status(404).json({ message: "Toko tidak ditemukan." });
     }
 
-    // Update data dasar toko
+   
     const updatedStore = await prisma.store.update({
       where: { id },
       data: {
@@ -511,7 +511,7 @@ export const updateStoreDetailsByAdmin = async (req, res, next) => {
         location,
         description,
         headerImageUrl,
-        images, // Pastikan dikirim sebagai array string
+        images,
       },
     });
 
@@ -591,7 +591,7 @@ export const uploadAdminPhoto = (req, res) => {
     );
 };
 
-// --- PAYOUT & FINANCE ---
+
 
 export const getPayoutRequests = async (req, res, next) => {
   try {
@@ -613,7 +613,7 @@ export const resolvePayoutRequest = async (req, res, next) => {
   const { status, adminNotes } = req.body;
 
   try {
-    // Gunakan transaksi database agar perubahan bersifat atomik (semua sukses atau semua gagal)
+   
     const result = await prisma.$transaction(async (tx) => {
       const request = await tx.payoutRequest.findUnique({ where: { id } });
       
@@ -621,7 +621,7 @@ export const resolvePayoutRequest = async (req, res, next) => {
         throw new Error("Request invalid atau sudah diproses.");
       }
 
-      // Logika REJECTED (Kembalikan Saldo)
+     
       if (status === "REJECTED") {
         await tx.storeWallet.update({
           where: { storeId: request.storeId },
@@ -629,20 +629,20 @@ export const resolvePayoutRequest = async (req, res, next) => {
         });
       }
 
-      // Logika APPROVED (Catat di Ledger - BUG FIX Phase 2.2)
+     
       if (status === "APPROVED") {
         await tx.ledgerEntry.create({
           data: {
             storeId: request.storeId,
-            payoutId: request.id, // Relasikan dengan payout request
-            amount: -request.amount, // Nilai negatif karena uang keluar
+            payoutId: request.id,
+            amount: -request.amount,
             type: "PAYOUT",
             description: `Penarikan Dana disetujui: ${adminNotes || "Oleh Admin"}`,
           },
         });
       }
 
-      // Update status request
+     
       const updatedRequest = await tx.payoutRequest.update({
         where: { id },
         data: {
@@ -657,7 +657,7 @@ export const resolvePayoutRequest = async (req, res, next) => {
       return updatedRequest;
     });
 
-    // Kirim notifikasi di luar transaksi
+   
     await createNotificationForUser(
       result.store.ownerId,
       `Request Payout Rp ${result.amount.toLocaleString()} telah di-${status}.`,
@@ -666,7 +666,7 @@ export const resolvePayoutRequest = async (req, res, next) => {
 
     res.json(result);
   } catch (error) {
-    // Tangani error khusus logic kita agar status code-nya sesuai (400 Bad Request)
+   
     if (error.message === "Request invalid atau sudah diproses.") {
       return res.status(400).json({ message: error.message });
     }
@@ -674,7 +674,7 @@ export const resolvePayoutRequest = async (req, res, next) => {
   }
 };
 
-// --- INVOICE (CONTRACT MODEL) ---
+
 
 export const previewStoreInvoice = async (req, res, next) => {
   const { storeId } = req.params;
@@ -835,7 +835,7 @@ export const getInvoiceByIdForAdmin = async (req, res, next) => {
   }
 };
 
-// --- BOOKINGS & REVIEWS ---
+
 
 export const getAllBookings = async (req, res, next) => {
   try {
@@ -896,7 +896,7 @@ export const deleteReview = async (req, res, next) => {
 
     await prisma.review.delete({ where: { id } });
 
-    // Recalculate rating
+   
     const agg = await prisma.review.aggregate({
       _avg: { rating: true },
       where: { storeId: review.storeId },
@@ -912,7 +912,7 @@ export const deleteReview = async (req, res, next) => {
   }
 };
 
-// --- PROMO & BANNER & SETTINGS ---
+
 
 export const getAllPromos = async (req, res, next) => {
   try {
@@ -963,7 +963,7 @@ export const updatePromo = async (req, res, next) => {
   const { id } = req.params;
   const data = req.body;
   try {
-    // Konversi tanggal string ke Date object jika ada
+   
     if (data.startDate) data.startDate = new Date(data.startDate);
     if (data.endDate) data.endDate = new Date(data.endDate);
 

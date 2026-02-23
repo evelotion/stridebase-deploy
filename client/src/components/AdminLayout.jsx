@@ -1,4 +1,4 @@
-// File: client/src/components/AdminLayout.jsx
+
 
 import React, { useState, useEffect } from "react";
 import {
@@ -17,22 +17,22 @@ const AdminLayout = () => {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // --- LOGIC TEMA ---
+ 
   const [isLightMode, setIsLightMode] = useState(() => {
-    // Menggunakan 'adminTheme' agar preferensi admin tersimpan terpisah
+   
     const saved = localStorage.getItem("adminTheme");
     return saved === "light";
   });
 
   useEffect(() => {
-    // PERBAIKAN UTAMA: Terapkan tema ke ROOT element (<html>)
-    // Ini memastikan CSS Variables di :root dan [data-theme] terbaca secara global
+   
+   
     document.documentElement.setAttribute("data-theme", isLightMode ? "light" : "dark");
     
-    // Simpan preferensi
+   
     localStorage.setItem("adminTheme", isLightMode ? "light" : "dark");
 
-    // Optional: Kita tetap set di wrapper jaga-jaga ada selector CSS spesifik
+   
     const wrapper = document.getElementById("admin-elevate-wrapper");
     if (wrapper) {
       wrapper.setAttribute("data-theme", isLightMode ? "light" : "dark");
@@ -58,7 +58,7 @@ const AdminLayout = () => {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // Helper: Menentukan Judul Halaman Mobile secara Dinamis
+ 
   const getPageTitle = () => {
     const path = location.pathname;
     if (path.includes("/dashboard")) return "Dashboard";
@@ -213,10 +213,10 @@ const AdminLayout = () => {
           MAIN CONTENT AREA
          ======================= */}
       <main className="pe-main-content">
-        {/* --- MOBILE HEADER BARU (APP STYLE) --- */}
+        {}
         <nav className="pe-mobile-header d-lg-none">
           <div className="d-flex align-items-center gap-2">
-            {/* Logo Kecil */}
+            {}
             <div
               style={{
                 width: "32px",
@@ -234,7 +234,7 @@ const AdminLayout = () => {
                 style={{ fontSize: "0.9rem" }}
               ></i>
             </div>
-            {/* Judul Halaman Dinamis */}
+            {}
             <span className="pe-mobile-header-title">{getPageTitle()}</span>
           </div>
 
@@ -251,7 +251,7 @@ const AdminLayout = () => {
               )}
             </button>
 
-            {/* Avatar Profile (Dropdown) */}
+            {}
             <div className="dropdown">
               <div
                 className="d-flex align-items-center justify-content-center fw-bold"
@@ -303,16 +303,16 @@ const AdminLayout = () => {
           </div>
         </nav>
 
-        {/* --- DYNAMIC CONTENT --- */}
+        {}
         <div style={{ minHeight: "100vh", position: "relative" }}>
-          {/* PERBAIKAN: Context dikirim agar child pages bisa akses state tema jika perlu */}
+          {}
           <Outlet context={{ isLightMode, toggleTheme }} />
         </div>
 
-        {/* --- MOBILE BOTTOM NAV (FLOATING DOCK) --- */}
+        {}
         <AdminMobileBottomNav />
 
-        {/* --- DESKTOP FLOATING THEME TOGGLE --- */}
+        {}
         <button
           className="pe-theme-fab d-none d-lg-flex"
           onClick={toggleTheme}

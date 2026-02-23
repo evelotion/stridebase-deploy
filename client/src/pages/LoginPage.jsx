@@ -1,4 +1,4 @@
-// File: client/src/pages/LoginPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -16,7 +16,7 @@ const LoginPage = ({ showMessage }) => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // NEW STATE: Toggle Password Visibility
+ 
   const [showPassword, setShowPassword] = useState(false);
 
   const submitHandler = async (e) => {
@@ -117,13 +117,13 @@ const LoginPage = ({ showMessage }) => {
               </Link>
             </div>
 
-            {/* WRAPPER INPUT PASSWORD (RELATIVE POSITION) */}
+            {}
             <div style={{ position: "relative" }}>
               <input
-                type={showPassword ? "text" : "password"} // Logic Toggle Type
+                type={showPassword ? "text" : "password"}
                 className="he-auth-input-glass"
                 style={{
-                  padding: "12px 40px 12px 16px", // Padding kanan lebih besar untuk ikon
+                  padding: "12px 40px 12px 16px",
                   fontSize: "0.95rem",
                   width: "100%",
                 }}
@@ -133,7 +133,7 @@ const LoginPage = ({ showMessage }) => {
                 required
               />
 
-              {/* EYE ICON BUTTON */}
+              {}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -152,7 +152,7 @@ const LoginPage = ({ showMessage }) => {
                   justifyContent: "center",
                   padding: "4px",
                 }}
-                tabIndex="-1" // Agar tidak bisa difokuskan lewat tab keyboard
+                tabIndex="-1"
               >
                 <i
                   className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}

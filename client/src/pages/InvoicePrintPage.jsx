@@ -1,4 +1,4 @@
-// File: client/src/pages/InvoicePrintPage.jsx
+
 
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,11 +11,11 @@ const InvoicePrintPage = () => {
   const [invoiceData, setInvoiceData] = useState(null);
 
   useEffect(() => {
-    // Ambil data dari state navigasi (dikirim dari AdminStoresPage)
+   
     if (location.state?.invoiceData) {
       setInvoiceData(location.state.invoiceData);
     } else {
-      // Jika diakses langsung tanpa data, kembali
+     
       navigate("/admin/stores");
     }
   }, [location, navigate]);
@@ -27,7 +27,7 @@ const InvoicePrintPage = () => {
     const { invoiceNumber, store, issueDate, dueDate, items, totalAmount } =
       invoiceData;
 
-    // -- PDF GENERATION LOGIC --
+   
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
     doc.text("INVOICE", 14, 22);
@@ -41,14 +41,14 @@ const InvoicePrintPage = () => {
       33
     );
 
-    // Info Mitra
+   
     doc.text("DITAGIHKAN KEPADA:", 14, 45);
     doc.setFont("helvetica", "bold");
     doc.text(store.name, 14, 50);
     doc.setFont("helvetica", "normal");
     doc.text(store.location || "", 14, 55);
 
-    // Tabel
+   
     const tableBody = items.map((item) => [
       item.description,
       `Rp ${item.unitPrice.toLocaleString()}`,
@@ -64,7 +64,7 @@ const InvoicePrintPage = () => {
       headStyles: { fillColor: [66, 66, 66] },
     });
 
-    // Total
+   
     const finalY = doc.lastAutoTable.finalY + 10;
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -95,7 +95,7 @@ const InvoicePrintPage = () => {
         className="bg-white p-5 shadow-lg"
         style={{ width: "210mm", minHeight: "297mm" }}
       >
-        {/* Visual Preview di Layar */}
+        {}
         <div className="d-flex justify-content-between align-items-center mb-5 border-bottom pb-4">
           <h1 className="fw-bold text-dark">INVOICE</h1>
           <div className="text-end">
@@ -155,7 +155,7 @@ const InvoicePrintPage = () => {
           </h3>
         </div>
 
-        {/* Floating Action Buttons */}
+        {}
         <div className="position-fixed bottom-0 start-50 translate-middle-x mb-4 d-flex gap-3 p-3 bg-dark rounded-pill shadow">
           <button
             className="btn btn-light rounded-pill px-4"

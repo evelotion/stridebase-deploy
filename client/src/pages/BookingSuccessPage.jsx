@@ -1,4 +1,4 @@
-// File: client/src/pages/BookingSuccessPage.jsx
+
 
 import React, { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const BookingSuccessPage = () => {
   if (!bookingData) return null;
 
   return (
-    // [FIX] Gunakan class he-centered-page-fix
+   
     <div className="home-elevate-wrapper he-centered-page-fix">
       <div className="text-center p-4" style={{ maxWidth: "600px" }}>
         <Zoom triggerOnce>
@@ -50,7 +50,7 @@ const BookingSuccessPage = () => {
               border: "1px solid var(--sb-card-border)",
             }}
           >
-            {/* Konten Detail... (Kode sama seperti sebelumnya) */}
+            {}
             <div className="d-flex justify-content-between mb-2">
               <span className="text-muted small">Toko</span>
               <span

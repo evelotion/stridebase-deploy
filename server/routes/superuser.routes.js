@@ -1,4 +1,4 @@
-// File: server/routes/superuser.routes.js (Lengkap)
+
 
 import express from "express";
 import {
@@ -14,38 +14,38 @@ import {
   getSecurityLogs,
   updateHomePageTheme,
   uploadDeveloperAsset,
-  // getDeveloperMetrics
+ 
 } from "../controllers/superuser.controller.js";
-import multer from "multer"; // <-- IMPOR MULTER
+import multer from "multer";
 
 
 const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Middleware ini akan berlaku untuk semua rute di bawah
+
 router.use(authenticateToken, checkRole(["developer"]));
 
-// Config Management
+
 router.get("/config", getGlobalConfig);
 router.post("/config", updateGlobalConfig);
 
-// Approval Management
+
 router.get("/approval-requests", getApprovalRequests);
 router.post("/approval-requests/:id/resolve", resolveApprovalRequest);
 
-// Security Log Management
+
 router.get("/security-logs", getSecurityLogs);
 
-// Maintenance
+
 router.post("/maintenance/reseed-database", reseedDatabase);
 
-// <-- TAMBAHKAN ROUTE BARU DI SINI -->
-// Theme Management
+
+
 router.put("/settings/homepage-theme", updateHomePageTheme);
 
 router.post("/upload-asset", upload.single("asset"), uploadDeveloperAsset);
 
-// router.get("/metrics", authenticateToken, authorizeRole("developer"), getDeveloperMetrics);
+
 
 export default router;

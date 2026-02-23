@@ -1,8 +1,8 @@
-// File: client/src/pages/PartnerServicesPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Fade } from "react-awesome-reveal";
-// PERBAIKAN: Menggunakan nama fungsi yang benar sesuai apiService.js
+
 import {
   getPartnerServices,
   createPartnerService,
@@ -17,7 +17,7 @@ const PartnerServicesPage = ({ showMessage }) => {
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
 
-  // Form State
+ 
   const [formData, setFormData] = useState({
     name: "",
     price: 0,
@@ -55,7 +55,7 @@ const PartnerServicesPage = ({ showMessage }) => {
   const handleDelete = async (id) => {
     if (!window.confirm("Hapus layanan ini?")) return;
     try {
-      // PERBAIKAN: Menggunakan deletePartnerService
+     
       await deletePartnerService(id);
       setServices((prev) => prev.filter((s) => s.id !== id));
       if (showMessage) showMessage("Layanan dihapus", "Success");
@@ -68,11 +68,11 @@ const PartnerServicesPage = ({ showMessage }) => {
     e.preventDefault();
     try {
       if (editingService) {
-        // PERBAIKAN: Menggunakan updatePartnerService
+       
         await updatePartnerService(editingService.id, formData);
         if (showMessage) showMessage("Layanan diperbarui", "Success");
       } else {
-        // PERBAIKAN: Menggunakan createPartnerService
+       
         await createPartnerService(formData);
         if (showMessage) showMessage("Layanan ditambahkan", "Success");
       }
@@ -104,7 +104,7 @@ const PartnerServicesPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* Sticky Header */}
+      {}
       <div
         className="sticky-top px-3 py-3"
         style={{
@@ -119,7 +119,7 @@ const PartnerServicesPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* Service List */}
+      {}
       <div className="px-3 py-3">
         {services.map((service) => (
           <div
@@ -164,13 +164,13 @@ const PartnerServicesPage = ({ showMessage }) => {
           </div>
         ))}
 
-        {/* Empty State */}
+        {}
         {services.length === 0 && (
           <div className="text-center py-5 text-muted">Belum ada layanan.</div>
         )}
       </div>
 
-      {/* Floating Action Button (Add) */}
+      {}
       <div
         className="position-fixed"
         style={{ bottom: "100px", right: "20px", zIndex: 1030 }}
@@ -285,7 +285,7 @@ const PartnerServicesPage = ({ showMessage }) => {
       {renderMobileView()}
       {renderDesktopView()}
 
-      {/* Modal Form */}
+      {}
       {showModal && (
         <>
           <div

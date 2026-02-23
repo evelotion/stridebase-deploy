@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminPayoutsPage.jsx
+
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -155,7 +155,7 @@ const AdminPayoutsPage = ({ showMessage }) => {
             >
               <div className="d-flex justify-content-between align-items-start mb-2">
                 <div>
-                  {/* FIX: Warna Text Muted */}
+                  {}
                   <small
                     className="d-block"
                     style={{
@@ -240,7 +240,7 @@ const AdminPayoutsPage = ({ showMessage }) => {
         )}
       </div>
 
-      {/* Bottom Sheet */}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"

@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoresPage.jsx
+
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ import {
 } from "../services/apiService";
 import "../styles/ElevateDashboard.css";
 
-// --- COMPONENT: PAGINATION (Compact Version) ---
+
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   if (pageCount <= 1) return null;
   const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
@@ -69,7 +69,7 @@ const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   );
 };
 
-// --- COMPONENT: EDIT MODAL ---
+
 const EditStoreModal = ({
   show,
   handleClose,
@@ -312,7 +312,7 @@ const EditStoreModal = ({
   );
 };
 
-// --- MAIN PAGE COMPONENT ---
+
 const AdminStoresPage = ({ showMessage }) => {
   const [stores, setStores] = useState([]);
   const [mitraUsers, setMitraUsers] = useState([]);
@@ -322,12 +322,12 @@ const AdminStoresPage = ({ showMessage }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const STORES_PER_PAGE = 12; // Menambah jumlah per halaman karena ukuran lebih kecil
+  const STORES_PER_PAGE = 12;
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [selectedStore, setSelectedStore] = useState(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false); // Mobile Sheet
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const [invoiceDetails, setInvoiceDetails] = useState({
     period: "",
@@ -498,7 +498,7 @@ const AdminStoresPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* Sticky Search - Lebih Ramping */}
+      {}
       <div
         className="sticky-top px-3 py-2"
         style={{
@@ -571,7 +571,7 @@ const AdminStoresPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* Card List - Lebih Ramping & Fix Warna Font */}
+      {}
       <div className="px-2 py-2">
         {filteredStores.length > 0 ? (
           filteredStores.map((store) => (
@@ -582,7 +582,7 @@ const AdminStoresPage = ({ showMessage }) => {
               style={{ padding: "12px 16px" }}
             >
               <div className="d-flex align-items-center gap-3">
-                {/* Store Avatar - Diperkecil */}
+                {}
                 <div
                   className="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 border border-secondary"
                   style={{
@@ -607,7 +607,7 @@ const AdminStoresPage = ({ showMessage }) => {
                   />
                 </div>
 
-                {/* Store Info */}
+                {}
                 <div className="flex-grow-1 min-width-0">
                   <div className="d-flex justify-content-between align-items-center">
                     <h6
@@ -623,7 +623,7 @@ const AdminStoresPage = ({ showMessage }) => {
                     {getStatusBadge(store.storeStatus)}
                   </div>
                   <div className="d-flex align-items-center gap-2 mt-1">
-                    {/* FIX: Warna font alamat sekarang mengikuti tema (var(--pe-text-muted)) */}
+                    {}
                     <small
                       className="text-truncate"
                       style={{
@@ -661,7 +661,7 @@ const AdminStoresPage = ({ showMessage }) => {
         )}
       </div>
 
-      {/* Bottom Sheet Action */}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -814,12 +814,12 @@ const AdminStoresPage = ({ showMessage }) => {
                 onChange={(e) => setFilterStatus(e.target.value)}
                 style={{
                   fontSize: "0.85rem",
-                  backgroundColor: "var(--pe-card-bg)", // Adaptif: Putih (Light) / Hitam (Dark)
-                  color: "var(--pe-text-main)", // Adaptif: Hitam (Light) / Putih (Dark)
+                  backgroundColor: "var(--pe-card-bg)",
+                  color: "var(--pe-text-main)",
                   borderColor: "var(--pe-card-border)",
                 }}
               >
-                {/* Hapus className="bg-dark" dari option */}
+                {}
                 <option value="all">Semua Status</option>
                 <option value="active">Aktif</option>
                 <option value="pending">Menunggu</option>
@@ -833,7 +833,7 @@ const AdminStoresPage = ({ showMessage }) => {
           <div className="pe-table-wrapper">
             <table className="pe-table align-middle mb-0">
               <thead style={{ backgroundColor: "rgba(128, 128, 128, 0.1)" }}>
-                {/* Menggunakan transparansi abu-abu yang aman untuk Light & Dark Mode */}
+                {}
                 <tr>
                   <th
                     style={{
@@ -896,7 +896,7 @@ const AdminStoresPage = ({ showMessage }) => {
                         <div className="d-flex align-items-center gap-3">
                           <div
                             className="rounded-3 border border-secondary p-1 bg-black"
-                            style={{ width: "40px", height: "40px" }} // Ukuran gambar lebih kecil
+                            style={{ width: "40px", height: "40px" }}
                           >
                             <img
                               src={
@@ -926,7 +926,7 @@ const AdminStoresPage = ({ showMessage }) => {
                         </div>
                       </td>
                       <td style={{ padding: "12px 16px" }}>
-                        {/* FIX: Ganti text-white-50 dengan var(--pe-text-muted) agar terlihat di dark/light mode */}
+                        {}
                         <div
                           className="small mb-1 text-truncate"
                           style={{
@@ -1039,7 +1039,7 @@ const AdminStoresPage = ({ showMessage }) => {
         showMessage={showMessage}
       />
 
-      {/* MODAL INVOICE */}
+      {}
       {showInvoiceModal && selectedStore && (
         <>
           <div

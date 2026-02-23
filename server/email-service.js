@@ -1,19 +1,19 @@
-// File: stridebase-app-render/server/email-service.js (Versi Final dengan Link Dinamis)
+
 
 import Brevo from '@getbrevo/brevo';
 
-// Konfigurasi API Brevo
+
 const apiInstance = new Brevo.TransactionalEmailsApi();
 apiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
 
 export const sendVerificationEmail = async (userEmail, token) => {
-  // --- PERUBAHAN DI SINI: Membuat link dinamis berdasarkan environment ---
+ 
   const frontendUrl = process.env.NODE_ENV === 'production'
-    ? 'https://stridebase-client-ctct.onrender.com' // URL Frontend Anda di Render
-    : 'http://localhost:5173';                     // URL untuk development lokal
+    ? 'https://stridebase-client-ctct.onrender.com'
+    : 'http://localhost:5173';                    
 
   const verificationLink = `${frontendUrl}/verify-email?token=${token}`;
-  // --- AKHIR PERUBAHAN ---
+ 
 
   const msg = {
     to: userEmail,

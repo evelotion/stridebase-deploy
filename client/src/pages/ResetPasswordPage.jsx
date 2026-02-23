@@ -1,4 +1,4 @@
-// File: client/src/pages/ResetPasswordPage.jsx
+
 
 import React, { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";

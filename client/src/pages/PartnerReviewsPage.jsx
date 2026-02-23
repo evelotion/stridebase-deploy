@@ -1,11 +1,11 @@
-// File: client/src/pages/PartnerReviewsPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Fade } from "react-awesome-reveal";
 import API_BASE_URL from "../apiConfig";
-import "./PartnerElevate.css"; // CSS Elevate
+import "./PartnerElevate.css";
 
-// --- COMPONENTS ---
+
 const StarDisplay = ({ rating }) => (
   <div className="d-flex gap-1 text-warning x-small">
     {[...Array(5)].map((_, i) => (
@@ -161,7 +161,7 @@ const PartnerReviewsPage = ({ showMessage }) => {
       </div>
     );
 
-  // Hitung statistik sederhana
+ 
   const avgRating =
     reviews.length > 0
       ? (
@@ -174,7 +174,7 @@ const PartnerReviewsPage = ({ showMessage }) => {
       <div className="pe-blob pe-blob-2"></div>
 
       <div className="container-fluid px-4 py-4 position-relative z-1">
-        {/* Header & Stats */}
+        {}
         <div className="row align-items-end mb-5 g-4">
           <div className="col-md-8">
             <Fade direction="down" triggerOnce>
@@ -203,14 +203,14 @@ const PartnerReviewsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* Review Grid */}
+        {}
         <div className="row g-4">
           {reviews.length > 0 ? (
             reviews.map((review, i) => (
               <div className="col-lg-6" key={review.id}>
                 <Fade delay={i * 50} triggerOnce>
                   <div className="pe-card h-100 d-flex flex-column">
-                    {/* User Header */}
+                    {}
                     <div className="d-flex justify-content-between align-items-start mb-3">
                       <div className="d-flex align-items-center gap-3">
                         <div
@@ -236,12 +236,12 @@ const PartnerReviewsPage = ({ showMessage }) => {
                       <StarDisplay rating={review.rating} />
                     </div>
 
-                    {/* Comment */}
+                    {}
                     <div className="pe-subtitle flex-grow-1 mb-3 fst-italic">
                       "{review.comment || "No written comment."}"
                     </div>
 
-                    {/* Reply Section */}
+                    {}
                     {review.partnerReply ? (
                       <div
                         className="p-3 rounded-3 mt-auto border border-secondary"

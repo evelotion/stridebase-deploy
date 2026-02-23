@@ -1,4 +1,4 @@
-// File: client/src/pages/LoginSuccessPage.jsx
+
 
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const LoginSuccessPage = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect berdasarkan role
+     
       const target =
         user.role === "admin" || user.role === "developer"
           ? "/admin/dashboard"
@@ -27,7 +27,7 @@ const LoginSuccessPage = () => {
           ? "/partner/dashboard"
           : "/dashboard";
 
-      // Delay sedikit agar transisi terasa halus
+     
       setTimeout(() => {
         navigate(target);
         window.location.reload();

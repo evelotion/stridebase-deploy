@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoreSettingsPage.jsx (Elevate Redesign)
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -168,10 +168,10 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
 
   return (
     <div className="container-fluid px-4 py-4 position-relative z-1">
-      {/* Decorative Blob */}
+      {}
       <div className="pe-blob pe-blob-1"></div>
 
-      {/* HEADER SECTION */}
+      {}
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 position-relative z-2">
         <Fade direction="down" triggerOnce>
           <div>
@@ -221,7 +221,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
 
       <Fade triggerOnce>
         <div className="pe-card position-relative z-2">
-          {/* CUSTOM TABS */}
+          {}
           <ul className="nav nav-pills mb-4 border-bottom border-secondary border-opacity-25 pb-3 gap-2">
             {[
               { id: "profile", label: "Profil & Galeri", icon: "fa-images" },
@@ -248,7 +248,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
             ))}
           </ul>
 
-          {/* TAB CONTENT: PROFILE */}
+          {}
           {activeTab === "profile" && (
             <div className="row g-4">
               <div className="col-lg-7">
@@ -318,7 +318,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
                             className="w-100 h-100"
                             style={{ objectFit: "cover" }}
                           />
-                          {/* Overlay Actions */}
+                          {}
                           <div
                             className="position-absolute inset-0 d-flex flex-column justify-content-between p-2"
                             style={{
@@ -398,7 +398,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
             </div>
           )}
 
-          {/* TAB CONTENT: SCHEDULE */}
+          {}
           {activeTab === "schedule" && (
             <div className="p-4 rounded-3 bg-dark bg-opacity-25 border border-secondary border-opacity-25">
               {daysOfWeek.map((day) => (
@@ -471,7 +471,7 @@ const AdminStoreSettingsPage = ({ showMessage }) => {
             </div>
           )}
 
-          {/* TAB CONTENT: BUSINESS MODEL */}
+          {}
           {activeTab === "business" && (
             <div className="row justify-content-center">
               <div className="col-lg-8">

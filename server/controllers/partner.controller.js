@@ -1,10 +1,10 @@
-// File: server/controllers/partner.controller.js
+
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
 
-// --- MIDDLEWARE: Cari Toko ---
+
 export const findMyStore = async (req, res, next) => {
   try {
     const store = await prisma.store.findFirst({
@@ -22,12 +22,12 @@ export const findMyStore = async (req, res, next) => {
   }
 };
 
-// --- DASHBOARD ---
+
 export const getPartnerDashboard = async (req, res, next) => {
   try {
     const storeId = req.store.id;
 
-    // Total Revenue dari Ledger (Hanya pendapatan mitra)
+   
     const netRevenue = await prisma.ledgerEntry.aggregate({
       _sum: { amount: true },
       where: { storeId, type: "PARTNER_INCOME" },
@@ -69,7 +69,7 @@ export const getPartnerDashboard = async (req, res, next) => {
   }
 };
 
-// --- ORDERS ---
+
 export const getPartnerOrders = async (req, res, next) => {
   try {
     const orders = await prisma.booking.findMany({
@@ -107,7 +107,7 @@ export const updateWorkStatus = async (req, res, next) => {
   }
 };
 
-// --- SERVICES ---
+
 export const getPartnerServices = async (req, res, next) => {
   try {
     const services = await prisma.service.findMany({
@@ -171,7 +171,7 @@ export const deletePartnerService = async (req, res, next) => {
   }
 };
 
-// --- SETTINGS ---
+
 export const getPartnerSettings = async (req, res, next) => {
   try {
     const store = await prisma.store.findUnique({
@@ -244,7 +244,7 @@ export const uploadPartnerPhoto = async (req, res, next) => {
   }
 };
 
-// --- WALLET & PAYOUT ---
+
 export const getWalletData = async (req, res, next) => {
   try {
     const wallet = await prisma.storeWallet.findUnique({
@@ -325,10 +325,10 @@ export const requestPayout = async (req, res, next) => {
   }
 };
 
-// --- INVOICES (PARTNER SIDE) ---
+
 export const getPartnerInvoices = async (req, res, next) => {
   try {
-    // Ambil semua invoice (baik yang UNPAID maupun PAID)
+   
     const invoices = await prisma.invoice.findMany({
       where: { storeId: req.store.id },
       orderBy: { createdAt: "desc" },
@@ -351,7 +351,7 @@ export const getOutstandingInvoices = async (req, res, next) => {
   }
 };
 
-// --- REVIEWS ---
+
 export const getPartnerReviews = async (req, res, next) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -377,7 +377,7 @@ export const replyToReview = async (req, res, next) => {
   }
 };
 
-// --- PROMOS ---
+
 export const getPartnerPromos = async (req, res, next) => {
   try {
     const sp = await prisma.storePromo.findMany({
@@ -459,7 +459,7 @@ export const deletePartnerPromo = async (req, res, next) => {
 
 export const getPartnerReports = async (req, res, next) => {
   try {
-    // Placeholder report sederhana
+   
     res.json({ message: "Report endpoint ready" });
   } catch (error) {
     next(error);

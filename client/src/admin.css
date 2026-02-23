@@ -1,9 +1,9 @@
-/* File: stridebase-app-render/client/src/admin.css (Perbaikan Final v4) */
 
-/* Import Font */
+
+
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-/* Color Palette */
+
 :root {
   --primary-color: #0dcaf0;
   --secondary-color: #28a745;
@@ -15,7 +15,7 @@
   --table-hover-color: #f1f1f1;
 }
 
-/* Dark Mode Color Definitions */
+
 body.dark-mode {
   --primary-color: #0dcaf0;
   --secondary-color: #28a745;
@@ -27,11 +27,11 @@ body.dark-mode {
   --table-hover-color: #313138;
 }
 
-/* Base Layout */
+
 body {
   font-family: "Poppins", sans-serif;
   overflow-x: hidden;
-  /* Mengembalikan scrollbar default browser */
+  
 }
 
 #wrapper {
@@ -189,7 +189,7 @@ body {
   background-color: var(--table-hover-color);
 }
 
-/* Tampilan Kartu untuk Tabel di Mobile */
+
 .mobile-card-list {
   padding: 0;
 }
@@ -226,11 +226,11 @@ body {
   text-align: right;
 }
 
-/* =============================================== */
-/* === KODE RESPONSIVE UTAMA === */
-/* =============================================== */
 
-/* --- Pengaturan Header Halaman (Judul & Tombol) --- */
+
+
+
+
 @media (max-width: 767.98px) {
   .container-fluid > .d-flex.justify-content-between {
     flex-direction: column;
@@ -241,43 +241,43 @@ body {
     width: 100%;
   }
 
-  /* === KODE BARU: PERBAIKAN FINAL UNTUK .nav-tabs DI MOBILE === */
+  
   .nav-tabs {
-    display: block; /* Override display: flex dari Bootstrap */
-    white-space: nowrap; /* Paksa semua item berada dalam satu baris */
-    overflow-x: auto; /* Buat bisa di-scroll secara horizontal */
+    display: block; 
+    white-space: nowrap; 
+    overflow-x: auto; 
     -ms-overflow-style: none;
     scrollbar-width: none;
-    padding-bottom: 10px; /* Beri sedikit ruang agar shadow tidak terpotong */
-    margin-bottom: 1rem; /* Jaga jarak dengan konten di bawahnya */
+    padding-bottom: 10px; 
+    margin-bottom: 1rem; 
   }
   .nav-tabs::-webkit-scrollbar {
-    display: none; /* Sembunyikan scrollbar di browser Webkit */
+    display: none; 
   }
   .nav-tabs .nav-item {
-    display: inline-block; /* Buat item sejajar dalam satu baris */
+    display: inline-block; 
     float: none;
   }
 }
 
-/* --- Pengaturan Navigasi Tab (Pending, Active, dll.) --- */
+
 .nav-pills, .nav-tabs {
   display: inline-flex;
-  background-color: transparent; /* Hapus latar belakang abu-abu */
+  background-color: transparent; 
   border-radius: 0;
   padding: 0;
   border: none;
-  border-bottom: 1px solid var(--border-color); /* Tambahkan garis bawah sebagai pemisah */
-  gap: 0.5rem; /* Beri sedikit jarak antar tombol */
+  border-bottom: 1px solid var(--border-color); 
+  gap: 0.5rem; 
 }
 .nav-pills .nav-link, .nav-tabs .nav-link {
-  border-radius: 0.5rem 0.5rem 0 0 !important; /* Sudut melengkung hanya di atas */
+  border-radius: 0.5rem 0.5rem 0 0 !important; 
   font-weight: 600;
   color: var(--text-muted);
   padding: 0.75rem 1.25rem;
   border: none;
   background-color: transparent;
-  margin-bottom: -1px; /* Agar menyatu dengan garis bawah */
+  margin-bottom: -1px; 
   transition: all 0.2s ease-in-out;
 }
 .nav-pills .nav-link:hover, .nav-tabs .nav-link:hover {
@@ -306,94 +306,94 @@ body {
     width: calc(100% - 250px);
     padding-top: 0;
   }
-  /* Di desktop, sembunyikan tampilan kartu */
+  
   .mobile-card-list {
     display: none;
   }
 }
 
-/* =============================================== */
-/* === GAYA BARU: AVATAR INISIAL PENGGUNA === */
-/* =============================================== */
+
+
+
 
 .user-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 50%; /* Membuatnya menjadi lingkaran sempurna */
+  border-radius: 50%; 
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   color: white;
-  flex-shrink: 0; /* Mencegah lingkaran menyusut */
+  flex-shrink: 0; 
 }
 
 .avatar-initials {
   text-transform: uppercase;
 }
 
-/* Memberikan warna latar belakang yang berbeda-beda secara otomatis */
+
 tr:nth-child(8n + 1) .user-avatar {
   background-color: #0d6efd;
-} /* Biru */
+} 
 tr:nth-child(8n + 2) .user-avatar {
   background-color: #6f42c1;
-} /* Ungu */
+} 
 tr:nth-child(8n + 3) .user-avatar {
   background-color: #d63384;
-} /* Pink */
+} 
 tr:nth-child(8n + 4) .user-avatar {
   background-color: #dc3545;
-} /* Merah */
+} 
 tr:nth-child(8n + 5) .user-avatar {
   background-color: #fd7e14;
-} /* Oranye */
+} 
 tr:nth-child(8n + 6) .user-avatar {
   background-color: #ffc107;
-} /* Kuning */
+} 
 tr:nth-child(8n + 7) .user-avatar {
   background-color: #198754;
-} /* Hijau */
+} 
 tr:nth-child(8n + 8) .user-avatar {
   background-color: #0dcaf0;
-} /* Cyan */
+} 
 
-/* --- PERBAIKAN: Membuat Nav Pills lebih rapi di Mobile --- */
+
 @media (max-width: 767.98px) {
   .nav-pills {
-    /* Mengubah dari flex menjadi block agar bisa di-scroll */
+    
     display: block;
-    white-space: nowrap; /* Mencegah item pindah ke baris baru */
-    overflow-x: auto; /* Aktifkan scroll horizontal */
-    -ms-overflow-style: none; /* Sembunyikan scrollbar (IE/Edge) */
-    scrollbar-width: none; /* Sembunyikan scrollbar (Firefox) */
-    padding-bottom: 10px; /* Jarak agar shadow tidak terpotong */
-    margin-left: -1rem; /* Menyesuaikan posisi agar rata kiri */
+    white-space: nowrap; 
+    overflow-x: auto; 
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+    padding-bottom: 10px; 
+    margin-left: -1rem; 
     margin-right: -1rem;
     padding-left: 1rem;
     padding-right: 1rem;
   }
 
-  /* Sembunyikan scrollbar untuk browser Webkit (Chrome, Safari) */
+  
   .nav-pills::-webkit-scrollbar {
     display: none;
   }
 
   .nav-pills .nav-item {
-    display: inline-block; /* Membuat item berjajar horizontal */
+    display: inline-block; 
     float: none;
   }
 
   .nav-pills .nav-link {
-    /* Mengurangi padding agar tombol lebih kecil */
+    
     padding: 0.5rem 1rem;
-    font-size: 0.9rem; /* Sedikit memperkecil font */
+    font-size: 0.9rem; 
   }
 }
 
-/* Tambahkan di akhir file admin.css */
 
-/* Tampilan Kartu untuk Tabel di Mobile */
+
+
 .mobile-card-list {
   padding: 0;
 }
@@ -430,55 +430,55 @@ tr:nth-child(8n + 8) .user-avatar {
   text-align: right;
 }
 
-/* ======================================================= */
-/* === PERBAIKAN: Status Panjang di Kartu Pesanan Mobile === */
-/* ======================================================= */
 
-/* Hanya berlaku pada layar mobile (di bawah 992px) */
+
+
+
+
 @media (max-width: 991.98px) {
   .mobile-card-header {
-    /* Mengatur ulang beberapa properti flex untuk penanganan yang lebih baik */
-    align-items: flex-start; /* Ganti dari 'center' agar tidak meregang secara vertikal */
-    gap: 0.5rem; /* Menambahkan sedikit jarak antara nama dan status */
+    
+    align-items: flex-start; 
+    gap: 0.5rem; 
   }
 
   .mobile-card-header > div:first-child {
-    /* Ini menargetkan div yang berisi nama dan ID */
-    flex: 1; /* Izinkan elemen ini untuk menyusut dan membesar */
-    min-width: 0; /* KUNCI UTAMA: Memungkinkan flex item untuk menyusut di bawah ukuran kontennya */
+    
+    flex: 1; 
+    min-width: 0; 
   }
 
   .mobile-card-header .fw-bold {
-    /* Ini menargetkan nama pelanggan */
-    white-space: nowrap; /* Mencegah nama pecah baris */
-    overflow: hidden; /* Sembunyikan teks yang meluber */
-    text-overflow: ellipsis; /* Tampilkan '...' jika teks nama terlalu panjang */
-    display: block; /* Diperlukan agar ellipsis berfungsi dengan baik */
+    
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    display: block; 
   }
 
   .mobile-card-header .badge {
-    flex-shrink: 0; /* Mencegah badge agar tidak tertekan (menyusut) */
-    white-space: normal; /* Izinkan teks di dalam badge untuk pindah ke baris baru jika sangat panjang */
-    text-align: right; /* Jika teks pindah baris, buat rata kanan */
-    max-width: 50%; /* Batasi lebar maksimum badge agar tidak terlalu dominan */
+    flex-shrink: 0; 
+    white-space: normal; 
+    text-align: right; 
+    max-width: 50%; 
   }
 }
 
 @media (max-width: 767.98px) {
   .nav-tabs {
-    display: block; /* Override display: flex dari Bootstrap */
-    white-space: nowrap; /* Paksa semua item berada dalam satu baris */
-    overflow-x: auto; /* Buat bisa di-scroll secara horizontal */
-    -ms-overflow-style: none;  /* Sembunyikan scrollbar di IE/Edge */
-    scrollbar-width: none;  /* Sembunyikan scrollbar di Firefox */
-    padding-bottom: 10px; /* Beri sedikit ruang agar shadow tidak terpotong */
-    margin-bottom: 1rem; /* Jaga jarak dengan konten di bawahnya */
+    display: block; 
+    white-space: nowrap; 
+    overflow-x: auto; 
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+    padding-bottom: 10px; 
+    margin-bottom: 1rem; 
   }
   .nav-tabs::-webkit-scrollbar {
-    display: none; /* Sembunyikan scrollbar di browser Webkit */
+    display: none; 
   }
   .nav-tabs .nav-item {
-    display: inline-block; /* Buat item sejajar dalam satu baris */
+    display: inline-block; 
     float: none;
   }
 }

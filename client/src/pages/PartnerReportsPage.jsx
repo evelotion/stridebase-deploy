@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerReportsPage.jsx
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -43,7 +43,7 @@ const KpiGlassCard = ({ title, value, icon, color }) => (
         <div className={`pe-stat-icon ${color} mb-0 position-relative z-1`}>
           <i className={`fas ${icon}`}></i>
         </div>
-        {/* Background Decoration */}
+        {}
         <i
           className={`fas ${icon} position-absolute bottom-0 end-0 opacity-10`}
           style={{ fontSize: "5rem", transform: "translate(20%, 20%)" }}
@@ -88,13 +88,13 @@ const PartnerReportsPage = ({ showMessage }) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Chart Configuration (Dummy Data visualization if real data not available in structure)
+ 
   const revenueChartData = {
     labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
     datasets: [
       {
         label: "Revenue",
-        data: [1200000, 1900000, 3000000, 5000000], // Placeholder logic
+        data: [1200000, 1900000, 3000000, 5000000],
         borderColor: "#3b82f6",
         backgroundColor: "rgba(59, 130, 246, 0.1)",
         fill: true,
@@ -139,7 +139,7 @@ const PartnerReportsPage = ({ showMessage }) => {
       <div className="pe-blob pe-blob-1"></div>
 
       <div className="container-fluid px-4 py-4 position-relative z-1">
-        {/* HEADER & FILTER */}
+        {}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-5 gap-3">
           <div>
             <Fade direction="down" triggerOnce>
@@ -178,7 +178,7 @@ const PartnerReportsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* KPI CARDS */}
+        {}
         <div className="row g-4 mb-4">
           <KpiGlassCard
             title="Total Revenue"
@@ -200,9 +200,9 @@ const PartnerReportsPage = ({ showMessage }) => {
           />
         </div>
 
-        {/* CHARTS & TABLES */}
+        {}
         <div className="row g-4">
-          {/* Main Chart */}
+          {}
           <div className="col-lg-8">
             <Fade direction="up" delay={100} triggerOnce>
               <div className="pe-card mb-4" style={{ height: "400px" }}>
@@ -213,7 +213,7 @@ const PartnerReportsPage = ({ showMessage }) => {
               </div>
             </Fade>
 
-            {/* Top Services Table */}
+            {}
             <Fade direction="up" delay={200} triggerOnce>
               <div className="pe-card">
                 <h5 className="pe-title mb-4">Top Performing Services</h5>
@@ -261,7 +261,7 @@ const PartnerReportsPage = ({ showMessage }) => {
             </Fade>
           </div>
 
-          {/* Right Sidebar: Recent Reviews & Insights */}
+          {}
           <div className="col-lg-4">
             <Fade direction="right" delay={100} triggerOnce>
               <div className="pe-card h-100">

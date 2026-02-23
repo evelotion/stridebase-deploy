@@ -1,10 +1,10 @@
-// File: client/src/pages/RegisterPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { registerUser } from "../services/apiService";
-import "./HomePageElevate.css"; // Pastikan CSS Elevate terhubung
+import "./HomePageElevate.css";
 
 const RegisterPage = ({ showMessage }) => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const RegisterPage = ({ showMessage }) => {
 
       <div className="he-auth-portal-overlay"></div>
 
-      {/* COMPACT CENTERED CARD */}
+      {}
       <div
         className="he-auth-card"
         style={{ maxWidth: "400px", padding: "2.5rem 2rem" }}

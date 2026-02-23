@@ -1,4 +1,4 @@
-// File: client/src/pages/TrackOrderPage.jsx
+
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -118,7 +118,7 @@ const TrackOrderPage = () => {
       </div>
     );
 
-  /* --- RENDER DESKTOP (HORIZONTAL) --- */
+  
   const renderDesktop = () => (
     <div className="d-none d-lg-block container pt-5 mt-5">
       <Fade direction="up" triggerOnce>
@@ -170,18 +170,18 @@ const TrackOrderPage = () => {
                 </p>
               </div>
 
-              {/* Horizontal Progress Bar */}
+              {}
               <div className="position-relative px-4 py-4 my-5">
-                {/* Background Line */}
+                {}
                 <div
                   className="position-absolute top-50 start-0 w-100 translate-middle-y"
                   style={{
                     height: "4px",
                     borderRadius: "10px",
-                    background: "rgba(255,255,255,0.1)", // Ganti opacity bootstrap dengan explicit rgba
+                    background: "rgba(255,255,255,0.1)",
                   }}
                 ></div>
-                {/* Active Line */}
+                {}
                 <div
                   className="position-absolute top-50 start-0 translate-middle-y"
                   style={{
@@ -264,10 +264,10 @@ const TrackOrderPage = () => {
     </div>
   );
 
-  /* --- RENDER MOBILE (VERTICAL TIMELINE) --- */
+  
   const renderMobile = () => (
     <div className="he-mobile-track-wrapper d-lg-none">
-      {/* Header Compact */}
+      {}
       <div className="he-mobile-header-sticky">
         <div className="d-flex align-items-center gap-3">
           <Link
@@ -283,12 +283,12 @@ const TrackOrderPage = () => {
           >
             Lacak Pesanan
           </h5>
-          <div style={{ width: "24px" }}></div> {/* Spacer */}
+          <div style={{ width: "24px" }}></div> {}
         </div>
       </div>
 
       <div className="container pt-4 pb-5">
-        {/* Info Card */}
+        {}
         <div
           className="he-mobile-track-info-card mb-4"
           style={{
@@ -371,7 +371,7 @@ const TrackOrderPage = () => {
           </div>
         </div>
 
-        {/* Vertical Timeline */}
+        {}
         <div className="he-mobile-timeline px-2">
           {workStages.map((stage, index) => {
             const isCompleted = index < currentStageIndex;
@@ -386,7 +386,7 @@ const TrackOrderPage = () => {
                 }`}
                 style={{ position: "relative" }}
               >
-                {/* Garis Penghubung */}
+                {}
                 {index !== workStages.length - 1 && (
                   <div
                     className="he-timeline-line"
@@ -399,7 +399,7 @@ const TrackOrderPage = () => {
                   ></div>
                 )}
 
-                {/* Dot / Icon */}
+                {}
                 <div
                   className="he-timeline-dot"
                   style={{
@@ -424,7 +424,7 @@ const TrackOrderPage = () => {
                   )}
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="he-timeline-content ps-3">
                   <h6
                     className="mb-1 fw-bold"
@@ -450,7 +450,7 @@ const TrackOrderPage = () => {
           })}
         </div>
 
-        {/* Action Button */}
+        {}
         {booking.workStatus === "pending_verification" && (
           <div
             className="fixed-bottom p-3"
@@ -473,7 +473,7 @@ const TrackOrderPage = () => {
       className="home-elevate-wrapper"
       style={{
         minHeight: "100vh",
-        background: "var(--pe-bg, #050505)", // Paksa background gelap utama
+        background: "var(--pe-bg, #050505)",
       }}
     >
       {renderDesktop()}

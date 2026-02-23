@@ -1,5 +1,3 @@
-// File: client/src/pages/AdminBookingsPage.jsx
-
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Fade } from "react-awesome-reveal";
 import {
@@ -8,7 +6,6 @@ import {
 } from "../services/apiService";
 import "../styles/ElevateDashboard.css";
 
-// --- COMPONENT: PAGINATION (Sama seperti AdminUsersPage) ---
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   if (pageCount <= 1) return null;
 
@@ -82,12 +79,11 @@ const AdminBookingsPage = ({ showMessage }) => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [openDropdownId, setOpenDropdownId] = useState(null);
 
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  // State untuk Mobile Bottom Sheet
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -95,7 +91,7 @@ const AdminBookingsPage = ({ showMessage }) => {
     setLoading(true);
     try {
       const data = await getAllBookingsForAdmin();
-      // Sort by terbaru (opsional, jika API belum sort)
+      
       const sorted = data.sort(
         (a, b) => new Date(b.bookingTime) - new Date(a.bookingTime),
       );
@@ -112,7 +108,6 @@ const AdminBookingsPage = ({ showMessage }) => {
     fetchBookings();
   }, [fetchBookings]);
 
-  // Reset pagination saat filter berubah
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterStatus]);
@@ -125,7 +120,7 @@ const AdminBookingsPage = ({ showMessage }) => {
       );
       if (showMessage)
         showMessage(result.message || "Status berhasil diperbarui.", "Sukses");
-      setIsSheetOpen(false); // Tutup sheet setelah update
+      setIsSheetOpen(false);
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
     }
@@ -141,7 +136,12 @@ const AdminBookingsPage = ({ showMessage }) => {
     setTimeout(() => setSelectedBooking(null), 300);
   };
 
-  // Helper Badge
+  // FUNGSI BARU UNTUK TOGGLE DROPDOWN REACT
+  const toggleDropdown = (id, e) => {
+    e.stopPropagation();
+    setOpenDropdownId(openDropdownId === id ? null : id);
+  };
+
   const getStatusBadgeClass = (status) => {
     switch (status) {
       case "completed":
@@ -161,7 +161,6 @@ const AdminBookingsPage = ({ showMessage }) => {
     }
   };
 
-  // Helper Label Status (Bahasa Indonesia)
   const getStatusLabel = (status) => {
     const labels = {
       pending: "Menunggu",
@@ -187,7 +186,6 @@ const AdminBookingsPage = ({ showMessage }) => {
     });
   }, [bookings, searchTerm, filterStatus]);
 
-  // --- LOGIC PAGINATION ---
   const pageCount = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
   const currentBookings = filteredBookings.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -215,7 +213,6 @@ const AdminBookingsPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* 1. STICKY SEARCH HEADER */}
       <div
         className="sticky-top px-3 py-3"
         style={{
@@ -248,7 +245,6 @@ const AdminBookingsPage = ({ showMessage }) => {
           />
         </div>
 
-        {/* Horizontal Filter Chips */}
         <div
           className="d-flex gap-2 mt-3 overflow-auto pb-1"
           style={{ whiteSpace: "nowrap", scrollbarWidth: "none" }}
@@ -283,7 +279,6 @@ const AdminBookingsPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 2. CARD FEED LIST */}
       <div className="px-3 py-2">
         {currentBookings.length > 0 ? (
           currentBookings.map((booking) => (
@@ -301,7 +296,6 @@ const AdminBookingsPage = ({ showMessage }) => {
                 }`,
               }}
             >
-              {/* Header Card */}
               <div className="d-flex justify-content-between align-items-start mb-2">
                 <div>
                   <span
@@ -339,7 +333,6 @@ const AdminBookingsPage = ({ showMessage }) => {
                 </div>
               </div>
 
-              {/* Content Card */}
               <div className="d-flex align-items-center gap-3 py-2 border-top border-bottom border-secondary border-opacity-10 my-2">
                 <div
                   className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
@@ -366,7 +359,6 @@ const AdminBookingsPage = ({ showMessage }) => {
                 </div>
               </div>
 
-              {/* Footer Card */}
               <div className="d-flex justify-content-between align-items-center mt-2">
                 <div>
                   <small
@@ -404,7 +396,6 @@ const AdminBookingsPage = ({ showMessage }) => {
           </div>
         )}
 
-        {/* PAGINATION MOBILE */}
         <Pagination
           currentPage={currentPage}
           pageCount={pageCount}
@@ -412,7 +403,6 @@ const AdminBookingsPage = ({ showMessage }) => {
         />
       </div>
 
-      {/* 3. BOTTOM SHEET MODAL (ACTION) */}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -531,11 +521,12 @@ const AdminBookingsPage = ({ showMessage }) => {
      RENDER: DESKTOP VIEW (CLASSIC TABLE)
      ========================================= */
   const renderDesktopView = () => (
-    <div className="d-none d-lg-block container-fluid px-4 py-4 position-relative z-1">
-      {/* Decorative Blob */}
+    <div 
+      className="d-none d-lg-block container-fluid px-4 py-4 position-relative z-1"
+      onClick={() => setOpenDropdownId(null)} // Tambahan dikit biar klik di luar area bisa nutup dropdown
+    >
       <div className="pe-blob pe-blob-1"></div>
 
-      {/* Header */}
       <div className="mb-4">
         <Fade direction="down" triggerOnce>
           <h6 className="pe-subtitle text-uppercase tracking-widest mb-1">
@@ -545,7 +536,6 @@ const AdminBookingsPage = ({ showMessage }) => {
         </Fade>
       </div>
 
-      {/* Filter Bar */}
       <Fade triggerOnce>
         <div className="pe-card mb-4">
           <div className="row g-3 align-items-center">
@@ -574,13 +564,12 @@ const AdminBookingsPage = ({ showMessage }) => {
               </div>
             </div>
             <div className="col-md-4">
-              {/* FIX: Dropdown Warna Adaptif (Hapus bg-dark) */}
               <select
                 className="form-select bg-transparent"
                 style={{
                   borderColor: "var(--pe-card-border)",
                   color: "var(--pe-text-main)",
-                  backgroundColor: "var(--pe-card-bg)", // Adaptif
+                  backgroundColor: "var(--pe-card-bg)",
                 }}
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -645,7 +634,6 @@ const AdminBookingsPage = ({ showMessage }) => {
         </div>
       </Fade>
 
-      {/* Table Data */}
       <Fade delay={100} triggerOnce>
         <div className="pe-card">
           <div className="pe-table-wrapper">
@@ -703,33 +691,35 @@ const AdminBookingsPage = ({ showMessage }) => {
                         </span>
                       </td>
                       <td className="text-center">
-                        <div className="dropdown">
+                        <div className="dropdown position-relative">
                           <button
-                            id={`dropdown-action-${booking.id}`} // <-- Tambahkan ID unik
+                            id={`dropdown-action-${booking.id}`}
                             className="pe-btn-action py-1 px-2"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            data-bs-boundary="window"
+                            onClick={(e) => toggleDropdown(booking.id, e)}
                             disabled={booking.status === "reviewed"}
                           >
                             <i className="fas fa-ellipsis-h"></i>
                           </button>
 
                           <ul
-                            className="dropdown-menu dropdown-menu-end shadow"
-                            aria-labelledby={`dropdown-action-${booking.id}`} // <-- Sambungkan ke ID
+                            className={`dropdown-menu dropdown-menu-end shadow ${openDropdownId === booking.id ? "show d-block" : ""}`}
                             style={{
                               backgroundColor: "var(--pe-card-bg)",
                               borderColor: "var(--pe-card-border)",
+                              position: "absolute",
+                              top: "100%",
+                              right: "0",
+                              zIndex: 1050
                             }}
                           >
                             <li>
                               <button
                                 className="dropdown-item"
                                 style={{ color: "var(--pe-text-main)" }}
-                                onClick={() =>
-                                  handleStatusChange(booking.id, "confirmed")
-                                }
+                                onClick={() => {
+                                  handleStatusChange(booking.id, "confirmed");
+                                  setOpenDropdownId(null);
+                                }}
                               >
                                 <i className="fas fa-check me-2 text-info"></i>{" "}
                                 Konfirmasi
@@ -739,9 +729,10 @@ const AdminBookingsPage = ({ showMessage }) => {
                               <button
                                 className="dropdown-item"
                                 style={{ color: "var(--pe-text-main)" }}
-                                onClick={() =>
-                                  handleStatusChange(booking.id, "in_progress")
-                                }
+                                onClick={() => {
+                                  handleStatusChange(booking.id, "in_progress");
+                                  setOpenDropdownId(null);
+                                }}
                               >
                                 <i className="fas fa-sync me-2 text-primary"></i>{" "}
                                 Kerjakan
@@ -751,9 +742,10 @@ const AdminBookingsPage = ({ showMessage }) => {
                               <button
                                 className="dropdown-item"
                                 style={{ color: "var(--pe-text-main)" }}
-                                onClick={() =>
-                                  handleStatusChange(booking.id, "completed")
-                                }
+                                onClick={() => {
+                                  handleStatusChange(booking.id, "completed");
+                                  setOpenDropdownId(null);
+                                }}
                               >
                                 <i className="fas fa-check-circle me-2 text-success"></i>{" "}
                                 Selesai
@@ -770,9 +762,10 @@ const AdminBookingsPage = ({ showMessage }) => {
                             <li>
                               <button
                                 className="dropdown-item text-danger"
-                                onClick={() =>
-                                  handleStatusChange(booking.id, "cancelled")
-                                }
+                                onClick={() => {
+                                  handleStatusChange(booking.id, "cancelled");
+                                  setOpenDropdownId(null);
+                                }}
                               >
                                 <i className="fas fa-times-circle me-2"></i>{" "}
                                 Batalkan
@@ -799,7 +792,6 @@ const AdminBookingsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* PAGINATION DESKTOP */}
         <Pagination
           currentPage={currentPage}
           pageCount={pageCount}

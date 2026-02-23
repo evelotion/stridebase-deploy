@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminNewStorePage.jsx (Theme-Aware Fix)
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import { getAllUsers } from "../services/apiService";
 import API_BASE_URL from "../apiConfig";
 import "../styles/ElevateDashboard.css";
 
-// Style untuk React-Select agar mengikuti Tema (Dynamic)
+
 const getSelectStyles = (isLightMode) => ({
   control: (provided, state) => ({
     ...provided,
@@ -43,7 +43,7 @@ const getSelectStyles = (isLightMode) => ({
 
 const AdminNewStorePage = ({ showMessage }) => {
   const navigate = useNavigate();
-  // Cek mode tema dari localStorage atau body class untuk React-Select
+ 
   const isLightMode = localStorage.getItem("adminTheme") === "light";
 
   const [storeData, setStoreData] = useState({
@@ -163,7 +163,7 @@ const AdminNewStorePage = ({ showMessage }) => {
                     >
                       Nama Toko
                     </label>
-                    {/* HAPUS bg-dark text-white manual, biarkan CSS global menangani */}
+                    {}
                     <input
                       type="text"
                       className="form-control"
@@ -272,7 +272,7 @@ const AdminNewStorePage = ({ showMessage }) => {
                           />
                           <span className="input-group-text">%</span>
                         </div>
-                        {/* FIX UTAMA: Gunakan class 'form-text' saja, CSS global akan mewarnainya */}
+                        {}
                         <div className="form-text mt-1">
                           Dipotong otomatis dari setiap transaksi sukses.
                         </div>

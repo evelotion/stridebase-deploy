@@ -1,21 +1,21 @@
-// File: client/src/pages/PartnerOrdersPage.jsx
+
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Fade } from "react-awesome-reveal";
-import { getPartnerOrders, updateOrderStatus } from "../services/apiService"; // Pastikan API ini ada
+import { getPartnerOrders, updateOrderStatus } from "../services/apiService";
 import "../pages/PartnerElevate.css";
 
 const PartnerOrdersPage = ({ showMessage }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("pending"); // pending, process, history
+  const [activeTab, setActiveTab] = useState("pending");
 
-  // Mobile Sheet
+ 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
-    // Simulasi Fetch
+   
     const fetchOrders = async () => {
       setLoading(true);
       try {
@@ -63,7 +63,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
       minimumFractionDigits: 0,
     }).format(val);
 
-  // Mobile Handlers
+ 
   const openSheet = (order) => {
     setSelectedOrder(order);
     setIsSheetOpen(true);
@@ -85,7 +85,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* 1. STICKY TABS HEADER */}
+      {}
       <div
         className="sticky-top px-3 pt-3 pb-2"
         style={{
@@ -143,7 +143,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 2. ORDER LIST FEED */}
+      {}
       <div className="px-3 py-3">
         {filteredOrders.length > 0 ? (
           filteredOrders.map((order) => (
@@ -213,7 +213,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
         )}
       </div>
 
-      {/* 3. BOTTOM SHEET ACTION */}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -253,7 +253,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
               </h2>
             </div>
 
-            {/* Detail Pelanggan */}
+            {}
             <div className="bg-dark bg-opacity-50 p-3 rounded-3 mb-4 border border-secondary border-opacity-25">
               <div className="d-flex justify-content-between mb-2">
                 <span className="text-muted small">Pelanggan</span>
@@ -278,7 +278,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {}
             <div className="d-grid gap-3">
               {selectedOrder.status === "pending" && (
                 <>
@@ -353,7 +353,7 @@ const PartnerOrdersPage = ({ showMessage }) => {
             </h6>
             <h2 className="pe-title mb-0">Manajemen Pesanan</h2>
           </div>
-          {/* Filter Tabs Desktop */}
+          {}
           <div className="d-flex gap-2">
             {["pending", "process", "history"].map((tab) => (
               <button

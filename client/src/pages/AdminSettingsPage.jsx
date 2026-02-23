@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminSettingsPage.jsx
+
 
 import React, { useState } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -9,10 +9,10 @@ const AdminSettingsPage = ({ showMessage }) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // Ambil fungsi toggleTheme & status isLightMode dari AdminLayout
+ 
   const { isLightMode, toggleTheme } = useOutletContext() || {};
 
-  // State Lokal untuk Toggle
+ 
   const [settings, setSettings] = useState({
     pushNotif: true,
     emailNotif: false,
@@ -39,7 +39,7 @@ const AdminSettingsPage = ({ showMessage }) => {
     }
   };
 
-  /* --- KOMPONEN ITEM MENU (iOS Style Helper - Mobile) --- */
+  
   const IOSMenuItem = ({
     icon,
     color,
@@ -137,7 +137,7 @@ const AdminSettingsPage = ({ showMessage }) => {
       </div>
 
       <div className="px-3 pt-1">
-        {/* Profile Card */}
+        {}
         <div
           className="pe-card p-3 mb-4 d-flex align-items-center gap-3 shadow-sm"
           style={{
@@ -182,7 +182,7 @@ const AdminSettingsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* Group: TAMPILAN */}
+        {}
         <div className="mb-4">
           <small
             className="fw-bold ps-3 mb-2 d-block text-uppercase tracking-widest"
@@ -215,7 +215,7 @@ const AdminSettingsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* Group: SISTEM */}
+        {}
         <div className="mb-4">
           <small
             className="fw-bold ps-3 mb-2 d-block text-uppercase tracking-widest"
@@ -262,7 +262,7 @@ const AdminSettingsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* Group: AKUN */}
+        {}
         <div className="mb-4">
           <div
             className="overflow-hidden shadow-sm"
@@ -313,7 +313,7 @@ const AdminSettingsPage = ({ showMessage }) => {
       </Fade>
       <Fade triggerOnce>
         <div className="row g-4">
-          {/* Kolom Kiri: Pengaturan Umum */}
+          {}
           <div className="col-md-6">
             <div className="pe-card p-4 h-100">
               <h5 className="mb-4 d-flex align-items-center gap-2">
@@ -371,7 +371,7 @@ const AdminSettingsPage = ({ showMessage }) => {
             </div>
           </div>
 
-          {/* Kolom Kanan: Keamanan & Akun */}
+          {}
           <div className="col-md-6">
             <div className="pe-card p-4 h-100">
               <h5 className="mb-4 d-flex align-items-center gap-2">

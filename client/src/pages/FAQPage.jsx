@@ -1,4 +1,4 @@
-// File: client/src/pages/FAQPage.jsx
+
 
 import React from "react";
 import { Fade } from "react-awesome-reveal";
@@ -33,7 +33,7 @@ const FAQPage = () => {
     <div className="home-elevate-wrapper he-faq-wrapper">
       <div className="d-none d-lg-block" style={{ height: "120px" }}></div>
 
-      {/* MOBILE HEADER */}
+      {}
       <div className="d-lg-none p-4 pt-5 pb-0">
         <Link to="/" className="text-decoration-none text-muted mb-3 d-block">
           <i className="fas fa-arrow-left"></i> Kembali

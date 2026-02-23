@@ -1,4 +1,4 @@
-// File: client/src/pages/InvoicePage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -9,7 +9,7 @@ import autoTable from "jspdf-autotable";
 
 const InvoicePage = ({ showMessage }) => {
   const { id } = useParams();
-  const [invoice, setInvoice] = useState(null); // Ganti 'booking' jadi 'invoice'
+  const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -17,8 +17,8 @@ const InvoicePage = ({ showMessage }) => {
     const fetchInvoiceDetails = async () => {
       const token = localStorage.getItem("token");
       try {
-        // PERBAIKAN: Fetch ke endpoint INVOICE, bukan BOOKING
-        // Pastikan endpoint ini aksesibel (misal: /api/admin/invoices/ atau /api/partner/invoices/)
+       
+       
         const response = await fetch(
           `${API_BASE_URL}/api/admin/invoices/${id}`,
           {
@@ -38,27 +38,27 @@ const InvoicePage = ({ showMessage }) => {
     fetchInvoiceDetails();
   }, [id]);
 
-  // --- CORPORATE INVOICE GENERATOR (B2B: HQ -> PARTNER) ---
+ 
   const handleDownloadPDF = () => {
     if (!invoice) return;
 
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
 
-    // Color Palette (Corporate Blue)
-    const brandColor = [28, 64, 212]; // #1c40d4 (StrideBase Deep Blue)
+   
+    const brandColor = [28, 64, 212];
     const grayColor = [248, 249, 250];
     const textDark = [33, 37, 41];
     const textMuted = [108, 117, 125];
 
-    // 1. HEADER & BRANDING
-    // Logo Text
+   
+   
     doc.setFontSize(26);
     doc.setTextColor(...brandColor);
     doc.setFont("helvetica", "bold");
     doc.text("StrideBase.", 14, 25);
 
-    // HQ Address (Static - Platform Info)
+   
     doc.setFontSize(9);
     doc.setTextColor(...textMuted);
     doc.setFont("helvetica", "normal");
@@ -66,7 +66,7 @@ const InvoicePage = ({ showMessage }) => {
     doc.text("Jakarta Selatan, Indonesia", 14, 35);
     doc.text("finance@stridebase.com", 14, 39);
 
-    // Invoice Title & Status
+   
     doc.setFontSize(28);
     doc.setTextColor(...textDark);
     doc.setFont("helvetica", "bold");
@@ -75,7 +75,7 @@ const InvoicePage = ({ showMessage }) => {
     doc.setFontSize(10);
     doc.setTextColor(
       ...(invoice.status === "PAID" ? [25, 135, 84] : [220, 53, 69])
-    ); // Green or Red
+    );
     doc.text(invoice.status.toUpperCase(), pageWidth - 14, 32, {
       align: "right",
     });
@@ -86,11 +86,11 @@ const InvoicePage = ({ showMessage }) => {
       align: "right",
     });
 
-    // 2. BILL TO SECTION (Gray Background)
+   
     doc.setFillColor(...grayColor);
     doc.rect(0, 50, pageWidth, 35, "F");
 
-    // Bill To (Mitra)
+   
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.setTextColor(...textDark);
@@ -105,7 +105,7 @@ const InvoicePage = ({ showMessage }) => {
     doc.text(invoice.store.owner?.name || "Owner", 14, 71);
     doc.text(invoice.store.location || "Lokasi Mitra", 14, 76);
 
-    // Dates (Right Side)
+   
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...textDark);
     doc.text("TANGGAL TERBIT:", pageWidth - 50, 60);
@@ -130,8 +130,8 @@ const InvoicePage = ({ showMessage }) => {
       78
     );
 
-    // 3. TABLE ITEMS
-    // Mapping items dari invoice
+   
+   
     const tableBody = invoice.items.map((item) => [
       item.description,
       item.quantity,
@@ -157,17 +157,17 @@ const InvoicePage = ({ showMessage }) => {
         textColor: textDark,
       },
       columnStyles: {
-        0: { cellWidth: "auto" }, // Desc
-        1: { cellWidth: 20, halign: "center" }, // Qty
-        2: { cellWidth: 40, halign: "right" }, // Price
-        3: { cellWidth: 40, halign: "right", fontStyle: "bold" }, // Total
+        0: { cellWidth: "auto" },
+        1: { cellWidth: 20, halign: "center" },
+        2: { cellWidth: 40, halign: "right" },
+        3: { cellWidth: 40, halign: "right", fontStyle: "bold" },
       },
     });
 
-    // 4. TOTAL & PAYMENT INFO
+   
     const finalY = doc.lastAutoTable.finalY + 10;
 
-    // Payment Instructions (Left)
+   
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...textDark);
@@ -179,7 +179,7 @@ const InvoicePage = ({ showMessage }) => {
     doc.text("A/N: PT StrideBase Indonesia", 14, finalY + 11);
     doc.text("Mohon cantumkan No. Invoice saat transfer.", 14, finalY + 16);
 
-    // Grand Total (Right)
+   
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text("TOTAL TAGIHAN", pageWidth - 14, finalY, { align: "right" });
@@ -194,7 +194,7 @@ const InvoicePage = ({ showMessage }) => {
       { align: "right" }
     );
 
-    // 5. FOOTER
+   
     doc.setDrawColor(200);
     doc.line(14, 270, pageWidth - 14, 270);
 
@@ -249,9 +249,9 @@ const InvoicePage = ({ showMessage }) => {
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-8">
-            {/* Visual Invoice Paper */}
+            {}
             <div className="bg-white rounded-4 shadow-lg overflow-hidden position-relative border">
-              {/* Header */}
+              {}
               <div className="p-5 border-bottom">
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
@@ -274,7 +274,7 @@ const InvoicePage = ({ showMessage }) => {
                 </div>
               </div>
 
-              {/* Info Section */}
+              {}
               <div className="p-5 bg-light">
                 <div className="row">
                   <div className="col-sm-6">
@@ -313,7 +313,7 @@ const InvoicePage = ({ showMessage }) => {
                 </div>
               </div>
 
-              {/* Items Table */}
+              {}
               <div className="p-5">
                 <div className="table-responsive">
                   <table className="table table-borderless">
@@ -361,7 +361,7 @@ const InvoicePage = ({ showMessage }) => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {}
               <div className="bg-light p-4 border-top d-flex justify-content-between align-items-center">
                 <button
                   onClick={() => window.history.back()}

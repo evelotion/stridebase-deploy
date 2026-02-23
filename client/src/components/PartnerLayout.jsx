@@ -1,4 +1,4 @@
-// File: client/src/components/PartnerLayout.jsx
+
 
 import React, { useState, useEffect } from "react";
 import {
@@ -8,7 +8,7 @@ import {
   Link,
   useLocation,
 } from "react-router-dom";
-import PartnerMobileBottomNav from "./PartnerMobileBottomNav"; // Import komponen baru
+import PartnerMobileBottomNav from "./PartnerMobileBottomNav";
 import "../styles/ElevateDashboard.css";
 import "../pages/PartnerElevate.css";
 
@@ -17,7 +17,7 @@ const PartnerLayout = ({ theme }) => {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // --- LOGIC TEMA ---
+ 
   const [isLightMode, setIsLightMode] = useState(() => {
     const saved = localStorage.getItem("partnerTheme");
     return saved === "light";
@@ -49,7 +49,7 @@ const PartnerLayout = ({ theme }) => {
     }
   };
 
-  // Helper: Judul Halaman Mobile Dinamis
+ 
   const getPageTitle = () => {
     const path = location.pathname;
     if (path.includes("/dashboard")) return "Dashboard Mitra";
@@ -66,7 +66,7 @@ const PartnerLayout = ({ theme }) => {
 
   return (
     <div id="partner-elevate-wrapper" className="pe-layout-wrapper">
-      {/* --- DESKTOP SIDEBAR (TETAP SAMA) --- */}
+      {}
       <aside className="pe-sidebar">
         <NavLink className="pe-sidebar-brand" to="/partner/dashboard">
           <i className="fas fa-cube text-primary"></i>
@@ -179,12 +179,12 @@ const PartnerLayout = ({ theme }) => {
         </div>
       </aside>
 
-      {/* --- MAIN CONTENT --- */}
+      {}
       <main className="pe-main-content">
-        {/* MOBILE HEADER BARU (APP STYLE) */}
+        {}
         <nav className="pe-mobile-header d-lg-none">
           <div className="d-flex align-items-center gap-2">
-            {/* Logo/Icon Kecil */}
+            {}
             <div
               style={{
                 width: "32px",
@@ -199,12 +199,12 @@ const PartnerLayout = ({ theme }) => {
             >
               <i className="fas fa-store" style={{ fontSize: "0.9rem" }}></i>
             </div>
-            {/* Judul Halaman Dinamis */}
+            {}
             <span className="pe-title fs-6 fw-bold">{getPageTitle()}</span>
           </div>
 
           <div className="d-flex align-items-center gap-3">
-            {/* Theme Toggle Mini */}
+            {}
             <button
               onClick={toggleTheme}
               className="btn btn-sm border-0 p-0"
@@ -217,7 +217,7 @@ const PartnerLayout = ({ theme }) => {
               )}
             </button>
 
-            {/* Profile Dropdown */}
+            {}
             <div className="dropdown">
               <div
                 className="d-flex align-items-center justify-content-center fw-bold"
@@ -256,15 +256,15 @@ const PartnerLayout = ({ theme }) => {
           </div>
         </nav>
 
-        {/* PAGE CONTENT */}
+        {}
         <div style={{ minHeight: "100vh", position: "relative" }}>
           <Outlet />
         </div>
 
-        {/* FLOATING BOTTOM NAV (MOBILE) */}
+        {}
         <PartnerMobileBottomNav />
 
-        {/* FLOATING THEME BUTTON (DESKTOP) */}
+        {}
         <button
           className="pe-theme-fab d-none d-lg-flex"
           onClick={toggleTheme}

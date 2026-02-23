@@ -1,10 +1,10 @@
-// File: client/src/pages/ForgotPasswordPage.jsx
+
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { forgotPasswordUser } from "../services/apiService";
-import "./HomePageElevate.css"; // Pastikan CSS Elevate terhubung
+import "./HomePageElevate.css";
 
 const ForgotPasswordPage = ({ showMessage }) => {
   const [email, setEmail] = useState("");
@@ -34,7 +34,7 @@ const ForgotPasswordPage = ({ showMessage }) => {
 
       <div className="he-auth-portal-overlay"></div>
 
-      {/* COMPACT CENTERED CARD */}
+      {}
       <div
         className="he-auth-card"
         style={{ maxWidth: "400px", padding: "2.5rem 2rem" }}

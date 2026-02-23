@@ -1,6 +1,6 @@
-/* File: client/src/pages/StoreDetailElevate.css */
 
-/* --- VARIABLES (INHERIT BLUE THEME) --- */
+
+
 .luxury-blue-theme {
   --sd-bg: #050505;
   --sd-card: #0f0f0f;
@@ -28,7 +28,7 @@
   --sd-primary-glow: rgba(37, 99, 235, 0.2);
 }
 
-/* --- 1. HERO SECTION --- */
+
 .sd-hero {
   position: relative;
   height: 60vh;
@@ -42,7 +42,7 @@
   background-size: cover;
   background-position: center;
   filter: brightness(0.8);
-  transform: scale(1.05); /* Slight zoom */
+  transform: scale(1.05); 
 }
 
 .sd-hero-overlay {
@@ -82,7 +82,7 @@
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 10px;
-  color: #fff; /* Always white on Hero */
+  color: #fff; 
   text-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
@@ -91,12 +91,12 @@
   color: rgba(255,255,255,0.8);
 }
 
-/* --- 2. LAYOUT & SECTIONS --- */
+
 .sd-content {
   padding-bottom: 100px;
   position: relative;
   z-index: 3;
-  margin-top: -40px; /* Overlap hero sedikit */
+  margin-top: -40px; 
 }
 
 .sd-section-title {
@@ -115,7 +115,7 @@
   font-size: 1.05rem;
 }
 
-/* --- 3. SERVICE SELECTION --- */
+
 .sd-tabs-scroll {
   display: flex;
   gap: 10px;
@@ -193,7 +193,7 @@
 .sd-service-dur { font-size: 0.8rem; color: var(--sd-text-muted); }
 .sd-service-price { font-weight: 700; color: var(--sd-primary); }
 
-/* --- 4. REVIEWS --- */
+
 .sd-review-item {
   background: var(--sd-card);
   border-bottom: 1px solid var(--sd-border);
@@ -202,7 +202,7 @@
   margin-bottom: 10px;
 }
 
-/* --- 5. STICKY BOOKING PANEL --- */
+
 .sd-sticky-wrapper {
   position: sticky;
   top: 100px;
@@ -314,7 +314,7 @@
   box-shadow: 0 15px 30px var(--sd-primary-glow);
 }
 
-/* --- MOBILE BAR --- */
+
 .sd-mobile-bar {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -329,7 +329,7 @@
   box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
 }
 
-/* --- MODAL --- */
+
 .pe-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -354,12 +354,12 @@
   font-size: 1.2rem;
 }
 
-/* --- MOBILE RESPONSIVE --- */
+
 @media (max-width: 991px) {
   .sd-hero { height: 50vh; }
   .sd-title { font-size: 2.5rem; }
   .sd-content { margin-top: 0; }
-  .sd-service-grid { grid-template-columns: 1fr; } /* Stack cards on mobile */
+  .sd-service-grid { grid-template-columns: 1fr; } 
   .sd-service-card { display: flex; align-items: center; gap: 15px; padding: 15px; }
   .sd-service-icon { margin-bottom: 0; width: 50px; height: 50px; }
   .sd-service-name { margin-bottom: 0; font-size: 1rem; flex-grow: 1; }

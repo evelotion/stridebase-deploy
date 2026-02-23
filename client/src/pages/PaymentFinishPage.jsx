@@ -1,4 +1,4 @@
-// File: client/src/pages/PaymentFinishPage.jsx
+
 
 import React from "react";
 import { Link } from "react-router-dom";
@@ -7,10 +7,10 @@ import "./HomePageElevate.css";
 
 const PaymentFinishPage = () => {
   return (
-    // [FIX] Tambahkan 'he-centered-page-fix'
+   
     <div className="home-elevate-wrapper he-centered-page-fix text-center p-4">
       
-      {/* [FIX] Tambahkan 'he-zoom-out-card' */}
+      {}
       <div className="he-zoom-out-card" style={{ maxWidth: '500px' }}>
         <Fade direction="up" triggerOnce>
           <div className="mb-4 text-primary" style={{ fontSize: '4rem' }}>

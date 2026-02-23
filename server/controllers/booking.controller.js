@@ -1,11 +1,11 @@
-// File: server/controllers/booking.controller.js
+
 
 import prisma from "../config/prisma.js";
 import { createNotificationForUser } from "../socket.js";
 
-// @desc    Create a new booking
-// @route   POST /api/bookings
-// @access  Private (User)
+
+
+
 export const createBooking = async (req, res, next) => {
   const {
     storeId,
@@ -18,18 +18,18 @@ export const createBooking = async (req, res, next) => {
     promoCode,
   } = req.body;
   const userId = req.user.id;
-  const io = req.io; // Ambil instance IO
+  const io = req.io;
 
   try {
-    // 1. Validasi dasar
+   
     if (!storeId || !serviceId || !serviceName || !scheduleDate) {
       return res.status(400).json({ message: "Data wajib tidak lengkap." });
     }
 
-    // 2. Cek Ketersediaan Toko & Layanan (Include OwnerId untuk notifikasi)
+   
     const store = await prisma.store.findUnique({
       where: { id: storeId },
-      include: { owner: { select: { id: true, email: true } } }, // Ambil info pemilik
+      include: { owner: { select: { id: true, email: true } } },
     });
 
     if (!store) {
@@ -43,13 +43,13 @@ export const createBooking = async (req, res, next) => {
       return res.status(404).json({ message: "Layanan tidak ditemukan." });
     }
 
-    // 3. Hitung Harga Awal
+   
     let totalPrice = service.price;
     const deliveryFee = deliveryOption === "pickup_delivery" ? 15000 : 0;
     const handlingFee = 2000;
     totalPrice += deliveryFee + handlingFee;
 
-    // 4. Validasi & Terapkan Promo
+   
     if (promoCode) {
       const promo = await prisma.promo.findUnique({
         where: { code: promoCode },
@@ -72,15 +72,15 @@ export const createBooking = async (req, res, next) => {
       }
     }
 
-    // 5. Sanitasi Data Address
+   
     const validAddressId =
       addressId && addressId.trim() !== "" ? addressId : undefined;
 
-    // 6. Hitung Waktu Kedaluwarsa (15 Menit)
+   
     const bookingExpiryMinutes = 15;
     const expiresAt = new Date(Date.now() + bookingExpiryMinutes * 60 * 1000);
 
-    // 7. Simpan Booking ke Database (Include user untuk data real-time)
+   
     const newBooking = await prisma.booking.create({
       data: {
         userId,
@@ -96,24 +96,24 @@ export const createBooking = async (req, res, next) => {
         expiresAt: expiresAt,
       },
       include: {
-        user: { select: { name: true, email: true } }, // Penting untuk tampilan di tabel mitra
+        user: { select: { name: true, email: true } },
       },
     });
 
-    // --- LOGIKA BARU: NOTIFIKASI REAL-TIME KE MITRA ---
+   
     if (io && store.ownerId) {
-      // Emit event 'newOrder' ke room milik owner toko
+     
       io.to(store.ownerId).emit("newOrder", newBooking);
       console.log(`Real-time order sent to Partner: ${store.ownerId}`);
     }
 
-    // Buat notifikasi database untuk Mitra
+   
     await createNotificationForUser(
       store.ownerId,
       `Pesanan Baru! ${req.user.name} memesan layanan ${serviceName}.`,
       `/partner/orders`
     );
-    // --------------------------------------------------
+   
 
     res.status(201).json(newBooking);
   } catch (error) {
@@ -122,9 +122,9 @@ export const createBooking = async (req, res, next) => {
   }
 };
 
-// @desc    Get booking by ID
-// @route   GET /api/bookings/:id
-// @access  Private (User/Partner/Admin)
+
+
+
 export const getBookingById = async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user.id;
@@ -171,9 +171,9 @@ export const getBookingById = async (req, res, next) => {
   }
 };
 
-// @desc    Get all user bookings
-// @route   GET /api/bookings/user/me
-// @access  Private (User)
+
+
+
 export const getUserBookings = async (req, res, next) => {
   try {
     const userBookings = await prisma.booking.findMany({
@@ -204,9 +204,9 @@ export const getUserBookings = async (req, res, next) => {
   }
 };
 
-// @desc    Cancel booking
-// @route   PUT /api/bookings/:id/cancel
-// @access  Private (User)
+
+
+
 export const cancelBooking = async (req, res, next) => {
   const { id } = req.params;
   const userId = req.user.id;
@@ -246,22 +246,22 @@ export const cancelBooking = async (req, res, next) => {
   }
 };
 
-// @desc    Get Latest Active Booking for Widget (NEW)
-// @route   GET /api/bookings/active/latest
-// @access  Private (User/Partner)
+
+
+
 export const getActiveBooking = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Cari booking terakhir yang statusnya MASIH AKTIF (belum selesai/batal)
+   
     const activeBooking = await prisma.booking.findFirst({
       where: {
         userId: userId,
         status: {
-          in: ["pending", "confirmed", "in_progress"], // Status aktif
+          in: ["pending", "confirmed", "in_progress"],
         },
         workStatus: {
-          not: "completed", // Pastikan pengerjaan belum selesai
+          not: "completed",
         },
       },
       orderBy: {
@@ -275,11 +275,11 @@ export const getActiveBooking = async (req, res) => {
     });
 
     if (!activeBooking) {
-      // Return null agar frontend tahu tidak ada order aktif
+     
       return res.status(200).json(null);
     }
 
-    // Hitung progress bar sederhana berdasarkan status
+   
     let progress = 0;
     let statusText = "Menunggu Konfirmasi";
 
@@ -295,10 +295,10 @@ export const getActiveBooking = async (req, res) => {
       if (activeBooking.workStatus === "in_progress") progress = 70;
     }
 
-    // Format response untuk widget
+   
     const widgetData = {
       id: activeBooking.id,
-      displayId: activeBooking.id.slice(-6).toUpperCase(), // Ambil 6 digit terakhir
+      displayId: activeBooking.id.slice(-6).toUpperCase(),
       status: statusText,
       service: activeBooking.serviceName,
       store: activeBooking.store.name,

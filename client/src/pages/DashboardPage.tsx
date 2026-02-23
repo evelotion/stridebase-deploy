@@ -1,4 +1,4 @@
-// File: client/src/pages/DashboardPage.tsx
+
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ import {
 import API_BASE_URL from "../apiConfig";
 import "./HomePageElevate.css";
 
-// --- HELPER: SAFE RENDER ---
+
 const safeRender = (data: any, fallback: string | number = "-") => {
   if (data === null || data === undefined) return fallback;
   if (typeof data === "object") {
@@ -30,7 +30,7 @@ const safeRender = (data: any, fallback: string | number = "-") => {
   return data;
 };
 
-// --- HELPER AVATAR ---
+
 const getInitials = (name: string) => {
   if (!name) return "?";
   const names = name.split(" ");
@@ -51,14 +51,14 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // State UI & Form
+ 
   const [activeTab, setActiveTab] = useState("history");
   const [bookingFilter, setBookingFilter] = useState("all");
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewingBooking, setReviewingBooking] = useState<any>(null);
 
-  // Form States
+ 
   const [newAddress, setNewAddress] = useState({
     label: "Rumah",
     recipientName: "",
@@ -73,7 +73,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
   const [reviewImageUrl, setReviewImageUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Pagination
+ 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
 
@@ -139,7 +139,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
     };
   }, [navigate]);
 
-  // --- HANDLERS ---
+ 
   const handleContinuePayment = (id: string) => navigate(`/payment-simulation/${id}`);
   const handleRedeemPoints = async () => {
     if (!confirm("Tukarkan 100 poin?")) return;
@@ -216,7 +216,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
     }
   };
 
-  // Filter & Pagination Logic
+ 
   const filteredBookings = bookings.filter((b) => {
     if (bookingFilter === "all") return true;
     if (bookingFilter === "processing")
@@ -241,12 +241,12 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
       </div>
     );
 
-  /* --- RENDER DESKTOP (LEGACY SIDEBAR) --- */
+  
   const renderDesktop = () => (
     <div className="he-dashboard-wrapper d-none d-lg-block">
       <div className="container">
         <div className="row g-5">
-          {/* LEFT SIDEBAR (NAVIGATION) */}
+          {}
           <div className="col-lg-3">
             <Fade direction="left" triggerOnce>
               <div className="he-dash-sidebar">
@@ -254,9 +254,9 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
                   <div className="he-dash-avatar">
                     {getInitials(user?.name)}
                   </div>
-                  {/* UPDATE 1: Ganti text-white jadi text-adaptive */}
+                  {}
                   <h5 className="fw-bold mb-1 text-adaptive">{user?.name}</h5>
-                  {/* UPDATE 2: Ganti text-white-50 jadi text-adaptive-muted */}
+                  {}
                   <p className="text-adaptive-muted small mb-0">{user?.email}</p>
                 </div>
 
@@ -306,10 +306,10 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
             </Fade>
           </div>
 
-          {/* RIGHT CONTENT */}
+          {}
           <div className="col-lg-9">
             <Fade direction="up" triggerOnce>
-              {/* HEADER STATS */}
+              {}
               <div className="row g-4 mb-5">
                 <div className="col-md-4">
                   <div className="he-stat-card">
@@ -317,11 +317,11 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
                       <i className="fas fa-shopping-bag"></i>
                     </div>
                     <div>
-                      {/* UPDATE 3: text-adaptive-muted */}
+                      {}
                       <div className="text-adaptive-muted small text-uppercase">
                         Total Orders
                       </div>
-                      {/* UPDATE 4: text-adaptive */}
+                      {}
                       <h3 className="mb-0 fw-bold text-adaptive">
                         {safeRender(stats?.totalOrders, bookings.length)}
                       </h3>
@@ -355,7 +355,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
                       <div className="text-adaptive-muted small text-uppercase">
                         Points
                       </div>
-                      {/* Note: text-warning is colored (yellow/gold), so we keep it. */}
+                      {}
                       <h3 className="mb-0 fw-bold text-warning">
                         {safeRender(loyaltyData?.points, 0)}
                       </h3>
@@ -364,12 +364,12 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
                 </div>
               </div>
 
-              {/* CONTENT PANELS (DESKTOP) */}
+              {}
               <div className="he-dash-content-panel">
                 {activeTab === "history" && (
                   <>
                     <div className="he-dash-header">
-                      {/* UPDATE 5: text-adaptive */}
+                      {}
                       <h4 className="fw-bold mb-0 text-adaptive">Order History</h4>
                       <div className="he-filter-btn-group">
                         {["all", "pending", "processing", "completed"].map(
@@ -402,7 +402,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
                           {currentBookings.length > 0 ? (
                             currentBookings.map((b) => (
                               <tr key={b.id}>
-                                {/* UPDATE 6: text-adaptive-muted inside table */}
+                                {}
                                 <td className="text-adaptive-muted">
                                   #{b.id.slice(-4)}
                                 </td>
@@ -499,7 +499,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
                               <span className="he-badge he-badge-info">
                                 {a.label}
                               </span>
-                              {/* UPDATE 7: Address text */}
+                              {}
                               <span className="fw-bold text-adaptive">
                                 {a.recipientName}
                               </span>
@@ -557,10 +557,10 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
     </div>
   );
 
-  /* --- RENDER MOBILE (NATIVE APP FEEL) --- */
+  
   const renderMobile = () => (
     <div className="he-mobile-dash-wrapper d-lg-none">
-      {/* 1. HEADER PROFILE (COMPACT) */}
+      {}
       <div className="he-mobile-dash-header">
         <div className="d-flex align-items-center gap-3">
           <div className="he-mobile-avatar">{getInitials(user?.name)}</div>
@@ -580,7 +580,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
         </button>
       </div>
 
-      {/* 2. QUICK STATS (HORIZONTAL SCROLL) */}
+      {}
       <div className="he-mobile-stats-scroll">
         <div className="he-mobile-stat-card blue">
           <div className="icon">
@@ -609,7 +609,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
         </div>
       </div>
 
-      {/* 3. TABS NAVIGATION (PILLS) */}
+      {}
       <div className="he-mobile-tabs-container">
         {["history", "loyalty", "addresses", "profile"].map((tab) => (
           <button
@@ -624,9 +624,9 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
         ))}
       </div>
 
-      {/* 4. CONTENT AREA */}
+      {}
       <div className="he-mobile-dash-content pb-5 mb-5">
-        {/* HISTORY: CARD STACK */}
+        {}
         {activeTab === "history" && (
           <div className="d-flex flex-column gap-3">
             {bookings.length > 0 ? (
@@ -687,7 +687,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
           </div>
         )}
 
-        {/* ADDRESSES: CARD LIST */}
+        {}
         {activeTab === "addresses" && (
           <div>
             <button
@@ -704,7 +704,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
                       <span className="he-badge he-badge-info mb-1">
                         {a.label}
                       </span>
-                      {/* FIX: Ganti text-main (mungkin custom class) jadi text-adaptive */}
+                      {}
                       <div className="fw-bold text-adaptive">{a.recipientName}</div>
                       <div className="text-muted small">{a.fullAddress}</div>
                     </div>
@@ -721,7 +721,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
           </div>
         )}
 
-        {/* LOYALTY & PROFILE (Simple Render) */}
+        {}
         {(activeTab === "loyalty" || activeTab === "profile") && (
           <div className="text-center text-muted py-5">
             <i className="fas fa-laptop mb-2 fs-1"></i>
@@ -730,7 +730,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
         )}
       </div>
 
-      {/* MODALS REUSED */}
+      {}
       {showAddressModal && (
         <div className="pe-modal-backdrop">
           <div className="pe-modal-glass">
@@ -744,7 +744,7 @@ const DashboardPage = ({ showMessage }: { showMessage: (msg: string, type?: stri
               </button>
             </div>
             <div className="pe-modal-body">
-              {/* Reuse form logic from desktop */}
+              {}
               <input
                 className="pe-input-glass mb-2"
                 placeholder="Label"

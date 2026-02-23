@@ -1,4 +1,4 @@
-// File: client/src/components/GlobalAnnouncement.jsx
+
 
 import React from 'react';
 
@@ -7,13 +7,13 @@ const GlobalAnnouncement = ({ message, isVisible, onClose }) => {
     return null;
   }
 
-  // PERBAIKAN: Pastikan yang dirender adalah string
-  // Jika message adalah object (dari database theme config), ambil properti .message-nya
+ 
+ 
   const displayText = typeof message === 'object' && message !== null 
     ? message.message 
     : message;
 
-  // Jika teks kosong, jangan tampilkan apa-apa
+ 
   if (!displayText) return null;
 
   return (

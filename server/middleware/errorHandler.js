@@ -1,4 +1,4 @@
-// File: server/middleware/errorHandler.js
+
 import { Prisma } from "@prisma/client";
 
 export const errorHandler = (err, req, res, next) => {
@@ -8,7 +8,7 @@ export const errorHandler = (err, req, res, next) => {
   let message = err.message || "Terjadi kesalahan pada server.";
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    // Kesalahan umum dari Prisma (misalnya, data unik sudah ada)
+   
     if (err.code === 'P2002') {
       statusCode = 400;
       const target = err.meta?.target || ['data'];
@@ -23,7 +23,7 @@ export const errorHandler = (err, req, res, next) => {
     success: false,
     error: {
       message: message,
-      // Tampilkan stack trace hanya di environment development untuk keamanan
+     
       ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
     },
   });

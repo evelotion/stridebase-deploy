@@ -1,4 +1,4 @@
-// File: server/prisma/schema.prisma (Versi Final Lengkap & Bersih)
+
 
 datasource db {
   provider = "postgresql"
@@ -9,7 +9,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Enums
+
 enum UserRole {
   customer
   mitra
@@ -92,7 +92,7 @@ enum PayoutStatus {
 }
 
 
-// Models
+
 model User {
   id                     String            @id @default(cuid())
   email                  String            @unique
@@ -134,11 +134,11 @@ model Store {
   owner            User              @relation(fields: [ownerId], references: [id])
   ownerId          String
   storeStatus      StoreStatus       @default(pending)
-  billingType     String            @default("COMMISSION") // "COMMISSION" atau "CONTRACT"
-  commissionRate  Float             @default(10)           // Dipakai jika COMMISSION
-  contractFee     Float?            @default(0)            // Dipakai jika CONTRACT (Nilai tagihan bulanan)
-  subscriptionFee Float?            // (Legacy/Optional) Bisa dibiarkan atau dihapus nanti
-  tier            Tier              @default(BASIC)        // (Legacy)
+  billingType     String            @default("COMMISSION")
+  commissionRate  Float             @default(10)          
+  contractFee     Float?            @default(0)           
+  subscriptionFee Float?           
+  tier            Tier              @default(BASIC)       
   rating           Float             @default(0)
   photoLimit       Int               @default(5)
   createdAt        DateTime          @default(now())
@@ -166,7 +166,7 @@ model LedgerEntry {
   booking     Booking? @relation(fields: [bookingId], references: [id])
   bookingId   String?
   payout      PayoutRequest? @relation(fields: [payoutId], references: [id])
-  payoutId    String?  @unique // <-- Perbaikan untuk error relasi PayoutRequest
+  payoutId    String?  @unique
 
   amount      Float    
   type        String   
@@ -250,7 +250,7 @@ model Booking {
   notifications   Notification[]
   review          Review?
   walletTransaction WalletTransaction?
-  expiresAt       DateTime? // <-- TAMBAHKAN BARIS INI DI SINI
+  expiresAt       DateTime?
   ledgerEntries LedgerEntry[]
 
   @@index([userId])

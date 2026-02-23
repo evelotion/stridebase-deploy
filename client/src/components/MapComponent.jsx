@@ -1,4 +1,4 @@
-// File: client/src/components/MapComponent.jsx
+
 
 import React from "react";
 
@@ -9,7 +9,7 @@ import React from "react";
  * 2. Mengganti 'YOUR_API_KEY' di dalam kode ini dengan API Key Anda.
  */
 const MapComponent = ({ lat, lng, storeName }) => {
-  // 1. Validasi Input: Memeriksa apakah koordinat (latitude dan longitude) tersedia.
+ 
   if (!lat || !lng) {
     return (
       <div
@@ -25,11 +25,11 @@ const MapComponent = ({ lat, lng, storeName }) => {
     );
   }
 
-  // Ganti 'YOUR_API_KEY' dengan kunci API Anda yang sebenarnya.
-  // PERUBAHAN DI BARIS INI: Gunakan variabel lingkungan
+ 
+ 
   const apiKey = import.meta.env.VITE_Maps_API_KEY;
 
-  // 2. Persiapan URL: Membuat URL yang benar untuk Google Maps.
+ 
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   const embedUrl = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${lat},${lng}`;
 
@@ -42,7 +42,7 @@ const MapComponent = ({ lat, lng, storeName }) => {
         overflow: "hidden",
       }}
     >
-      {/* 3. Tampilan Peta (Iframe): */}
+      {}
       <iframe
         width="100%"
         height="100%"
@@ -53,7 +53,7 @@ const MapComponent = ({ lat, lng, storeName }) => {
         title={`Peta Lokasi ${storeName}`}
       ></iframe>
 
-      {/* 4. Tombol Aksi (Fallback): */}
+      {}
       <a
         href={googleMapsUrl}
         target="_blank"

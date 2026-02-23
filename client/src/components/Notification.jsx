@@ -1,11 +1,11 @@
-// File: stridebase-app-current/client/src/components/Notification.jsx
+
 
 import React, { useEffect } from 'react';
-import './Notification.css'; // Kita akan buat file CSS ini nanti
+import './Notification.css';
 
 const Notification = ({ notification, onClose }) => {
   useEffect(() => {
-    // Sembunyikan notifikasi setelah 3 detik
+   
     const timer = setTimeout(() => {
       onClose();
     }, 3000);

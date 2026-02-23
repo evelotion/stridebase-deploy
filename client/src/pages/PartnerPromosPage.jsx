@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerPromosPage.jsx
+
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -6,7 +6,7 @@ import { Fade, Slide } from "react-awesome-reveal";
 import API_BASE_URL from "../apiConfig";
 import "./PartnerElevate.css";
 
-// --- GLASS MODAL FOR PROMOS ---
+
 const PromoGlassModal = ({
   show,
   handleClose,
@@ -204,7 +204,7 @@ const PartnerPromosPage = ({ showMessage }) => {
       if (showMessage)
         showMessage(`Promo ${isEditing ? "updated" : "created"} successfully!`);
       setShowModal(false);
-      // Refresh (Simplified)
+     
       window.location.reload();
     } catch (err) {
       if (showMessage) showMessage(err.message, "Error");
@@ -285,7 +285,7 @@ const PartnerPromosPage = ({ showMessage }) => {
                   className="pe-card position-relative overflow-hidden h-100 d-flex flex-column group-hover-glow"
                   style={{ borderLeft: "4px solid var(--pe-warning)" }}
                 >
-                  {/* Ticket Perforation Effect */}
+                  {}
                   <div
                     className="position-absolute top-50 start-0 translate-middle"
                     style={{

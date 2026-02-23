@@ -1,4 +1,4 @@
-// File: server/controllers/user.controller.js (Versi Perbaikan Final)
+
 
 import prisma from "../config/prisma.js";
 
@@ -130,17 +130,17 @@ export const redeemLoyaltyPoints = async (req, res, next) => {
   res.json({ message: "Fungsi redeem belum diimplementasikan." });
 };
 
-// --- FUNGSI INI YANG DIPERBAIKI ---
+
 export const getRedeemedPromos = async (req, res, next) => {
   try {
-    // Logika yang benar untuk fitur ini perlu dibuat nanti.
-    // Untuk sekarang, kita kembalikan array kosong agar tidak error.
+   
+   
     res.json([]);
   } catch (error) {
     next(error);
   }
 };
-// --- AKHIR PERBAIKAN ---
+
 
 export const getRecommendations = async (req, res, next) => {
   try {

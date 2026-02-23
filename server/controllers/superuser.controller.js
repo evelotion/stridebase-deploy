@@ -1,10 +1,10 @@
-// File: server/controllers/superuser.controller.js
+
 
 import prisma from "../config/prisma.js";
 import { loadThemeConfig, getTheme } from "../config/theme.js";
 import { broadcastThemeUpdate, createNotificationForUser } from "../socket.js";
 import cloudinary from "../config/cloudinary.js";
-import bcrypt from "bcryptjs"; // Pastikan import bcrypt untuk hashing password seed
+import bcrypt from "bcryptjs";
 
 export const getGlobalConfig = async (req, res, next) => {
   try {
@@ -85,7 +85,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
         .json({ message: "Permintaan ini sudah diproses." });
     }
 
-    // Logika penghapusan (User Deletion)
+   
     if (request.requestType === "USER_DELETION" && resolution === "APPROVED") {
       const userIdToDelete = request.details.userId;
       if (userIdToDelete) {
@@ -99,7 +99,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
           prisma.address.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.securityLog.deleteMany({ where: { userId: userIdToDelete } }),
           prisma.loyaltyPoint.deleteMany({ where: { userId: userIdToDelete } }),
-          // Hati-hati: Baris ini menghapus request yang sedang diproses!
+         
           prisma.approvalRequest.deleteMany({
             where: { requestedById: userIdToDelete },
           }),
@@ -109,7 +109,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
       }
     }
 
-    // Logika Perubahan Bisnis
+   
     if (
       request.requestType === "BUSINESS_MODEL_CHANGE" &&
       resolution === "APPROVED"
@@ -125,11 +125,11 @@ export const resolveApprovalRequest = async (req, res, next) => {
       });
     }
 
-    // Logika Penghapusan Toko
+   
     if (request.requestType === "STORE_DELETION" && resolution === "APPROVED") {
       const { storeId } = request;
       if (storeId) {
-        // Hapus dependensi toko
+       
         await prisma.$transaction([
           prisma.review.deleteMany({ where: { storeId } }),
           prisma.platformEarning.deleteMany({ where: { storeId } }),
@@ -143,13 +143,13 @@ export const resolveApprovalRequest = async (req, res, next) => {
           prisma.service.deleteMany({ where: { storeId } }),
           prisma.storeSchedule.deleteMany({ where: { storeId } }),
           prisma.storePromo.deleteMany({ where: { storeId } }),
-          // Hati-hati: Baris ini menghapus request yang sedang diproses!
+         
           prisma.approvalRequest.deleteMany({ where: { storeId } }),
           prisma.storeWallet.deleteMany({ where: { storeId } }),
           prisma.store.delete({ where: { id: storeId } }),
         ]);
 
-        // Hapus notifikasi terkait
+       
         await prisma.notification.deleteMany({
           where: {
             bookingId: null,
@@ -159,9 +159,9 @@ export const resolveApprovalRequest = async (req, res, next) => {
       }
     }
 
-    // --- FIX LOGIC START ---
-    // Cek apakah request ini termasuk tipe penghapusan yang disetujui?
-    // Jika YA, berarti data approvalRequest di database sudah TERHAPUS oleh transaksi di atas.
+   
+   
+   
     const isDeletionRequest =
       (request.requestType === "USER_DELETION" ||
         request.requestType === "STORE_DELETION") &&
@@ -170,15 +170,15 @@ export const resolveApprovalRequest = async (req, res, next) => {
     let updatedRequest = null;
 
     if (!isDeletionRequest) {
-      // Hanya lakukan update jika data masih ada (bukan request penghapusan)
+     
       updatedRequest = await prisma.approvalRequest.update({
         where: { id: id },
         data: { status: resolution, reviewedById: req.user.id },
       });
     }
-    // --- FIX LOGIC END ---
+   
 
-    // Kirim notifikasi (tetap dilakukan meskipun data dihapus)
+   
     const targetName =
       request.details?.userName ||
       request.details?.storeName ||
@@ -195,7 +195,7 @@ export const resolveApprovalRequest = async (req, res, next) => {
       }
     }
 
-    // Pastikan notifikasi dikirim ke ID yang valid (jika user belum dihapus, atau logic notifikasi handle user null)
+   
     if (!isDeletionRequest || request.requestType === "BUSINESS_MODEL_CHANGE") {
       await createNotificationForUser(
         request.requestedById,
@@ -204,8 +204,8 @@ export const resolveApprovalRequest = async (req, res, next) => {
       );
     }
 
-    // Respons ke Client
-    // Jika terhapus, kita kirim objek dummy agar frontend tidak error
+   
+   
     res.json(
       updatedRequest || {
         id,
@@ -218,10 +218,10 @@ export const resolveApprovalRequest = async (req, res, next) => {
   }
 };
 
-// --- REFACTORED: Programmatic Reseed (Lebih Aman & Stabil) ---
+
 export const reseedDatabase = async (req, res, next) => {
   try {
-    // 1. Hapus data lama (Urutan penting karena Foreign Key!)
+   
     await prisma.$transaction([
       prisma.notification.deleteMany(),
       prisma.securityLog.deleteMany(),
@@ -243,10 +243,10 @@ export const reseedDatabase = async (req, res, next) => {
       prisma.address.deleteMany(),
       prisma.loyaltyPoint.deleteMany(),
       prisma.user.deleteMany(),
-      // Jangan hapus GlobalSetting agar konfigurasi tema tidak hilang
+     
     ]);
 
-    // 2. Buat Data Default (Developer & Admin)
+   
     const hashedPassword = await bcrypt.hash("password123", 10);
 
     await prisma.user.create({
@@ -282,7 +282,7 @@ export const reseedDatabase = async (req, res, next) => {
       },
     });
 
-    // Log aktivitas ini
+   
     console.log("Database reseeded programmatically via Developer Console.");
 
     res.json({

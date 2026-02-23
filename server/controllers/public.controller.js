@@ -1,15 +1,15 @@
-// File: server/controllers/public.controller.js
+
 import prisma from "../config/prisma.js";
 import { getTheme } from "../config/theme.js";
 
-// @desc    Get the current theme configuration
-// @route   GET /api/public/theme-config
+
+
 export const getThemeConfig = (req, res) => {
   res.json(getTheme());
 };
 
-// @desc    Get all active banners
-// @route   GET /api/public/banners
+
+
 export const getBanners = async (req, res, next) => {
   try {
     const allBanners = await prisma.banner.findMany({
@@ -22,8 +22,8 @@ export const getBanners = async (req, res, next) => {
   }
 };
 
-// @desc    Generate and serve the sitemap.xml
-// @route   GET /api/public/sitemap.xml
+
+
 export const getSitemap = async (req, res, next) => {
   const baseUrl = "https://stridebase-client-ctct.onrender.com";
   try {
@@ -35,13 +35,13 @@ export const getSitemap = async (req, res, next) => {
     let xml = `<?xml version="1.0" encoding="UTF-8"?>`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-    // Halaman statis
+   
     xml += `<url><loc>${baseUrl}/</loc></url>`;
     xml += `<url><loc>${baseUrl}/store</loc></url>`;
     xml += `<url><loc>${baseUrl}/about</loc></url>`;
     xml += `<url><loc>${baseUrl}/contact</loc></url>`;
 
-    // Halaman dinamis (toko)
+   
     stores.forEach((store) => {
       xml += `<url><loc>${baseUrl}/store/${store.id}</loc></url>`;
     });
@@ -55,9 +55,9 @@ export const getSitemap = async (req, res, next) => {
   }
 };
 
-// --- TAMBAHAN BARU: Get Global Promos ---
-// @desc    Get active global promos for mobile homepage
-// @route   GET /api/public/promos
+
+
+
 export const getGlobalPromos = async (req, res, next) => {
   try {
     const now = new Date();
@@ -65,15 +65,15 @@ export const getGlobalPromos = async (req, res, next) => {
     const promos = await prisma.promo.findMany({
       where: {
         status: "active",
-        // Pastikan promo sudah mulai
+       
         startDate: { lte: now },
-        // Pastikan promo belum berakhir (atau endDate null/selamanya)
+       
         OR: [{ endDate: { gte: now } }, { endDate: null }],
       },
       orderBy: {
         createdAt: "desc",
       },
-      take: 5, // Batasi 5 voucher terbaru
+      take: 5,
     });
 
     res.json(promos);

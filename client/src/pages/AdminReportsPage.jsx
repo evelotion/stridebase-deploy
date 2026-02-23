@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminReportsPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -192,7 +192,7 @@ const AdminReportsPage = ({ showMessage }) => {
             <div className="pe-card h-100">
               <h5 className="mb-4">Top Performing Stores</h5>
               <ul className="list-group list-group-flush">
-                {/* FIX: List Item Text Color */}
+                {}
                 <li
                   className="list-group-item bg-transparent d-flex justify-content-between"
                   style={{ color: "var(--pe-text-main)" }}

@@ -1,4 +1,4 @@
-// File: client/src/pages/AboutPage.jsx
+
 
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -13,11 +13,11 @@ const AboutPage = () => {
 
   return (
     <div className="pe-dashboard-wrapper luxury-blue-theme">
-      {/* Navbar otomatis dari App.jsx */}
+      {}
 
-      {/* --- 1. HERO SECTION (TYPOGRAPHY ONLY) --- */}
+      {}
       <section className="lx-hero-clean">
-        {/* Ambient Blue Orbs */}
+        {}
         <div className="lx-orb orb-1"></div>
         <div className="lx-orb orb-2"></div>
 
@@ -35,7 +35,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* --- 2. MANIFESTO (TEXT FOCUS) --- */}
+      {}
       <section className="lx-section py-5">
         <div className="container">
           <div className="row justify-content-center">
@@ -53,11 +53,11 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* --- 3. THE CRAFT (DARK CARDS WITH BLUE GLOW) --- */}
+      {}
       <section className="lx-section">
         <div className="container">
           <div className="row g-4">
-            {/* Card 1 */}
+            {}
             <div className="col-md-6">
               <Slide direction="left" triggerOnce>
                 <div className="lx-feature-card">
@@ -72,7 +72,7 @@ const AboutPage = () => {
               </Slide>
             </div>
 
-            {/* Card 2 */}
+            {}
             <div className="col-md-6">
               <Slide direction="right" triggerOnce>
                 <div className="lx-feature-card">
@@ -90,7 +90,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* --- 4. STATS (MINIMAL BLUE) --- */}
+      {}
       <section className="lx-section pt-5 pb-5">
         <div className="container">
           <div className="lx-stats-grid">
@@ -112,7 +112,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* --- 5. CTA (BLUE GRADIENT) --- */}
+      {}
       <section className="lx-cta-section-blue">
         <div className="container text-center">
           <Zoom triggerOnce>

@@ -1,4 +1,4 @@
-// File: client/src/components/StoreCard.tsx (Tanpa Badge PRO)
+
 
 import { Link } from "react-router-dom";
 
@@ -28,7 +28,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
     images,
     headerImage,
     distance,
-    tier, // Variabel 'tier' tetap ada, tapi tidak kita gunakan untuk badge
+    tier,
   } = store;
 
   const imageUrl =
@@ -40,7 +40,7 @@ const StoreCard: React.FC<StoreCardProps> = ({ store }) => {
   return (
     <Link to={`/store/${id}`} className="text-decoration-none text-dark">
       <div className="store-grid__card h-100">
-        {/* --- BAGIAN KODE BADGE PRO DIHAPUS DARI SINI --- */}
+        {}
 
         <div className="store-grid__image-wrapper">
           <img

@@ -1,10 +1,10 @@
-// File: client/src/components/Navbar.jsx
+
 
 import React, { useState, useEffect, useRef } from "react";
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom"; // <--- TAMBAH useLocation
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 
-// --- Helper Avatar ---
+
 const getInitials = (name) => {
   if (!name) return "?";
   const names = name.split(" ");
@@ -60,21 +60,21 @@ const Navbar = ({
 }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
-  const location = useLocation(); // <--- INISIALISASI LOCATION
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // State Desktop
+ 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
 
-  // State Mobile
+ 
   const [showMobileProfileMenu, setShowMobileProfileMenu] = useState(false);
 
   const profileRef = useRef(null);
   const notifRef = useRef(null);
   const mobileProfileRef = useRef(null);
 
-  // Logika Scroll Global
+ 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -82,7 +82,7 @@ const Navbar = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle klik di luar menu
+ 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target))
@@ -134,7 +134,7 @@ const Navbar = ({
         />
       );
     }
-    // FIX: Gunakan variabel warna teks navbar agar terlihat di Light Mode
+   
     return (
       <span className="fs-4 fw-bold" style={{ color: "var(--nav-text-color)" }}>
         StrideBase
@@ -142,7 +142,7 @@ const Navbar = ({
     );
   };
 
-  // --- KOMPONEN DROPDOWN MENU ---
+ 
   const UserDropdownMenu = ({ isMobile = false }) => (
     <ul
       className={`dropdown-menu dropdown-menu-end dropdown-menu-custom border-0 ${
@@ -242,10 +242,10 @@ const Navbar = ({
     </ul>
   );
 
-  // LOGIKA UTAMA PERBAIKAN:
-  // 1. Cek apakah ini Homepage ("/")
-  // 2. Jika Homepage DAN belum discroll, gunakan 'sb-navbar-transparent'
-  // 3. Jika BUKAN Homepage, SELALU gunakan 'sb-navbar-glass' (agar aman di halaman putih)
+ 
+ 
+ 
+ 
 
   const isHomePage = location.pathname === "/";
 
@@ -254,15 +254,15 @@ const Navbar = ({
       ? "navbar navbar-expand-lg d-none d-lg-flex fixed-top transition-all sb-navbar-transparent"
       : "navbar navbar-expand-lg d-none d-lg-flex fixed-top transition-all sb-navbar-glass";
 
-  // Helper style untuk link agar warnanya dinamis
+ 
   const navLinkStyle = ({ isActive }) => ({
-    color: isActive ? "var(--pe-accent)" : "inherit", // Inherit agar mengikuti aturan CSS parent (Navbar)
+    color: isActive ? "var(--pe-accent)" : "inherit",
     fontWeight: "500",
   });
 
   return (
     <>
-      {/* NAVBAR DESKTOP */}
+      {}
       <nav className={navbarClass}>
         <div className="container">
           <Link className="navbar-brand fw-bold" to="/">
@@ -295,7 +295,7 @@ const Navbar = ({
           <div className="d-flex align-items-center gap-3">
             {user ? (
               <>
-                {/* Notifikasi Dropdown */}
+                {}
                 <div className="dropdown" ref={notifRef}>
                   <button
                     className={`sb-btn-icon position-relative ${
@@ -304,7 +304,7 @@ const Navbar = ({
                     type="button"
                     onClick={handleOpenNotifications}
                     style={{
-                      color: "inherit", // Ikuti parent
+                      color: "inherit",
                       border: "none",
                       background: "transparent",
                     }}
@@ -390,7 +390,7 @@ const Navbar = ({
                   </ul>
                 </div>
 
-                {/* Profile Dropdown Desktop */}
+                {}
                 <div className="dropdown" ref={profileRef}>
                   <button
                     className={`sb-btn-profile ${
@@ -402,7 +402,7 @@ const Navbar = ({
                       setShowNotifMenu(false);
                     }}
                     style={{
-                      color: "inherit", // Ikuti parent
+                      color: "inherit",
                       display: "flex",
                       alignItems: "center",
                       border: "none",
@@ -440,7 +440,7 @@ const Navbar = ({
         </div>
       </nav>
 
-      {/* MOBILE HEADER (FIXED) */}
+      {}
       <div
         className="mobile-header d-lg-none"
         style={{
@@ -480,7 +480,7 @@ const Navbar = ({
         )}
       </div>
 
-      {/* MOBILE BOTTOM NAV */}
+      {}
       <div
         className="mobile-bottom-nav d-lg-none"
         style={{

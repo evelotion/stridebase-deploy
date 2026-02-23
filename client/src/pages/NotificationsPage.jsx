@@ -1,4 +1,4 @@
-// File: client/src/pages/NotificationsPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ const NotificationsPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch Notifications
+ 
   useEffect(() => {
     const fetchNotifications = async () => {
       const token = localStorage.getItem("token");
@@ -30,7 +30,7 @@ const NotificationsPage = () => {
         const data = await response.json();
         if (response.ok) {
           setNotifications(data.notifications || []);
-          // Otomatis tandai terbaca (opsional, bisa dipindah ke on click)
+         
           markAllAsRead(token);
         }
       } catch (error) {
@@ -54,7 +54,7 @@ const NotificationsPage = () => {
     }
   };
 
-  // --- Helper: Group By Date ---
+ 
   const groupedNotifications = notifications.reduce((groups, notif) => {
     const date = new Date(notif.createdAt);
     const today = new Date();
@@ -74,7 +74,7 @@ const NotificationsPage = () => {
     return groups;
   }, {});
 
-  // --- Helper: Icon & Color Type ---
+ 
   const getIconInfo = (message) => {
     const msg = message.toLowerCase();
     if (
@@ -115,7 +115,7 @@ const NotificationsPage = () => {
       </div>
     );
 
-  /* --- DESKTOP VIEW --- */
+  
   const renderDesktop = () => (
     <div
       className="home-elevate-wrapper d-none d-lg-block"
@@ -201,7 +201,7 @@ const NotificationsPage = () => {
     </div>
   );
 
-  /* --- MOBILE VIEW (ACTIVITY FEED) --- */
+  
   const renderMobile = () => (
     <div className="he-mobile-notif-wrapper d-lg-none">
       <div className="he-mobile-header-sticky">

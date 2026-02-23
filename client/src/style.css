@@ -1,9 +1,9 @@
-/* File: stridebase-app-render/client/src/style.css */
 
-/* General Styles */
+
+
 
 :root {
-  /* ================= DARK MODE (DEFAULT) ================= */
+  
   --sb-bg-primary: #000000;
   --sb-bg-secondary: #050505;
   --sb-bg-tertiary: #080808;
@@ -21,14 +21,14 @@
 
   --sb-accent: #3b82f6;
 
-  /* --- NAVBAR VARIABLES (DARK MODE) --- */
+  
   --nav-text-color: #ffffff;
   --nav-icon-bg: rgba(255, 255, 255, 0.1);
   --nav-icon-border: rgba(255, 255, 255, 0.2);
 
-  /* Background Navbar (Penting agar navbar berubah warna) */
-  --nav-glass-bg: rgba(5, 5, 5, 0.85); /* Hitam kaca saat scroll */
-  --nav-gradient-top: rgba(0, 0, 0, 0.9); /* Gradasi hitam di posisi top */
+  
+  --nav-glass-bg: rgba(5, 5, 5, 0.85); 
+  --nav-gradient-top: rgba(0, 0, 0, 0.9); 
   --nav-border-bottom: rgba(255, 255, 255, 0.15);
 
   --nav-underline: #ffffff; 
@@ -38,14 +38,14 @@
   --sb-input-placeholder: rgba(255, 255, 255, 0.4);
 }
 
-/* ================= LIGHT MODE OVERRIDE (Porcelain) ================= */
+
 [data-theme="light"] {
   --sb-bg-primary: #ffffff;
   --sb-bg-secondary: #f8fafc;
   --sb-bg-tertiary: #f1f5f9;
 
-  /* Text dibalik menjadi Gelap */
-  --sb-text-main: #0f172a; /* Hitam kebiruan */
+  
+  --sb-text-main: #0f172a; 
 --sb-text-muted: #64748b;
   --sb-text-inverse: #ffffff;
 
@@ -56,19 +56,19 @@
   --glass-bg: rgba(255, 255, 255, 0.9);
   --glass-border: #cbd5e1;
 
-  /* --- NAVBAR VARIABLES (LIGHT MODE) --- */
-  --nav-text-color: #111827; /* Teks jadi Hitam */
-  --nav-icon-bg: rgba(0, 0, 0, 0.05); /* Icon bg abu muda */
-  --nav-icon-border: rgba(0, 0, 0, 0.1); /* Border icon abu */
+  
+  --nav-text-color: #111827; 
+  --nav-icon-bg: rgba(0, 0, 0, 0.05); 
+  --nav-icon-border: rgba(0, 0, 0, 0.1); 
 
-  /* Background Navbar (Override ke Putih) */
-  --nav-glass-bg: rgba(255, 255, 255, 0.85); /* Putih kaca saat scroll */
-  --nav-gradient-top: rgba(255, 255, 255, 0.9); /* Putih pudar di posisi top */
+  
+  --nav-glass-bg: rgba(255, 255, 255, 0.85); 
+  --nav-gradient-top: rgba(255, 255, 255, 0.9); 
   --nav-border-bottom: rgba(0, 0, 0, 0.05);
 
-  /* Helper Override */
+  
   --override-text-color: #0f172a;
-  --nav-underline: #3b82f6; /* Sama dengan --sb-accent */
+  --nav-underline: #3b82f6; 
   --nav-underline-glow: none;
 
   --sb-input-text: #0f172a;
@@ -77,7 +77,7 @@
 
 }
 
-/* --- Helper Classes (Adaptive Text) --- */
+
 .he-hero-headline,
 .he-section-title,
 .he-store-name-wide,
@@ -105,7 +105,7 @@ body {
   background-color: var(--bg-light);
   color: var(--text-dark);
   font-family: var(--font-family);
-  /* Gunakan variabel untuk font-size, dengan 16px sebagai fallback */
+  
   font-size: var(--font-size-base, 16px);
   margin: 0;
   padding: 0;
@@ -116,7 +116,7 @@ body.is-user-layout {
   background-color: var(--bg-light);
 }
 
-/* Navbar Styles */
+
 /* .navbar {
   position: fixed;
   top: 0;
@@ -203,9 +203,9 @@ body.is-user-layout {
   width: 100%;
 }
 
-/* --- Penyesuaian Warna Font Navbar --- */
 
-/* Untuk Navbar Putih (Halaman Lain) */
+
+
 .navbar-light .nav-link {
   color: var(--text-dark);
 }
@@ -217,16 +217,16 @@ body.is-user-layout {
   background: var(--primary-color);
 }
 
-/* Untuk Navbar Gelap (Modern Homepage) */
+
 .navbar-dark .nav-link {
-  color: rgba(255, 255, 255, 0.85); /* Putih transparan */
+  color: rgba(255, 255, 255, 0.85); 
 }
 .navbar-dark .nav-link:hover,
 .navbar-dark .nav-link.active {
-  color: #ffffff; /* Putih solid */
+  color: #ffffff; 
 }
 .navbar-dark .nav-link::after {
-  background: #ffffff; /* Garis bawah putih */
+  background: #ffffff; 
 }
 
 .btn-gradient {
@@ -240,7 +240,7 @@ body.is-user-layout {
   padding: 0.3rem 1.2rem;
   border-radius: 999px;
   font-weight: 500;
-  /* Gunakan variabel untuk font-size, dengan 0.85rem sebagai fallback */
+  
   font-size: var(--font-size-button, 0.85rem);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -250,7 +250,7 @@ body.is-user-layout {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* === PENGATURAN PADDING KONSISTEN UNTUK SEMUA HALAMAN === */
+
 .page-content,
 .page-content-about,
 .page-content-booking,
@@ -260,9 +260,9 @@ body.is-user-layout {
 .terms-content {
   padding-top: 90px;
 }
-/* Untuk auth-container tidak perlu padding atas karena sudah diatur secara internal */
 
-/* Hero Section */
+
+
 .hero-section {
   min-height: 100vh;
   background-color: var(--bg-white);
@@ -272,13 +272,13 @@ body.is-user-layout {
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: center; /* Tambahkan baris ini */
+  justify-content: center; 
 }
 
 .hero-section h1 {
   color: var(--text-dark);
   font-weight: 700;
-  /* Gunakan variabel untuk font-size, dengan 3rem sebagai fallback */
+  
   font-size: var(--font-size-h1, 3rem);
 }
 
@@ -370,7 +370,7 @@ body.is-user-layout {
   transform: rotate(12deg) translateX(80px) scale(1.05);
 }
 
-/* ENHANCED Hero Form */
+
 .hero-form-enhanced {
   position: absolute;
   bottom: -80px;
@@ -664,7 +664,7 @@ footer {
   perspective: 1000px;
 }
 
-/* ENHANCED Testimonial Section */
+
 .testimonial-container-enhanced {
   position: relative;
   padding: 3rem 0;
@@ -673,7 +673,7 @@ footer {
 }
 
 .testimonial-container-enhanced::before {
-  content: "\f10d"; /* Font Awesome quote-left icon */
+  content: "\f10d"; 
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
   position: absolute;
@@ -731,13 +731,13 @@ footer {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Fallback for old hero form and testimonial container */
+
 .hero-form,
 .testimonial-container {
   display: none;
 }
 
-/* Scroll Animation */
+
 .fade-in-section {
   opacity: 0;
   transform: translateY(30px);
@@ -815,7 +815,7 @@ footer {
   }
 }
 
-/* about.html */
+
 .page-content-about {
   padding-bottom: 60px;
 }
@@ -825,7 +825,7 @@ footer {
   color: #555;
 }
 
-/* contact.html */
+
 .form-control {
   border-radius: 0.5rem;
 }
@@ -842,7 +842,7 @@ footer {
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* dashboard.html */
+
 .dashboard {
   padding-bottom: 60px;
 }
@@ -862,7 +862,7 @@ footer {
   margin-top: 2rem;
 }
 
-/* search.html */
+
 .store-card {
   border: none;
   border-radius: 1rem;
@@ -876,7 +876,7 @@ footer {
   object-fit: cover;
 }
 
-/* store-detail.html */
+
 .store-detail h1 {
   font-weight: 700;
   font-size: 2rem;
@@ -940,7 +940,7 @@ footer {
   cursor: pointer;
 }
 
-/* store.html */
+
 .store-page {
   padding-bottom: 5rem;
 }
@@ -956,7 +956,7 @@ footer {
   display: flex !important;
 }
 
-/* terms.html */
+
 .terms-content {
   padding-bottom: 60px;
 }
@@ -976,11 +976,11 @@ footer {
   }
 }
 
-/* === STYLE BARU UNTUK HALAMAN LOGIN, REGISTER, RESET PASSWORD === */
+
 .auth-container {
   min-height: calc(
     100vh - 44px
-  ); /* MODIFIKASI: Tinggi disesuaikan dengan navbar */
+  ); 
   padding-top: 0x;
 }
 
@@ -998,14 +998,14 @@ footer {
 }
 
 .login-image-side {
-  /* background-image properti sudah dihapus */
+  
   background-size: cover;
   background-position: center;
   position: relative;
 }
 
 .register-image-side {
-  /* background-image properti sudah dihapus */
+  
   background-size: cover;
   background-position: center;
   position: relative;
@@ -1081,7 +1081,7 @@ footer {
   font-size: 0.9rem;
 }
 
-/* === Account Page Styles === */
+
 .account-page-container {
   padding-bottom: 60px;
 }
@@ -1112,7 +1112,7 @@ footer {
 .account-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* Memberi jarak antar tombol */
+  gap: 0.5rem; 
 }
 
 .account-nav-item {
@@ -1120,7 +1120,7 @@ footer {
   align-items: center;
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid transparent; /* Border transparan agar layout tidak bergeser saat hover */
+  border: 1px solid transparent; 
   background-color: transparent;
   border-radius: 0.5rem;
   color: var(--text-muted);
@@ -1138,11 +1138,11 @@ footer {
   background-color: var(--primary-color);
   color: var(--bg-white);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(28, 64, 212, 0.3); /* Disesuaikan dengan warna primer */
+  box-shadow: 0 4px 12px rgba(28, 64, 212, 0.3); 
 }
 
 .account-nav-item i {
-  width: 24px; /* Memberi ruang tetap untuk ikon */
+  width: 24px; 
   font-size: 1rem;
 }
 
@@ -1204,7 +1204,7 @@ footer {
   flex-grow: 1;
 }
 
-/* === Booking Confirmation Page Styles === */
+
 .page-content-booking {
   padding-bottom: 60px;
 }
@@ -1284,11 +1284,11 @@ footer {
   padding: 0.75rem;
 }
 
-/* === Booking Success Page Styles === */
+
 .success-container {
   min-height: calc(
     100vh - 120px
-  ); /* Adjust based on navbar and footer height */
+  ); 
   padding-bottom: 60px;
 }
 
@@ -1362,7 +1362,7 @@ footer {
   font-weight: 500;
 }
 
-/* === FAQ Page Styles (Baru Ditambahkan) === */
+
 .faq-header-enhanced {
   text-align: center;
   padding: 2rem 0;
@@ -1433,7 +1433,7 @@ footer {
   border: 1px solid #e9ecef;
 }
 
-/* === Notification Page Styles === */
+
 .notification-list .notification-item {
   background-color: #fff;
   border: 1px solid #e9ecef;
@@ -1474,7 +1474,7 @@ footer {
   font-size: 0.8rem;
   color: var(--text-muted);
   position: relative;
-  padding-right: 15px; /* space for the dot */
+  padding-right: 15px; 
 }
 
 .unread-dot {
@@ -1488,7 +1488,7 @@ footer {
   transform: translateY(-50%);
 }
 
-/* === Search Results Page Styles === */
+
 .search-page-bar .form-control {
   border-right: none;
   border-top-right-radius: 0;
@@ -1500,7 +1500,7 @@ footer {
   border-bottom-left-radius: 0;
 }
 
-/* === Legal Pages (Terms, Privacy) Styles === */
+
 .legal-content-card {
   background-color: #fff;
   padding: 2rem 3rem;
@@ -1518,7 +1518,7 @@ footer {
   color: #555;
 }
 
-/* === Notification Bell & Offcanvas Styles === */
+
 .notification-bell-icon {
   position: relative;
   font-size: 1.2rem;
@@ -1533,7 +1533,7 @@ footer {
   padding: 0.3em 0.5em;
 }
 
-/* Penyesuaian untuk panel notifikasi */
+
 .offcanvas-body .notification-list {
   padding-top: 0;
 }
@@ -1554,11 +1554,11 @@ footer {
 }
 
 .offcanvas-body .notification-item.unread {
-  border-left: none; /* Hapus border kiri di dalam offcanvas */
-  background-color: var(--bg-light); /* Cukup dengan background berbeda */
+  border-left: none; 
+  background-color: var(--bg-light); 
 }
 
-/* Hapus meta (waktu, titik) di dalam offcanvas agar lebih simpel */
+
 .offcanvas-body .notification-meta {
   display: none;
 }
@@ -1597,7 +1597,7 @@ STYLE BARU UNTUK JADWAL (MODAL INTERAKTIF)
 
 .schedule-container-grid {
   display: grid;
-  grid-template-columns: 60px repeat(7, 1fr); /* Kolom waktu + 7 hari */
+  grid-template-columns: 60px repeat(7, 1fr); 
   gap: 0.5rem;
   overflow-x: auto;
   padding-bottom: 1rem;
@@ -1656,7 +1656,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
 ==================================================================
 */
 @media (max-width: 991px) {
-  /* --- Mobile Navigation Menu --- */
+  
   .navbar-collapse {
     position: fixed;
     top: 0;
@@ -1665,7 +1665,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
     height: 100vh;
     background: #fff;
 
-    /* Using Flexbox for vertical layout */
+    
     display: flex;
     flex-direction: column;
 
@@ -1690,10 +1690,10 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   }
 
   .navbar-collapse #navbarAuth .btn {
-    /* Pushes the button to the bottom of the menu */
+    
     margin-top: auto;
 
-    /* Full width with some horizontal margin */
+    
     width: calc(100% - 3rem);
     margin-left: 1.5rem;
     margin-right: 1.5rem;
@@ -1703,32 +1703,32 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
     padding-bottom: 0.75rem;
     font-size: 1rem;
     text-align: center;
-    /* Override desktop margin */
+    
     margin-left: 1.5rem !important;
   }
 
 
   .hero-section .row {
-    flex-direction: column-reverse; /* Pindahkan gambar ke atas teks */
+    flex-direction: column-reverse; 
   }
 
   .hero-section h1 {
-    font-size: 2.2rem; /* Sedikit lebih besar agar tetap impactful */
+    font-size: 2.2rem; 
     line-height: 1.3;
-    margin-bottom: 1rem !important; /* Kurangi margin bawah */
+    margin-bottom: 1rem !important; 
   }
   
   .hero-section p.lead {
-    font-size: 1rem; /* Kecilkan subjudul */
-    margin-bottom: 2rem !important; /* Beri jarak ke tombol */
+    font-size: 1rem; 
+    margin-bottom: 2rem !important; 
   }
 
-  /* Mengganti gambar statis dengan carousel banner */
+  
   .hero-section .col-lg-6:has(img) {
-      display: none; /* Sembunyikan kolom gambar statis */
+      display: none; 
   }
   .hero-section .col-lg-6:has(.carousel) {
-      display: block !important; /* Tampilkan kolom carousel banner */
+      display: block !important; 
       margin-bottom: 2rem;
   }
 
@@ -1764,22 +1764,22 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
     text-align: center !important;
   }
 
-  /* --- Other Mobile Adjustments --- */
+  
   .account-sidebar {
     margin-bottom: 2rem;
   }
 
-  /* ======================================================= */
-/* === GAYA BARU: TAMPILAN MOBILE HOMEPAGE V3 === */
-/* ======================================================= */
+  
+
+
 .homepage-mobile-container {
-  background-color: #f8f9fa; /* Warna latar belakang abu-abu muda */
+  background-color: #f8f9fa; 
   padding-bottom: 2rem;
 }
 
-/* --- Mobile Header & Search --- */
+
 .mobile-home-header {
-  background-color:   #ffffff; /* Menggunakan variabel warna primer */
+  background-color:   #ffffff; 
   color: white;
   padding: 0.75rem 1.5rem 1.5rem 1.5rem;
   border-bottom-left-radius: 2rem;
@@ -1794,13 +1794,13 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
 }
 
 .mobile-home-header .mobile-logo img {
-  max-height: 32px; /* Sesuaikan ukuran logo */
+  max-height: 32px; 
 }
 
 .mobile-home-header .actions {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Jarak antar ikon */
+  gap: 0.5rem; 
 }
 
 .mobile-home-header .btn-icon {
@@ -1811,11 +1811,11 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   border-radius: 50%;
   background-color: #e7e8e8;
   border: none;
-  /* --- TAMBAHKAN BARIS DI BAWAH INI --- */
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0; /* Menghapus padding default tombol */
+  padding: 0; 
 }
 
 .mobile-home-header .user-avatar-sm {
@@ -1841,10 +1841,10 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   border: 2px solid var(--primary-color);
 }
 
-/* --- Hero Section (diubah menjadi Card) --- */
+
 .hero-section {
   padding-top: 0 !important;
-  margin-top: 2rem; /* Tarik ke atas agar menimpa header */
+  margin-top: 2rem; 
   min-height: auto;
   padding-bottom: 2rem;
 }
@@ -1853,7 +1853,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   position: relative;
   border-radius: 1rem;
   overflow: hidden;
-  height: 180px; /* Atur tinggi kartu banner */
+  height: 180px; 
 }
 
 .mobile-hero-card-img {
@@ -1882,7 +1882,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   margin-bottom: 0;
 }
 
-/* --- Section Titles --- */
+
 .section-title {
   font-size: 1.2rem;
   font-weight: 600;
@@ -1895,20 +1895,20 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   color: var(--primary-color);
 }
 
-/* --- Service Categories --- */
+
 .service-categories-section {
   padding-top: 2rem;
 }
 
-/* --- Featured/Popular Stores Section --- */
+
 .featured-stores {
-  background-color: transparent !important; /* Hapus bg-light di mobile */
+  background-color: transparent !important; 
   padding-top: 2rem;
 }
 
 }
 
-/* Fine-tuning for smaller mobile phones */
+
 @media (max-width: 768px) {
   .copyright {
     flex-direction: column;
@@ -1948,7 +1948,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
     padding: 1.5rem;
   }
 
-  /* Added from our modifications */
+  
   section {
     padding: 2.5rem 0;
   }
@@ -1975,7 +1975,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   }
 }
 
-/* === Partner Registration Page (Multi-Step) Styles === */
+
 .partner-register-image-side {
   background-image: url("https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=2574&auto=format&fit=crop");
   position: relative;
@@ -1991,9 +1991,9 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   flex-direction: column;
   text-align: center;
 
-  /* HAPUS: justify-content dan align-items dihapus */
-  /* Cukup atur padding atas untuk mendorong konten ke bawah */
-  padding-top: 15vh; /* NAIKKAN LAGI: Coba nilai antara 15vh - 25vh */
+  
+  
+  padding-top: 15vh; 
 }
 
 .auth-image-overlay h3 {
@@ -2059,29 +2059,29 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   animation: fadeIn 0.5s ease;
 }
 
-/* =============================================== */
-/* Kustomisasi Tampilan Tab di Halaman Detail Toko (Versi 2) */
-/* =============================================== */
 
-/* Mengatur ulang header kartu tempat tab berada */
+
+
+
+
 .info-box .card-header {
   padding: 0;
   border-bottom: 1px solid var(--border-color);
   background-color: transparent;
 }
 
-/* Mengatur navigasi tab di dalam header */
+
 .info-box .card-header .nav-tabs {
-  border-bottom: 0; /* Hapus garis bawah default dari nav-tabs */
+  border-bottom: 0; 
 }
 
-/* Memberi jarak antar tombol tab */
+
 .info-box .nav-tabs .nav-item {
-  margin-bottom: -1px; /* Mengangkat tombol agar menyatu dengan garis border */
-  margin-right: 0.5rem; /* Jarak antar tombol */
+  margin-bottom: -1px; 
+  margin-right: 0.5rem; 
 }
 
-/* Mengatur tampilan tombol tab (link) */
+
 .info-box .nav-tabs .nav-link {
   border: 1px solid transparent;
   border-top-left-radius: 0.5rem;
@@ -2091,7 +2091,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   font-weight: 500;
 }
 
-/* Mengatur tampilan tombol tab yang AKTIF */
+
 .info-box .nav-tabs .nav-link.active {
   color: var(--text-dark);
   background-color: var(--bg-white);
@@ -2099,12 +2099,12 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
   font-weight: 600;
 }
 
-/* Mengatur jarak konten di dalam card-body */
+
 .info-box .card-body {
-  padding-top: 1.5rem; /* Menambah jarak antara garis tab dengan konten (Jam Operasional, dll) */
+  padding-top: 1.5rem; 
 }
 
-/* Custom styling untuk service selection (Versi 2) */
+
 .service-option {
   display: block;
   position: relative;
@@ -2116,7 +2116,7 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
 }
 
 .service-option .service-label {
-  padding: 0.5rem 1rem !important; /* Padding dibuat lebih tipis & override Bootstrap */
+  padding: 0.5rem 1rem !important; 
   transition: all 0.2s ease-in-out;
 }
 
@@ -2125,25 +2125,25 @@ MEDIA QUERIES FOR RESPONSIVE BEHAVIOR (FINAL VERSION)
 }
 
 .service-option input[type="radio"] {
-  display: none; /* Sembunyikan radio button asli */
+  display: none; 
 }
 
-/* Tampilan saat dipilih (Monokrom) */
+
 .service-option input[type="radio"]:checked + .service-label {
-  border: 1px solid var(--text-dark); /* Border menjadi gelap, bukan hijau */
+  border: 1px solid var(--text-dark); 
   border-radius: 0.5rem;
 }
 
-/* Checkmark saat dipilih (Monokrom) */
+
 .service-option input[type="radio"]:checked + .service-label::after {
-  content: "\f00c"; /* Font Awesome check icon */
+  content: "\f00c"; 
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
   position: absolute;
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-dark); /* Warna checkmark menjadi gelap */
+  color: var(--text-dark); 
 }
 
 /*
@@ -2152,7 +2152,7 @@ GAYA BARU UNTUK FITUR-FITUR TERKINI
 ================================================
 */
 
-/* --- Gaya Dropdown Pengguna --- */
+
 .btn-user-profile {
   display: flex;
   align-items: center;
@@ -2206,7 +2206,7 @@ GAYA BARU UNTUK FITUR-FITUR TERKINI
   color: #58151c !important;
 }
 
-/* --- Gaya Opsi Pengantaran --- */
+
 .delivery-option-group {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2247,7 +2247,7 @@ GAYA BARU UNTUK FITUR-FITUR TERKINI
   font-size: 0.8rem;
 }
 
-/* --- Gaya Pemilih Jadwal & Modal --- */
+
 .schedule-picker-box {
   border: 1px solid var(--border-color);
   background-color: var(--bg-white);
@@ -2324,50 +2324,50 @@ GAYA BARU UNTUK FITUR-FITUR TERKINI
   transform: scale(1.05);
 }
 
-/* === Enhanced Promo Code Section (booking-confirmation.html) - ROBUST FLEXBOX FIX === */
 
-/* Container utama yang kita gayakan agar TERLIHAT seperti input field */
+
+
 .promo-input-container {
   display: flex;
-  align-items: center; /* KUNCI UTAMA: Ini akan mensejajarkan tombol dan input secara vertikal */
+  align-items: center; 
   background-color: var(--bg-white);
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
-  padding: 0.375rem 0.5rem 0.375rem 1rem; /* Padding: atas kanan bawah kiri */
+  padding: 0.375rem 0.5rem 0.375rem 1rem; 
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-/* Memberi efek 'focus' pada seluruh container saat input di dalamnya aktif */
+
 .promo-input-container:focus-within {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 4px rgba(52, 58, 64, 0.1);
 }
 
-/* Mengatur input yang sebenarnya agar transparan dan mengisi ruang */
+
 .promo-input-container .form-control-plaintext {
-  flex-grow: 1; /* Membuat input mengambil semua ruang yang tersedia */
+  flex-grow: 1; 
   border: none;
   background: transparent;
-  padding: 0.5rem 0; /* Memberi sedikit padding vertikal */
+  padding: 0.5rem 0; 
   height: auto;
 }
 
 .promo-input-container .form-control-plaintext:focus {
-  box-shadow: none; /* Menghilangkan efek focus bawaan pada input */
+  box-shadow: none; 
 }
 
-/* Mengatur tombol, kini menjadi item flex biasa */
+
 .btn-apply-promo {
   transform: translateY(-2.5px);
-  flex-shrink: 0; /* Mencegah tombol menyusut */
+  flex-shrink: 0; 
   font-weight: 500;
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  margin-left: 0.5rem; /* Memberi jarak antara input dan tombol */
+  margin-left: 0.5rem; 
 }
 
-/* Gaya untuk link (opsional, bisa disesuaikan) */
+
 .link-view-promo {
   color: var(--primary-color);
   text-decoration: none;
@@ -2380,9 +2380,9 @@ GAYA BARU UNTUK FITUR-FITUR TERKINI
   text-decoration: none;
 }
 
-/* FILE: project/css/style.css */
 
-/* === Payment Page Styles (payment.html) === */
+
+
 .payment-summary-card,
 .payment-methods-card {
   border: 1px solid var(--border-color);
@@ -2436,31 +2436,31 @@ GAYA BARU UNTUK FITUR-FITUR TERKINI
   text-align: center;
 }
 
-/* FILE: project/css/style.css */
 
-/* === Promo Banner Slider Section === */
+
+
 .promo-banner-section {
-  padding-top: 100px; /* Memberi jarak dari hero form di atasnya */
-  padding-bottom: 2rem; /* Memberi jarak ke section di bawahnya */
+  padding-top: 100px; 
+  padding-bottom: 2rem; 
 }
 
 #promoBannerCarousel .carousel-inner {
-  border-radius: 1rem; /* Membuat sudut banner melengkung */
-  overflow: hidden; /* Penting agar gambar mengikuti lengkungan border */
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); /* Memberi sedikit efek bayangan agar terlihat premium */
+  border-radius: 1rem; 
+  overflow: hidden; 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); 
 }
 
 #promoBannerCarousel .carousel-item {
-  height: 90px; /* Mengatur tinggi container slide menjadi 90px */
+  height: 90px; 
 }
 
 #promoBannerCarousel .carousel-item img {
-  width: 100%; /* Lebar gambar selalu mengisi container */
-  height: 100%; /* Tinggi gambar selalu mengisi container 90px */
-  object-fit: cover; /* Membuat gambar mengisi area 90px tanpa distorsi (mungkin terpotong sedikit agar pas) */
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
 }
 
-/* === Customer Promo Page Styles === */
+
 .promo-card {
   background-color: var(--bg-white);
   border: 1px solid var(--border-color);
@@ -2488,7 +2488,7 @@ GAYA BARU UNTUK FITUR-FITUR TERKINI
 }
 
 .promo-card .btn-copy-code {
-  margin-top: auto; /* Mendorong tombol ke bagian bawah kartu */
+  margin-top: auto; 
 }
 
 /*
@@ -2497,21 +2497,21 @@ GAYA BARU UNTUK TAHAP 1 PENGEMBANGAN V2
 ================================================
 */
 
-/* Gaya untuk Pilihan Jenis Sepatu (Chip) */
+
 .service-option-chip {
   display: block;
   position: relative;
 }
 
 .service-option-chip input[type="radio"] {
-  display: none; /* Sembunyikan radio button asli */
+  display: none; 
 }
 
 .service-option-chip span {
   display: inline-block;
   padding: 0.5rem 1rem;
   border: 1px solid var(--border-color);
-  border-radius: 999px; /* Membuatnya bulat seperti pil */
+  border-radius: 999px; 
   cursor: pointer;
   background-color: var(--bg-white);
   color: var(--text-dark);
@@ -2530,10 +2530,10 @@ GAYA BARU UNTUK TAHAP 1 PENGEMBANGAN V2
   border-color: var(--primary-color);
 }
 
-/* Gaya untuk Bagian yang Dinonaktifkan (Beku) */
+
 .section-disabled {
   opacity: 0.5;
-  pointer-events: none; /* Mencegah semua interaksi klik */
+  pointer-events: none; 
   transition: opacity 0.3s ease;
 }
 
@@ -2543,7 +2543,7 @@ GAYA BARU UNTUK TAHAP 2 PENGEMBANGAN V2
 ================================================
 */
 
-/* Gaya untuk Kartu Alamat di Dashboard */
+
 .address-card {
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
@@ -2593,7 +2593,7 @@ GAYA BARU UNTUK TAHAP 3 PENGEMBANGAN V2
 ================================================
 */
 
-/* Gaya untuk Pilihan Alamat di Halaman Detail Toko */
+
 .address-option {
   display: block;
   position: relative;
@@ -2601,7 +2601,7 @@ GAYA BARU UNTUK TAHAP 3 PENGEMBANGAN V2
 }
 
 .address-option input[type="radio"] {
-  display: none; /* Sembunyikan radio button asli */
+  display: none; 
 }
 
 .address-option-label {
@@ -2637,7 +2637,7 @@ GAYA BARU UNTUK TAHAP 3 PENGEMBANGAN V2
 }
 
 .address-option input[type="radio"]:checked + .address-option-label::after {
-  content: "\f00c"; /* Font Awesome check icon */
+  content: "\f00c"; 
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
   position: absolute;
@@ -2685,15 +2685,15 @@ GAYA BARU: PREMIUM DROPDOWN PEMILIH SEPATU
 }
 
 .dropdown-toggle-custom .placeholder {
-  font-weight: 400; /* Dibuat lebih tipis */
+  font-weight: 400; 
   color: var(--text-muted);
 }
 
 .dropdown-toggle-custom::after {
-  display: none; /* Sembunyikan panah default bootstrap */
+  display: none; 
 }
 
-/* Mengatur menu dropdown */
+
 #shoe-type-options .dropdown-menu {
   width: 100%;
   border-radius: 0.75rem;
@@ -2740,7 +2740,7 @@ body:has(.store-page-container) {
   background-color: var(--bg-white);
 }
 
-/* === Sidebar Filter (Tidak banyak berubah) === */
+
 .filters-sidebar {
   width: 320px;
   flex-shrink: 0;
@@ -2753,7 +2753,7 @@ body:has(.store-page-container) {
 .filters-header,
 .filters-footer,
 .results-header {
-  padding: 1rem 1.5rem; /* Memberi padding yang konsisten */
+  padding: 1rem 1.5rem; 
   border-bottom: 1px solid #e9ecef;
   flex-shrink: 0;
 }
@@ -2786,7 +2786,7 @@ body:has(.store-page-container) {
   color: #ffc107;
 }
 
-/* === Konten Hasil (Tidak banyak berubah) === */
+
 .results-content {
   flex-grow: 1;
   display: flex;
@@ -2800,7 +2800,7 @@ body:has(.store-page-container) {
   align-items: center;
 }
 .results-header + h5 {
-  padding: 1rem 1.5rem 0; /* Padding atas untuk judul "Menampilkan X Toko" */
+  padding: 1rem 1.5rem 0; 
   flex-shrink: 0;
 }
 .search-box-wrapper {
@@ -2821,9 +2821,9 @@ body:has(.store-page-container) {
   background-color: var(--bg-light);
 }
 
-/* === GRID DAN KARTU TOKO KUSTOM (PERUBAHAN TOTAL) === */
+
 .results-grid {
-  padding: 1.5rem; /* Padding kini hanya di grid */
+  padding: 1.5rem; 
   overflow-y: auto;
   flex-grow: 1;
   display: grid;
@@ -2832,18 +2832,18 @@ body:has(.store-page-container) {
 }
 
 .store-grid__card {
-  position: relative; /* Wajib untuk pseudo-element */
+  position: relative; 
   border-radius: 1rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 1px; /* Ini akan menjadi tebal border kita */
+  padding: 1px; 
   background: linear-gradient(
     to top,
     var(--primary-color),
     transparent
-  ); /* Gradien dipindah ke background utama */
+  ); 
 }
 
 .store-grid__card:hover {
@@ -2854,7 +2854,7 @@ body:has(.store-page-container) {
 .store-grid__image-wrapper {
   height: 180px;
   width: 100%;
-  background-color: white; /* Beri latar belakang putih juga */
+  background-color: white; 
 }
 
 .store-grid__image {
@@ -2868,8 +2868,8 @@ body:has(.store-page-container) {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  background-color: white; /* Beri latar belakang putih */
-  /* Pastikan sudut bawahnya melengkung, kurangi sedikit agar pas dengan border */
+  background-color: white; 
+  
   border-bottom-left-radius: calc(1rem - 2px);
   border-bottom-right-radius: calc(1rem - 2px);
 }
@@ -2900,10 +2900,10 @@ body:has(.store-page-container) {
 }
 
 .store-grid__button {
-  margin-top: auto; /* Mendorong tombol ke bawah */
+  margin-top: auto; 
 }
 
-/* Penyesuaian Mobile */
+
 @media (max-width: 991.98px) {
   body:has(.store-page-container) {
     overflow: auto;
@@ -2933,7 +2933,7 @@ PENINGKATAN UX PENCARIAN & FILTER
 ================================================
 */
 
-/* Tombol "Gunakan Lokasi Saya" */
+
 .btn-location {
   position: absolute;
   right: 0.5rem;
@@ -2945,7 +2945,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   cursor: pointer;
 }
 
-/* Dropdown Autocomplete */
+
 .autocomplete-suggestions {
   position: absolute;
   top: 100%;
@@ -2957,7 +2957,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   margin-top: 0.25rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  display: none; /* Disembunyikan secara default */
+  display: none; 
 }
 .autocomplete-suggestions .suggestion-item {
   padding: 0.5rem 1rem;
@@ -2967,7 +2967,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   background-color: var(--bg-light);
 }
 
-/* Bar untuk Filter Aktif */
+
 .active-filters-bar {
   padding: 0.5rem 1.5rem;
   background-color: var(--bg-light);
@@ -3000,7 +3000,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   margin-right: 0.5rem;
 }
 
-/* === Gaya Halaman Pelacakan Pesanan (V2) === */
+
 .progress-tracker-container {
   display: flex;
   justify-content: space-between;
@@ -3014,7 +3014,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   left: 0;
   transform: translateY(-50%);
   height: 4px;
-  background-color: #20c997; /* Warna hijau untuk progres yang selesai */
+  background-color: #20c997; 
   z-index: 1;
   transition: width 0.5s ease-in-out;
 }
@@ -3026,7 +3026,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   left: 0;
   transform: translateY(-50%);
   height: 4px;
-  background-color: #e9ecef; /* Warna abu-abu untuk garis dasar */
+  background-color: #e9ecef; 
   width: 100%;
   z-index: 0;
 }
@@ -3035,7 +3035,7 @@ PENINGKATAN UX PENCARIAN & FILTER
   text-align: center;
   position: relative;
   z-index: 2;
-  width: 100px; /* Lebar setiap langkah */
+  width: 100px; 
 }
 
 .progress-step-icon {
@@ -3070,27 +3070,27 @@ PENINGKATAN UX PENCARIAN & FILTER
   font-weight: 600;
 }
 
-/* === GAYA BARU UNTUK HALAMAN AUTENTIKASI (DENGAN PERBAIKAN PADDING) === */
+
 .auth-container {
   min-height: 100vh;
   width: 100vw;
   background-color: var(--bg-white);
-  /* PERUBAHAN: Memberi padding atas setinggi navbar (misal: 56px) */
+  
   padding-top: 0px !important;
 }
 
 .auth-image-panel {
-  /* Mengurangi tinggi panel gambar agar sesuai dengan container baru */
+  
   height: 100vh;
   background-size: cover;
   background-position: center;
   position: relative;
-  border-radius: 0 ; /* Membuat sudut melengkung */
+  border-radius: 0 ; 
   overflow: hidden;
 }
 
 .login-image-side {
-  /* Ganti dengan URL gambar yang Anda inginkan */
+  
   background-image: url("https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=2574&auto=format&fit=crop");
 }
 
@@ -3106,10 +3106,10 @@ PENINGKATAN UX PENCARIAN & FILTER
   align-items: center;
 }
 
-/* KODE BARU: Langsung targetkan judulnya */
+
 .auth-image-overlay h1 {
   font-size: 2.2rem;
-  /* DIUBAH: Gunakan margin-top untuk mendorongnya ke bawah dari atas */
+  
   margin-top: 50vh;
 }
 
@@ -3129,19 +3129,19 @@ PENINGKATAN UX PENCARIAN & FILTER
   border-color: #000;
 }
 
-/* === PENYESUAIAN UKURAN FONT HALAMAN LOGIN === */
+
 .auth-form-container .form-label {
   font-size: 0.9rem;
 }
 
 .auth-form-container .form-control {
   font-size: 0.9rem;
-  /* DIUBAH: Mengurangi padding atas & bawah agar lebih kurus */
+  
   padding: 0.5rem 1.25rem;
 }
 
 .auth-form-container .btn {
-  /* DIUBAH: Mengurangi padding atas & bawah agar lebih kurus */
+  
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
 }
@@ -3151,48 +3151,48 @@ PENINGKATAN UX PENCARIAN & FILTER
   font-size: 0.9rem;
 }
 
-/* === PENYESUAIAN LANJUTAN FORM LOGIN === */
+
 .auth-form-container form {
-  max-width: 250px; /* Atur lebar maksimum form agar lebih pendek */
-  margin-left: auto; /* Pusatkan form di dalam container */
+  max-width: 250px; 
+  margin-left: auto; 
   margin-right: auto;
 }
 
 .auth-form-container .form-control {
-  border-radius: 30px; /* Membuat input field lebih melengkung */
-  padding: 0.75rem 1.25rem; /* Menyesuaikan padding internal input */
+  border-radius: 30px; 
+  padding: 0.75rem 1.25rem; 
 }
 
 .auth-form-container .btn {
-  border-radius: 30px; /* Membuat tombol mengikuti lengkungan input */
-  padding: 0.75rem 1rem; /* Menyesuaikan padding internal tombol */
+  border-radius: 30px; 
+  padding: 0.75rem 1rem; 
   font-size: 0.9rem;
 }
 
-/* === MENGECILKAN FONT DI PANEL GAMBAR LOGIN === */
+
 .auth-image-overlay h1 {
-  font-size: 2.2rem; /* Ukuran font judul utama diperkecil */
+  font-size: 2.2rem; 
 }
 
 .auth-image-overlay p.lead {
-  font-size: 1rem; /* Ukuran font subjudul diperkecil */
+  font-size: 1rem; 
 }
-/* === GAYA BARU UNTUK HALAMAN /STORE === */
 
-/* Container Utama */
+
+
 .store-page-redesigned {
-  padding-top: 56px; /* Jarak dari navbar */
-  background-color: #f8f9fa; /* Warna latar belakang seperti di contoh */
+  padding-top: 56px; 
+  background-color: #f8f9fa; 
   min-height: 100vh;
 }
 
-/* Panel Filter di Atas */
+
 .filter-panel-top {
   background-color: #ffffff;
   padding: 1rem 0;
   border-bottom: 1px solid #dee2e6;
   position: sticky;
-  top: 56px; /* Menempel di bawah navbar saat scroll */
+  top: 56px; 
   z-index: 999;
 }
 
@@ -3227,27 +3227,27 @@ PENINGKATAN UX PENCARIAN & FILTER
   font-weight: 500;
 }
 
-/* Grid Hasil Pencarian */
+
 .results-grid-redesigned {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
 }
 
-/* Penyesuaian Kartu Toko (Opsional, tapi direkomendasikan) */
+
 .store-grid__card {
-  position: relative; /* Wajib untuk pseudo-element */
+  position: relative; 
   border-radius: 1rem;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  padding: 1px; /* Ini akan menjadi tebal border kita */
+  padding: 1px; 
   background: linear-gradient(
     to top,
     var(--primary-color),
     transparent
-  ); /* Gradien dipindah ke background utama */
+  ); 
 }
 
 .store-grid__card:hover {
@@ -3258,7 +3258,7 @@ PENINGKATAN UX PENCARIAN & FILTER
 .store-grid__image-wrapper {
   height: 180px;
   width: 100%;
-  background-color: white; /* Beri latar belakang putih juga */
+  background-color: white; 
 }
 
 .store-grid__image {
@@ -3272,8 +3272,8 @@ PENINGKATAN UX PENCARIAN & FILTER
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  background-color: white; /* Beri latar belakang putih */
-  /* Pastikan sudut bawahnya melengkung, kurangi sedikit agar pas dengan border */
+  background-color: white; 
+  
   border-bottom-left-radius: calc(1rem - 2px);
   border-bottom-right-radius: calc(1rem - 2px);
 }
@@ -3290,37 +3290,37 @@ body.is-user-layout main body.is-user-layout .hero-section {
   background-color: transparent !important;
 }
 
-/* =============================================== */
-/* Kustomisasi Font Size Dinamis (PENTING)         */
-/* =============================================== */
 
-/* Ukuran untuk Judul Besar (seperti di Homepage/About) */
+
+
+
+
 .display-4 {
   font-size: var(--font-size-display, 3.5rem) !important;
 }
 
-/* Ukuran untuk Sub-judul/Paragraf Pembuka */
+
 .lead {
   font-size: var(--font-size-lead, 1.25rem) !important;
 }
 
-/* Ukuran untuk Tombol Besar */
+
 .btn-lg {
   font-size: var(--font-size-button-lg, 1rem) !important;
 }
 
-/* =============================================== */
-/* Padding Khusus untuk Halaman Detail Toko (FIX) */
-/* =============================================== */
 
-/* Aturan spesifik ini akan menimpa gaya umum .page-content */
+
+
+
+
 main.store-detail {
-  padding-top: 90px !important; /* Ubah nilai ini sesuai keinginan Anda */
+  padding-top: 90px !important; 
 }
 
-/* =============================================== */
-/* Menyeragamkan Efek Hover untuk Semua Tombol     */
-/* =============================================== */
+
+
+
 
 /* Aturan ini akan mengubah tombol .btn-dark dan .btn-outline-dark
    saat kursor diarahkan ke atasnya (hover) */
@@ -3343,14 +3343,14 @@ main.store-detail {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Menyelaraskan Warna Tombol Outline dengan warna primer tema */
+
 .btn-outline-dark {
   border-color: var(--primary-color);
   color: var(--primary-color);
 }
-/* =============================================== */
-/* Menyelaraskan Warna Tombol Outline              */
-/* =============================================== */
+
+
+
 
 /* Aturan ini akan mengubah warna default untuk tombol
    dengan garis luar (outline) menjadi warna primer tema */
@@ -3359,14 +3359,14 @@ main.store-detail {
   color: var(--primary-color);
 }
 
-/* =============================================== */
-/* === GAYA BARU: DESAIN ULANG DETAIL TOKO V2 === */
-/* =============================================== */
+
+
+
 
 .store-detail-page-container {
   display: grid;
-  /* PERUBAHAN: Menggunakan grid-template-areas untuk tata letak yang lebih fleksibel */
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* Kolom kiri lebih besar */
+  
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); 
   grid-template-areas:
     "main sidebar"
     "reviews reviews";
@@ -3378,18 +3378,18 @@ main.store-detail {
 }
 
 .store-detail-main {
-  grid-area: main; /* Menempatkan konten utama di area 'main' */
+  grid-area: main; 
 }
 
 .store-detail-sidebar {
-  grid-area: sidebar; /* Menempatkan form pemesanan di area 'sidebar' */
+  grid-area: sidebar; 
   position: sticky;
   top: 80px;
   height: calc(100vh - 100px);
-  overflow-y: auto; /* Memungkinkan sidebar untuk scroll jika kontennya panjang */
+  overflow-y: auto; 
 }
 
-/* PERUBAHAN: Menambahkan area grid untuk ulasan */
+
 .store-detail-reviews {
   grid-area: reviews;
 }
@@ -3484,13 +3484,13 @@ main.store-detail {
 .review-comment {
   font-size: 0.95rem;
   color: #555;
-  padding-left: 55px; /* Sejajarkan dengan teks di atas */
+  padding-left: 55px; 
 }
 
-/* Responsiveness */
+
 @media (max-width: 992px) {
   .store-detail-page-container {
-    /* PERUBAHAN: Mengubah tata letak menjadi satu kolom di layar kecil */
+    
     grid-template-columns: 1fr;
     grid-template-areas:
       "main"
@@ -3504,9 +3504,9 @@ main.store-detail {
   }
 }
 
-/* =============================================== */
-/* === GAYA BARU: SLIDER DI HEADER DETAIL TOKO === */
-/* =============================================== */
+
+
+
 
 .store-header .carousel,
 .store-header .carousel-inner {
@@ -3518,9 +3518,9 @@ main.store-detail {
   height: 100%;
 }
 
-/* =============================================== */
-/* === GAYA BARU: GALERI PRATINJAU & MODAL POP-UP === */
-/* =============================================== */
+
+
+
 
 .store-gallery-section {
   padding-top: 0;
@@ -3528,9 +3528,9 @@ main.store-detail {
 
 .gallery-preview-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* Membuat 5 kolom */
+  grid-template-columns: repeat(5, 1fr); 
   gap: 0.5rem;
-  height: 80px; /* Atur tinggi baris pratinjau */
+  height: 80px; 
 }
 
 .gallery-preview-item {
@@ -3576,15 +3576,15 @@ main.store-detail {
   object-fit: contain;
 }
 
-/* =============================================== */
-/* === GAYA BARU: FILTER LANJUTAN YANG RAPIH === */
-/* =============================================== */
+
+
+
 
 .filter-active-dot {
   display: inline-block;
   width: 8px;
   height: 8px;
-  background-color: #0dcaf0; /* Gunakan warna primer atau warna cerah lainnya */
+  background-color: #0dcaf0; 
   border-radius: 50%;
   margin-left: 8px;
   animation: pulse 1.5s infinite;
@@ -3598,7 +3598,7 @@ main.store-detail {
   border-radius: 0.5rem;
 }
 
-/* Menghentikan penutupan dropdown saat checkbox di dalamnya diklik */
+
 .dropdown-menu[data-bs-auto-close="outside"] .form-check {
   padding: 0.25rem 1rem;
 }
@@ -3607,15 +3607,15 @@ main.store-detail {
   cursor: pointer;
 }
 
-/* File: stridebase-app/client/src/style.css */
 
-/* =============================================== */
-/* === GAYA BARU: KARTU PEMILIHAN LAYANAN (V2) === */
-/* =============================================== */
+
+
+
+
 
 .service-card-container {
   display: grid;
-  grid-template-columns: 1fr; /* Satu kolom untuk tampilan mobile-first */
+  grid-template-columns: 1fr; 
   gap: 0.75rem;
 }
 
@@ -3626,7 +3626,7 @@ main.store-detail {
 }
 
 .service-card input[type="radio"] {
-  display: none; /* Sembunyikan radio button asli */
+  display: none; 
 }
 
 .service-card-content {
@@ -3664,14 +3664,14 @@ main.store-detail {
 
 .service-card-checkmark {
   font-size: 1.5rem;
-  color: #e9ecef; /* Warna default (abu-abu) saat tidak aktif */
+  color: #e9ecef; 
   transition: color 0.2s ease-in-out;
 }
 
-/* Tampilan saat dipilih */
+
 .service-card input[type="radio"]:checked + .service-card-content {
   border-color: var(--primary-color);
-  background-color: #f0f7ff; /* Latar belakang biru muda */
+  background-color: #f0f7ff; 
   box-shadow: 0 0 0 2px var(--primary-color);
 }
 
@@ -3679,36 +3679,36 @@ main.store-detail {
   input[type="radio"]:checked
   + .service-card-content
   .service-card-checkmark {
-  color: var(--primary-color); /* Warna checkmark menjadi aktif */
+  color: var(--primary-color); 
 }
 
-/* client/src/style.css */
 
-/* === Global Announcement Bar (Versi Floating / Overlay) === */
+
+
 .global-announcement-bar {
   position: fixed;
-  top: 50px; /* Jarak dari atas (di bawah navbar) */
+  top: 50px; 
   left: 50%;
   transform: translateX(-50%);
-  width: 90%; /* Tidak 100% agar terlihat mengambang */
+  width: 90%; 
   max-width: 900px;
-  z-index: 999; /* Pastikan berada di atas konten lain, tapi di bawah navbar (1000) */
+  z-index: 999; 
 
-  /* Efek Kaca Transparan */
-  background: rgba(28, 64, 212, 0.85); /* Warna primer dengan opacity */
+  
+  background: rgba(28, 64, 212, 0.85); 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
   color: white;
   padding: 0.75rem 1rem;
-  border-radius: 999px; /* Sudut seperti kapsul */
+  border-radius: 999px; 
   text-align: center;
   font-size: 0.9rem;
   font-weight: 500;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 
-  /* Animasi saat muncul */
+  
   animation: fadeInDown 0.5s ease-out forwards;
 }
 
@@ -3716,7 +3716,7 @@ main.store-detail {
     .global-announcement-bar {
         padding: 0.5rem 1rem;
         font-size: 0.8rem;
-        top: 60px; /* Sedikit turun agar tidak terlalu mepet navbar mobile */
+        top: 60px; 
     }
 }
 
@@ -3744,8 +3744,8 @@ main.store-detail {
   opacity: 1;
 }
 
-/* Pastikan semua padding-top yang kita tambahkan sebelumnya dihapus */
-/* Hapus semua aturan seperti ini dari CSS Anda: */
+
+
 /* main {
   padding-top: 120px; 
 }
@@ -3754,11 +3754,11 @@ body.has-global-announcement .hero-section {
 }
 */
 
-/* =============================================== */
-/* === GAYA BARU: NAVIGASI MOBILE (V2) === */
-/* =============================================== */
 
-/* --- Mobile Header (Logo di tengah, User di kanan) --- */
+
+
+
+
 .mobile-header {
   position: fixed;
   top: 0;
@@ -3790,7 +3790,7 @@ body.has-global-announcement .hero-section {
   right: 1rem;
 }
 
-/* --- Mobile Floating Bottom Navigation --- */
+
 .mobile-bottom-nav {
   position: fixed;
   bottom: 0;
@@ -3824,7 +3824,7 @@ body.has-global-announcement .hero-section {
   margin-bottom: 2px;
 }
 
-/* Status aktif untuk link di navigasi bawah */
+
 .mobile-bottom-nav .nav-link.active {
   color: var(--primary-color);
   font-weight: 600;
@@ -3842,14 +3842,14 @@ body.has-global-announcement .hero-section {
   }
 }
 
-/* Sembunyikan navbar desktop di mobile */
+
 @media (max-width: 991.98px) {
   .navbar.d-none.d-lg-flex {
     display: none !important;
   }
 }
 
-/* Tampilkan elemen mobile hanya di layar kecil */
+
 @media (min-width: 992px) {
   .mobile-header.d-lg-none,
   .mobile-bottom-nav.d-lg-none {
@@ -3857,63 +3857,63 @@ body.has-global-announcement .hero-section {
   }
 }
 
-/* ======================================================= */
-/* === GAYA BARU: PENYESUAIAN MOBILE HOMEPAGE V2 === */
-/* ======================================================= */
 
-/* --- Solusi untuk Banner Hero Proporsional --- */
+
+
+
+
 .hero-banner-img {
   height: 400px;
-  max-height: 60vh; /* Tambahkan baris ini */
+  max-height: 60vh; 
   object-fit: cover;
-  border-radius: 1rem; /* Menambahkan sudut melengkung pada gambar */
+  border-radius: 1rem; 
 }
 
-/* --- Solusi untuk Kartu Toko Horizontal --- */
-/* Gaya ini berlaku untuk semua kartu toko, termasuk di halaman /store */
+
+
 .store-grid__card {
   transition: all 0.3s ease;
   background-color: #ffffff;
 }
 
-/* Aturan khusus untuk layar mobile (lebar di bawah 576px) */
+
 @media (max-width: 575.98px) {
-  /* Atur tinggi banner hero menjadi lebih pendek */
+  
   .hero-banner-img {
     height: 220px;
   }
 
-  /* Ubah tata letak kartu toko menjadi horizontal */
+  
   .store-grid__card {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0; /* Hapus padding default */
-    background: none; /* Hapus gradien di mobile */
+    padding: 0; 
+    background: none; 
   }
 
   .store-grid__image-wrapper {
-    width: 120px; /* Lebar tetap untuk gambar */
+    width: 120px; 
     height: 120px;
     flex-shrink: 0;
-    border-radius: 0.75rem; /* Sudut melengkung untuk gambar */
+    border-radius: 0.75rem; 
     overflow: hidden;
   }
 
   .store-grid__content {
-    border-radius: 0 0.75rem 0.75rem 0; /* Sesuaikan sudut */
+    border-radius: 0 0.75rem 0.75rem 0; 
     padding: 0.75rem 1rem;
     height: 120px;
     justify-content: center;
   }
 
   .store-grid__title {
-    font-size: 1rem; /* Kecilkan sedikit judul */
+    font-size: 1rem; 
   }
 
   .store-grid__location,
   .store-grid__rating {
-    font-size: 0.8rem; /* Kecilkan teks lokasi dan rating */
+    font-size: 0.8rem; 
     margin-bottom: 0.25rem;
   }
 
@@ -3924,12 +3924,12 @@ body.has-global-announcement .hero-section {
   }
 }
 
-/* File: stridebase-app-render/client/src/style.css */
-/* ... (semua kode css yang sudah ada) ... */
 
-/* ======================================================= */
-/* === GAYA BARU: TAMPILAN MOBILE HOMEPAGE V3 === */
-/* ======================================================= */
+
+
+
+
+
 
 @media (max-width: 991.98px) {
 .hero-section {
@@ -3942,7 +3942,7 @@ body.has-global-announcement .hero-section {
 }
   
   .homepage-mobile-container {
-    background-color: #f8f9fa; /* Warna latar belakang abu-abu muda */
+    background-color: #f8f9fa; 
     padding-bottom: 2rem;
   }
 
@@ -3956,11 +3956,11 @@ body.has-global-announcement .hero-section {
     padding-top: 0;
   }
 
-  /* --- Mobile Header & Search --- */
+  
   .mobile-home-header {
-    background-color:  #ffffff; /* Warna hijau teal seperti di contoh */
+    background-color:  #ffffff; 
     color: white;
-    padding: 0.75rem 1.5rem 1.5rem 1.5rem; /* Padding bawah lebih besar untuk efek melengkung */
+    padding: 0.75rem 1.5rem 1.5rem 1.5rem; 
     border-bottom-left-radius: 2rem;
     border-bottom-right-radius: 2rem;
   }
@@ -3991,13 +3991,13 @@ body.has-global-announcement .hero-section {
   border: none;
   padding-left: 3rem;
   font-size: 1rem;
-  background-color: #e7e8e8; /* CONTOH: Warna abu-abu muda */
+  background-color: #e7e8e8; 
 }
 
-  /* --- Hero Section (diubah menjadi Card) --- */
+  
   .hero-section {
     padding-top: 0 !important;
-    margin-top: 2rem; /* Tarik ke atas agar menimpa header */
+    margin-top: 2rem; 
     min-height: auto;
     padding-bottom: 2rem;
   }
@@ -4006,7 +4006,7 @@ body.has-global-announcement .hero-section {
     position: relative;
     border-radius: 1rem;
     overflow: hidden;
-    height: 200px; /* Atur tinggi kartu banner */
+    height: 200px; 
   }
 
   .mobile-hero-card-img {
@@ -4035,7 +4035,7 @@ body.has-global-announcement .hero-section {
     margin-bottom: 0;
   }
 
-  /* --- Section Titles --- */
+  
   .section-title {
     font-size: 1.2rem;
     font-weight: 600;
@@ -4048,7 +4048,7 @@ body.has-global-announcement .hero-section {
     color: var(--primary-color);
   }
 
-  /* --- Service Categories --- */
+  
   .service-categories-section {
     padding-top: 2rem;
   }
@@ -4088,25 +4088,25 @@ body.has-global-announcement .hero-section {
     color: var(--primary-color);
   }
 
-  /* --- Featured/Popular Stores Section --- */
+  
   .featured-stores {
-    background-color: transparent !important; /* Hapus bg-light di mobile */
+    background-color: transparent !important; 
     padding-top: 2rem;
   }
 }
 
-/* ======================================================= */
-/* === PENYESUAIAN RUANG UNTUK GLOBAL ANNOUNCEMENT (MOBILE) === */
-/* ======================================================= */
+
+
+
 @media (max-width: 991.98px) {
-  /* Saat notifikasi aktif, beri padding atas tambahan pada header mobile */
+  
   body.has-global-announcement .hero-section {
-    padding-top: 2rem !important; /* Nilai ini bisa disesuaikan */
+    padding-top: 2rem !important; 
   }
 
-  /* Atur posisi notifikasi agar tetap di atas, di dalam padding yang baru dibuat */
+  
   .global-announcement-bar {
-    top: 56px; /* Sesuaikan dengan tinggi header mobile Anda jika berbeda */
+    top: 56px; 
   }
 }
 
@@ -4143,46 +4143,46 @@ body.has-global-announcement .hero-section {
 }
 
 
-/* --- 2. Tata Letak untuk Desktop (Layar Lebar) --- */
+
 @media (min-width: 992px) {
     .category-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* 4 kolom di desktop */
+        grid-template-columns: repeat(4, 1fr); 
         gap: 1.5rem;
     }
     .category-card {
-        display: flex; /* Ikon dan teks bersebelahan */
+        display: flex; 
         align-items: center;
         gap: 1rem;
         font-size: 0.9rem;
     }
     .category-icon {
-        margin: 0; /* Hapus margin auto */
+        margin: 0; 
     }
 }
 
-/* --- 3. Tata Letak untuk Mobile (Layar Sempit) --- */
+
 @media (max-width: 991.98px) {
     .category-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* Tetap 4 kolom di mobile */
+        grid-template-columns: repeat(4, 1fr); 
         gap: 0.75rem;
     }
     .category-card {
         display: flex;
-        flex-direction: column; /* Ikon di atas, teks di bawah */
+        flex-direction: column; 
         gap: 0.5rem;
         padding: 1rem 0.5rem;
         font-size: 0.75rem;
     }
     .category-icon {
-        margin: 0 auto 0.5rem; /* Pusatkan ikon lagi */
+        margin: 0 auto 0.5rem; 
     }
 }
 
-/* =============================================== */
-/* === PENINGKATAN HALAMAN KONTAK (MOBILE & DESKTOP) === */
-/* =============================================== */
+
+
+
 
 .page-content-contact {
   padding-top: 80px;
@@ -4203,10 +4203,10 @@ body.has-global-announcement .hero-section {
 }
 
 .contact-info-item i {
-  width: 30px; /* Memberi lebar tetap agar teks sejajar */
+  width: 30px; 
 }
 
-/* Penyesuaian untuk Mobile */
+
 @media (max-width: 767.98px) {
   .page-content-contact {
     padding-top: 60px;
@@ -4214,7 +4214,7 @@ body.has-global-announcement .hero-section {
   }
   
   .contact-card .card-body {
-    padding: 1.5rem; /* Padding yang lebih sesuai untuk mobile */
+    padding: 1.5rem; 
   }
 
   .contact-info-item {
@@ -4222,20 +4222,20 @@ body.has-global-announcement .hero-section {
   }
 }
 
-/* ======================================================= */
-/* === PENYESUAIAN GLOBAL ANNOUNCEMENT (MOBILE HOMEPAGE) === */
-/* ======================================================= */
 
-/* Wrapper ini hanya ada di HomePage */
+
+
+
+
 .homepage-announcement-wrapper {
-    background-color: #1c40d4; /* Warna solid agar mengisi ruang */
+    background-color: #1c40d4; 
     padding: 0.75rem 1.5rem;
     margin-top: 1 rem;
 }
 
-/* Override style floating dari .global-announcement-bar khusus di dalam wrapper ini */
+
 .homepage-announcement-wrapper .global-announcement-bar {
-    position: static; /* KUNCI UTAMA: Mengubah dari fixed menjadi static */
+    position: static; 
     transform: none;
     width: 100%;
     max-width: 100%;
@@ -4244,28 +4244,28 @@ body.has-global-announcement .hero-section {
     backdrop-filter: none;
     border: none;
     box-shadow: none;
-    animation: none; /* Hapus animasi fade-in */
+    animation: none; 
 }
 
 .homepage-announcement-wrapper .global-announcement-bar .container {
     padding: 0;
 }
 
-/* Hapus padding atas ekstra dari mobile header saat di homepage */
+
 .homepage-mobile-container .mobile-home-header {
-    /* MENGURANGI PADDING ATAS AGAR LEBIH RAPIH */
+    
     padding-top: 0.75rem; 
-    padding-bottom: 1.5rem; /* Padding bawah dipertahankan untuk lengkungan */
+    padding-bottom: 1.5rem; 
 }
 
-/* Hapus padding atas dari body jika ada class has-global-announcement */
+
 body.has-global-announcement {
   padding-top: 0 !important;
 }
 
-/* ======================================================= */
-/* === FINAL FIX: TOMBOL LOGIN HOMEPAGE MOBILE === */
-/* ======================================================= */
+
+
+
 .mobile-home-header .actions a.btn-light {
   display: inline-block !important;
   font-weight: 500 !important;
@@ -4290,20 +4290,20 @@ body.has-global-announcement {
   border-color: #d3d9df !important;
 }
 
-/* =============================================== */
-/* === GAYA BARU: HALAMAN KONFIRMASI BOOKING V2 === */
-/* =============================================== */
+
+
+
 
 .page-content-booking {
-  padding-top: 120px !important; /* Menambah jarak dari atas */
+  padding-top: 120px !important; 
   padding-bottom: 60px !important;
 }
 
-/* Menggunakan kelas spesifik agar tidak bertabrakan */
+
 .page-content-booking .confirmation-details-card,
 .page-content-booking .confirmation-action-card {
   border: 1px solid var(--border-color);
-  border-radius: 1rem; /* Sudut lebih melengkung */
+  border-radius: 1rem; 
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
   height: 100%;
   background-color: var(--bg-white);
@@ -4370,9 +4370,9 @@ body.has-global-announcement {
 }
 
 
-/* =============================================== */
-/* === GAYA BARU: TIKET KONFIRMASI BOOKING KREATIF === */
-/* =============================================== */
+
+
+
 
 .page-content-booking {
   padding-top: 80px !important;
@@ -4508,7 +4508,7 @@ body.has-global-announcement {
   font-weight: 600;
 }
 
-/* Penyesuaian untuk Mobile */
+
 @media (max-width: 767.98px) {
   .booking-ticket {
     flex-direction: column;
@@ -4526,7 +4526,7 @@ body.has-global-announcement {
     gap: 1.5rem;
   }
   .stub-qr {
-    display: none; /* Sembunyikan QR di mobile agar tidak terlalu ramai */
+    display: none; 
   }
   .stub-price {
     text-align: left;
@@ -4541,12 +4541,12 @@ body.has-global-announcement {
   }
 }
 
-/* =============================================== */
-/* === UPDATE: Penambahan Voucher di Tiket Konfirmasi === */
-/* =============================================== */
+
+
+
 
 .ticket-stub {
-  justify-content: space-between; /* Pastikan item terdistribusi dengan baik */
+  justify-content: space-between; 
 }
 
 .stub-promo-section {
@@ -4564,7 +4564,7 @@ body.has-global-announcement {
   color: var(--text-dark);
 }
 
-/* Menggunakan kembali style dari iterasi sebelumnya agar konsisten */
+
 .promo-input-wrapper {
   display: flex;
   align-items: center;
@@ -4595,10 +4595,10 @@ body.has-global-announcement {
   padding: 0.6rem 1rem;
 }
 
-/* Penyesuaian Mobile */
+
 @media (max-width: 767.98px) {
   .ticket-stub {
-    flex-direction: column; /* Ubah kembali ke kolom di mobile */
+    flex-direction: column; 
     gap: 1rem;
   }
   .stub-promo-section {
@@ -4607,80 +4607,80 @@ body.has-global-announcement {
     margin-bottom: 0;
   }
   .stub-price {
-    text-align: center; /* Pusatkan lagi di mobile */
+    text-align: center; 
   }
   .ticket-stub .btn-confirm {
-    width: 100%; /* Tombol bayar kembali full-width */
+    width: 100%; 
   }
 }
 
-/* --- Penyesuaian Form Floating untuk Tampilan Lebih Bersih --- */
+
 .form-floating > .form-control-lg ~ label {
-    padding-top: 1rem; /* Sesuaikan padding label untuk input lg */
+    padding-top: 1rem; 
     padding-bottom: 1rem;
 }
 
 .form-floating > .form-control-lg:focus ~ label,
 .form-floating > .form-control-lg:not(:placeholder-shown) ~ label,
 .form-floating > .form-control-lg:-webkit-autofill ~ label {
-    transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem); /* Pindahkan label ke atas lebih rapi */
+    transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem); 
 }
 
-/* --- Gaya Tombol Kustom (jika ingin lebih dari default Bootstrap) --- */
+
 .btn-dark {
-    background-color: var(--primary-color, #212529); /* Menggunakan variabel warna utama */
+    background-color: var(--primary-color, #212529); 
     border-color: var(--primary-color, #212529);
-    transition: all 0.3s ease; /* Transisi halus */
+    transition: all 0.3s ease; 
 }
 
 .btn-dark:hover {
-    background-color: var(--primary-color-dark, #000000); /* Warna lebih gelap saat hover */
+    background-color: var(--primary-color-dark, #000000); 
     border-color: var(--primary-color-dark, #000000);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Efek bayangan saat hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
 .btn-dark:focus {
-    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), .5); /* Efek fokus yang lebih baik */
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), .5); 
 }
 
-/* --- Penyesuaian Auth Form Container --- */
+
 .auth-form-container {
-    max-width: 480px; /* Batasi lebar form untuk tampilan yang lebih baik */
+    max-width: 480px; 
     width: 100%;
     margin: auto;
-    background-color: var(--white); /* Pastikan background putih */
-    border-radius: 8px; /* Sudut sedikit membulat */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Sedikit bayangan */
+    background-color: var(--white); 
+    border-radius: 8px; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
 }
 
-/* --- Overrides untuk form-control focus (opsional) --- */
+
 .form-control:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), .25);
 }
 
-/* Jika Anda memiliki variabel warna primary di `:root` atau sudah diset di tempat lain, pastikan konsisten */
+
 :root {
-  --primary-color: #212529; /* Contoh warna primary dark */
+  --primary-color: #212529; 
   --primary-color-dark: #000000;
-  --primary-rgb: 33, 37, 41; /* Nilai RGB dari primary-color */
-  --secondary-color: #6c757d; /* Contoh warna secondary */
+  --primary-rgb: 33, 37, 41; 
+  --secondary-color: #6c757d; 
   --white: #ffffff;
 }
 
-/* Secara default, panel filter menempel 56px dari atas (di bawah navbar) */
+
 .filter-panel-top {
   top: 56px;
 }
 
-/* TAPI, jika ada global announcement, dorong panel filter ke bawah lagi */
+
 body.has-global-announcement .filter-panel-top {
-  top: 110px; /* Sesuaikan nilai ini jika tinggi announcement bar berubah */
+  top: 110px; 
 }
 
-/* Tambahkan kode ini di bagian akhir file style.css Anda */
 
-/* === Gaya Halaman Pelacakan Pesanan (V2) === */
+
+
 .progress-tracker-container {
   display: flex;
   justify-content: space-between;
@@ -4694,7 +4694,7 @@ body.has-global-announcement .filter-panel-top {
   left: 0;
   transform: translateY(-50%);
   height: 4px;
-  background-color: #20c997; /* Warna hijau untuk progres yang selesai */
+  background-color: #20c997; 
   z-index: 1;
   transition: width 0.5s ease-in-out;
 }
@@ -4706,7 +4706,7 @@ body.has-global-announcement .filter-panel-top {
   left: 0;
   transform: translateY(-50%);
   height: 4px;
-  background-color: #e9ecef; /* Warna abu-abu untuk garis dasar */
+  background-color: #e9ecef; 
   width: 100%;
   z-index: 0;
 }
@@ -4715,7 +4715,7 @@ body.has-global-announcement .filter-panel-top {
   text-align: center;
   position: relative;
   z-index: 2;
-  width: 100px; /* Lebar setiap langkah */
+  width: 100px; 
 }
 
 .progress-step-icon {
@@ -4750,21 +4750,21 @@ body.has-global-announcement .filter-panel-top {
   font-weight: 600;
 }
 
-/* === Perbaikan Layout Konsisten untuk Halaman Akun/Dashboard === */
+
 .account-page-container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  flex-grow: 1; /* Memastikan kontainer mengisi sisa ruang di <main> */
+  flex-grow: 1; 
 }
 
 .account-page-container > .row {
-  flex-grow: 1; /* Memastikan baris di dalamnya juga ikut mengisi ruang */
+  flex-grow: 1; 
 }
 
-/* =============================================== */
-/* === GAYA BARU: IKON PREVIEW PASSWORD === */
-/* =============================================== */
+
+
+
 
 .password-toggle-icon {
   position: absolute;
@@ -4772,20 +4772,20 @@ body.has-global-announcement .filter-panel-top {
   right: 1rem;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #6c757d; /* Warna text-muted */
-  z-index: 3; /* Pastikan ikon di atas label floating */
+  color: #6c757d; 
+  z-index: 3; 
 }
 
-/* ======================================================= */
-/* === GAYA FINAL HALAMAN AUTENTIKASI (LOGIN & REGISTER) === */
-/* ======================================================= */
 
-/* Reset dasar untuk memastikan tidak ada style lain yang mengganggu */
+
+
+
+
 .auth-container, .auth-container * {
   box-sizing: border-box;
 }
 
-/* Mengatur layout utama agar full-screen */
+
 .auth-container .row {
   min-height: 100vh;
   width: 100vw;
@@ -4793,9 +4793,9 @@ body.has-global-announcement .filter-panel-top {
   padding: 0;
 }
 
-/* Kolom Gambar (Sisi Kiri) untuk Login & Register */
+
 .auth-container .auth-image-panel {
-  display: flex !important; /* Tambahkan !important untuk menimpa gaya lain */
+  display: flex !important; 
   align-items: center;
   justify-content: center;
   padding: 3rem;
@@ -4804,11 +4804,11 @@ body.has-global-announcement .filter-panel-top {
   position: relative;
 }
 
-/* Overlay gelap di atas gambar agar teks lebih terbaca */
+
 .auth-container .auth-image-overlay {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
   position: absolute;
-  inset: 0; /* Mengisi seluruh parent */
+  inset: 0; 
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -4817,9 +4817,9 @@ body.has-global-announcement .filter-panel-top {
   padding: 2rem;
 }
 
-/* Kolom Form (Sisi Kanan) untuk Login & Register */
+
 .auth-container .auth-form-panel {
-  display: flex !important; /* Tambahkan !important */
+  display: flex !important; 
   align-items: center;
   justify-content: center;
   padding: 2rem;
@@ -4828,14 +4828,14 @@ body.has-global-announcement .filter-panel-top {
 
 .auth-container .auth-form-container {
   width: 100%;
-  max-width: 400px; /* Lebar maksimum form */
+  max-width: 400px; 
 }
 
-/* --- Gaya Khusus untuk Halaman Register (jika ada perbedaan) --- */
-/* (Saat ini kita satukan gayanya dengan login, jadi tidak perlu tambahan) */
 
 
-/* --- Penyesuaian ikon password di halaman Login --- */
+
+
+
 .auth-container .form-floating {
   position: relative;
 }
@@ -4849,10 +4849,10 @@ body.has-global-announcement .filter-panel-top {
   color: #6c757d;
   z-index: 3;
 }
-/* Perbaikan untuk padding di halaman register */
+
 .auth-form-panel {
   height: 100vh;
-  overflow-y: auto; /* Tambahkan scroll jika kontennya panjang */
+  overflow-y: auto; 
   padding-top: 2rem;
   padding-bottom: 2rem;
 }

@@ -1,4 +1,4 @@
-// File: client/src/pages/StorePage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -13,9 +13,9 @@ const StorePage = ({ showMessage }) => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchParams] = useSearchParams();
 
-  // Pagination State
+ 
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 8; // Grid 4x2 agar rapi
+  const ITEMS_PER_PAGE = 8;
 
   const categories = [
     "All",
@@ -80,7 +80,7 @@ const StorePage = ({ showMessage }) => {
 
   return (
     <div className="pe-dashboard-wrapper luxury-blue-theme">
-      {/* --- 1. HERO SECTION (MINIMALIST TYPOGRAPHY) --- */}
+      {}
       <section className="sp-hero">
         <div className="sp-hero-orb orb-1"></div>
         <div className="sp-hero-orb orb-2"></div>
@@ -96,7 +96,7 @@ const StorePage = ({ showMessage }) => {
         </div>
       </section>
 
-      {/* --- 2. FLOATING SEARCH & FILTER (GLASS PILL) --- */}
+      {}
       <div className="sp-filter-sticky">
         <div className="container">
           <div className="sp-filter-glass">
@@ -127,7 +127,7 @@ const StorePage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* --- 3. THE GALLERY (STORE GRID) --- */}
+      {}
       <section className="sp-grid-section">
         <div className="container">
           {loading ? (
@@ -142,7 +142,7 @@ const StorePage = ({ showMessage }) => {
                     <Fade direction="up" delay={index * 50} triggerOnce>
                       <Link to={`/store/${store.id}`} className="sp-card-link">
                         <div className="sp-card">
-                          {/* Image Area - Clean & Cinematic */}
+                          {}
                           <div className="sp-card-img-wrapper">
                             <img
                               src={
@@ -154,20 +154,20 @@ const StorePage = ({ showMessage }) => {
                               className="sp-card-img"
                             />
 
-                            {/* Tier Badge (Pengganti Harga) */}
+                            {}
                             <div className="sp-tier-badge">
                               {store.tier === "PRO"
                                 ? "PRO PARTNER"
                                 : "VERIFIED"}
                             </div>
 
-                            {/* Rating Star (Minimalis) */}
+                            {}
                             <div className="sp-rating-badge">
                               ★ {store.rating ? store.rating.toFixed(1) : "N/A"}
                             </div>
                           </div>
 
-                          {/* Content Area - Gallery Style */}
+                          {}
                           <div className="sp-card-body">
                             <div className="d-flex justify-content-between align-items-end">
                               <div>
@@ -180,19 +180,19 @@ const StorePage = ({ showMessage }) => {
                                   </span>
                                 </div>
                               </div>
-                              {/* Tombol Panah Halus */}
+                              {}
                               <div className="sp-card-arrow">
                                 <i className="fas fa-arrow-right"></i>
                               </div>
                             </div>
 
-                            {/* Hover Reveal: Explore Text */}
+                            {}
                             <div className="sp-card-hover-text">
                               Explore Atelier
                             </div>
                           </div>
 
-                          {/* Glow Border Effect */}
+                          {}
                           <div className="sp-card-border-glow"></div>
                         </div>
                       </Link>
@@ -201,7 +201,7 @@ const StorePage = ({ showMessage }) => {
                 ))}
               </div>
 
-              {/* Pagination */}
+              {}
               {totalPages > 1 && (
                 <div className="sp-pagination">
                   <button

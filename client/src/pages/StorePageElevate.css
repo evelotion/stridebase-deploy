@@ -1,6 +1,6 @@
-/* File: client/src/pages/StorePageElevate.css */
 
-/* --- INHERIT VARIABLES (Sama seperti sebelumnya) --- */
+
+
 .luxury-blue-theme {
   --lx-bg: #050505;
   --lx-card-bg: #0f0f0f;
@@ -26,10 +26,10 @@
   --lx-blue-glow: rgba(37, 99, 235, 0.2);
 }
 
-/* --- 1. HERO --- */
+
 .sp-hero {
   position: relative;
-  height: 50vh; /* Sedikit lebih pendek agar grid naik */
+  height: 50vh; 
   min-height: 400px;
   display: flex;
   align-items: center;
@@ -87,7 +87,7 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* --- 2. FLOATING FILTER --- */
+
 .sp-filter-sticky {
   position: sticky;
   top: 90px;
@@ -176,7 +176,7 @@
   box-shadow: 0 0 15px var(--lx-blue-glow);
 }
 
-/* --- 3. GALLERY CARD (CLEAN & PREMIUM) --- */
+
 .sp-grid-section {
   padding-bottom: 100px;
 }
@@ -189,7 +189,7 @@
 
 .sp-card {
   background: var(--lx-card-bg);
-  border-radius: 16px; /* Sedikit lebih kotak */
+  border-radius: 16px; 
   overflow: hidden;
   position: relative;
   transition: transform 0.4s ease;
@@ -206,10 +206,10 @@
   transform: translateY(-8px);
 }
 
-/* IMAGE AREA */
+
 .sp-card-img-wrapper {
   position: relative;
-  height: 250px; /* Gambar lebih tinggi */
+  height: 250px; 
   overflow: hidden;
 }
 .sp-card-img {
@@ -217,16 +217,16 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.7s ease, filter 0.5s ease;
-  /* filter: grayscale(100%);  <-- Hapus atau Comment bagian ini */
+  
 }
 
-/* Opsional: Anda bisa menghapus properti filter di hover juga karena sudah tidak ada perubahan */
+
 .sp-card:hover .sp-card-img {
   transform: scale(1.05);
-  /* filter: grayscale(0%); <-- Ini juga bisa dihapus */
+  
 }
 
-/* BADGES (CLEAN) */
+
 .sp-tier-badge {
   position: absolute;
   top: 15px;
@@ -252,7 +252,7 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* CARD BODY (MINIMALIST) */
+
 .sp-card-body {
   padding: 20px;
   position: relative;
@@ -273,7 +273,7 @@
   letter-spacing: 1px;
 }
 
-/* Arrow Interaction */
+
 .sp-card-arrow {
   color: var(--lx-text-muted);
   font-size: 1rem;
@@ -284,7 +284,7 @@
   color: var(--lx-blue-primary);
 }
 
-/* Hidden "Explore" Text */
+
 .sp-card-hover-text {
   font-size: 0.75rem;
   color: var(--lx-blue-primary);
@@ -295,7 +295,7 @@
   opacity: 0;
   transform: translateY(10px);
   transition: all 0.3s ease;
-  height: 0; /* Hide taking space */
+  height: 0; 
 }
 .sp-card:hover .sp-card-hover-text {
   opacity: 1;
@@ -303,7 +303,7 @@
   height: auto;
 }
 
-/* Glow Border */
+
 .sp-card-border-glow {
   position: absolute;
   inset: 0;
@@ -326,7 +326,7 @@
   opacity: 1;
 }
 
-/* --- 4. PAGINATION --- */
+
 .sp-pagination {
   display: flex;
   justify-content: center;
@@ -373,26 +373,26 @@
   padding: 100px 0;
 }
 
-/* --- MOBILE OPTIMIZATION --- */
+
 @media (max-width: 768px) {
   .sp-hero {
-    /* 1. UBAH height menjadi auto agar tidak memaksa tinggi 40% layar */
+    
     height: auto !important;       
     min-height: unset !important;  
     
-    /* 2. Atur Padding Manual */
-    /* Gunakan angka ini untuk mengatur 'kedekatan' dengan navbar atas */
-    /* 70px biasanya pas untuk memberi ruang navbar tanpa terlihat kosong */
+    
+    
+    
     padding-top: 70px !important;  
     
-    /* Jarak bawah sebelum search bar */
+    
     padding-bottom: 80px !important; 
     
-    /* 3. Posisikan konten di tengah secara vertikal */
+    
     align-items: center !important; 
   }
 .sp-hero-title {
-    /* Opsional: Kecilkan font sedikit agar lebih proporsional */
+    
     font-size: 2.5rem; 
   }
 
@@ -404,11 +404,11 @@
     gap: 15px;
   }
 
-  /* Mobile Cards: Horizontal "Spotify Playlist" Style */
+  
   .sp-card {
     display: flex;
     flex-direction: row;
-    height: 100px; /* Fixed height compact */
+    height: 100px; 
     align-items: center;
   }
 
@@ -456,7 +456,7 @@
 
   .sp-card-hover-text {
     display: none;
-  } /* No hover text on mobile */
+  } 
   .sp-card-arrow {
     display: none;
   }

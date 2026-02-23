@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerSettingsPage.jsx
+
 
 import React from "react";
 import { Fade } from "react-awesome-reveal";
@@ -30,7 +30,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
       </div>
 
       <div className="px-3">
-        {/* 1. Store Profile */}
+        {}
         <div className="pe-card p-3 mb-4 d-flex align-items-center gap-3">
           <div
             className="rounded-3 d-flex align-items-center justify-content-center bg-dark border border-secondary"
@@ -47,7 +47,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
           </button>
         </div>
 
-        {/* 2. Operational Settings */}
+        {}
         <h6 className="text-muted small fw-bold mb-2 ps-2 text-uppercase tracking-widest">
           Operasional
         </h6>
@@ -91,7 +91,7 @@ const PartnerSettingsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* 3. Financial Settings */}
+        {}
         <h6 className="text-muted small fw-bold mb-2 ps-2 text-uppercase tracking-widest">
           Keuangan
         </h6>

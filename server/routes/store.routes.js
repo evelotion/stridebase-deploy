@@ -1,4 +1,4 @@
-// File: server/routes/store.routes.js
+
 import express from 'express';
 import { 
     getStores, 

@@ -1,12 +1,12 @@
-/* File: client/src/pages/AboutPageElevate.css */
 
-/* --- THEME VARIABLES (BLUE DNA) --- */
+
+
 .luxury-blue-theme {
   --lx-bg: #050505;
   --lx-card-bg: #0f0f0f;
   --lx-text: #ffffff;
   --lx-text-muted: rgba(255, 255, 255, 0.5);
-  --lx-blue-primary: #3b82f6; /* Electric Blue */
+  --lx-blue-primary: #3b82f6; 
   --lx-blue-glow: rgba(59, 130, 246, 0.5);
   --lx-font-display: "Outfit", sans-serif;
   --lx-font-body: "Inter", sans-serif;
@@ -17,7 +17,7 @@
   overflow-x: hidden;
 }
 
-/* Light Mode Override */
+
 [data-theme="light"] .luxury-blue-theme {
   --lx-bg: #ffffff;
   --lx-card-bg: #f8f9fa;
@@ -27,20 +27,20 @@
   --lx-blue-glow: rgba(37, 99, 235, 0.2);
 }
 
-/* --- 1. HERO CLEAN (NO IMAGE, PURE AMBIENCE) --- */
+
 .lx-hero-clean {
   position: relative;
-  height: 80vh; /* Tinggi pas, tidak terlalu full */
+  height: 80vh; 
   min-height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Tambah padding atas agar tidak nabrak navbar */
+  
   padding-top: 100px;
 }
 
-/* AMBIENT ORBS (Kunci "Blue Ambience") */
+
 .lx-orb {
   position: absolute;
   border-radius: 50%;
@@ -62,7 +62,7 @@
 .orb-2 {
   width: 300px;
   height: 300px;
-  background: #06b6d4; /* Cyan/Teal accent */
+  background: #06b6d4; 
   bottom: 10%;
   right: 10%;
   opacity: 0.3;
@@ -70,7 +70,7 @@
 }
 
 [data-theme="light"] .lx-orb {
-  opacity: 0.15; /* Lebih tipis di light mode */
+  opacity: 0.15; 
   filter: blur(80px);
 }
 
@@ -100,7 +100,7 @@
 
 .lx-hero-title-clean {
   font-family: var(--lx-font-display);
-  font-size: 6rem; /* SUPER BESAR */
+  font-size: 6rem; 
   font-weight: 800;
   line-height: 0.9;
   letter-spacing: -3px;
@@ -114,7 +114,7 @@
   background: linear-gradient(135deg, #60a5fa 0%, var(--lx-blue-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  /* Fallback color */
+  
   color: var(--lx-blue-primary);
 }
 
@@ -125,7 +125,7 @@
   font-weight: 300;
 }
 
-/* --- 2. MANIFESTO --- */
+
 .lx-quote {
   font-family: var(--lx-font-display);
   font-size: 2.5rem;
@@ -139,7 +139,7 @@
   position: relative;
   display: inline-block;
 }
-/* Garis bawah biru */
+
 .lx-highlight-blue::after {
   content: "";
   position: absolute;
@@ -151,7 +151,7 @@
   opacity: 0.5;
 }
 
-/* --- 3. CRAFT CARDS (GLASS + GLOW) --- */
+
 .lx-feature-card {
   background: var(--lx-card-bg);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -173,7 +173,7 @@
 .lx-card-number {
   font-size: 4rem;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.03); /* Sangat samar */
+  color: rgba(255, 255, 255, 0.03); 
   position: absolute;
   top: 20px;
   right: 30px;
@@ -196,7 +196,7 @@
   line-height: 1.6;
 }
 
-/* Hover Glow Effect */
+
 .lx-card-glow {
   position: absolute;
   bottom: -50px;
@@ -212,7 +212,7 @@
   opacity: 0.4;
 }
 
-/* --- 4. STATS --- */
+
 .lx-stats-grid {
   display: flex;
   justify-content: center;
@@ -228,14 +228,14 @@
   display: block;
   font-size: 3.5rem;
   font-weight: 800;
-  color: var(--lx-text); /* Teks putih di dark mode */
+  color: var(--lx-text); 
   line-height: 1;
 }
 .lx-stat-label {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--lx-blue-primary); /* Label biru */
+  color: var(--lx-blue-primary); 
   font-weight: 600;
 }
 
@@ -245,7 +245,7 @@
   background: rgba(128, 128, 128, 0.2);
 }
 
-/* --- 5. CTA BLUE --- */
+
 .lx-cta-section-blue {
   padding: 120px 0;
   position: relative;
@@ -262,7 +262,7 @@
   display: inline-block;
   padding: 18px 45px;
   background: var(--lx-blue-primary);
-  color: #ffffff; /* Selalu putih */
+  color: #ffffff; 
   border-radius: 50px;
   font-weight: 600;
   text-decoration: none;
@@ -291,7 +291,7 @@
   color: var(--lx-blue-primary);
 }
 
-/* --- MOBILE RESPONSIVE --- */
+
 @media (max-width: 991px) {
   .lx-hero-title-clean {
     font-size: 3.5rem;
@@ -311,7 +311,7 @@
   }
   .lx-stat-divider {
     width: 60px;
-    height: 1px; /* Divider jadi horizontal */
+    height: 1px; 
   }
 
   .lx-cta-title {

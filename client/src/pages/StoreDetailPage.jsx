@@ -1,4 +1,4 @@
-// File: client/src/pages/StoreDetailPage.jsx
+
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -9,10 +9,10 @@ import {
   addUserAddress,
 } from "../services/apiService";
 
-// Import CSS Baru
+
 import "./StoreDetailElevate.css";
 
-// Helper Icon untuk Tipe Sepatu (Tabs)
+
 const getShoeIcon = (type) => {
   const t = type?.toLowerCase() || "";
   if (t.includes("leather") || t.includes("pantofel") || t.includes("kulit"))
@@ -25,7 +25,7 @@ const getShoeIcon = (type) => {
   return "fa-layer-group";
 };
 
-// [NEW] Helper Icon untuk Service (Card)
+
 const getServiceIcon = (name) => {
   const n = name?.toLowerCase() || "";
   if (n.includes("fast") || n.includes("express")) return "fa-bolt";
@@ -37,7 +37,7 @@ const getServiceIcon = (name) => {
   if (n.includes("repair") || n.includes("glue") || n.includes("sol"))
     return "fa-tools";
   if (n.includes("protector") || n.includes("coat")) return "fa-shield-alt";
-  return "fa-star"; // Default
+  return "fa-star";
 };
 
 const StoreDetailPage = ({ showMessage }) => {
@@ -51,7 +51,7 @@ const StoreDetailPage = ({ showMessage }) => {
   const [loading, setLoading] = useState(true);
   const [showAddressModal, setShowAddressModal] = useState(false);
 
-  // Booking State
+ 
   const [selectedShoeType, setSelectedShoeType] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [bookingData, setBookingData] = useState({
@@ -60,7 +60,7 @@ const StoreDetailPage = ({ showMessage }) => {
     notes: "",
   });
 
-  // Form New Address
+ 
   const [newAddress, setNewAddress] = useState({
     label: "Rumah",
     recipientName: "",
@@ -97,7 +97,7 @@ const StoreDetailPage = ({ showMessage }) => {
     fetchData();
   }, [id]);
 
-  // Grouping Services
+ 
   const servicesByShoeType = useMemo(() => {
     const groups = {};
     services.forEach((srv) => {
@@ -174,7 +174,7 @@ const StoreDetailPage = ({ showMessage }) => {
 
   return (
     <div className="pe-dashboard-wrapper luxury-blue-theme sd-page-container">
-      {/* --- 1. HERO SECTION --- */}
+      {}
       <section className="sd-hero">
         <div
           className="sd-hero-bg"
@@ -201,13 +201,13 @@ const StoreDetailPage = ({ showMessage }) => {
         </div>
       </section>
 
-      {/* --- 2. MAIN CONTENT --- */}
+      {}
       <section className="sd-content">
         <div className="container">
           <div className="row g-5">
-            {/* LEFT COLUMN: Services & Info */}
+            {}
             <div className="col-lg-8">
-              {/* About */}
+              {}
               <div className="sd-section mb-5">
                 <h3 className="sd-section-title">The Atelier</h3>
                 <p className="sd-desc">
@@ -216,11 +216,11 @@ const StoreDetailPage = ({ showMessage }) => {
                 </p>
               </div>
 
-              {/* Service Selection */}
+              {}
               <div className="sd-section mb-5">
                 <h3 className="sd-section-title">Select Service</h3>
 
-                {/* Tabs (Shoe Types) */}
+                {}
                 <div className="sd-tabs-scroll">
                   {shoeTypes.map((type) => (
                     <button
@@ -238,7 +238,7 @@ const StoreDetailPage = ({ showMessage }) => {
                   ))}
                 </div>
 
-                {/* Service Cards Grid */}
+                {}
                 <div className="sd-service-grid mt-4">
                   {servicesByShoeType[selectedShoeType]?.map((srv, idx) => (
                     <div
@@ -253,7 +253,7 @@ const StoreDetailPage = ({ showMessage }) => {
                           }`}
                         >
                           <div className="d-flex justify-content-between mb-3">
-                            {/* [UPDATE] ICON DINAMIS BERDASARKAN NAMA SERVICE */}
+                            {}
                             <span className="sd-service-icon">
                               <i
                                 className={`fas ${getServiceIcon(srv.name)}`}
@@ -281,7 +281,7 @@ const StoreDetailPage = ({ showMessage }) => {
                 </div>
               </div>
 
-              {/* Reviews */}
+              {}
               <div className="sd-section mb-5">
                 <h3 className="sd-section-title">Client Stories</h3>
                 {reviews.length > 0 ? (
@@ -303,13 +303,13 @@ const StoreDetailPage = ({ showMessage }) => {
                     ))}
                   </div>
                 ) : (
-                  // Perbaikan warna font "Belum ada ulasan"
+                 
                   <p className="sd-text-muted fst-italic">Belum ada ulasan.</p>
                 )}
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Sticky Booking Panel */}
+            {}
             <div className="col-lg-4">
               <div className="sd-sticky-wrapper">
                 <div className="sd-booking-card">
@@ -400,7 +400,7 @@ const StoreDetailPage = ({ showMessage }) => {
                       <div className="sd-divider"></div>
 
                       <div className="d-flex justify-content-between align-items-center mb-4">
-                        {/* Perbaikan warna font "Total" */}
+                        {}
                         <span className="sd-text-muted">Total</span>
                         <span className="sd-total-price">
                           Rp {selectedService.price.toLocaleString("id-ID")}
@@ -429,7 +429,7 @@ const StoreDetailPage = ({ showMessage }) => {
         </div>
       </section>
 
-      {/* --- MOBILE BAR (Disesuaikan) --- */}
+      {}
       {selectedService && (
         <div className="sd-mobile-bar d-lg-none">
           <div className="d-flex flex-column">
@@ -448,7 +448,7 @@ const StoreDetailPage = ({ showMessage }) => {
         </div>
       )}
 
-      {/* --- ADDRESS MODAL (Warna Input Disesuaikan) --- */}
+      {}
       {showAddressModal && (
         <div className="pe-modal-backdrop">
           <div className="pe-modal-glass" style={{ maxWidth: "400px" }}>

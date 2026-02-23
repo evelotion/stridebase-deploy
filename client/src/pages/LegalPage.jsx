@@ -1,4 +1,4 @@
-// File: stridebase-app-render/client/src/pages/LegalPage.jsx
+
 
 import React from "react";
 

@@ -1,4 +1,4 @@
-// File: server/middleware/authenticateToken.js
+
 import jwt from 'jsonwebtoken';
 import prisma from '../config/prisma.js';
 
@@ -30,7 +30,7 @@ export const authenticateToken = async (req, res, next) => {
   });
 };
 
-// Middleware tambahan untuk memeriksa peran
+
 export const checkRole = (roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
     return res.status(403).json({ message: `Akses ditolak. Membutuhkan peran: ${roles.join(' atau ')}.` });

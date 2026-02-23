@@ -1,4 +1,4 @@
-// File: server/config/midtrans.js (FILE BARU)
+
 import midtransClient from 'midtrans-client';
 
 export const snap = new midtransClient.Snap({

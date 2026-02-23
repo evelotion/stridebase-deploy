@@ -1,4 +1,4 @@
-// File: server/controllers/auth.controller.js (Kode Lengkap Final)
+
 
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -86,7 +86,7 @@ export const loginUser = async (req, res, next) => {
         return res.status(401).json({ message: "Email atau password salah." });
     }
     
- if (!user.isEmailVerified) { // INI PERBAIKANNYA
+ if (!user.isEmailVerified) {
     return res.status(401).json({ message: "Akun Anda belum diverifikasi. Silakan cek email Anda." });
 }
     if (user.status !== 'active') {
@@ -147,7 +147,7 @@ export const superuserLogin = async (req, res, next) => {
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" } // Sesi lebih pendek untuk superuser
+      { expiresIn: "8h" }
     );
 
     res.json({
@@ -211,7 +211,7 @@ export const forgotPassword = async (req, res, next) => {
     try {
         const user = await prisma.user.findUnique({ where: { email }});
         if (!user) {
-            // Respon generik untuk keamanan
+           
             return res.status(200).json({ message: 'Jika email terdaftar, link reset password akan dikirim.' });
         }
 

@@ -1,4 +1,4 @@
-// File: client/src/pages/BookingConfirmationPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -110,7 +110,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
         promoCode: appliedPromo ? appliedPromo.code : undefined,
       };
 
-      // 1. Buat Booking
+     
       const bookingResponse = await fetch(`${API_BASE_URL}/api/bookings`, {
         method: "POST",
         headers: {
@@ -129,7 +129,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
       if (!bookingResponse.ok)
         throw new Error(newBookingData.message || "Gagal booking.");
 
-      // 2. Buat Transaksi Pembayaran
+     
       const transactionResponse = await fetch(
         `${API_BASE_URL}/api/payment/create-transaction`,
         {
@@ -148,7 +148,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
 
       localStorage.removeItem("pendingBooking");
 
-      // 3. Routing Pembayaran
+     
       if (transactionData.paymentMethod === "simulation") {
         navigate(`/payment-simulation/${newBookingData.id}`);
       } else {
@@ -185,7 +185,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
     );
   }
 
-  // --- Kalkulasi Biaya ---
+ 
   const handlingFee = 2000;
   const deliveryFee =
     bookingDetails.deliveryOption === "pickup_delivery" ? 15000 : 0;
@@ -204,8 +204,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
     subtotal + handlingFee + deliveryFee - discountAmount
   );
 
-  /* --- [STYLE INJECTION] MEMAKSA TEKS PUTIH --- */
-  // Ini memastikan tombol tetap putih meskipun Light Mode punya aturan text-dark !important
+  
+ 
   const forceWhiteStyle = (
     <style>{`
       .text-white-force { color: #ffffff !important; }
@@ -213,7 +213,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
     `}</style>
   );
 
-  /* --- RENDER DESKTOP --- */
+  
   const renderDesktop = () => (
     <div
       className="home-elevate-wrapper d-none d-lg-block"
@@ -224,7 +224,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
         <Fade direction="up" triggerOnce>
           <h2 className="he-section-title mb-5 text-center">Review Pesanan</h2>
           <div className="row g-5">
-            {/* KIRI: DETAIL */}
+            {}
             <div className="col-lg-8">
               <div
                 className="p-5 rounded-4 h-100 position-relative overflow-hidden"
@@ -394,7 +394,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
               </div>
             </div>
 
-            {/* KANAN: PAYMENT SUMMARY */}
+            {}
             <div className="col-lg-4">
               <div className="position-sticky" style={{ top: "120px" }}>
                 <div
@@ -541,8 +541,8 @@ const BookingConfirmationPage = ({ showMessage }) => {
 
   const renderMobile = () => (
     <div className="he-mobile-receipt-wrapper d-lg-none">
-      {forceWhiteStyle} {/* Inject Style Tag */}
-      {/* Sticky Header */}
+      {forceWhiteStyle} {}
+      {}
       <div className="he-mobile-header-sticky">
         <div className="d-flex align-items-center gap-3">
           <button
@@ -561,13 +561,13 @@ const BookingConfirmationPage = ({ showMessage }) => {
           <div style={{ width: "24px" }}></div>
         </div>
       </div>
-      {/* Receipt Container */}
+      {}
       <div className="container pt-4 pb-5 px-4">
         <div className="he-receipt-card">
           <div className="he-receipt-edge top"></div>
 
           <div className="he-receipt-content">
-            {/* Header Receipt */}
+            {}
             <div className="text-center mb-4 border-bottom border-dashed border-secondary border-opacity-25 pb-3">
               <div className="he-receipt-logo mb-2">
                 <i className="fas fa-check-circle text-success fs-1"></i>
@@ -581,7 +581,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
               </p>
             </div>
 
-            {/* Order Details */}
+            {}
             <div className="he-receipt-section">
               <div className="he-receipt-row">
                 <span className="label">Store</span>
@@ -611,7 +611,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
               )}
             </div>
 
-            {/* Cost Breakdown */}
+            {}
             <div className="he-receipt-section border-top border-dashed border-secondary border-opacity-25 pt-3 mt-3">
               <div className="he-receipt-row">
                 <span className="label">Subtotal</span>
@@ -643,7 +643,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
               )}
             </div>
 
-            {/* Total */}
+            {}
             <div
               className="he-receipt-total mt-4 pt-3 border-top border-2"
               style={{ borderColor: "var(--sb-card-border)" }}
@@ -659,7 +659,7 @@ const BookingConfirmationPage = ({ showMessage }) => {
           <div className="he-receipt-edge bottom"></div>
         </div>
 
-        {/* --- PROMO INPUT --- */}
+        {}
         <div className="mt-4 mb-3">
           <label
             className="small mb-2 text-uppercase fw-bold"
@@ -718,17 +718,17 @@ const BookingConfirmationPage = ({ showMessage }) => {
           )}
         </div>
       </div>
-      {/* Sticky Action Button */}
+      {}
       <div className="he-mobile-sticky-footer">
         <button
           onClick={handleConfirmAndPay}
           disabled={isSubmitting}
-          // TAMBAHKAN CLASS 'text-white-force' DI SINI
+         
           className="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-lg d-flex justify-content-between px-4 align-items-center text-white-force"
           style={{
             background: "var(--sb-accent)",
             border: "none",
-            // Hapus color: white inline yang kalah kuat
+           
           }}
         >
           {isSubmitting ? (

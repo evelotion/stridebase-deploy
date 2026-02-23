@@ -1,4 +1,4 @@
-// File: server/routes/auth.routes.js (Kode Lengkap Final)
+
 
 import express from "express";
 import {
@@ -17,7 +17,7 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
-// Rute Otentikasi
+
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/verify-email", verifyEmail);
@@ -25,11 +25,11 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.post("/superuser-login", superuserLogin);
 
-// Rute Profil Pengguna (membutuhkan token)
+
 router.get("/profile", authenticateToken, getProfile);
 router.put("/profile", authenticateToken, updateProfile);
 
-// Rute Google OAuth
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -39,10 +39,10 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/login",
-    session: false, // Pastikan tidak menggunakan sesi
+    session: false,
   }),
   (req, res) => {
-    // Buat JWT token setelah login Google berhasil
+   
     const user = req.user;
     const token = jwt.sign(
       { id: user.id, role: user.role },
@@ -50,7 +50,7 @@ router.get(
       { expiresIn: "24h" }
     );
 
-    // Redirect ke client dengan token dan data user
+   
     res.redirect(
       `${
         process.env.CLIENT_URL

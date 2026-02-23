@@ -1,4 +1,4 @@
-// File: client/src/pages/DeveloperDashboardPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,13 +23,13 @@ import {
   resolveApprovalRequest,
   reseedDatabase,
   uploadDeveloperAsset,
-  getDeveloperMetrics, // Pastikan ini ada di apiService.js
+  getDeveloperMetrics,
 } from "../services/apiService";
 
 import API_BASE_URL from "../apiConfig";
 import "../styles/ElevateDashboard.css";
 
-// Registrasi Chart.js
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -42,7 +42,7 @@ ChartJS.register(
   Filler
 );
 
-// --- HELPER: SAFE RENDER ---
+
 const safeRender = (data, fallback = "-") => {
   if (data === null || data === undefined) return fallback;
   if (typeof data === "object") {
@@ -51,7 +51,7 @@ const safeRender = (data, fallback = "-") => {
   return data;
 };
 
-// --- STYLE HELPER: GLASS INPUT ---
+
 const glassInputStyle = {
   background: "rgba(255, 255, 255, 0.05)",
   border: "1px solid var(--pe-card-border)",
@@ -60,7 +60,7 @@ const glassInputStyle = {
   padding: "10px 12px",
 };
 
-// --- HELPER: PAGINATION CONTROLS ---
+
 const PaginationControls = ({
   currentPage,
   totalPages,
@@ -95,7 +95,7 @@ const PaginationControls = ({
   );
 };
 
-// --- KOMPONEN: DEBOUNCED SLIDER ---
+
 const DebouncedRangeInput = ({ label, value, min, max, onChange }) => {
   const [localValue, setLocalValue] = useState(value);
   useEffect(() => {
@@ -128,7 +128,7 @@ const DebouncedRangeInput = ({ label, value, min, max, onChange }) => {
   );
 };
 
-// --- HELPER: GOOGLE FONTS ---
+
 const loadGoogleFont = (fontFamily) => {
   if (!fontFamily) return;
   const fontName = fontFamily.split(",")[0].replace(/['"]/g, "").trim();
@@ -147,7 +147,7 @@ const loadGoogleFont = (fontFamily) => {
   if (link.href !== fontUrl) link.href = fontUrl;
 };
 
-// --- COMPONENT: LOG DETAILS ---
+
 const LogDetails = ({ details }) => {
   if (!details) return <small>-</small>;
   let parsedDetails = details;
@@ -207,7 +207,7 @@ const LogDetails = ({ details }) => {
   );
 };
 
-// --- COMPONENT: THEME PREVIEW ---
+
 const ThemePreview = ({ config }) => {
   if (!config) return null;
   const wrapperStyle = {
@@ -300,12 +300,12 @@ const ThemePreview = ({ config }) => {
   );
 };
 
-// --- MAIN COMPONENT ---
+
 const DeveloperDashboardPage = ({ showMessage }) => {
   const [config, setConfig] = useState(null);
   const [initialConfig, setInitialConfig] = useState(null);
   
-  // State Monitoring Realtime
+ 
   const [metrics, setMetrics] = useState({
     uptime: "00:00:00",
     avgLatency: 0,
@@ -326,17 +326,17 @@ const DeveloperDashboardPage = ({ showMessage }) => {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview"); // Default ke Overview
+  const [activeTab, setActiveTab] = useState("overview");
   const [uploadingStatus, setUploadingStatus] = useState({});
   const navigate = useNavigate();
 
-  // --- CHART DATA (REALTIME LINKED) ---
+ 
   const apiTrafficData = {
     labels: ["-6m", "-5m", "-4m", "-3m", "-2m", "-1m", "Now"],
     datasets: [
       {
         label: "API Requests (RPM)",
-        data: metrics.traffic, // Gunakan data dari metrics
+        data: metrics.traffic,
         fill: true,
         backgroundColor: "rgba(244, 63, 94, 0.1)",
         borderColor: "#f43f5e",
@@ -356,7 +356,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         data: [
           metrics.cpu.usage * 10,
           metrics.memory.osUsagePercent,
-          (metrics.memory.used / 2048) * 100, // Asumsi 2GB
+          (metrics.memory.used / 2048) * 100,
         ],
         backgroundColor: [
           "#3b82f6",
@@ -368,13 +368,13 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     ],
   };
 
-  // --- CHART OPTIONS (LIGHT MODE FIX) ---
+ 
   const commonChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-      x: { grid: { display: false }, ticks: { color: "#9ca3af" } }, // FIX: Warna netral
+      x: { grid: { display: false }, ticks: { color: "#9ca3af" } },
       y: {
         grid: { color: "rgba(128, 128, 128, 0.1)" },
         ticks: { color: "#9ca3af" },
@@ -382,11 +382,11 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     },
   };
 
-  // --- FETCHING DATA ---
+ 
   const fetchConfig = async () => {
     try {
       const configData = await getSuperUserConfig();
-      // Default theme 'elevate' jika belum diset
+     
       if (!configData.homePageTheme || configData.homePageTheme !== "elevate") {
         configData.homePageTheme = "elevate";
       }
@@ -459,7 +459,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
     };
     init();
 
-    // Polling Metrics setiap 5 detik
+   
     const interval = setInterval(fetchMetrics, 5000);
     return () => clearInterval(interval);
   }, [navigate]);
@@ -469,7 +469,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       loadGoogleFont(config.typography.fontFamily);
   }, [config?.typography?.fontFamily]);
 
-  // --- HANDLERS ---
+ 
   const handleConfigChange = (e, path) => {
     const { value, type, checked } = e.target;
     const keys = path.split(".");
@@ -591,32 +591,32 @@ const DeveloperDashboardPage = ({ showMessage }) => {
       case "overview":
         return (
           <div className="row g-4">
-            {/* METRICS CARDS */}
+            {}
             {[
               {
                 l: "API Uptime",
-                v: metrics.uptime, // Real Data
+                v: metrics.uptime,
                 i: "fa-server",
                 c: "pe-icon-green",
                 s: "Operational",
               },
               {
                 l: "Avg Latency",
-                v: `${metrics.avgLatency}ms`, // Real Data
+                v: `${metrics.avgLatency}ms`,
                 i: "fa-bolt",
                 c: "pe-icon-gold",
                 s: metrics.avgLatency < 100 ? "Fast" : "Slow",
               },
               {
                 l: "Error Rate",
-                v: `${metrics.errorRate}%`, // Real Data
+                v: `${metrics.errorRate}%`,
                 i: "fa-exclamation-triangle",
                 c: "pe-icon-red",
                 s: metrics.errorRate < 1 ? "Healthy" : "Check Logs",
               },
               {
                 l: "Active Nodes",
-                v: "8/8", // Static for now
+                v: "8/8",
                 i: "fa-network-wired",
                 c: "pe-icon-blue",
                 s: "Healthy",
@@ -640,7 +640,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
               </div>
             ))}
 
-            {/* CHARTS */}
+            {}
             <div className="col-lg-8">
               <Slide direction="left" triggerOnce>
                 <div className="pe-card h-100">
@@ -686,7 +686,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                 <h5 className="pe-title mb-4 border-bottom border-secondary pb-3">
                   Global Theme Settings
                 </h5>
-                {/* Branding & Assets Section */}
+                {}
                 <div className="row g-5">
                   <div className="col-md-6">
                     <h6 className="pe-subtitle text-uppercase mb-3 fw-bold text-info">
@@ -727,7 +727,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                     <h6 className="pe-subtitle text-uppercase mb-3 fw-bold text-info">
                       Design Tokens
                     </h6>
-                    {/* Color Palette Inputs */}
+                    {}
                     <div className="d-grid gap-2 mb-4">
                       {[
                         { label: "Primary", path: "colors.primary" },
@@ -766,7 +766,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                         );
                       })}
                     </div>
-                    {/* Font Selector */}
+                    {}
                     <select
                       className="form-select mb-3"
                       style={glassInputStyle}
@@ -808,7 +808,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
                   </div>
                 </div>
 
-                {/* SLIDERS */}
+                {}
                 <div className="mt-4 pt-4 border-top border-secondary">
                   <h6 className="pe-subtitle text-uppercase mb-3 fw-bold text-warning">
                     Dimensions
@@ -1064,11 +1064,11 @@ const DeveloperDashboardPage = ({ showMessage }) => {
 
   return (
     <div className="container-fluid px-4 py-4 position-relative z-1">
-      {/* Background Blobs khusus Dev */}
+      {}
       <div className="pe-blob pe-blob-1 pe-blob-dev"></div>
       <div className="pe-blob pe-blob-2"></div>
 
-      {/* HEADER */}
+      {}
       <div className="d-flex justify-content-between align-items-end mb-5">
         <div>
           <Fade direction="down" triggerOnce>
@@ -1107,7 +1107,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* NAVIGATION TABS */}
+      {}
       <div className="d-flex gap-2 mb-4 overflow-auto pb-2">
         {[
           { id: "overview", label: "Overview", icon: "fa-chart-line" },
@@ -1136,7 +1136,7 @@ const DeveloperDashboardPage = ({ showMessage }) => {
         ))}
       </div>
 
-      {/* DYNAMIC CONTENT */}
+      {}
       {renderContent()}
     </div>
   );

@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerDashboardPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,28 +7,28 @@ import {
   getPartnerStats,
   updatePartnerStoreStatus,
 } from "../services/apiService";
-import "../pages/PartnerElevate.css"; // Gunakan CSS Partner
+import "../pages/PartnerElevate.css";
 
 const PartnerDashboardPage = ({ showMessage }) => {
   const [stats, setStats] = useState(null);
-  const [storeStatus, setStoreStatus] = useState("open"); // open/closed
+  const [storeStatus, setStoreStatus] = useState("open");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch Data Real dari API
+   
     const fetchData = async () => {
       setLoading(true);
       try {
         const data = await getPartnerStats();
         if (data) {
           setStats(data);
-          // Mapping status dari backend (active/inactive) ke UI (open/closed)
+         
           setStoreStatus(data.storeStatus === "active" ? "open" : "closed");
         }
       } catch (err) {
         console.error("Gagal memuat statistik:", err);
-        // Jika gagal, set default stats agar tidak crash
+       
         setStats({
           todayRevenue: 0,
           todayOrders: 0,
@@ -45,16 +45,16 @@ const PartnerDashboardPage = ({ showMessage }) => {
   }, []);
 
   const handleToggleStore = async () => {
-    // 1. Simpan status lama untuk rollback jika gagal
+   
     const oldStatus = storeStatus;
-    // 2. Tentukan status baru
+   
     const newStatus = storeStatus === "open" ? "closed" : "open";
 
-    // 3. Optimistic Update (Ubah UI duluan agar terasa cepat)
+   
     setStoreStatus(newStatus);
 
     try {
-      // 4. Panggil API dengan status yang sesuai backend (active/inactive)
+     
       await updatePartnerStoreStatus(
         newStatus === "open" ? "active" : "inactive"
       );
@@ -67,7 +67,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
       }
     } catch (err) {
       console.error("Gagal update status toko:", err);
-      // 5. Rollback jika error
+     
       setStoreStatus(oldStatus);
       if (showMessage)
         showMessage("Gagal mengubah status toko. Coba lagi.", "Error");
@@ -96,7 +96,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* 1. STORE STATUS CARD (CRITICAL) */}
+      {}
       <div className="px-3 pt-3 mb-3">
         <div className="pe-store-status-card">
           <div className="d-flex align-items-center gap-3">
@@ -106,7 +106,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
               }`}
               style={{ width: 40, height: 40 }}
             >
-              {/* FIX: Pakai style color #ffffff agar icon selalu putih (di dark/light mode) karena backgroundnya berwarna */}
+              {}
               <i
                 className={`fas ${
                   storeStatus === "open" ? "fa-store" : "fa-store-slash"
@@ -115,14 +115,14 @@ const PartnerDashboardPage = ({ showMessage }) => {
               ></i>
             </div>
             <div>
-              {/* FIX: Pakai var(--pe-text-main) agar adaptif (Putih di Dark, Hitam di Light) */}
+              {}
               <h6
                 className="fw-bold mb-0"
                 style={{ color: "var(--pe-text-main)" }}
               >
                 {storeStatus === "open" ? "Toko Buka" : "Toko Tutup"}
               </h6>
-              {/* FIX: Pakai var(--pe-text-muted) agar adaptif */}
+              {}
               <small
                 style={{
                   color: "var(--pe-text-muted)",
@@ -136,7 +136,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
             </div>
           </div>
 
-          {/* Custom Toggle Switch */}
+          {}
           <div
             className={`pe-toggle-switch ${
               storeStatus === "open" ? "active" : ""
@@ -149,7 +149,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 2. REVENUE CARD (TODAY) */}
+      {}
       <div className="px-3 mb-4">
         <div className="pe-card p-4 text-center">
           <small
@@ -170,7 +170,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 3. MENU GRID SHORTCUTS */}
+      {}
       <div className="px-3 mb-4">
         <h6 className="text-muted small fw-bold mb-3 ps-1">Menu Cepat</h6>
         <div className="row g-2">
@@ -245,7 +245,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 4. RECENT ORDERS LIST */}
+      {}
       <div className="px-3">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h6 className="text-muted small fw-bold mb-0 ps-1">
@@ -259,7 +259,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
           </Link>
         </div>
 
-        {/* List Pesanan */}
+        {}
         <div className="d-flex flex-column gap-2">
           {!stats?.recentOrders || stats.recentOrders.length === 0 ? (
             <div className="text-center text-muted py-3 small">
@@ -293,7 +293,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
                   <span className="pe-badge pe-badge-warning mb-1">
                     {order.status || "Baru"}
                   </span>
-                  {/* FIX: Harga adaptif (Putih/Hitam), bukan hardcode text-white */}
+                  {}
                   <small
                     className="d-block fw-bold"
                     style={{ color: "var(--pe-text-main)" }}
@@ -340,7 +340,7 @@ const PartnerDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {}
       <div className="row g-4 mb-4">
         {[
           {

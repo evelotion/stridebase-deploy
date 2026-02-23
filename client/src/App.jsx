@@ -1,4 +1,4 @@
-// File: client/src/App.jsx
+
 
 import React, { useEffect, useState, Suspense } from "react";
 import {
@@ -16,36 +16,36 @@ import { io } from "socket.io-client";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
-// --- FIX IMPORT: Gunakan path yang valid sesuai struktur folder ---
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import GlobalAnnouncement from "./components/GlobalAnnouncement";
 import MobileBottomNav from "./components/MobileBottomNav";
 import DemoPage from './pages/DemoPage';
-// import Notification from "./components/Notification"; // <-- Jika file ini belum ada/error, komentari dulu atau pastikan path benar
+
 import API_BASE_URL from "./apiConfig";
 
-// --- FUNGSI NOTIFIKASI SEDERHANA (INLINE) ---
-// Jika Notification.jsx bermasalah, gunakan versi sederhana ini sementara
+
+
 const Notification = ({ notification, onClose }) => {
-  // 1. Logika Timer Otomatis (Auto-Close)
+ 
   useEffect(() => {
     if (notification) {
-      // Pasang timer 5 detik (5000ms)
+     
       const timer = setTimeout(() => {
         onClose();
       }, 5000);
 
-      // Bersihkan timer jika komponen di-unmount atau notifikasi berubah
-      // (Penting agar tidak error saat user menutup manual sebelum 5 detik)
+     
+     
       return () => clearTimeout(timer);
     }
   }, [notification, onClose]);
 
-  // Jika tidak ada notifikasi, jangan render apa-apa
+ 
   if (!notification) return null;
 
-  // 2. Deteksi Error agar warna berbeda
+ 
   const isError = 
     notification.title?.toLowerCase().includes("gagal") || 
     notification.title?.toLowerCase().includes("error") || 
@@ -54,22 +54,22 @@ const Notification = ({ notification, onClose }) => {
 
   return (
     <div
-      className="pe-notification-toast" // Class opsional jika ingin styling via CSS
+      className="pe-notification-toast"
       style={{
         position: "fixed",
         top: "24px",
         right: "24px",
-        // Theme Variables (Otomatis Dark/Light)
+       
         background: "var(--sb-card-bg, rgba(20, 20, 20, 0.95))", 
         color: "var(--sb-text-main, #ffffff)",
-        borderLeft: isError ? "4px solid #ef4444" : "4px solid #3b82f6", // Border kiri berwarna
+        borderLeft: isError ? "4px solid #ef4444" : "4px solid #3b82f6",
         border: "1px solid var(--sb-card-border, rgba(255,255,255,0.1))",
         
-        // Glass Effect
+       
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         
-        // Layout & Animasi
+       
         padding: "16px 20px",
         borderRadius: "12px",
         boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
@@ -82,7 +82,7 @@ const Notification = ({ notification, onClose }) => {
         animation: "slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
       }}
     >
-      {/* Icon */}
+      {}
       <div 
         style={{ 
           fontSize: "1.2rem", 
@@ -93,7 +93,7 @@ const Notification = ({ notification, onClose }) => {
         {isError ? <i className="fas fa-exclamation-circle"></i> : <i className="fas fa-check-circle"></i>}
       </div>
 
-      {/* Content */}
+      {}
       <div style={{ flex: 1 }}>
         <h6 
           style={{ 
@@ -111,14 +111,14 @@ const Notification = ({ notification, onClose }) => {
             margin: 0, 
             fontSize: "0.85rem", 
             lineHeight: "1.4",
-            opacity: 0.8 // Agar teks isi sedikit lebih pudar tapi tetap terbaca
+            opacity: 0.8
           }}
         >
           {notification.message}
         </p>
       </div>
 
-      {/* Close Button */}
+      {}
       <button
         onClick={onClose}
         style={{
@@ -138,7 +138,7 @@ const Notification = ({ notification, onClose }) => {
         &times;
       </button>
 
-      {/* Inject Keyframe Animasi Slide-In */}
+      {}
       <style>
         {`
           @keyframes slideInRight {
@@ -150,7 +150,7 @@ const Notification = ({ notification, onClose }) => {
     </div>
   );
 };
-// Lazy load all page components
+
 const HomePage = React.lazy(() => import("./pages/HomePage"));
 const AboutPage = React.lazy(() => import("./pages/AboutPage"));
 const ContactPage = React.lazy(() => import("./pages/ContactPage"));
@@ -250,7 +250,7 @@ const LoginSuccessPage = React.lazy(() => import("./pages/LoginSuccessPage"));
 
 let socket;
 
-// --- FUNGSI HELPER: TERAPKAN TEMA ---
+
 const applyTheme = (theme) => {
   if (!theme) return;
   const root = document.documentElement;
@@ -347,7 +347,7 @@ const applyTheme = (theme) => {
   }
 };
 
-// --- KOMPONEN WRAPPER MAINTENANCE ---
+
 const PageStatusWrapper = ({ children, path, theme }) => {
   const isEnabled = theme?.featureFlags?.pageStatus?.[path] ?? true;
   if (isEnabled) {
@@ -356,8 +356,8 @@ const PageStatusWrapper = ({ children, path, theme }) => {
   return <MaintenanceNoticePage />;
 };
 
-// --- LAYOUT USER (NAVBAR + FOOTER) ---
-// Di dalam client/src/App.jsx
+
+
 
 const UserLayout = ({
   theme,
@@ -373,14 +373,14 @@ const UserLayout = ({
 }) => {
   const [isThemeDrawerOpen, setIsThemeDrawerOpen] = useState(false);
   
-  // 1. LOGIC MENYEMBUNYIKAN NAVBAR
+ 
   const location = useLocation();
-  // Daftar path yang TIDAK BOLEH ada navbar bawah
+ 
   const hideNavPaths = ["/store/", "/booking-confirmation", "/payment"];
   
-  // Cek apakah URL saat ini mengandung salah satu path di atas
+ 
   const shouldHideNav = hideNavPaths.some((path) => 
-    location.pathname.includes(path) && location.pathname !== "/store" // Kecuali halaman utama store list
+    location.pathname.includes(path) && location.pathname !== "/store"
   );
 
   useEffect(() => {
@@ -418,7 +418,7 @@ const UserLayout = ({
         <Footer />
       </div>
 
-      {/* 2. RENDER KONDISIONAL: Hanya tampilkan jika TIDAK di halaman detail/booking */}
+      {}
       {!shouldHideNav && <MobileBottomNav />}
 
       <div className={`he-theme-control-group ${isThemeDrawerOpen ? 'open' : ''}`}>
@@ -440,7 +440,7 @@ const UserLayout = ({
   );
 };
 
-// --- LAYOUT AUTH (TANPA NAVBAR/FOOTER) ---
+
 const AuthLayout = () => {
   useEffect(() => {
     document.body.classList.add("auth-layout");
@@ -456,7 +456,7 @@ const AuthLayout = () => {
   );
 };
 
-// --- KOMPONEN PROTECTED ROUTE (UPDATED: ROLE HIERARCHY) ---
+
 const ProtectedRoute = ({ children, requiredRole }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
@@ -465,34 +465,34 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // --- LOGIKA HIRARKI PERAN ---
+ 
   let isAllowed = false;
 
-  // 1. Developer (Superuser) -> Akses Segalanya (Kecuali logic khusus jika ada)
+ 
   if (user.role === "developer") {
     isAllowed = true;
   }
-  // 2. Admin -> Akses Admin saja
+ 
   else if (user.role === "admin") {
     if (requiredRole === "admin") isAllowed = true;
   }
-  // 3. Mitra -> Akses Mitra saja
+ 
   else if (user.role === "mitra") {
     if (requiredRole === "mitra") isAllowed = true;
   }
-  // 4. Customer -> Akses Customer saja
+ 
   else {
     if (requiredRole === "customer") isAllowed = true;
   }
 
-  // --- PENGECUALIAN PENTING ---
-  // Admin TIDAK BOLEH masuk ke panel Developer
+ 
+ 
   if (requiredRole === "developer" && user.role !== "developer") {
     isAllowed = false;
   }
 
   if (!isAllowed) {
-    // Redirect jika tidak punya izin
+   
     return <Navigate to="/" replace />;
   }
 
@@ -519,7 +519,7 @@ function AppContent() {
   const [isAnnouncementVisible, setAnnouncementVisible] = useState(true);
   const navigate = useNavigate();
 
-  // --- LOGIKA TEMA (LIGHT/DARK) ---
+ 
   const [isLightMode, setIsLightMode] = useState(() => {
     const saved = localStorage.getItem("elevateTheme");
     return saved === "light";
@@ -590,8 +590,8 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    // FIX: Gunakan API_BASE_URL untuk socket jika tidak di production
-    // atau gunakan logika manual jika API_BASE_URL kosong
+   
+   
     const socketUrl = import.meta.env.PROD
       ? "https://stridebase-server-wqdw.onrender.com"
       : "http://localhost:5000";
@@ -651,9 +651,9 @@ function AppContent() {
     <Suspense fallback={<LoadingFallback />}>
       <Notification notification={notification} onClose={hideMessage} />
       <Routes>
-        {/* --- RUTE PANEL ADMIN/MITRA/DEV (Protected with Role Hierarchy) --- */}
+        {}
 
-        {/* Developer: Hanya untuk Developer */}
+        {}
         <Route
           path="/developer/*"
           element={
@@ -670,7 +670,7 @@ function AppContent() {
 
         <Route path="/demo" element={<DemoPage />} />
 
-        {/* Mitra: Hanya untuk Mitra */}
+        {}
         <Route
           path="/partner/*"
           element={
@@ -700,7 +700,7 @@ function AppContent() {
           <Route path="reports" element={renderWithProps(PartnerReportsPage)} />
         </Route>
 
-        {/* Admin: Untuk Admin DAN Developer */}
+        {}
         <Route
           path="/admin/*"
           element={
@@ -741,7 +741,7 @@ function AppContent() {
           <Route path="invoice/print/preview" element={<InvoicePrintPage />} />
         </Route>
 
-        {/* --- RUTE AUTH (Login/Register) --- */}
+        {}
         <Route element={<AuthLayout />}>
           <Route
             path="/login"
@@ -763,7 +763,7 @@ function AppContent() {
           <Route path="/email-verified" element={<EmailVerifiedPage />} />
         </Route>
 
-        {/* --- RUTE PUBLIK (User Layout dengan Theme Toggle) --- */}
+        {}
         <Route
           path="/*"
           element={

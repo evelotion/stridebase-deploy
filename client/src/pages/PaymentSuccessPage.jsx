@@ -1,4 +1,4 @@
-// File: client/src/pages/PaymentSuccessPage.jsx
+
 
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -10,8 +10,8 @@ import "./HomePageElevate.css";
 
 const PaymentSuccessPage = () => {
   const [searchParams] = useSearchParams();
-  // Ambil ID dari URL (tergantung return url dari midtrans, biasanya ?order_id=...)
-  // Atau jika pake route param, sesuaikan logic ini.
+ 
+ 
   const bookingId = searchParams.get("order_id") || searchParams.get("id");
 
   const [booking, setBooking] = useState(null);
@@ -36,25 +36,25 @@ const PaymentSuccessPage = () => {
     fetchBooking();
   }, [bookingId]);
 
-  // --- PREMIUM CUSTOMER RECEIPT GENERATOR ---
+ 
   const handleDownloadReceipt = () => {
     if (!booking) return;
 
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
 
-    // Brand Colors
-    const primaryBlue = [13, 110, 253]; // StrideBase Blue
+   
+    const primaryBlue = [13, 110, 253];
     const darkText = [33, 37, 41];
     const lightText = [108, 117, 125];
     const bgLight = [248, 249, 250];
 
-    // 1. HEADER BRANDING
-    // Blue geometric shape at top left
+   
+   
     doc.setFillColor(...primaryBlue);
     doc.circle(0, 0, 40, "F");
 
-    // Brand Name
+   
     doc.setFontSize(22);
     doc.setTextColor(...primaryBlue);
     doc.setFont("helvetica", "bold");
@@ -65,7 +65,7 @@ const PaymentSuccessPage = () => {
     doc.setFont("helvetica", "normal");
     doc.text("Premium Shoe Care Service", 20, 30);
 
-    // Title & ID
+   
     doc.setFontSize(16);
     doc.setTextColor(...darkText);
     doc.setFont("helvetica", "bold");
@@ -81,18 +81,18 @@ const PaymentSuccessPage = () => {
       { align: "right" }
     );
 
-    // 2. STATUS BADGE
-    doc.setFillColor(209, 231, 221); // Light Green
+   
+    doc.setFillColor(209, 231, 221);
     doc.roundedRect(pageWidth - 50, 36, 30, 8, 3, 3, "F");
-    doc.setTextColor(25, 135, 84); // Dark Green
+    doc.setTextColor(25, 135, 84);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.text("PAID", pageWidth - 35, 41, { align: "center" });
 
-    // 3. CUSTOMER & DATE SECTION (Side by Side)
+   
     const startY = 55;
 
-    // Left: Customer
+   
     doc.setFontSize(9);
     doc.setTextColor(...lightText);
     doc.setFont("helvetica", "bold");
@@ -106,7 +106,7 @@ const PaymentSuccessPage = () => {
     doc.setTextColor(...lightText);
     doc.text(booking.user.email, 20, startY + 11);
 
-    // Right: Transaction Details
+   
     doc.setFontSize(9);
     doc.setTextColor(...lightText);
     doc.setFont("helvetica", "bold");
@@ -124,7 +124,7 @@ const PaymentSuccessPage = () => {
     });
     doc.text(dateStr, pageWidth - 20, startY + 6, { align: "right" });
 
-    // Payment Method (Safe check)
+   
     const method = booking.payment?.paymentMethod || "Online Payment";
     doc.text(
       method.toUpperCase().replace("_", " "),
@@ -133,17 +133,17 @@ const PaymentSuccessPage = () => {
       { align: "right" }
     );
 
-    // 4. SERVICE TICKET (The "Card" Look)
-    // Draw a box for the service details
+   
+   
     doc.setDrawColor(230, 230, 230);
     doc.setFillColor(...bgLight);
     doc.roundedRect(20, startY + 25, pageWidth - 40, 35, 3, 3, "FD");
 
-    // Inside the box
+   
     doc.setFontSize(14);
     doc.setTextColor(...primaryBlue);
     doc.setFont("helvetica", "bold");
-    doc.text(booking.serviceName, 30, startY + 38); // Service Name
+    doc.text(booking.serviceName, 30, startY + 38);
 
     doc.setFontSize(10);
     doc.setTextColor(...darkText);
@@ -159,7 +159,7 @@ const PaymentSuccessPage = () => {
       startY + 50
     );
 
-    // Price inside box
+   
     doc.setFontSize(14);
     doc.setTextColor(...darkText);
     doc.setFont("helvetica", "bold");
@@ -170,10 +170,10 @@ const PaymentSuccessPage = () => {
       { align: "right" }
     );
 
-    // 5. TOTAL SECTION
+   
     const totalY = startY + 75;
     doc.setDrawColor(200);
-    doc.line(20, totalY, pageWidth - 20, totalY); // Divider
+    doc.line(20, totalY, pageWidth - 20, totalY);
 
     doc.setFontSize(10);
     doc.setTextColor(...lightText);
@@ -190,10 +190,10 @@ const PaymentSuccessPage = () => {
       { align: "right" }
     );
 
-    // 6. FOOTER / TRACKING INFO
+   
     const footerY = 250;
 
-    // Visual "Tracking Box" (Placeholder for QR Code logic if needed later)
+   
     doc.setDrawColor(...primaryBlue);
     doc.setLineWidth(0.5);
     doc.rect(20, footerY, 170, 25);
@@ -230,7 +230,7 @@ const PaymentSuccessPage = () => {
             borderTop: "5px solid var(--sb-primary)",
           }}
         >
-          {/* Success Icon Animation */}
+          {}
           <div className="mb-4">
             <div
               className="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10"
@@ -246,7 +246,7 @@ const PaymentSuccessPage = () => {
             segera memproses sepatu kesayangan Anda.
           </p>
 
-          {/* Booking Summary Card */}
+          {}
           {loading ? (
             <div
               className="spinner-border text-primary mb-4"

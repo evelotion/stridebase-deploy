@@ -1,4 +1,4 @@
-// File: client/src/components/DeveloperLayout.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import "../styles/ElevateDashboard.css";
 const DeveloperLayout = () => {
   const navigate = useNavigate();
 
-  // --- LOGIC TEMA (LIGHT/DARK) ---
+ 
   const [isLightMode, setIsLightMode] = useState(() => {
     const saved = localStorage.getItem("devTheme");
     return saved === "light";
@@ -38,7 +38,7 @@ const DeveloperLayout = () => {
 
   return (
     <div id="dev-elevate-wrapper" className="pe-layout-wrapper">
-      {/* --- SIDEBAR DEVELOPER --- */}
+      {}
       <aside
         className="pe-sidebar"
         style={{ borderRightColor: "var(--pe-accent-dev)" }}
@@ -73,7 +73,7 @@ const DeveloperLayout = () => {
             <i className="fas fa-cogs"></i> Global Config
           </NavLink>
 
-          {/* Anda bisa menambahkan menu developer lain di sini nanti */}
+          {}
 
           <NavLink
             to="/admin/dashboard"
@@ -93,7 +93,7 @@ const DeveloperLayout = () => {
         </div>
       </aside>
 
-      {/* --- MAIN CONTENT --- */}
+      {}
       <main className="pe-main-content">
         <nav className="pe-mobile-header d-lg-none">
           <NavLink className="pe-mobile-brand fs-5" to="/developer/dashboard">

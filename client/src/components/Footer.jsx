@@ -1,4 +1,4 @@
-// File: client/src/components/Footer.jsx
+
 
 import React from "react";
 import { Link } from "react-router-dom";
@@ -8,13 +8,13 @@ const Footer = () => {
     <footer
       className="pt-5 pb-4 mt-auto position-relative overflow-hidden"
       style={{
-        backgroundColor: "var(--pe-sidebar-bg)", // Ikuti warna sidebar/panel
+        backgroundColor: "var(--pe-sidebar-bg)",
         borderTop: "1px solid var(--pe-card-border)",
       }}
     >
       <div className="container">
         <div className="row g-5 justify-content-between">
-          {/* Kolom 1: Brand */}
+          {}
           <div className="col-lg-4 col-md-6">
             <div className="mb-4">
               <span
@@ -31,7 +31,7 @@ const Footer = () => {
                 setiap langkah.
               </p>
               <div className="d-flex gap-3 social-links">
-                {/* Gunakan class pe-btn-action untuk tombol sosial agar konsisten */}
+                {}
                 <a href="#" className="pe-btn-action">
                   <i className="fab fa-instagram"></i>
                 </a>
@@ -45,7 +45,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Kolom 2: Links */}
+          {}
           <div className="col-lg-2 col-md-6">
             <h6
               className="text-uppercase fw-bold mb-4 ls-2"
@@ -93,7 +93,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Kolom 3: Legal */}
+          {}
           <div className="col-lg-2 col-md-6">
             <h6
               className="text-uppercase fw-bold mb-4 ls-2"
@@ -132,7 +132,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Kolom 4: Newsletter */}
+          {}
           <div className="col-lg-3 col-md-6">
             <h6
               className="text-uppercase fw-bold mb-4 ls-2"

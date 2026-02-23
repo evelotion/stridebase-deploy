@@ -1,8 +1,8 @@
-// File: client/src/pages/PartnerWalletPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Fade } from "react-awesome-reveal";
-// PERBAIKAN: Ubah import agar sesuai dengan apiService.js
+
 import { getPartnerWalletData, requestPartnerPayout } from "../services/apiService";
 import "../pages/PartnerElevate.css";
 
@@ -11,12 +11,12 @@ const PartnerWalletPage = ({ showMessage }) => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Withdrawal State
+ 
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mobile Sheet State
+ 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const PartnerWalletPage = ({ showMessage }) => {
   const fetchWalletData = async () => {
     setLoading(true);
     try {
-      // PERBAIKAN: Gunakan nama fungsi yang benar
+     
       const data = await getPartnerWalletData();
       setWallet(data.wallet); 
       setTransactions(data.transactions || []);
@@ -51,15 +51,15 @@ const PartnerWalletPage = ({ showMessage }) => {
 
     setIsSubmitting(true);
     try {
-      // PERBAIKAN: Gunakan nama fungsi yang benar.
-      // Catatan: requestPartnerPayout di apiService sudah membungkus { amount },
-      // jadi kita cukup kirim nilai amount-nya saja.
+     
+     
+     
       await requestPartnerPayout(amount);
       
       if (showMessage)
         showMessage("Permintaan penarikan berhasil dikirim", "Success");
       setShowWithdrawModal(false);
-      setIsSheetOpen(false); // Tutup sheet mobile
+      setIsSheetOpen(false);
       setWithdrawAmount("");
       fetchWalletData();
     } catch (err) {
@@ -76,7 +76,7 @@ const PartnerWalletPage = ({ showMessage }) => {
       minimumFractionDigits: 0,
     }).format(val);
 
-  // Mobile Handlers
+ 
   const openWithdrawSheet = () => setIsSheetOpen(true);
   const closeWithdrawSheet = () => setIsSheetOpen(false);
 
@@ -92,7 +92,7 @@ const PartnerWalletPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* 1. STICKY HEADER */}
+      {}
       <div
         className="sticky-top px-3 py-3"
         style={{ background: "var(--pe-bg)", zIndex: 1020 }}
@@ -101,7 +101,7 @@ const PartnerWalletPage = ({ showMessage }) => {
       </div>
 
       <div className="px-3">
-        {/* 2. DIGITAL CARD (VISA STYLE) */}
+        {}
         <div
           className="pe-card p-4 mb-4 position-relative overflow-hidden"
           style={{
@@ -112,7 +112,7 @@ const PartnerWalletPage = ({ showMessage }) => {
             boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
           }}
         >
-          {/* Background Decoration */}
+          {}
           <div className="position-absolute top-0 end-0 p-4 opacity-25">
             <i className="fas fa-wallet fa-5x text-white"></i>
           </div>
@@ -153,7 +153,7 @@ const PartnerWalletPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* 3. ACTION BUTTONS */}
+        {}
         <div className="d-grid gap-2 mb-4">
           <button
             className="btn btn-primary py-3 rounded-4 fw-bold shadow-lg d-flex align-items-center justify-content-center gap-2"
@@ -163,7 +163,7 @@ const PartnerWalletPage = ({ showMessage }) => {
           </button>
         </div>
 
-        {/* 4. TRANSACTION HISTORY */}
+        {}
         <h6 className="text-muted small fw-bold mb-3 ps-1 text-uppercase tracking-widest">
           Riwayat Transaksi
         </h6>
@@ -224,7 +224,7 @@ const PartnerWalletPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* WITHDRAWAL BOTTOM SHEET */}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -411,7 +411,7 @@ const PartnerWalletPage = ({ showMessage }) => {
       {renderMobileView()}
       {renderDesktopView()}
 
-      {/* Modal Desktop */}
+      {}
       {showWithdrawModal && (
         <div
           className="modal fade show d-block"

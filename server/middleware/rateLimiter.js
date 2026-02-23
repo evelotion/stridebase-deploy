@@ -1,8 +1,8 @@
-// File: server/middleware/rateLimiter.js (Dengan Perbaikan)
 
-// Menambahkan 'export' agar bisa di-import oleh file lain
+
+
 export const MAX_LOGIN_ATTEMPTS = 5;
-export const COOLDOWN_PERIOD = 15 * 60 * 1000; // 15 menit
+export const COOLDOWN_PERIOD = 15 * 60 * 1000;
 
 export const failedLoginAttempts = new Map();
 

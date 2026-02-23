@@ -1,20 +1,20 @@
-// File: client/src/pages/PaymentConfirmMobilePage.jsx
+
 
 import React, { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom"; // Tambah useSearchParams
+import { useParams, useSearchParams } from "react-router-dom";
 import API_BASE_URL from "../apiConfig";
 import { Fade } from "react-awesome-reveal";
 import "./HomePageElevate.css";
 
 const PaymentConfirmMobilePage = ({ showMessage }) => {
-  const { bookingId } = useParams(); // Ini bisa berisi ID Booking atau ID Invoice
-  const [searchParams] = useSearchParams(); // Hook untuk membaca query params (?type=...)
+  const { bookingId } = useParams();
+  const [searchParams] = useSearchParams();
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  // Ambil tipe transaksi dari URL, default ke "booking" jika kosong
+ 
   const transactionType = searchParams.get("type") || "booking";
 
   const handleSimulatePayment = async () => {
@@ -26,9 +26,9 @@ const PaymentConfirmMobilePage = ({ showMessage }) => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json", // Wajib ada untuk kirim body JSON
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ type: transactionType }), // Kirim type ke backend
+          body: JSON.stringify({ type: transactionType }),
         }
       );
 
@@ -89,7 +89,7 @@ const PaymentConfirmMobilePage = ({ showMessage }) => {
                 Konfirmasi Bayar
               </h3>
               <p className="he-service-desc mb-4 small">
-                {/* Tampilkan label sesuai tipe transaksi */}
+                {}
                 {transactionType === "invoice" ? "Invoice ID: " : "Pesanan ID: "}
                 <span className="fw-bold text-primary">
                   #{bookingId.substring(0, 8)}

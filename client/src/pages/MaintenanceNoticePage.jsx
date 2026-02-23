@@ -1,4 +1,4 @@
-// File: client/src/pages/MaintenanceNoticePage.jsx
+
 
 import React from "react";
 import { Fade } from "react-awesome-reveal";
@@ -6,9 +6,9 @@ import "./HomePageElevate.css";
 
 const MaintenanceNoticePage = () => {
   return (
-    // [FIX] Tambahkan 'he-centered-page-fix'
+   
     <div className="home-elevate-wrapper he-centered-page-fix text-center p-4">
-      {/* [FIX] Tambahkan 'he-zoom-out-card' agar kartu lebih compact */}
+      {}
       <div
         className="he-promo-card he-zoom-out-card p-5 border-0"
         style={{ maxWidth: "500px", background: "rgba(255,255,255,0.03)" }}

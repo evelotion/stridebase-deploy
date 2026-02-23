@@ -1,4 +1,4 @@
-// File: stridebase-app-render/client/src/pages/SitemapPage.jsx
+
 
 import React from "react";
 import { Link } from "react-router-dom";

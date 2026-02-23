@@ -1,20 +1,20 @@
-// File: server/controllers/payment.controller.js
+
 
 import midtransClient from "midtrans-client";
 import prisma from "../config/prisma.js";
 import { getIO } from "../socket.js";
 
-// Konstanta Biaya Aplikasi
+
 const HANDLING_FEE = 2000;
 
-// Inisialisasi Midtrans
+
 const snap = new midtransClient.Snap({
   isProduction: process.env.MIDTRANS_IS_PRODUCTION === "true",
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
 
-// Mode Pembayaran (Simulation / Midtrans)
+
 const PAYMENT_MODE = process.env.PAYMENT_MODE || "simulation";
 
 /**
@@ -29,9 +29,9 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
     let transactionDetails = {};
     let customerDetails = {};
     let itemDetails = [];
-    let customField1 = ""; // Penanda tipe transaksi (BOOKING / INVOICE)
+    let customField1 = "";
 
-    // --- SKENARIO A: PEMBAYARAN BOOKING ---
+   
     if (bookingId) {
       const booking = await prisma.booking.findUnique({
         where: { id: bookingId },
@@ -43,7 +43,7 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
       if (booking.userId !== userId)
         return res.status(403).json({ message: "Akses ditolak." });
 
-      // Cek status
+     
       if (["confirmed", "completed", "in_progress"].includes(booking.status)) {
         return res.status(400).json({ message: "Pesanan ini sudah dibayar." });
       }
@@ -56,7 +56,7 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
         return res.status(400).json({ message: "Pesanan kedaluwarsa." });
       }
 
-      // Setup Data Midtrans
+     
       transactionDetails = {
         order_id: booking.id,
         gross_amount: booking.totalPrice,
@@ -75,13 +75,13 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
           merchant_name: booking.store.name.substring(0, 50),
         },
       ];
-      // Handling fee bisa ditambahkan sebagai item terpisah jika mau,
-      // tapi pastikan totalnya match dengan gross_amount.
+     
+     
 
       customField1 = "BOOKING";
     }
 
-    // --- SKENARIO B: PEMBAYARAN INVOICE (KONTRAK) ---
+   
     else if (invoiceId) {
       const invoice = await prisma.invoice.findUnique({
         where: { id: invoiceId },
@@ -93,11 +93,11 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
       if (invoice.status === "PAID")
         return res.status(400).json({ message: "Tagihan ini sudah lunas." });
 
-      // Validasi Pemilik
+     
       if (invoice.store.ownerId !== userId)
         return res.status(403).json({ message: "Bukan tagihan Anda." });
 
-      // Setup Data Midtrans
+     
       transactionDetails = {
         order_id: invoice.id,
         gross_amount: invoice.totalAmount,
@@ -125,25 +125,25 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
         });
     }
 
-    // --- MODE SIMULASI ---
+   
     if (PAYMENT_MODE === "simulation") {
       return res.status(200).json({
         paymentMethod: "simulation",
         message: "Redirecting to simulation",
         token: "dummy-token",
-        // Redirect ke halaman simulasi dengan tipe yang sesuai
+       
         redirectUrl: `${process.env.FRONTEND_URL}/payment-simulation/${
           bookingId || invoiceId
         }?type=${customField1.toLowerCase()}`,
       });
     }
 
-    // --- MODE MIDTRANS ---
+   
     const parameter = {
       transaction_details: transactionDetails,
       customer_details: customerDetails,
       item_details: itemDetails,
-      custom_field1: customField1, // Metadata untuk webhook
+      custom_field1: customField1,
     };
 
     const transaction = await snap.createTransaction(parameter);
@@ -163,18 +163,18 @@ export const createPaymentGatewayTransaction = async (req, res, next) => {
  * @route   POST /api/payment/confirm-simulation/:bookingId
  */
 export const confirmPaymentSimulation = async (req, res, next) => {
-  // --- [MODIFIED START] ---
-  // Fix: Mengambil 'bookingId' dari params karena route definisinya /:bookingId
+ 
+ 
   const { bookingId } = req.params; 
   
-  // Mapping ke variabel 'id' supaya logika di bawah tetap jalan tanpa ubah banyak kode
+ 
   const id = bookingId; 
-  // --- [MODIFIED END] ---
+ 
 
-  const { type } = req.body; // "booking" atau "invoice"
+  const { type } = req.body;
 
   try {
-    // 1. Jika Pembayaran Invoice
+   
     if (type === "invoice") {
       const invoice = await prisma.invoice.findUnique({ where: { id } });
       if (!invoice)
@@ -183,7 +183,7 @@ export const confirmPaymentSimulation = async (req, res, next) => {
         return res.status(200).json({ message: "Already paid" });
 
       await prisma.$transaction(async (tx) => {
-        // Update Status Invoice
+       
         await tx.invoice.update({
           where: { id },
           data: {
@@ -200,7 +200,7 @@ export const confirmPaymentSimulation = async (req, res, next) => {
           },
         });
 
-        // Catat Pendapatan Platform (Kontrak Fee)
+       
         await tx.ledgerEntry.create({
           data: {
             storeId: invoice.storeId,
@@ -211,7 +211,7 @@ export const confirmPaymentSimulation = async (req, res, next) => {
         });
       });
 
-      // Notifikasi Realtime
+     
       try {
         const io = getIO();
         io.emit("payment_confirmed", { id, status: "success" });
@@ -220,7 +220,7 @@ export const confirmPaymentSimulation = async (req, res, next) => {
       return res.json({ message: "Invoice Paid Successfully" });
     }
 
-    // 2. Jika Pembayaran Booking (Default)
+   
     else {
       const booking = await prisma.booking.findUnique({
         where: { id },
@@ -234,7 +234,7 @@ export const confirmPaymentSimulation = async (req, res, next) => {
       }
 
       const result = await prisma.$transaction(async (tx) => {
-        // Update Booking
+       
         const updatedBooking = await tx.booking.update({
           where: { id },
           data: {
@@ -250,7 +250,7 @@ export const confirmPaymentSimulation = async (req, res, next) => {
           },
         });
 
-        // LOGIKA KEUANGAN: Split Income
+       
         await calculateAndRecordIncome(
           tx,
           booking.store,
@@ -291,21 +291,21 @@ export const handleMidtransNotification = async (req, res, next) => {
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
     const grossAmount = parseFloat(statusResponse.gross_amount);
-    const customField1 = statusResponse.custom_field1; // "BOOKING" atau "INVOICE"
+    const customField1 = statusResponse.custom_field1;
 
-    // Helper cek sukses
+   
     const isSuccess =
       (transactionStatus === "capture" && fraudStatus === "accept") ||
       transactionStatus === "settlement";
     const isFailure = ["cancel", "deny", "expire"].includes(transactionStatus);
 
     if (isSuccess) {
-      // Handle Sukses
+     
       if (customField1 === "INVOICE") {
-        // Logic Invoice
+       
         await prisma.$transaction(async (tx) => {
           const invoice = await tx.invoice.update({
-            where: { id: orderId }, // Asumsi orderId = invoiceId
+            where: { id: orderId },
             data: {
               status: "PAID",
               paidAt: new Date(),
@@ -320,7 +320,7 @@ export const handleMidtransNotification = async (req, res, next) => {
               },
             },
           });
-          // Ledger Platform
+         
           await tx.ledgerEntry.create({
             data: {
               storeId: invoice.storeId,
@@ -331,7 +331,7 @@ export const handleMidtransNotification = async (req, res, next) => {
           });
         });
       } else {
-        // Logic Booking (Default)
+       
         const booking = await prisma.booking.findUnique({
           where: { id: orderId },
         });
@@ -344,13 +344,13 @@ export const handleMidtransNotification = async (req, res, next) => {
         }
       }
 
-      // Emit Socket
+     
       try {
         const io = getIO();
         io.emit("payment_confirmed", { id: orderId, status: "success" });
       } catch (e) {}
     } else if (isFailure) {
-      // Handle Gagal
+     
       if (customField1 === "BOOKING" || !customField1) {
         await prisma.booking.update({
           where: { id: orderId },
@@ -366,16 +366,16 @@ export const handleMidtransNotification = async (req, res, next) => {
   }
 };
 
-// --- HELPER FUNCTIONS ---
 
-// Logika Pemisahan Uang (Komisi vs Kontrak)
+
+
 async function calculateAndRecordIncome(tx, store, bookingId, totalAmount) {
   const handlingFee = HANDLING_FEE;
   let platformIncome = 0;
   let partnerIncome = 0;
 
   if (store.billingType === "CONTRACT") {
-    // MODEL KONTRAK: Platform hanya ambil Handling Fee
+   
     platformIncome = handlingFee;
     partnerIncome = totalAmount - handlingFee;
 
@@ -389,7 +389,7 @@ async function calculateAndRecordIncome(tx, store, bookingId, totalAmount) {
       },
     });
   } else {
-    // MODEL KOMISI: Platform ambil (Komisi% + Handling Fee)
+   
     const commissionRate = store.commissionRate || 10;
     const commissionAmount = Math.round(
       ((totalAmount - handlingFee) * commissionRate) / 100
@@ -418,7 +418,7 @@ async function calculateAndRecordIncome(tx, store, bookingId, totalAmount) {
     });
   }
 
-  // Catat Pendapatan Mitra di Ledger
+ 
   await tx.ledgerEntry.create({
     data: {
       storeId: store.id,
@@ -429,14 +429,14 @@ async function calculateAndRecordIncome(tx, store, bookingId, totalAmount) {
     },
   });
 
-  // UPDATE WALLET MITRA (Tambah Saldo Real)
+ 
   await tx.storeWallet.upsert({
     where: { storeId: store.id },
     update: { balance: { increment: partnerIncome } },
     create: { storeId: store.id, balance: partnerIncome },
   });
 
-  // UPDATE PLATFORM EARNINGS (Statistik Admin)
+ 
   await tx.platformEarning.create({
     data: {
       bookingId: bookingId,
@@ -446,14 +446,14 @@ async function calculateAndRecordIncome(tx, store, bookingId, totalAmount) {
   });
 }
 
-// Helper Booking Midtrans
+
 async function processSuccessfulBookingPayment(
   booking,
   paymentDetails,
   grossAmount
 ) {
   await prisma.$transaction(async (tx) => {
-    // Update Booking
+   
     await tx.booking.update({
       where: { id: booking.id },
       data: {
@@ -470,7 +470,7 @@ async function processSuccessfulBookingPayment(
       },
     });
 
-    // Split Dana
+   
     const store = await tx.store.findUnique({ where: { id: booking.storeId } });
     await calculateAndRecordIncome(
       tx,
@@ -481,7 +481,7 @@ async function processSuccessfulBookingPayment(
   });
 }
 
-// Cek Status Pembayaran (Untuk Polling Frontend)
+
 export const getPaymentStatus = async (req, res, next) => {
   try {
     const { bookingId } = req.params;

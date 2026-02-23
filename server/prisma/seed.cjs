@@ -1,4 +1,4 @@
-// File: server/prisma/seed.cjs
+
 
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
@@ -9,8 +9,8 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Start seeding database to Neon/Production...");
 
-  // 1. BERSIHKAN DATABASE
-  // Kita pakai deleteMany() agar aman
+ 
+ 
   await prisma.notification.deleteMany();
   await prisma.securityLog.deleteMany();
   await prisma.invoice.deleteMany();
@@ -34,10 +34,10 @@ async function main() {
 
   console.log("🧹 Database cleaned.");
 
-  // 2. SETUP PASSWORD HASH
+ 
   const password = await bcrypt.hash("password123", 10);
 
-  // 3. BUAT USER UTAMA (FIXED ACCOUNTS)
+ 
   const developer = await prisma.user.create({
     data: {
       name: "Indra Developer",
@@ -65,7 +65,7 @@ async function main() {
       name: "Mitra Sukses",
       email: "partner@stridebase.com",
       password,
-      role: "mitra", // Sesuai enum UserRole
+      role: "mitra",
       isEmailVerified: true,
       status: "active",
     },
@@ -84,7 +84,7 @@ async function main() {
 
   console.log("✅ Main users created (Pass: password123)");
 
-  // 4. BUAT 20 USER TAMBAHAN
+ 
   const users = [];
   for (let i = 0; i < 20; i++) {
     const role = i < 10 ? "mitra" : "customer";
@@ -115,7 +115,7 @@ async function main() {
     users.push(user);
   }
 
-  // Pisahkan list partner dan customer
+ 
   const allPartners = users.filter((u) => u.role === "mitra");
   allPartners.push(demoPartner);
 
@@ -124,12 +124,12 @@ async function main() {
 
   console.log(`✅ ${users.length} Random users created.`);
 
-  // 5. BUAT TOKO (STORE)
+ 
   const stores = [];
   for (const partner of allPartners) {
     const storeName = faker.company.name() + " Shoes Care";
 
-    // Create Store
+   
     const store = await prisma.store.create({
       data: {
         name: storeName,
@@ -143,8 +143,8 @@ async function main() {
         rating: 0,
         commissionRate: 10.0,
 
-        // --- PERBAIKAN DI SINI ---
-        // Di schema namanya 'wallet', bukan 'storeWallet'
+       
+       
         wallet: {
           create: {
             balance: faker.number.int({ min: 100000, max: 5000000 }),
@@ -154,7 +154,7 @@ async function main() {
     });
     stores.push(store);
 
-    // Create Services
+   
     const servicesList = [
       { name: "Deep Clean", price: 50000, desc: "Cuci mendalam" },
       { name: "Fast Clean", price: 30000, desc: "Cuci cepat" },
@@ -177,7 +177,7 @@ async function main() {
   }
   console.log(`✅ ${stores.length} Stores & Services created.`);
 
-  // 6. BUAT BOOKING (TRANSAKSI)
+ 
   const bookings = [];
   const statuses = [
     "pending",
@@ -213,7 +213,7 @@ async function main() {
       },
     });
 
-    // Jika COMPLETED, buat Review
+   
     if (randomStatus === "completed") {
       await prisma.review.create({
         data: {
@@ -232,7 +232,7 @@ async function main() {
 
   console.log(`✅ ${bookings.length} Bookings & Reviews created.`);
 
-  // 7. RECALCULATE RATINGS
+ 
   console.log("🔄 Recalculating store ratings...");
   const storesToUpdate = await prisma.store.findMany({
     include: { reviews: true },

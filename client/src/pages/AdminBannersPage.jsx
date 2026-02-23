@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminBannersPage.jsx
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -63,7 +63,7 @@ const AdminBannersPage = ({ showMessage }) => {
     }
   };
 
-  // Mobile Handlers
+ 
   const openSheet = (banner) => {
     setSelectedBanner(banner);
     setIsSheetOpen(true);
@@ -116,7 +116,7 @@ const AdminBannersPage = ({ showMessage }) => {
               onClick={() => openSheet(banner)}
               style={{ borderRadius: "16px" }}
             >
-              {/* Banner Image Preview */}
+              {}
               <div
                 style={{ height: "140px", width: "100%", position: "relative" }}
               >
@@ -156,7 +156,7 @@ const AdminBannersPage = ({ showMessage }) => {
         )}
       </div>
 
-      {/* Bottom Sheet */}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -192,7 +192,7 @@ const AdminBannersPage = ({ showMessage }) => {
             >
               {selectedBanner.title}
             </h5>
-            {/* FIX: Warna Deskripsi */}
+            {}
             <p className="small mb-4" style={{ color: "var(--pe-text-muted)" }}>
               {selectedBanner.description || "Tidak ada deskripsi"}
             </p>
@@ -241,7 +241,7 @@ const AdminBannersPage = ({ showMessage }) => {
                   >
                     {b.title}
                   </h5>
-                  {/* FIX: Warna Deskripsi Desktop */}
+                  {}
                   <p
                     className="small mb-3"
                     style={{ color: "var(--pe-text-muted)" }}
@@ -272,14 +272,14 @@ const AdminBannersPage = ({ showMessage }) => {
       {renderMobileView()}
       {renderDesktopView()}
 
-      {/* Modal Form */}
+      {}
       {showModal && (
         <div
           className="modal fade show d-block"
           style={{ backdropFilter: "blur(5px)", zIndex: 1060 }}
         >
           <div className="modal-dialog modal-dialog-centered">
-            {/* FIX: Modal Theme */}
+            {}
             <div
               className="modal-content pe-card border-0 shadow-lg p-4"
               style={{

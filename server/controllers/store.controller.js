@@ -1,13 +1,13 @@
-// File: server/controllers/store.controller.js (Versi Perbaikan Final dengan Caching)
+
 
 import prisma from "../config/prisma.js";
 import redisClient from "../redis-client.js";
 
-// Fungsi helper untuk menghitung jarak (tetap sama)
+
 function getDistance(lat1, lon1, lat2, lon2) {
   if (lat1 == null || lon1 == null || lat2 == null || lon2 == null)
     return Infinity;
-  const R = 6371; // Radius bumi dalam km
+  const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
   const a =
@@ -22,11 +22,11 @@ function getDistance(lat1, lon1, lat2, lon2) {
 
 export const getStores = async (req, res, next) => {
   const { search, sortBy, lat, lng, minRating, services, openNow } = req.query;
-  // Membuat key unik untuk cache berdasarkan filter yang digunakan
+ 
   const cacheKey = `stores_v3:${JSON.stringify(req.query)}`;
 
   try {
-    // Cek Redis hanya jika client terhubung
+   
     if (redisClient.isReady) {
       const cachedStores = await redisClient.get(cacheKey);
       if (cachedStores) {
@@ -92,7 +92,7 @@ export const getStores = async (req, res, next) => {
 
     try {
       if (redisClient.isReady) {
-        // Simpan hasil ke cache selama 5 menit (300 detik)
+       
         await redisClient.setEx(cacheKey, 300, JSON.stringify(stores));
         console.log(
           `✅ Data berhasil disimpan ke cache untuk key: ${cacheKey}`
@@ -111,7 +111,7 @@ export const getStores = async (req, res, next) => {
   }
 };
 
-// ... sisa controller (getStoreById, getStoreServices, getStoreReviews) tetap sama ...
+
 export const getStoreById = async (req, res, next) => {
   try {
     const store = await prisma.store.findUnique({

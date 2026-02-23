@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminStoreInvoicesPage.jsx (Elevate Redesign)
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import {
   getStoreInvoicesByAdmin,
   getStoreSettingsForAdmin,
 } from "../services/apiService";
-import "../styles/ElevateDashboard.css"; // Pastikan CSS Elevate terhubung
+import "../styles/ElevateDashboard.css";
 
 const AdminStoreInvoicesPage = ({ showMessage }) => {
   const { storeId } = useParams();
@@ -38,7 +38,7 @@ const AdminStoreInvoicesPage = ({ showMessage }) => {
     fetchInvoiceHistory();
   }, [fetchInvoiceHistory]);
 
-  // --- HELPER: Status Badge dengan Gaya Elevate ---
+ 
   const getStatusBadge = (status) => {
     let badgeClass = "pe-badge-secondary";
     let icon = "fa-circle";
@@ -97,10 +97,10 @@ const AdminStoreInvoicesPage = ({ showMessage }) => {
 
   return (
     <div className="container-fluid px-4 py-4 position-relative z-1">
-      {/* Background Blob Decoration */}
+      {}
       <div className="pe-blob pe-blob-2"></div>
 
-      {/* HEADER SECTION */}
+      {}
       <div className="d-flex justify-content-between align-items-end mb-5 position-relative z-2">
         <Fade direction="down" triggerOnce>
           <div>
@@ -119,7 +119,7 @@ const AdminStoreInvoicesPage = ({ showMessage }) => {
         </Fade>
       </div>
 
-      {/* TABLE CARD */}
+      {}
       <Fade triggerOnce>
         <div className="pe-card position-relative z-2">
           <div className="pe-table-wrapper">

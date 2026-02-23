@@ -1,59 +1,59 @@
-/* File: client/src/pages/PartnerElevate.css */
+
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap");
 
-/* --- DEFINISI VARIABEL (DEFAULT: DARK / OBSIDIAN) --- */
+
 :root {
-  /* Base Colors */
+  
   --pe-bg: #050505;
   --pe-sidebar-bg: rgba(15, 15, 15, 0.95);
 
-  /* Card & Glass */
+  
   --pe-card-bg: rgba(20, 20, 20, 0.6);
   --pe-card-border: rgba(255, 255, 255, 0.08);
   --pe-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 
-  /* Typography */
+  
   --pe-text-main: #ffffff;
   --pe-text-muted: rgba(255, 255, 255, 0.5);
   --pe-text-inverse: #000000;
 
-  /* Accents */
-  --pe-accent: #3b82f6; /* Electric Blue */
+  
+  --pe-accent: #3b82f6; 
   --pe-accent-glow: rgba(59, 130, 246, 0.15);
 
-  /* Status Colors */
+  
   --pe-success: #10b981;
   --pe-warning: #f59e0b;
   --pe-danger: #ef4444;
 
-  /* Table Elements */
+  
   --pe-table-row-bg: rgba(255, 255, 255, 0.03);
   --pe-table-row-hover: rgba(255, 255, 255, 0.06);
 }
 
-/* --- LIGHT MODE OVERRIDE (PORCELAIN EDITION) --- */
+
 [data-theme="light"] {
-  /* Base Colors: Putih Abu-abu Halus */
+  
   --pe-bg: #f3f4f6;
   --pe-sidebar-bg: rgba(255, 255, 255, 0.85);
 
-  /* Card & Glass: White Frosted */
+  
   --pe-card-bg: rgba(255, 255, 255, 0.7);
   --pe-card-border: rgba(0, 0, 0, 0.05);
   --pe-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 
-  /* Typography */
+  
   --pe-text-main: #111827;
   --pe-text-muted: #6b7280;
   --pe-text-inverse: #ffffff;
 
-  /* Table Elements */
+  
   --pe-table-row-bg: rgba(255, 255, 255, 0.5);
   --pe-table-row-hover: rgba(255, 255, 255, 0.9);
 }
 
-/* --- 1. BASE LAYOUT --- */
+
 .pe-dashboard-wrapper {
   background-color: var(--pe-bg);
   min-height: 100vh;
@@ -65,7 +65,7 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Background Gradients (Ambiance) */
+
 .pe-blob {
   position: absolute;
   border-radius: 50%;
@@ -95,7 +95,7 @@
   opacity: 0.15;
 }
 
-/* --- 2. TYPOGRAPHY --- */
+
 .pe-title {
   font-family: "Outfit", sans-serif;
   font-weight: 700;
@@ -107,7 +107,7 @@
   font-size: 0.9rem;
 }
 
-/* --- 3. CARDS (GLASS) --- */
+
 .pe-card {
   background: var(--pe-card-bg);
   backdrop-filter: blur(20px);
@@ -127,7 +127,7 @@
   box-shadow: 0 15px 40px rgba(59, 130, 246, 0.1);
 }
 
-/* Stat Card Specifics */
+
 .pe-stat-icon {
   width: 48px;
   height: 48px;
@@ -155,7 +155,7 @@
   color: var(--pe-danger);
 }
 
-/* --- 4. DATA TABLES --- */
+
 .pe-table-wrapper {
   overflow-x: auto;
 }
@@ -197,7 +197,7 @@
   background: var(--pe-table-row-hover);
 }
 
-/* Badges */
+
 .pe-badge {
   padding: 4px 12px;
   border-radius: 20px;
@@ -223,7 +223,7 @@
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-/* --- 5. BUTTONS --- */
+
 .pe-btn-action {
   background: var(--pe-card-bg);
   color: var(--pe-text-main);
@@ -241,7 +241,7 @@
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
 
-/* --- 6. PARTNER LAYOUT (SIDEBAR & NAV) --- */
+
 .pe-layout-wrapper {
   display: flex;
   min-height: 100vh;
@@ -249,7 +249,7 @@
   transition: background-color 0.3s ease;
 }
 
-/* SIDEBAR */
+
 .pe-sidebar {
   width: 280px;
   background: var(--pe-sidebar-bg);
@@ -289,7 +289,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  /* Scroll Fix */
+  
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 8px;
@@ -297,7 +297,7 @@
   padding-bottom: 20px;
 }
 
-/* Custom Scrollbar Sidebar */
+
 .pe-sidebar-menu::-webkit-scrollbar {
   width: 4px;
 }
@@ -350,7 +350,7 @@
   transform: scale(1.1);
 }
 
-/* Special Links */
+
 .pe-nav-link.upgrade-link {
   background: linear-gradient(45deg, rgba(245, 158, 11, 0.1), transparent);
   color: var(--pe-warning);
@@ -366,7 +366,7 @@
   border-color: rgba(239, 68, 68, 0.2);
 }
 
-/* MAIN CONTENT */
+
 .pe-main-content {
   flex-grow: 1;
   margin-left: 280px;
@@ -376,7 +376,7 @@
   transition: background-color 0.3s ease;
 }
 
-/* MOBILE HEADER */
+
 .pe-mobile-header {
   display: none;
   padding: 1rem 1.5rem;
@@ -396,7 +396,7 @@
   text-decoration: none;
 }
 
-/* Dropdown Dark/Light Adaptive */
+
 .dropdown-menu-adaptive {
   background: var(--pe-card-bg) !important;
   border: 1px solid var(--pe-card-border) !important;
@@ -411,7 +411,7 @@
   color: #fff !important;
 }
 
-/* RESPONSIVE */
+
 @media (max-width: 991px) {
   .pe-sidebar {
     display: none;
@@ -424,7 +424,7 @@
   }
 }
 
-/* --- 7. FLOATING THEME TOGGLE (FAB) --- */
+
 .pe-theme-fab {
   position: fixed;
   bottom: 30px;
@@ -433,7 +433,7 @@
   height: 56px;
   border-radius: 50%;
 
-  /* Glassmorphism Style */
+  
   background: var(--pe-card-bg);
   border: 1px solid var(--pe-card-border);
   backdrop-filter: blur(20px);
@@ -478,23 +478,23 @@
    ================================================================= */
 
 @media (max-width: 991px) {
-  /* 1. GLOBAL MOBILE FIXES */
+  
   body {
     overscroll-behavior-y: none;
     background-color: var(--pe-bg);
   }
   .pe-main-content {
     margin-left: 0 !important;
-    padding-bottom: 110px !important; /* Space untuk Bottom Dock */
+    padding-bottom: 110px !important; 
     width: 100%;
   }
 
-  /* 2. MOBILE HEADER (Glassmorphism Sticky) */
+  
   .pe-mobile-header {
     position: sticky;
     top: 0;
     z-index: 1040;
-    background: var(--pe-sidebar-bg); /* Menggunakan var transparan */
+    background: var(--pe-sidebar-bg); 
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--pe-card-border);
@@ -505,7 +505,7 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
   }
 
-  /* 3. MOBILE BOTTOM DOCK (Floating) */
+  
   .pe-mobile-dock {
     position: fixed;
     bottom: 20px;
@@ -556,7 +556,7 @@
     transform: translateY(-2px);
   }
 
-  /* CENTER FAB (FOCUS: ORDERS) */
+  
   .pe-dock-fab-wrapper {
     position: relative;
     top: -25px;
@@ -571,7 +571,7 @@
     justify-content: center;
     color: #fff;
     font-size: 1.5rem;
-    border: 5px solid var(--pe-bg); /* Border agar terpisah dari content */
+    border: 5px solid var(--pe-bg); 
     box-shadow: 0 8px 20px var(--pe-accent-glow);
     transition: transform 0.2s;
   }
@@ -579,10 +579,10 @@
     transform: scale(0.95);
   }
   [data-theme="light"] .pe-dock-fab {
-    border-color: #f3f4f6; /* Warna bg light mode */
+    border-color: #f3f4f6; 
   }
 
-  /* 4. STORE STATUS TOGGLE (Dashboard Widget) */
+  
   .pe-store-status-card {
     background: linear-gradient(135deg, rgba(20,20,20,0.8), rgba(10,10,10,0.9));
     border: 1px solid var(--pe-card-border);

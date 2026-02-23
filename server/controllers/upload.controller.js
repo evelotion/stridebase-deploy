@@ -1,8 +1,8 @@
-// File: server/controllers/upload.controller.js
+
 import cloudinary from "../config/cloudinary.js";
 
-// @desc    Upload image for reviews
-// @route   POST /api/upload/review
+
+
 export const uploadReviewImage = async (req, res, next) => {
     if (!req.file) {
         return res.status(400).json({ message: "Tidak ada file yang diunggah." });

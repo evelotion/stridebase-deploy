@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminPromosPage.jsx
+
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -10,11 +10,11 @@ const AdminPromosPage = ({ showMessage }) => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  // Mobile Sheet State
+ 
   const [selectedPromo, setSelectedPromo] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // Form State
+ 
   const [formData, setFormData] = useState({
     code: "",
     description: "",
@@ -156,7 +156,7 @@ const AdminPromosPage = ({ showMessage }) => {
                     {promo.status || "Active"}
                   </span>
                 </div>
-                {/* FIX: Warna Deskripsi */}
+                {}
                 <p
                   className="small mb-2 text-truncate"
                   style={{ color: "var(--pe-text-muted)" }}
@@ -164,7 +164,7 @@ const AdminPromosPage = ({ showMessage }) => {
                   {promo.description}
                 </p>
                 <div className="d-flex align-items-center gap-3">
-                  {/* FIX: Warna Usage Count */}
+                  {}
                   <small
                     style={{
                       fontSize: "0.7rem",
@@ -188,7 +188,7 @@ const AdminPromosPage = ({ showMessage }) => {
         )}
       </div>
 
-      {/* Bottom Sheet */}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -333,7 +333,7 @@ const AdminPromosPage = ({ showMessage }) => {
       {renderMobileView()}
       {renderDesktopView()}
 
-      {/* --- MODAL FORM --- */}
+      {}
       {showModal && (
         <>
           <div

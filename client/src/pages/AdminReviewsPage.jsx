@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminReviewsPage.jsx
+
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -8,7 +8,7 @@ import {
 } from "../services/apiService";
 import "../styles/ElevateDashboard.css";
 
-// --- COMPONENT: PAGINATION ---
+
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   if (pageCount <= 1) return null;
 
@@ -82,11 +82,11 @@ const AdminReviewsPage = ({ showMessage }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRating, setFilterRating] = useState("all");
 
-  // Pagination State
+ 
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  // State untuk Mobile Sheet
+ 
   const [selectedReview, setSelectedReview] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -94,7 +94,7 @@ const AdminReviewsPage = ({ showMessage }) => {
     setLoading(true);
     try {
       const data = await getAllReviewsForAdmin();
-      // Sort by newest
+     
       const sorted = data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
@@ -110,7 +110,7 @@ const AdminReviewsPage = ({ showMessage }) => {
     fetchReviews();
   }, [fetchReviews]);
 
-  // Reset pagination saat filter berubah
+ 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterRating]);
@@ -127,7 +127,7 @@ const AdminReviewsPage = ({ showMessage }) => {
     }
   };
 
-  // Helper Stars
+ 
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
       <i
@@ -155,7 +155,7 @@ const AdminReviewsPage = ({ showMessage }) => {
     });
   }, [reviews, searchTerm, filterRating]);
 
-  // --- LOGIC PAGINATION ---
+ 
   const pageCount = Math.ceil(filteredReviews.length / ITEMS_PER_PAGE);
   const currentReviews = filteredReviews.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -168,7 +168,7 @@ const AdminReviewsPage = ({ showMessage }) => {
     }
   };
 
-  // Mobile Sheet Handlers
+ 
   const openSheet = (review) => {
     setSelectedReview(review);
     setIsSheetOpen(true);
@@ -193,7 +193,7 @@ const AdminReviewsPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* 1. STICKY HEADER */}
+      {}
       <div
         className="sticky-top px-3 py-3"
         style={{
@@ -231,7 +231,7 @@ const AdminReviewsPage = ({ showMessage }) => {
           />
         </div>
 
-        {/* Filter Chips */}
+        {}
         <div className="d-flex gap-2 mt-3">
           {[
             { id: "all", label: "Semua" },
@@ -259,7 +259,7 @@ const AdminReviewsPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 2. REVIEW FEED */}
+      {}
       <div className="px-3 py-2">
         {currentReviews.length > 0 ? (
           currentReviews.map((review) => (
@@ -268,7 +268,7 @@ const AdminReviewsPage = ({ showMessage }) => {
               key={review.id}
               onClick={() => openSheet(review)}
             >
-              {/* User Header */}
+              {}
               <div className="d-flex justify-content-between align-items-start mb-2">
                 <div className="d-flex align-items-center gap-2">
                   <div
@@ -304,7 +304,7 @@ const AdminReviewsPage = ({ showMessage }) => {
                 </div>
               </div>
 
-              {/* Comment Body */}
+              {}
               <p
                 className="mb-3 mt-2"
                 style={{
@@ -316,7 +316,7 @@ const AdminReviewsPage = ({ showMessage }) => {
                 "{review.comment}"
               </p>
 
-              {/* Store & Reply Context */}
+              {}
               <div
                 className="p-2 rounded-3 border border-secondary border-opacity-10"
                 style={{ background: "rgba(128,128,128,0.05)" }}
@@ -351,7 +351,7 @@ const AdminReviewsPage = ({ showMessage }) => {
           </div>
         )}
 
-        {/* PAGINATION MOBILE */}
+        {}
         <Pagination
           currentPage={currentPage}
           pageCount={pageCount}
@@ -359,7 +359,7 @@ const AdminReviewsPage = ({ showMessage }) => {
         />
       </div>
 
-      {/* 3. BOTTOM SHEET */}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -519,7 +519,7 @@ const AdminReviewsPage = ({ showMessage }) => {
                 {currentReviews.length > 0 ? (
                   currentReviews.map((r) => (
                     <tr key={r.id} className="pe-table-row-hover">
-                      {/* FIX: Gunakan inline style dengan var tema agar kontras */}
+                      {}
                       <td
                         className="small"
                         style={{ color: "var(--pe-text-muted)" }}
@@ -582,7 +582,7 @@ const AdminReviewsPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* PAGINATION DESKTOP */}
+        {}
         <Pagination
           currentPage={currentPage}
           pageCount={pageCount}

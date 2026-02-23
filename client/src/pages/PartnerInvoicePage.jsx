@@ -1,4 +1,4 @@
-// File: client/src/pages/PartnerInvoicePage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -39,7 +39,7 @@ const PartnerInvoicePage = ({ showMessage }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ invoiceId }), // Kirim invoiceId
+          body: JSON.stringify({ invoiceId }),
         }
       );
       const data = await res.json();
@@ -47,7 +47,7 @@ const PartnerInvoicePage = ({ showMessage }) => {
       if (!res.ok) throw new Error(data.message);
 
       if (data.paymentMethod === "simulation") {
-        // Redirect ke halaman simulasi dengan tipe invoice
+       
         window.location.href = `/payment-simulation/${invoiceId}?type=invoice`;
       } else {
         window.snap.pay(data.token, {

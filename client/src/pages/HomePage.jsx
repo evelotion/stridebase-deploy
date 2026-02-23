@@ -1,6 +1,6 @@
-// File: client/src/pages/HomePage.jsx
 
-import React, { useState, useEffect, useMemo } from "react"; // Tambahkan useMemo
+
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import StoreCard from "../components/StoreCard";
 import API_BASE_URL from "../apiConfig";
@@ -8,7 +8,7 @@ import GlobalAnnouncement from "../components/GlobalAnnouncement";
 import { Fade, Slide, Zoom } from "react-awesome-reveal";
 import "./HomePageElevate.css";
 
-// Import Swiper & Modules
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -17,7 +17,7 @@ import "swiper/css/pagination";
 
 import { Carousel } from "bootstrap";
 
-// --- HELPER: COUNTDOWN TIMER ---
+
 const useCountdown = (targetDate) => {
   const countDownDate = new Date(targetDate).getTime();
 
@@ -41,7 +41,7 @@ const getReturnValues = (countDown) => {
   if (countDown < 0) {
     return [0, 0, 0, 0];
   }
-  // Hitung hari, jam, menit, detik
+ 
   const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
   const hours = Math.floor(
     (countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -105,7 +105,7 @@ const HomePage = ({
 
   const navigate = useNavigate();
 
-  // 1. Fetch Data Umum Homepage
+ 
   useEffect(() => {
     const fetchHomepageData = async () => {
       try {
@@ -145,14 +145,14 @@ const HomePage = ({
     fetchHomepageData();
   }, []);
 
-  // 2. Fetch Promo Dinamis
+ 
   useEffect(() => {
     const fetchPromos = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/api/public/promos`);
         const data = await res.json();
         if (res.ok) {
-          // Filter hanya promo aktif yang belum kadaluarsa
+         
           const activePromos = data.filter((p) => {
             if (p.status !== "active") return false;
             if (p.endDate && new Date(p.endDate) < new Date()) return false;
@@ -167,7 +167,7 @@ const HomePage = ({
     fetchPromos();
   }, []);
 
-  // 3. Fetch Active Order
+ 
   useEffect(() => {
     const fetchActiveOrder = async () => {
       if (!user || user.role === "admin" || user.role === "developer") return;
@@ -187,21 +187,21 @@ const HomePage = ({
     fetchActiveOrder();
   }, [user]);
 
-  // --- LOGIC PEMILIHAN PROMO UTAMA (FEATURED) ---
+ 
   const featuredPromo = useMemo(() => {
     if (promos.length === 0) return null;
-    // Prioritaskan promo dengan nilai diskon terbesar atau yang akan segera berakhir
+   
     return promos.reduce((prev, current) =>
       (prev.value || 0) > (current.value || 0) ? prev : current
     );
   }, [promos]);
 
-  // Hook Countdown untuk Promo Utama
+ 
   const [days, hours, minutes, seconds] = useCountdown(
     featuredPromo?.endDate || null
   );
 
-  // --- INISIALISASI CAROUSEL ---
+ 
   useEffect(() => {
    if (banners.length > 1) {
       const carouselElement = document.getElementById("elevateCarousel");
@@ -216,11 +216,11 @@ const HomePage = ({
     }
   }, [banners]);
 
-  // ... (Fungsi renderClassicHomepage & renderModernHomepage SAMA SEPERTI SEBELUMNYA - DILEWATI AGAR SINGKAT) ...
-  const renderClassicHomepage = () => <></>; // Placeholder agar tidak error, kode asli tetap ada
-  const renderModernHomepage = () => <></>; // Placeholder
+ 
+  const renderClassicHomepage = () => <></>;
+  const renderModernHomepage = () => <></>;
 
-  // --- 3. RENDER DESKTOP ELEVATE (DIPERBARUI DINAMIS) ---
+ 
   const renderElevateHomepage = () => {
     const v3Services = [
       {
@@ -247,7 +247,7 @@ const HomePage = ({
 
     return (
       <div className="home-elevate-wrapper">
-        {/* HERO SECTION (Sama) */}
+        {}
         <section className="he-hero-section">
           <div
             id="elevateCarousel"
@@ -317,7 +317,7 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* BRAND MARQUEE (Sama) */}
+        {}
         <section className="he-brand-section">
           <div className="he-trust-track-wrapper overflow-hidden">
             <marquee
@@ -334,7 +334,7 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* POPULAR STORES (Sama) */}
+        {}
         <section className="he-popular-section">
           <div className="container">
             <div className="d-flex justify-content-between align-items-end he-section-header">
@@ -402,7 +402,7 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* SERVICES (Sama) */}
+        {}
         <section className="he-services-section">
           <div className="he-glow-blob he-blob-left"></div>
           <div className="he-glow-blob he-blob-right"></div>
@@ -441,7 +441,7 @@ const HomePage = ({
           </div>
         </section>
 
-        {/* [UPDATED] PROMO SECTION DINAMIS */}
+        {}
         {featuredPromo ? (
           <section className="he-promo-section">
             <div className="container">
@@ -488,7 +488,7 @@ const HomePage = ({
                   </Fade>
                 </div>
 
-                {/* Tampilkan Timer HANYA jika ada End Date */}
+                {}
                 {featuredPromo.endDate && (
                   <div className="col-lg-6">
                     <Fade direction="right" triggerOnce className="h-100">
@@ -549,11 +549,11 @@ const HomePage = ({
             </div>
           </section>
         ) : (
-          /* Fallback jika tidak ada promo aktif */
+          
           <div className="py-5 bg-dark d-none"></div>
         )}
 
-        {/* PROCESS SECTION (Sama) */}
+        {}
         <section id="how-it-works" className="he-process-section">
           <div className="he-process-blob he-proc-blob-1"></div>
           <div className="he-process-blob he-proc-blob-2"></div>
@@ -604,15 +604,15 @@ const HomePage = ({
     );
   };
 
-  // ... (renderMobileElevateHomepage SAMA SEPERTI SEBELUMNYA) ...
+ 
   const renderMobileElevateHomepage = () => {
-    // Logic Role untuk Tampilan
+   
     const shouldShowWidget =
       user && user.role !== "admin" && user.role !== "developer" && activeOrder;
 
     return (
       <div className="he-mobile-wrapper">
-        {/* HEADER STICKY */}
+        {}
         <header className="he-mobile-header-sticky">
           <div className="d-flex justify-content-between align-items-center mb-3 he-mobile-greeting">
             <div>
@@ -660,9 +660,9 @@ const HomePage = ({
           </div>
         </header>
 
-        {/* CONTENT SCROLLABLE */}
+        {}
         <div className="he-mobile-content-scroll pt-1">
-          {/* SECTION 0: LIVE ACTIVITY */}
+          {}
           {shouldShowWidget && (
             <section className="px-3 mb-3">
               <div className="he-mobile-track-card">
@@ -710,7 +710,7 @@ const HomePage = ({
             </section>
           )}
 
-          {/* SECTION 1: HERO BANNER */}
+          {}
           <section className="mb-2">
             <Swiper
               modules={[Autoplay, Pagination]}
@@ -743,7 +743,7 @@ const HomePage = ({
             </Swiper>
           </section>
 
-          {/* SECTION 2: SERVICES */}
+          {}
           <section className="mb-3">
             <h6 className="he-mobile-section-title px-3 mb-2">Layanan Kami</h6>
             <div className="he-mobile-services-grid px-3">
@@ -776,7 +776,7 @@ const HomePage = ({
             </div>
           </section>
 
-          {/* SECTION 3: VOUCHER SCROLL */}
+          {}
           {promos.length > 0 && (
             <section className="mb-3 ps-3">
               <h6 className="he-mobile-section-title mb-3">Voucher Spesial</h6>
@@ -835,7 +835,7 @@ const HomePage = ({
             </section>
           )}
 
-          {/* SECTION 5: POPULAR STORES */}
+          {}
           <section className="px-3 pb-1">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h6 className="he-mobile-section-title mb-0">Mitra Pilihan</h6>

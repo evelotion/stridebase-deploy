@@ -1,4 +1,4 @@
-// File: client/src/pages/ContactPage.jsx
+
 
 import React, { useState } from "react";
 import { Fade, Slide } from "react-awesome-reveal";
@@ -34,7 +34,7 @@ const ContactPage = ({ showMessage }) => {
   };
 
   return (
-    // UBAH 1: Background pakai variabel --pe-bg
+   
     <div
       className="home-elevate-wrapper position-relative overflow-hidden"
       style={{
@@ -44,7 +44,7 @@ const ContactPage = ({ showMessage }) => {
         transition: "background 0.3s ease, color 0.3s ease",
       }}
     >
-      {/* Background Blobs */}
+      {}
       <div
         className="he-glow-blob"
         style={{
@@ -70,7 +70,7 @@ const ContactPage = ({ showMessage }) => {
         }}
       ></div>
 
-      {/* Hero Section */}
+      {}
       <section
         className="d-flex flex-column justify-content-center align-items-center text-center position-relative"
         style={{ minHeight: "50vh", paddingTop: "100px" }}
@@ -113,7 +113,7 @@ const ContactPage = ({ showMessage }) => {
         </Fade>
       </section>
 
-      {/* Form Section */}
+      {}
       <section className="position-relative" style={{ paddingBottom: "8rem" }}>
         <div className="container">
           <div className="row g-0 justify-content-center">
@@ -130,7 +130,7 @@ const ContactPage = ({ showMessage }) => {
                   }}
                 >
                   <div className="row g-0">
-                    {/* Left Column: Info */}
+                    {}
                     <div
                       className="col-lg-5 p-5 d-flex flex-column justify-content-between position-relative"
                       style={{
@@ -196,7 +196,7 @@ const ContactPage = ({ showMessage }) => {
                         ))}
                       </div>
 
-                      {/* Social Media */}
+                      {}
                       <div className="mt-5">
                         <h6
                           className="text-uppercase small mb-3 fw-bold"
@@ -227,7 +227,7 @@ const ContactPage = ({ showMessage }) => {
                       </div>
                     </div>
 
-                    {/* Right Column: Form */}
+                    {}
                     <div className="col-lg-7 p-5">
                       <form onSubmit={handleSubmit}>
                         <div className="row g-4">
@@ -359,7 +359,7 @@ const ContactPage = ({ showMessage }) => {
         </div>
       </section>
 
-      {/* Map Section */}
+      {}
       <section
         className="position-relative"
         style={{
@@ -370,7 +370,7 @@ const ContactPage = ({ showMessage }) => {
         <div
           className="he-map-container h-100 rounded-0 mt-0"
           style={{
-            // UBAH 2: Map jadi normal (tidak invert) saat light mode
+           
             filter:
               "grayscale(100%) var(--pe-map-filter, invert(90%) contrast(90%))",
           }}

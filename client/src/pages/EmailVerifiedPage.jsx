@@ -1,4 +1,4 @@
-// File: client/src/pages/EmailVerifiedPage.jsx
+
 
 import React from "react";
 import { Link } from "react-router-dom";

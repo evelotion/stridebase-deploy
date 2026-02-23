@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminDashboardPage.jsx
+
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -17,13 +17,13 @@ import {
   Filler,
 } from "chart.js";
 
-// --- IMPORT SWIPER (KHUSUS MOBILE) ---
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
 
-// Registrasi Chart.js
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -59,7 +59,7 @@ const AdminDashboardPage = ({ showMessage }) => {
     fetchAdminStats();
   }, [showMessage]);
 
-  // Konfigurasi Chart (Desktop)
+ 
   const chartData = {
     labels: ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"],
     datasets: [
@@ -70,7 +70,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         backgroundColor: "rgba(139, 92, 246, 0.1)",
         borderColor: "#8b5cf6",
         tension: 0.4,
-        // Update: Gunakan warna ungu solid agar aman di light/dark mode
+       
         pointBackgroundColor: "#8b5cf6",
         pointBorderColor: "#8b5cf6",
         pointBorderWidth: 2,
@@ -78,7 +78,7 @@ const AdminDashboardPage = ({ showMessage }) => {
     ],
   };
 
-  // FIX CHART COLOR: Gunakan warna abu-abu netral (#9ca3af)
+ 
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -86,13 +86,13 @@ const AdminDashboardPage = ({ showMessage }) => {
     scales: {
       x: {
         grid: { display: false },
-        // FIX: Warna netral (terlihat di dark & light)
+       
         ticks: { color: "#9ca3af" },
       },
       y: {
-        // FIX: Grid transparan netral
+       
         grid: { color: "rgba(128, 128, 128, 0.1)" },
-        // FIX: Warna netral
+       
         ticks: { color: "#9ca3af" },
       },
     },
@@ -106,7 +106,7 @@ const AdminDashboardPage = ({ showMessage }) => {
     );
   if (error) return <div className="p-4 text-danger">Error: {error}</div>;
 
-  // Data KPI Stats
+ 
   const kpiItems = [
     {
       title: "Total Pengguna",
@@ -147,7 +147,7 @@ const AdminDashboardPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* 1. GREETING CARD */}
+      {}
       <div className="mb-4 pt-3 px-1">
         <div
           className="pe-card p-3 d-flex align-items-center justify-content-between"
@@ -181,7 +181,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 2. KPI SWIPER */}
+      {}
       <div className="mb-4">
         <Swiper
           slidesPerView={1.25}
@@ -232,7 +232,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         </Swiper>
       </div>
 
-      {/* 3. LIVE ACTIVITY WIDGET */}
+      {}
       <div className="mb-4 px-1">
         <div className="d-flex justify-content-between align-items-center mb-2">
           <span
@@ -243,7 +243,7 @@ const AdminDashboardPage = ({ showMessage }) => {
           </span>
         </div>
 
-        {/* Task Card: Toko Pending */}
+        {}
         <div
           className="pe-card p-3 mb-2 d-flex align-items-center gap-3"
           style={{ border: "1px solid rgba(59,130,246,0.3)" }}
@@ -256,7 +256,7 @@ const AdminDashboardPage = ({ showMessage }) => {
             <i className="fas fa-store-alt"></i>
           </div>
           <div className="flex-grow-1">
-            {/* FIX: Adaptive Text */}
+            {}
             <h6 className="mb-0 fw-bold fs-6 text-adaptive">Verifikasi Toko</h6>
             <small
               className="text-adaptive-muted"
@@ -268,7 +268,7 @@ const AdminDashboardPage = ({ showMessage }) => {
           <i className="fas fa-chevron-right text-adaptive-muted opacity-50 small"></i>
         </div>
 
-        {/* Task Card: Payout Pending */}
+        {}
         <div
           className="pe-card p-3 d-flex align-items-center gap-3"
           style={{ border: "1px solid rgba(245,158,11,0.3)" }}
@@ -281,7 +281,7 @@ const AdminDashboardPage = ({ showMessage }) => {
             <i className="fas fa-hand-holding-usd"></i>
           </div>
           <div className="flex-grow-1">
-            {/* FIX: Adaptive Text */}
+            {}
             <h6 className="mb-0 fw-bold fs-6 text-adaptive">
               Permintaan Payout
             </h6>
@@ -296,7 +296,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* 4. QUICK ACTIONS GRID */}
+      {}
       <div className="px-1 mb-5">
         <h6
           className="pe-subtitle fw-bold mb-3"
@@ -359,7 +359,7 @@ const AdminDashboardPage = ({ showMessage }) => {
      ========================================= */
   const renderDesktopView = () => (
     <div className="d-none d-lg-block">
-      {/* HEADER */}
+      {}
       <div className="d-flex justify-content-between align-items-end mb-5">
         <div>
           <Fade direction="down" triggerOnce>
@@ -393,7 +393,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* KPI CARDS (GRID) */}
+      {}
       <div className="row g-4 mb-5">
         {kpiItems.map((item, idx) => (
           <div className="col-md-6 col-xl-3" key={idx}>
@@ -416,7 +416,7 @@ const AdminDashboardPage = ({ showMessage }) => {
         ))}
       </div>
 
-      {/* CHARTS */}
+      {}
       <div className="row g-4">
         <div className="col-lg-8">
           <Slide direction="left" triggerOnce>

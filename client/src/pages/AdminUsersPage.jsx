@@ -1,4 +1,4 @@
-// File: client/src/pages/AdminUsersPage.jsx
+
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Fade } from "react-awesome-reveal";
@@ -11,15 +11,15 @@ import {
 } from "../services/apiService";
 import "../styles/ElevateDashboard.css";
 
-// --- COMPONENT: PAGINATION (MAX 5 BUTTONS) ---
+
 const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   if (pageCount <= 1) return null;
 
-  // Logika: Tampilkan maksimal 5 tombol halaman
+ 
   let startPage = Math.max(1, currentPage - 2);
   let endPage = Math.min(pageCount, startPage + 4);
 
-  // Koreksi jika halaman mendekati akhir (tetap tampilkan 5 tombol jika ada)
+ 
   if (endPage - startPage < 4) {
     startPage = Math.max(1, endPage - 4);
   }
@@ -35,7 +35,7 @@ const Pagination = ({ currentPage, pageCount, onPageChange }) => {
         Halaman {currentPage} dari {pageCount}
       </span>
       <div className="d-flex gap-1">
-        {/* Prev Button */}
+        {}
         <button
           className="pe-btn-action py-1 px-2"
           onClick={() => onPageChange(currentPage - 1)}
@@ -45,7 +45,7 @@ const Pagination = ({ currentPage, pageCount, onPageChange }) => {
           <i className="fas fa-chevron-left"></i>
         </button>
 
-        {/* Page Numbers (Limited) */}
+        {}
         <div className="d-flex gap-1">
           {pages.map((num) => (
             <button
@@ -70,7 +70,7 @@ const Pagination = ({ currentPage, pageCount, onPageChange }) => {
           ))}
         </div>
 
-        {/* Next Button */}
+        {}
         <button
           className="pe-btn-action py-1 px-2"
           onClick={() => onPageChange(currentPage + 1)}
@@ -84,7 +84,7 @@ const Pagination = ({ currentPage, pageCount, onPageChange }) => {
   );
 };
 
-// --- MODAL TAMBAH USER ---
+
 const AddUserModal = ({ show, handleClose, handleSubmit, showMessage }) => {
   const [userData, setUserData] = useState({
     name: "",
@@ -105,7 +105,7 @@ const AddUserModal = ({ show, handleClose, handleSubmit, showMessage }) => {
     try {
       await handleSubmit(userData);
     } catch (error) {
-      // Error handled by parent
+     
     } finally {
       setIsSaving(false);
     }
@@ -215,7 +215,7 @@ const AddUserModal = ({ show, handleClose, handleSubmit, showMessage }) => {
                     Peran
                   </label>
                   
-                  {/* FIX: Dropdown menggunakan Variabel Tema */}
+                  {}
                   <select
                     className="form-select"
                     name="role"
@@ -266,7 +266,7 @@ const AddUserModal = ({ show, handleClose, handleSubmit, showMessage }) => {
   );
 };
 
-// --- HALAMAN UTAMA ADMIN USERS ---
+
 const AdminUsersPage = ({ showMessage }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -275,11 +275,11 @@ const AdminUsersPage = ({ showMessage }) => {
   const [filterRole, setFilterRole] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Pagination State (Show 10)
+ 
   const [currentPage, setCurrentPage] = useState(1);
   const USERS_PER_PAGE = 10;
 
-  // Mobile Bottom Sheet State
+ 
   const [selectedUser, setSelectedUser] = useState(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -300,7 +300,7 @@ const AdminUsersPage = ({ showMessage }) => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Reset pagination saat filter berubah
+ 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterRole]);
@@ -375,7 +375,7 @@ const AdminUsersPage = ({ showMessage }) => {
     }
   };
 
-  // Mobile Sheet Handlers
+ 
   const openActionSheet = (user) => {
     setSelectedUser(user);
     setIsSheetOpen(true);
@@ -395,7 +395,7 @@ const AdminUsersPage = ({ showMessage }) => {
       case "mitra":
         return "pe-badge pe-badge-warning";
       default:
-        return "pe-badge"; // Customer
+        return "pe-badge";
     }
   };
 
@@ -415,7 +415,7 @@ const AdminUsersPage = ({ showMessage }) => {
     });
   }, [users, searchTerm, filterRole]);
 
-  // --- LOGIC PAGINATION ---
+ 
   const pageCount = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
   const currentUsersOnPage = filteredUsers.slice(
     (currentPage - 1) * USERS_PER_PAGE,
@@ -443,7 +443,7 @@ const AdminUsersPage = ({ showMessage }) => {
      ========================================= */
   const renderMobileView = () => (
     <div className="d-lg-none pb-5">
-      {/* Sticky Header & Search */}
+      {}
       <div
         className="sticky-top px-3 py-3"
         style={{
@@ -469,7 +469,7 @@ const AdminUsersPage = ({ showMessage }) => {
               left: "12px",
               top: "50%",
               transform: "translateY(-50%)",
-              color: "var(--pe-text-muted)", // Warna Adaptif
+              color: "var(--pe-text-muted)",
             }}
           ></i>
           <input
@@ -486,7 +486,7 @@ const AdminUsersPage = ({ showMessage }) => {
           />
         </div>
 
-        {/* Filter Chips */}
+        {}
         <div
           className="d-flex gap-2 mt-3 overflow-auto pb-1"
           style={{ whiteSpace: "nowrap", scrollbarWidth: "none" }}
@@ -514,7 +514,7 @@ const AdminUsersPage = ({ showMessage }) => {
         </div>
       </div>
 
-      {/* Feed List */}
+      {}
       <div className="px-3 py-2">
         {currentUsersOnPage.length > 0 ? (
           currentUsersOnPage.map((user) => (
@@ -602,7 +602,7 @@ const AdminUsersPage = ({ showMessage }) => {
           </div>
         )}
 
-        {/* Pagination Mobile */}
+        {}
         <Pagination
           currentPage={currentPage}
           pageCount={pageCount}
@@ -610,8 +610,8 @@ const AdminUsersPage = ({ showMessage }) => {
         />
       </div>
 
-      {/* Bottom Sheet */}
-      {/* ... Bottom Sheet code remains same ... */}
+      {}
+      {}
       <div
         className={`position-fixed top-0 start-0 w-100 h-100 bg-black ${
           isSheetOpen ? "visible opacity-50" : "invisible opacity-0"
@@ -776,7 +776,7 @@ const AdminUsersPage = ({ showMessage }) => {
               </div>
             </div>
             <div className="col-md-4">
-              {/* FIX: Dropdown Warna Adaptif */}
+              {}
               <select
                 className="form-select bg-transparent border-secondary"
                 value={filterRole}
@@ -838,7 +838,7 @@ const AdminUsersPage = ({ showMessage }) => {
       </Fade>
 
       <Fade delay={100} triggerOnce>
-        {/* TABEL */}
+        {}
         <div className="pe-card">
           <div className="pe-table-wrapper">
             <table className="pe-table align-middle">
@@ -911,7 +911,7 @@ const AdminUsersPage = ({ showMessage }) => {
                                 <li key={role}>
                                   <button
                                     className="dropdown-item"
-                                    style={{ color: "var(--pe-text-main)" }} // Pastikan teks kontras
+                                    style={{ color: "var(--pe-text-main)" }}
                                     onClick={() =>
                                       handleRoleChange(user.id, role)
                                     }
@@ -979,7 +979,7 @@ const AdminUsersPage = ({ showMessage }) => {
           </div>
         </div>
 
-        {/* PAGINATION DESKTOP (Di Bawah Card) */}
+        {}
         <Pagination
           currentPage={currentPage}
           pageCount={pageCount}

@@ -5,45 +5,45 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const DemoPage = () => {
-  const [activeRole, setActiveRole] = useState('customer'); // 'customer' or 'partner'
+  const [activeRole, setActiveRole] = useState('customer');
   const [demoStep, setDemoStep] = useState(0);
   const [notification, setNotification] = useState(null);
 
-  // Reset step ketika ganti role
+ 
   useEffect(() => {
     setDemoStep(0);
     setNotification(null);
   }, [activeRole]);
 
-  // --- LOGIKA SIMULASI CUSTOMER ---
+ 
   const handleCustomerAction = () => {
     if (demoStep === 0) {
-      setDemoStep(1); // Processing
+      setDemoStep(1);
       setTimeout(() => {
-        setDemoStep(2); // Found Store
+        setDemoStep(2);
         showNotif("Yeay! Mitra 'CleanKicks' menerima pesananmu.");
       }, 1500);
     } else if (demoStep === 2) {
-      setDemoStep(3); // Completed
+      setDemoStep(3);
       showNotif("Sepatu sudah selesai dicuci! Siap diantar.");
     } else {
-      setDemoStep(0); // Reset
+      setDemoStep(0);
     }
   };
 
-  // --- LOGIKA SIMULASI PARTNER ---
+ 
   const handlePartnerAction = () => {
     if (demoStep === 0) {
-      setDemoStep(1); // Accept Order
+      setDemoStep(1);
       showNotif("Order diterima. Segera jemput sepatu pelanggan.");
     } else if (demoStep === 1) {
-      setDemoStep(2); // In Progress
+      setDemoStep(2);
       showNotif("Status diupdate: Sedang Dicuci.");
     } else if (demoStep === 2) {
-      setDemoStep(3); // Money In
+      setDemoStep(3);
       showNotif("Saldo Dompet bertambah Rp 50.000!");
     } else {
-      setDemoStep(0); // Reset
+      setDemoStep(0);
     }
   };
 
@@ -52,8 +52,8 @@ const DemoPage = () => {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  // Variabel Warna Dinamis (Sesuai Role)
-  const roleColor = activeRole === 'customer' ? '#3b82f6' : '#10b981'; // Biru vs Hijau
+ 
+  const roleColor = activeRole === 'customer' ? '#3b82f6' : '#10b981';
   const roleLightColor = activeRole === 'customer' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(16, 185, 129, 0.1)';
 
   return (
@@ -63,7 +63,7 @@ const DemoPage = () => {
         backgroundColor: 'var(--sb-bg-primary)', 
         color: 'var(--sb-text-main)',
         minHeight: '100vh',
-        paddingTop: '120px', // FIX: Padding agar tidak ketutup Navbar Fixed
+        paddingTop: '120px',
         paddingBottom: '80px',
         transition: 'background-color 0.3s, color 0.3s'
       }}
@@ -72,7 +72,7 @@ const DemoPage = () => {
 
       <div className="container">
         
-        {/* 1. Header Section */}
+        {}
         <div className="text-center mb-5">
           <Slide direction="down" triggerOnce>
             <span 
@@ -90,7 +90,7 @@ const DemoPage = () => {
           </Slide>
         </div>
 
-        {/* 2. Role Switcher (Toggle) */}
+        {}
         <div className="d-flex justify-content-center mb-5">
           <div 
             className="p-1 rounded-pill d-inline-flex position-relative"
@@ -125,10 +125,10 @@ const DemoPage = () => {
           </div>
         </div>
 
-        {/* 3. Main Interactive Area */}
+        {}
         <div className="row align-items-center g-5">
           
-          {/* KIRI: Deskripsi Langkah */}
+          {}
           <div className="col-lg-6 order-2 order-lg-1">
             <Fade key={activeRole} triggerOnce>
               <div 
@@ -181,7 +181,7 @@ const DemoPage = () => {
             </Fade>
           </div>
 
-          {/* KANAN: Phone Simulator */}
+          {}
           <div className="col-lg-6 order-1 order-lg-2 d-flex justify-content-center">
             <div 
               className="phone-mockup shadow-lg position-relative"
@@ -190,21 +190,21 @@ const DemoPage = () => {
                 height: '640px',
                 borderRadius: '40px',
                 border: '8px solid #1f2937',
-                backgroundColor: '#fff', // Layar HP biasanya putih/terang atau bisa dibuat dark juga
+                backgroundColor: '#fff',
                 overflow: 'hidden',
-                background: activeRole === 'customer' ? '#f0f9ff' : '#f0fdf4' // Sedikit tint warna
+                background: activeRole === 'customer' ? '#f0f9ff' : '#f0fdf4'
               }}
             >
-              {/* Notch */}
+              {}
               <div className="position-absolute top-0 start-50 translate-middle-x bg-dark rounded-bottom-4" style={{ width: '120px', height: '25px', zIndex: 20 }}></div>
 
-              {/* Status Bar */}
+              {}
               <div className="d-flex justify-content-between px-4 pt-2 pb-3" style={{ fontSize: '0.75rem', color: '#333' }}>
                 <span className="fw-bold">9:41</span>
                 <span>📶 🔋</span>
               </div>
 
-              {/* Dynamic Notification */}
+              {}
               {notification && (
                 <div 
                   className="position-absolute start-50 translate-middle-x px-3 py-2 rounded-3 shadow-sm"
@@ -223,10 +223,10 @@ const DemoPage = () => {
                 </div>
               )}
 
-              {/* --- SCREEN CONTENT --- */}
+              {}
               <div className="h-100 d-flex flex-column">
                 
-                {/* App Header */}
+                {}
                 <div className="px-3 py-2 mb-2 d-flex align-items-center bg-white shadow-sm">
                   <div className="fw-bold" style={{ color: roleColor }}>
                     {activeRole === 'customer' ? 'StrideBase' : 'Partner Dash'}
@@ -234,10 +234,10 @@ const DemoPage = () => {
                   <div className="ms-auto rounded-circle bg-secondary" style={{ width: '24px', height: '24px' }}></div>
                 </div>
 
-                {/* App Body */}
+                {}
                 <div className="flex-grow-1 p-3 overflow-hidden d-flex flex-column justify-content-center">
                   
-                  {/* --- CUSTOMER FLOW --- */}
+                  {}
                   {activeRole === 'customer' && (
                     <>
                       {demoStep === 0 && (
@@ -301,7 +301,7 @@ const DemoPage = () => {
                     </>
                   )}
 
-                  {/* --- PARTNER FLOW --- */}
+                  {}
                   {activeRole === 'partner' && (
                     <>
                       {demoStep === 0 && (
@@ -364,7 +364,7 @@ const DemoPage = () => {
 
                 </div>
 
-                {/* App Bottom Nav */}
+                {}
                 <div className="bg-white border-top p-2 d-flex justify-content-around">
                   <div className="text-primary"><small>🏠</small></div>
                   <div className="text-muted"><small>💬</small></div>
@@ -377,7 +377,7 @@ const DemoPage = () => {
 
         </div>
 
-        {/* 4. CTA Final */}
+        {}
         <div className="text-center mt-5 pt-5 border-top border-secondary border-opacity-25">
           <h3 className="fw-bold mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>Siap Bergabung?</h3>
           <div className="d-flex justify-content-center gap-3">

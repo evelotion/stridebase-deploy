@@ -1,4 +1,4 @@
-// File: client/src/pages/NotFoundPage.jsx
+
 
 import React from "react";
 import { Link } from "react-router-dom";
@@ -7,9 +7,9 @@ import "./HomePageElevate.css";
 
 const NotFoundPage = () => {
   return (
-    // [FIX] Gunakan 'he-centered-page-fix' agar tidak ketutupan navbar
+   
     <div className="home-elevate-wrapper he-centered-page-fix position-relative overflow-hidden">
-      {/* Background Glow */}
+      {}
       <div
         className="he-glow-blob"
         style={{
