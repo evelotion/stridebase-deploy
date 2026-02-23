@@ -705,17 +705,19 @@ const AdminBookingsPage = ({ showMessage }) => {
                       <td className="text-center">
                         <div className="dropdown">
                           <button
+                            id={`dropdown-action-${booking.id}`} // <-- Tambahkan ID unik
                             className="pe-btn-action py-1 px-2"
                             data-bs-toggle="dropdown"
-                            aria-expanded="false" // <-- Tambahkan ini
-                            data-bs-boundary="window" // <-- TAMBAHKAN INI (Biar gak kepotong tabel)
+                            aria-expanded="false"
+                            data-bs-boundary="window"
                             disabled={booking.status === "reviewed"}
                           >
                             <i className="fas fa-ellipsis-h"></i>
                           </button>
-                          {/* FIX: Dropdown Menu Warna Adaptif */}
+
                           <ul
                             className="dropdown-menu dropdown-menu-end shadow"
+                            aria-labelledby={`dropdown-action-${booking.id}`} // <-- Sambungkan ke ID
                             style={{
                               backgroundColor: "var(--pe-card-bg)",
                               borderColor: "var(--pe-card-border)",
